@@ -28,7 +28,7 @@ test('shows location when passed location information', async () => {
             }}
         >
             <Form>
-                <Location locationPath="location" geometry={loc.geometry} />
+                <Location />
             </Form>
         </Formik>,
     );

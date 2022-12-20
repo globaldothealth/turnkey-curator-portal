@@ -9,19 +9,23 @@ import BulkCaseFormValues from '../bulk-case-form-fields/BulkCaseFormValues';
 import CaseFormValues from '../new-case-form-fields/CaseFormValues';
 import { CaseReference } from '../../api/models/Case';
 import FieldTitle from './FieldTitle';
-import React from 'react';
+import React, { useState } from 'react';
 import { RequiredHelperText } from './FormikFields';
 import Scroll from 'react-scroll';
 import { TextField } from 'formik-mui';
 import { StyledTooltip } from '../new-case-form-fields/StyledTooltip';
 import axios from 'axios';
 import { throttle } from 'lodash';
+import { ParsedCase } from '../../api/models/Day0Case';
+import Button from '@mui/material/Button';
+import AddIcon from '@mui/icons-material/Add';
 
 interface SourceProps {
     initialValue?: CaseReference;
     hasSourceEntryId?: boolean;
     freeSolo?: boolean;
     sourcesWithStableIdentifiers?: boolean;
+    withAdditioanlSources?: boolean;
 }
 
 const TooltipText = () => (
@@ -49,39 +53,86 @@ const TooltipText = () => (
     </StyledTooltip>
 );
 
-export default class Source extends React.Component<
-    SourceProps,
-    Record<string, unknown>
-> {
-    render(): JSX.Element {
-        const freeSolo =
-            this.props.freeSolo === undefined ? true : this.props.freeSolo;
-        return (
-            <Scroll.Element name="source">
-                <FieldTitle
-                    title="Data Source"
-                    tooltip={<TooltipText />}
-                ></FieldTitle>
-                <SourcesAutocomplete
-                    initialValue={this.props.initialValue}
-                    freeSolo={freeSolo}
-                    sourcesWithStableIdentifiers={
-                        this.props.sourcesWithStableIdentifiers
-                    }
-                />
-                {this.props.hasSourceEntryId && (
-                    <FastField
-                        label="Source entry ID"
-                        name="caseReference.sourceEntryId"
-                        type="text"
-                        data-testid="sourceEntryId"
-                        component={TextField}
-                        fullWidth
-                    />
+const useSourceStyles = makeStyles(() => ({
+    additionalSources: {
+        width: '50%',
+    },
+    hidden: {
+        display: 'none',
+    },
+}));
+
+const additionalSources = [
+    { name: 'sourceII', label: 'Source II url' },
+    { name: 'sourceIII', label: 'Source III url' },
+    { name: 'sourceIV', label: 'Source IV url' },
+    { name: 'sourceV', label: 'Source V url' },
+    { name: 'sourceVI', label: 'Source VI url' },
+    { name: 'sourceVII', label: 'Source VII url' },
+];
+
+export default function Source(props: SourceProps) {
+    const classes = useSourceStyles();
+    const [additionalSourceNum, setAdditionalSourceNum] = useState(0);
+
+    const freeSolo = props.freeSolo === undefined ? true : props.freeSolo;
+
+    const handleadditionalSourceClick = () => {
+        if (additionalSourceNum >= additionalSources.length) return;
+
+        setAdditionalSourceNum((state) => state + 1);
+    };
+
+    const renderedAdditionalSources = () => {
+        const fields = [];
+        for (let i = 0; i < additionalSourceNum; i++) {
+            fields.push(
+                <FastField
+                    key={additionalSources[i].name}
+                    label={additionalSources[i].label}
+                    name={additionalSources[i].name}
+                    type="text"
+                    data-testid={additionalSources[i].name}
+                    component={TextField}
+                    margin="normal"
+                    fullWidth
+                />,
+            );
+        }
+
+        return fields;
+    };
+
+    return (
+        <Scroll.Element name="source">
+            <FieldTitle title="Data Source" tooltip={<TooltipText />} />
+            <SourcesAutocomplete
+                initialValue={props.initialValue}
+                freeSolo={freeSolo}
+                sourcesWithStableIdentifiers={
+                    props.sourcesWithStableIdentifiers
+                }
+            />
+            {props.withAdditioanlSources && (
+                <div className={classes.additionalSources}>
+                    {renderedAdditionalSources()}
+                </div>
+            )}
+
+            {props.withAdditioanlSources &&
+                additionalSourceNum < additionalSources.length && (
+                    <Button
+                        variant="outlined"
+                        id="add-additional-sources"
+                        startIcon={<AddIcon />}
+                        onClick={handleadditionalSourceClick}
+                        sx={{ marginTop: '1rem' }}
+                    >
+                        Add additional source
+                    </Button>
                 )}
-            </Scroll.Element>
-        );
-    }
+        </Scroll.Element>
+    );
 }
 
 interface OriginData {
@@ -148,6 +199,9 @@ const useStyles = makeStyles(() => ({
     sourceTextField: {
         marginTop: '1em',
     },
+    fieldRow: {
+        maxWidth: '50%',
+    },
 }));
 
 export function SourcesAutocomplete(
@@ -162,7 +216,7 @@ export function SourcesAutocomplete(
     const [inputValue, setInputValue] = React.useState('');
     const [options, setOptions] = React.useState<CaseReferenceForm[]>([]);
     const { setFieldValue, setTouched, values } = useFormikContext<
-        CaseFormValues | BulkCaseFormValues
+        ParsedCase | BulkCaseFormValues
     >();
 
     const fetch = React.useMemo(
@@ -248,7 +302,7 @@ export function SourcesAutocomplete(
     }, [value, inputValue, fetch]);
 
     return (
-        <React.Fragment>
+        <div className={classes.fieldRow}>
             <Autocomplete
                 itemType="CaseReferenceForm"
                 getOptionLabel={(option: string | CaseReferenceForm): string =>
@@ -293,6 +347,12 @@ export function SourcesAutocomplete(
                     }
                     setValue(newValue);
                     setFieldValue(name, newValue);
+                    setFieldValue(
+                        'source',
+                        typeof newValue === 'string'
+                            ? newValue
+                            : newValue?.sourceUrl,
+                    );
                 }}
                 filterOptions={(
                     options: CaseReferenceForm[],
@@ -354,11 +414,11 @@ export function SourcesAutocomplete(
                             placeholder="https://..."
                             component={TextField}
                             fullWidth
-                        ></Field>
+                        />
                         <RequiredHelperText
                             name={name}
                             wrongUrl={sourceURLValidation(inputValue)}
-                        ></RequiredHelperText>
+                        />
                     </div>
                 )}
                 renderOption={(
@@ -426,6 +486,6 @@ export function SourcesAutocomplete(
                         />
                     </>
                 )}
-        </React.Fragment>
+        </div>
     );
 }

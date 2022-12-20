@@ -1,38 +1,39 @@
-import React from 'react';
-import { FastField, FieldArray, useFormikContext } from 'formik';
-
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import Button from '@mui/material/Button';
-import CancelIcon from '@mui/icons-material/Cancel';
-import CaseFormValues from './CaseFormValues';
-import {
-    DateField,
-    FormikAutocomplete,
-} from '../common-form-fields/FormikFields';
+import { FastField, useFormikContext } from 'formik';
+import { DateField, SelectField } from '../common-form-fields/FormikFields';
 import FieldTitle from '../common-form-fields/FieldTitle';
 import { StyledTooltip } from './StyledTooltip';
 import Scroll from 'react-scroll';
 import { TextField } from 'formik-mui';
 import makeStyles from '@mui/styles/makeStyles';
-import shortId from 'shortid';
 import { VaccineSideEffects } from './Symptoms';
+import { ParsedCase } from '../../api/models/Day0Case';
+import { format } from 'date-fns';
+import { useStyles } from './styled';
+import clsx from 'clsx';
+import { toUTCDate } from '../util/date';
 
 const TooltipText = () => (
     <StyledTooltip>
-        <p>
-            You can enter the name and batch ID of the vaccine administered, and
-            date the patient was vaccinated. If any side-effects were reported,
-            you can provide a list of these using the same data dictionary as
-            for disease symptoms.
-        </p>
-        <p>
-            You can also indicate, for each dose of vaccine, whether the patient
-            was previously infected and, if so, the detection method.
-        </p>
+        <ul>
+            <li>
+                <strong>Vaccination:</strong> Has the individual received a dose
+                of vaccine (Y=Yes, N=No, NA=Not applicable)?
+            </li>
+            <li>
+                <strong>Vaccine name:</strong> Name of the first vaccine.
+            </li>
+            <li>
+                <strong>Vaccine date:</strong> Date of first vaccination.
+            </li>
+            <li>
+                <strong>Vaccine side effects:</strong> list of symptoms
+                experienced after receiving the vaccine.
+            </li>
+        </ul>
     </StyledTooltip>
 );
 
-const useStyles = makeStyles(() => ({
+const styles = makeStyles(() => ({
     vaccineTitle: {
         alignItems: 'left',
     },
@@ -47,134 +48,56 @@ const useStyles = makeStyles(() => ({
 }));
 
 export default function Vaccines(): JSX.Element {
-    const { values, setValues } = useFormikContext<CaseFormValues>();
-    const classes = useStyles();
+    const { values, setValues } = useFormikContext<ParsedCase>();
+    const classes = styles();
+    const globalClasses = useStyles();
+
     return (
         <Scroll.Element name="vaccines">
             <FieldTitle
                 title="Vaccines"
                 interactive
                 tooltip={<TooltipText />}
-            ></FieldTitle>
-            <FieldArray name="vaccines">
-                {({ push, remove }): JSX.Element => {
-                    return (
-                        <div>
-                            {values.vaccines &&
-                                values.vaccines.map((vaccine, index) => (
-                                    <div
-                                        key={vaccine.reactId}
-                                        data-testid={'vaccine-section'}
-                                    >
-                                        <div className={classes.vaccineTitle}>
-                                            {`Vaccine ${index + 1}`}
-                                            <span
-                                                className={classes.spacer}
-                                            ></span>
-                                            <Button
-                                                startIcon={<CancelIcon />}
-                                                data-testid={
-                                                    'remove-vaccine-button'
-                                                }
-                                                onClick={(): void => {
-                                                    remove(index);
-                                                }}
-                                            >
-                                                Remove
-                                            </Button>
-                                            <DateField
-                                                name={`vaccines[${index}].date`}
-                                                label="Vaccination date"
-                                                value={
-                                                    values.vaccines[index]
-                                                        .date || null
-                                                }
-                                                onChange={(newValue) => {
-                                                    const reactId =
-                                                        values.vaccines[index]
-                                                            .reactId;
-
-                                                    const newVaccines =
-                                                        values.vaccines.map(
-                                                            (element) =>
-                                                                element.reactId ===
-                                                                reactId
-                                                                    ? {
-                                                                          ...element,
-                                                                          date: newValue as Date,
-                                                                      }
-                                                                    : element,
-                                                        );
-
-                                                    setValues({
-                                                        ...values,
-                                                        vaccines: newVaccines,
-                                                    });
-                                                }}
-                                            ></DateField>
-                                            <FastField
-                                                className={classes.field}
-                                                name={`vaccines[${index}].name`}
-                                                type="text"
-                                                label="Vaccine Name"
-                                                fullWidth
-                                                component={TextField}
-                                            ></FastField>
-                                            <FastField
-                                                className={classes.field}
-                                                name={`vaccines[${index}].batch`}
-                                                type="text"
-                                                label="Vaccine Batch ID"
-                                                fullWidth
-                                                component={TextField}
-                                            ></FastField>
-                                            <FormikAutocomplete
-                                                name={`vaccines[${index}].previousInfection`}
-                                                label="Previous Infection?"
-                                                multiple={false}
-                                                optionsList={[
-                                                    'Yes',
-                                                    'No',
-                                                    'NA',
-                                                ]}
-                                                initialValue={
-                                                    vaccine.previousInfection
-                                                }
-                                            />
-                                            <FastField
-                                                className={classes.field}
-                                                name={`vaccines[${index}].previousInfectionDetectionMethod`}
-                                                type="text"
-                                                label="Detection Method for Previous Infection"
-                                                fullWidth
-                                                component={TextField}
-                                            ></FastField>
-                                            <VaccineSideEffects i={index} />
-                                        </div>
-                                    </div>
-                                ))}
-                            <Button
-                                data-testid="addVaccine"
-                                startIcon={<AddCircleIcon />}
-                                onClick={(): void => {
-                                    push({
-                                        reactId: shortId.generate(),
-                                        name: '',
-                                        batch: null,
-                                        date: new Date(),
-                                        sideEffects: [],
-                                        sideEffectsStatus: 'Asymptomatic',
-                                        previousInfection: 'NA',
-                                        previousInfectionDetectionMethod: null,
-                                    });
-                                }}
-                            >
-                                Add vaccine
-                            </Button>
-                        </div>
-                    );
-                }}
-            </FieldArray>
+            />
+            <SelectField
+                name="vaccination"
+                label="Vaccination"
+                values={['Y', 'N', 'NA']}
+            />
+            {values.vaccination === 'Y' && (
+                <>
+                    <div
+                        className={clsx([
+                            globalClasses.fieldRow,
+                            globalClasses.halfWidth,
+                        ])}
+                    >
+                        <FastField
+                            name="vaccineName"
+                            type="text"
+                            label="Vaccine name"
+                            component={TextField}
+                            fullWidth
+                        />
+                    </div>
+                    <DateField
+                        name="vaccineDate"
+                        label="Vaccine date"
+                        value={values.vaccineDate}
+                        onChange={(newValue) => {
+                            setValues({
+                                ...values,
+                                vaccineDate: toUTCDate(
+                                    newValue
+                                        ? newValue.toDateString()
+                                        : undefined,
+                                ),
+                            });
+                        }}
+                    />
+                    <VaccineSideEffects />
+                </>
+            )}
         </Scroll.Element>
     );
 }

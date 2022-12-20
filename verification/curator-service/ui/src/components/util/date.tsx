@@ -1,4 +1,6 @@
-export default function renderDate(date: string | Date | null): string {
+export default function renderDate(
+    date: string | Date | undefined | null,
+): string {
     if (!date) return '';
     if (typeof date === 'string') {
         date = new Date(date);
@@ -10,7 +12,9 @@ export default function renderDate(date: string | Date | null): string {
 }
 
 // Changes the date to be in UTC while maintaining the current date values
-export function toUTCDate(dateString: string): string {
+export function toUTCDate(dateString: string | undefined): string | undefined {
+    if (!dateString) return undefined;
+
     const date = new Date(dateString);
     // The datepicker sometimes returns the date at the
     // user's current time and timezone. We need to convert

@@ -1,10 +1,6 @@
 import React from 'react';
-import {
-    FormikAutocomplete,
-    SelectField,
-} from '../common-form-fields/FormikFields';
+import { FormikAutocomplete } from '../common-form-fields/FormikFields';
 
-import CaseFormValues from './CaseFormValues';
 import { Chip } from '@mui/material';
 import FieldTitle from '../common-form-fields/FieldTitle';
 import { StyledTooltip } from './StyledTooltip';
@@ -12,6 +8,7 @@ import Scroll from 'react-scroll';
 import axios from 'axios';
 import makeStyles from '@mui/styles/makeStyles';
 import { useFormikContext } from 'formik';
+import { ParsedCase } from '../../api/models/Day0Case';
 
 const useStyles = makeStyles(() => ({
     chip: {
@@ -22,42 +19,12 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
+// @TODO
 // If changing this list, also modify https://github.com/globaldothealth/list/blob/main/data-serving/data-service/api/openapi.yaml
-const symptomStatusValues = [
-    'Unknown',
-    'Asymptomatic',
-    'Symptomatic',
-    'Presymptomatic',
-];
 
 const TooltipText = () => (
     <StyledTooltip>
         <ul>
-            <li>
-                <strong>Symptom status:</strong> Enter the symptom status for
-                the case.
-                <ul>
-                    <li>
-                        <strong>Asymptomatic:</strong> Case is a confirmed
-                        carrier of the disease but has not experienced any
-                        symptoms.
-                    </li>
-                    <li>
-                        <strong>Symptomatic:</strong> Case is a confirmed
-                        carrier of the disease and experiences symptoms.
-                    </li>
-                    <li>
-                        <strong>Presymptomatic:</strong> Case is a confirmed
-                        carrier but hasn’t developed symptoms at the time of
-                        confirmation but may have at a later time point.
-                    </li>
-                    <li>
-                        <strong>Unknown:</strong> There is no symptom data
-                        provided for the case.
-                    </li>
-                </ul>
-                If no data is provided select unknown.
-            </li>
             <li>
                 <strong>Symptoms:</strong> Select the symptoms reported for the
                 case.
@@ -80,15 +47,11 @@ const TooltipText = () => (
 interface SymptomListProps {
     title: string;
     collectionName: string;
-    selectFieldName: string;
-    selectFieldLabel: string;
-    isVaccineSideEffect: boolean;
-    vaccineIndex: number;
 }
 
 function SymptomList(props: SymptomListProps): JSX.Element {
     const { values, initialValues, setFieldValue } =
-        useFormikContext<CaseFormValues>();
+        useFormikContext<ParsedCase>();
     const [commonSymptoms, setCommonSymptoms] = React.useState([]);
 
     React.useEffect(
@@ -106,88 +69,57 @@ function SymptomList(props: SymptomListProps): JSX.Element {
     const classes = useStyles();
     return (
         <Scroll.Element name={props.collectionName}>
-            <FieldTitle
-                title={props.title}
-                tooltip={<TooltipText />}
-            ></FieldTitle>
-            <SelectField
-                name={props.selectFieldName}
-                label={props.selectFieldLabel}
-                values={symptomStatusValues}
-            ></SelectField>
-            {(props.isVaccineSideEffect
-                ? values.vaccines[props.vaccineIndex].sideEffects.status
-                : values.symptomsStatus) === 'Symptomatic' && (
+            <FieldTitle title={props.title} tooltip={<TooltipText />} />
+            {commonSymptoms.length > 0 && (
                 <>
-                    {commonSymptoms.length > 0 && (
-                        <>
-                            <div className={classes.section}>
-                                Frequently added symptoms
-                            </div>
-                            <div className={classes.section}>
-                                {commonSymptoms.map((symptom) => (
-                                    <Chip
-                                        key={symptom}
-                                        className={classes.chip}
-                                        label={symptom}
-                                        onClick={(): void => {
-                                            if (
-                                                !values.symptoms.includes(
-                                                    symptom,
-                                                )
-                                            ) {
-                                                setFieldValue(
-                                                    'symptoms',
-                                                    values.symptoms.concat([
-                                                        symptom,
-                                                    ]),
-                                                );
-                                            }
-                                        }}
-                                    ></Chip>
-                                ))}
-                            </div>
-                        </>
-                    )}
-                    <FormikAutocomplete
-                        name={props.collectionName}
-                        label={props.title}
-                        initialValue={initialValues[props.collectionName]}
-                        multiple
-                        optionsLocation="https://raw.githubusercontent.com/globaldothealth/list/main/suggest/symptoms.txt"
-                    />
+                    <div className={classes.section}>
+                        Frequently added symptoms
+                    </div>
+                    <div className={classes.section}>
+                        {commonSymptoms.map((symptom) => (
+                            <Chip
+                                key={symptom}
+                                className={classes.chip}
+                                label={symptom}
+                                onClick={(): void => {
+                                    if (
+                                        values.symptoms &&
+                                        !values.symptoms.includes(symptom)
+                                    ) {
+                                        setFieldValue(
+                                            props.collectionName,
+                                            values.symptoms &&
+                                                values.symptoms.length > 0
+                                                ? values.symptoms.concat(
+                                                      `, ${symptom}`,
+                                                  )
+                                                : symptom,
+                                        );
+                                    }
+                                }}
+                            />
+                        ))}
+                    </div>
                 </>
             )}
+            <FormikAutocomplete
+                name={props.collectionName}
+                label={props.title}
+                initialValue={initialValues[props.collectionName] || undefined}
+                multiple
+                freeSolo
+                optionsLocation="https://raw.githubusercontent.com/globaldothealth/list/main/suggest/symptoms.txt"
+            />
         </Scroll.Element>
     );
 }
 
 const Symptoms: () => JSX.Element = () => (
-    <SymptomList
-        title="Symptoms"
-        collectionName="symptoms"
-        selectFieldName="symptomsStatus"
-        selectFieldLabel="Symptom status"
-        isVaccineSideEffect={false}
-        vaccineIndex={NaN}
-    />
+    <SymptomList title="Symptoms" collectionName="symptoms" />
 );
 
-interface SideEffectsProps {
-    i: number;
-}
-
-export const VaccineSideEffects: (props: SideEffectsProps) => JSX.Element = (
-    props,
-) => (
-    <SymptomList
-        title="Side Effects"
-        collectionName={`vaccines[${props.i}].sideEffects.values`}
-        selectFieldName={`vaccines[${props.i}].sideEffects.status`}
-        selectFieldLabel="Side effects status"
-        isVaccineSideEffect
-        vaccineIndex={props.i}
-    />
+export const VaccineSideEffects: () => JSX.Element = () => (
+    <SymptomList title="Side Effects" collectionName="vaccineSideEffects" />
 );
 
 export default Symptoms;

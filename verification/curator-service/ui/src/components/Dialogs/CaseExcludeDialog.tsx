@@ -11,6 +11,7 @@ import {
     TextField,
 } from '@mui/material';
 import { useFormik } from 'formik';
+import { CaseStatus } from '../../api/models/Day0Case';
 
 interface Props {
     isOpen: boolean;
@@ -37,14 +38,14 @@ export const CaseExcludeDialog = ({
 
             onClose();
 
-            dispatch(
-                changeCasesStatus({
-                    status: VerificationStatus.Excluded,
-                    caseIds,
-                    query,
-                    note,
-                }),
-            );
+            // dispatch(
+            //     changeCasesStatus({
+            //         status: CaseStatus.,
+            //         caseIds,
+            //         query,
+            //         note,
+            //     }),
+            // );
         },
     });
 

@@ -1,22 +1,20 @@
-import { Chip } from '@mui/material';
-
 import makeStyles from '@mui/styles/makeStyles';
-
-import CaseFormValues from './CaseFormValues';
-import ChipInput from '../ChipInput';
 import FieldTitle from '../common-form-fields/FieldTitle';
 import { StyledTooltip } from './StyledTooltip';
-import { FormikAutocomplete } from '../common-form-fields/FormikFields';
+import {
+    FormikAutocomplete,
+    SelectField,
+} from '../common-form-fields/FormikFields';
 import React from 'react';
 import Scroll from 'react-scroll';
 import axios from 'axios';
-import { useFormikContext } from 'formik';
+import { FastField, useFormikContext } from 'formik';
+import { ParsedCase } from '../../api/models/Day0Case';
+import { TextField } from 'formik-mui';
+import { useStyles } from './styled';
+import clsx from 'clsx';
 
-const useStyles = makeStyles(() => ({
-    fieldRow: {
-        marginBottom: '2em',
-        width: '100%',
-    },
+const styles = makeStyles(() => ({
     chip: {
         margin: '0.5em',
     },
@@ -29,12 +27,31 @@ const TooltipText = () => (
     <StyledTooltip>
         <ul>
             <li>
-                <strong>Route of transmission:</strong> Enter the route of
-                transmission if provided by the source.
+                <strong>Contact with case:</strong> Has the individual had
+                contact with a confirmed/ probable/ suspected case (Y=Yes, N=No,
+                NA=Not applicable)?
             </li>
             <li>
-                <strong>Place of transmission:</strong> Enter the place of
-                transmission if provided by the source.
+                <strong>Contact ID:</strong> If specified, is the case ID from
+                which this patient contracted the virus.
+            </li>
+            {/* @TODO */}
+            <li>
+                <strong>Contact setting:</strong> Setting where contact occurred
+                that led to transmission.
+            </li>
+            <li>
+                <strong>Contact animal:</strong> Whether the individual has
+                known contact with animals.
+            </li>
+            <li>
+                <strong>Contact comment:</strong> Free text describing any
+                additional contact information.
+            </li>
+            {/* @TODO */}
+            <li>
+                <strong>Transmission:</strong> Setting where contact occurred
+                that led to transmission.
             </li>
         </ul>
     </StyledTooltip>
@@ -42,10 +59,11 @@ const TooltipText = () => (
 
 export default function Transmission(): JSX.Element {
     const { setFieldValue, initialValues, values } =
-        useFormikContext<CaseFormValues>();
+        useFormikContext<ParsedCase>();
     const [commonPlacesOfTransmission, setCommonPlacesOfTransmission] =
         React.useState([]);
-    const classes = useStyles();
+    const classes = styles();
+    const globalClasses = useStyles();
 
     React.useEffect(
         () => {
@@ -63,72 +81,78 @@ export default function Transmission(): JSX.Element {
 
     return (
         <Scroll.Element name="transmission">
-            <FieldTitle
-                title="Transmission"
-                tooltip={<TooltipText />}
-            ></FieldTitle>
-            <div className={classes.fieldRow}>
+            <FieldTitle title="Transmission" tooltip={<TooltipText />} />
+            <SelectField
+                name="contactWithCase"
+                label="Contact with case"
+                values={['Y', 'N', 'NA']}
+            />
+            <div
+                className={clsx([
+                    globalClasses.fieldRow,
+                    globalClasses.halfWidth,
+                ])}
+            >
+                <FastField
+                    name="contactID"
+                    type="text"
+                    label="Contact ID"
+                    component={TextField}
+                    fullWidth
+                />
+            </div>
+            <div
+                className={clsx([
+                    globalClasses.fieldRow,
+                    globalClasses.halfWidth,
+                ])}
+            >
+                <FastField
+                    name="contactSetting"
+                    type="text"
+                    label="Contact setting"
+                    component={TextField}
+                    fullWidth
+                />
+            </div>
+            <div
+                className={clsx([
+                    globalClasses.fieldRow,
+                    globalClasses.halfWidth,
+                ])}
+            >
+                <FastField
+                    name="contactAnimal"
+                    type="text"
+                    label="Contact animal"
+                    component={TextField}
+                    fullWidth
+                />
+            </div>
+            <div
+                className={clsx([
+                    globalClasses.fieldRow,
+                    globalClasses.halfWidth,
+                ])}
+            >
+                <FastField
+                    name="contactComment"
+                    type="text"
+                    label="Contact comment"
+                    component={TextField}
+                    fullWidth
+                />
+            </div>
+            <div className={globalClasses.fieldRow}>
                 <FormikAutocomplete
-                    name="transmissionRoutes"
+                    name="transmission"
                     freeSolo
-                    label="Route of transmission"
-                    initialValue={initialValues.transmissionRoutes}
-                    multiple
+                    label="Transmission"
+                    multiple={false}
+                    initialValue={initialValues.transmission}
                     optionsLocation="https://raw.githubusercontent.com/globaldothealth/list/main/suggest/route_of_transmission.txt"
                 />
             </div>
-            <div className={classes.fieldRow}>
-                {commonPlacesOfTransmission.length > 0 && (
-                    <>
-                        <div className={classes.section}>
-                            Frequently added places of transmission
-                        </div>{' '}
-                        <div className={classes.section}>
-                            {commonPlacesOfTransmission.map((place) => (
-                                <Chip
-                                    key={place}
-                                    className={classes.chip}
-                                    label={place}
-                                    onClick={(): void => {
-                                        if (
-                                            !values.transmissionPlaces.includes(
-                                                place,
-                                            )
-                                        ) {
-                                            setFieldValue(
-                                                'transmissionPlaces',
-                                                values.transmissionPlaces.concat(
-                                                    [place],
-                                                ),
-                                            );
-                                        }
-                                    }}
-                                ></Chip>
-                            ))}
-                        </div>
-                    </>
-                )}
-                <FormikAutocomplete
-                    name="transmissionPlaces"
-                    freeSolo
-                    label="Places of transmission"
-                    initialValue={initialValues.transmissionPlaces}
-                    multiple
-                    optionsLocation="https://raw.githubusercontent.com/globaldothealth/list/main/suggest/place_of_transmission.txt"
-                />
-            </div>
-            <ChipInput
-                label="Transmission linked case IDs"
-                placeholder="Contacted case IDs"
-                defaultValue={initialValues.transmissionLinkedCaseIds}
-                onChange={(values) => {
-                    setFieldValue(
-                        'transmissionLinkedCaseIds',
-                        values ?? undefined,
-                    );
-                }}
-                values={values.transmissionLinkedCaseIds}
-            />
         </Scroll.Element>
     );
 }

@@ -1,16 +1,12 @@
 import * as Yup from 'yup';
 
 import { Button, LinearProgress, Typography } from '@mui/material';
-import { Case, VerificationStatus } from '../api/models/Case';
-import { Form, Formik } from 'formik';
-import { GenomeSequence, Travel } from './new-case-form-fields/CaseFormValues';
+import { FastField, Form, Formik } from 'formik';
 import { Paper } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import Source, { submitSource } from './common-form-fields/Source';
 import { green, grey, red } from '@mui/material/colors';
 
 import AppModal from './AppModal';
-import CaseFormValues from './new-case-form-fields/CaseFormValues';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import Demographics from './new-case-form-fields/Demographics';
 import ErrorIcon from '@mui/icons-material/Error';
@@ -18,8 +14,6 @@ import Events from './new-case-form-fields/Events';
 import GenomeSequences from './new-case-form-fields/GenomeSequences';
 import LocationForm from './new-case-form-fields/LocationForm';
 import MuiAlert from '@mui/material/Alert';
-import Notes from './new-case-form-fields/Notes';
-import NumCases from './new-case-form-fields/NumCases';
 import Pathogens from './new-case-form-fields/Pathogens';
 import PreexistingConditions from './new-case-form-fields/PreexistingConditions';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
@@ -29,16 +23,16 @@ import Symptoms from './new-case-form-fields/Symptoms';
 import Transmission from './new-case-form-fields/Transmission';
 import TravelHistory from './new-case-form-fields/TravelHistory';
 import Vaccines from './new-case-form-fields/Vaccines';
-import Variant from './new-case-form-fields/Variant';
-import axios from 'axios';
-import { cloneDeep } from 'lodash';
 import { hasKey } from './Utils';
-import shortId from 'shortid';
-import { toUTCDate } from './util/date';
 import { useHistory } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import { codeForCountry, nameCountry } from './util/countryNames';
+import { CaseStatus, ParsedCase, Day0Case } from '../api/models/Day0Case';
+import TextField from '@mui/material/TextField';
+import { toUTCDate } from './util/date';
+import axios from 'axios';
+import Source from './common-form-fields/Source';
+import General from './new-case-form-fields/General';
 
 const TableOfContents = styled('nav')(() => ({
     position: 'fixed',
@@ -62,150 +56,93 @@ const FormSection = styled(Paper)(() => ({
     margin: '2em 0',
 }));
 
-function initialValuesFromCase(c?: Case): CaseFormValues {
+const initialValuesFromCase = (c?: ParsedCase) => {
     if (!c) {
         return {
-            caseReference: { sourceId: '', sourceUrl: '' },
-            gender: '',
-            minAge: undefined,
-            maxAge: undefined,
-            age: undefined,
-            ethnicity: undefined,
-            nationalities: [],
+            id: undefined,
+            pathogen: 'COVID-19',
+            caseStatus: undefined,
+            country: '',
+            countryISO3: '',
+            location: '',
+            // geocodeLocation is a helper value used in places autocomplete
+            geocodeLocation: undefined,
+            city: '',
+            age: '',
+            gender: undefined,
             occupation: '',
-            location: undefined,
-            confirmedDate: null,
-            methodOfConfirmation: '',
-            onsetSymptomsDate: null,
-            firstClinicalConsultationDate: null,
-            selfIsolationDate: null,
-            admittedToHospital: '',
-            hospitalAdmissionDate: null,
-            admittedToIcu: '',
-            icuAdmissionDate: null,
-            outcomeDate: null,
-            outcome: '',
-            symptomsStatus: '',
-            symptoms: [],
-            variantName: undefined,
-            SGTF: undefined,
-            hasPreexistingConditions: '',
-            preexistingConditions: [],
-            transmissionRoutes: [],
-            transmissionPlaces: [],
-            transmissionLinkedCaseIds: [],
-            traveledPrior30Days: '',
-            travelHistory: [],
-            genomeSequences: [],
-            pathogens: [],
-            notes: '',
-            numCases: 1,
-            vaccines: [],
+            healthcareWorker: undefined,
+            symptoms: undefined,
+            symptomsOnsetDate: null,
+            confirmationDate: null,
+            confirmationMethod: '',
+            previousInfection: undefined,
+            coInfection: '',
+            preexistingCondition: undefined,
+            pregnancyStatus: undefined,
+            vaccination: undefined,
+            vaccineName: '',
+            vaccineDate: null,
+            vaccineSideEffects: undefined,
+            firstConsultDate: null,
+            hospitalized: undefined,
+            hospitalizationReason: undefined,
+            hospitalizationDate: null,
+            hospitalDischargeDate: null,
+            intensiveCare: undefined,
+            ICUAdmissionDate: null,
+            ICUDischargeDate: null,
+            homeMonitoring: undefined,
+            isolated: undefined,
+            isolationDate: null,
+            outcome: undefined,
+            deathDate: null,
+            recoveredDate: null,
+            contactWithCase: undefined,
+            contactID: undefined,
+            contactSetting: '',
+            contactAnimal: '',
+            contactComment: '',
+            transmission: '',
+            travelHistory: undefined,
+            travelHistoryEntry: '',
+            travelHistoryStart: '',
+            travelHistoryLocation: '',
+            travelHistoryCountry: '',
+            genomicsMetadata: '',
+            accessionNumber: '',
+            source: '',
+            sourceII: '',
+            sourceIII: '',
+            sourceIV: '',
+            sourceV: '',
+            sourceVI: '',
+            sourceVII: '',
+            entryDate: null,
+            lastModifiedDate: null,
         };
     }
-    return {
-        caseReference: c.caseReference,
-        gender: c.demographics?.gender || '',
-        minAge:
-            c.demographics?.ageRange?.start !== c.demographics?.ageRange?.end
-                ? c.demographics?.ageRange?.start
-                : undefined,
-        maxAge:
-            c.demographics?.ageRange?.start !== c.demographics?.ageRange?.end
-                ? c.demographics?.ageRange?.end
-                : undefined,
-        age:
-            c.demographics?.ageRange?.start === c.demographics?.ageRange?.end
-                ? c.demographics?.ageRange?.start
-                : undefined,
-        ethnicity: c.demographics?.ethnicity,
-        nationalities: c.demographics?.nationalities,
-        occupation: c.demographics?.occupation ?? '',
-        location: {
-            ...c.location,
-            country: nameCountry(c.location.country),
-        },
-        confirmedDate:
-            c.events.find((event) => event.name === 'confirmed')?.dateRange
-                ?.start || null,
-        methodOfConfirmation:
-            c.events.find((event) => event.name === 'confirmed')?.value || '',
-        onsetSymptomsDate:
-            c.events.find((event) => event.name === 'onsetSymptoms')?.dateRange
-                ?.start || null,
-        firstClinicalConsultationDate:
-            c.events.find((event) => event.name === 'firstClinicalConsultation')
-                ?.dateRange?.start || null,
-        selfIsolationDate:
-            c.events.find((event) => event.name === 'selfIsolation')?.dateRange
-                ?.start || null,
-        admittedToHospital:
-            c.events.find((event) => event.name === 'hospitalAdmission')
-                ?.value || '',
-        hospitalAdmissionDate:
-            c.events.find((event) => event.name === 'hospitalAdmission')
-                ?.dateRange?.start || null,
-        admittedToIcu:
-            c.events.find((event) => event.name === 'icuAdmission')?.value ||
-            '',
-        icuAdmissionDate:
-            c.events.find((event) => event.name === 'icuAdmission')?.dateRange
-                ?.start || null,
-        outcomeDate:
-            c.events.find((event) => event.name === 'outcome')?.dateRange
-                ?.start || null,
-        outcome:
-            c.events.find((event) => event.name === 'outcome')?.value || '',
-        symptomsStatus: c.symptoms?.status || '',
-        symptoms: c.symptoms?.values,
-        variantName: c.variant?.name || undefined,
-        SGTF: c.SGTF || undefined,
-        hasPreexistingConditions:
-            c.preexistingConditions?.hasPreexistingConditions === undefined
-                ? ''
-                : c.preexistingConditions?.hasPreexistingConditions
-                ? 'Yes'
-                : 'No',
-        preexistingConditions: c.preexistingConditions?.values ?? [],
-        transmissionRoutes: c.transmission?.routes,
-        transmissionPlaces: c.transmission?.places,
-        transmissionLinkedCaseIds: c.transmission?.linkedCaseIds,
-        traveledPrior30Days:
-            c.travelHistory?.traveledPrior30Days === undefined
-                ? ''
-                : c.travelHistory.traveledPrior30Days
-                ? 'Yes'
-                : 'No',
-        travelHistory: c.travelHistory?.travel?.map((travel) => {
-            return { reactId: shortId.generate(), ...travel };
-        }),
-        genomeSequences: c.genomeSequences?.map((genomeSequence) => {
-            return { reactId: shortId.generate(), ...genomeSequence };
-        }),
-        pathogens: c.pathogens,
-        notes: c.notes,
-        numCases: undefined,
-        vaccines: c.vaccines,
-    };
-}
+
+    return c;
+};
 
 interface Props {
-    initialCase?: Case;
+    initialCase?: ParsedCase;
     onModalClose: () => void;
     diseaseName: string;
 }
 
-// TODO: get 0 and 120 min/max age values from the backend.
+// @TODO: get 0 and 120 min/max age values from the backend.
 const NewCaseValidation = Yup.object().shape(
     {
-        caseReference: Yup.object().shape({
-            sourceUrl: Yup.string().required('Required'),
-            sourceName: Yup.string().when('sourceId', {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                is: (sourceId: any) => !sourceId,
-                then: Yup.string().required('Required'),
-            }),
-        }),
+        caseStatus: Yup.string()
+            .oneOf(['confirmed', 'suspected', 'discarded', 'omit_error'])
+            .required(),
+        pathogen: Yup.string().required('Required'),
+        country: Yup.string().required('Required'),
+        countryISO3: Yup.string().required('Required'),
+        entryDate: Yup.date().required('Required'),
+        source: Yup.string().required('Required'),
         minAge: Yup.number()
             .min(0, 'Age must be between 0 and 120')
             .max(120, 'Age must be between 0 and 120')
@@ -250,18 +187,6 @@ const NewCaseValidation = Yup.object().shape(
                     'Cannot enter age and age range',
                 ),
             }),
-        transmissionLinkedCaseIds: Yup.array().of(
-            Yup.string().matches(new RegExp('[a-z0-9]{24}'), 'Invalid case ID'),
-        ),
-        confirmedDate: Yup.string().nullable().required('Required'),
-        location: Yup.object().required('Required'),
-        SGTF: Yup.string().oneOf(
-            ['NA', '0', '1'],
-            'S-Gene Target Failure must be 0, 1, or NA',
-        ),
-        numCases: Yup.number()
-            .nullable()
-            .min(1, 'Must enter one or more cases'),
     },
     [['maxAge', 'minAge']],
 );
@@ -281,13 +206,6 @@ function hasErrors(fields: string[], errors: any, touched: any): boolean {
     return false;
 }
 
-function unknownOrEmptyToUndefined(
-    value: string | undefined,
-): string | undefined {
-    if (value === 'Unknown' || value === '') return undefined;
-    return value;
-}
-
 export default function CaseForm(props: Props): JSX.Element {
     const { initialCase } = props;
     const theme = useTheme();
@@ -295,223 +213,94 @@ export default function CaseForm(props: Props): JSX.Element {
     const history = useHistory();
     const [errorMessage, setErrorMessage] = React.useState('');
 
-    const filterTravel = (travel: Travel[]): Travel[] => {
-        const filteredTravel = cloneDeep(travel);
-        filteredTravel.forEach((travel) => {
-            delete travel.reactId;
-            if (
-                !travel.dateRange ||
-                (travel.dateRange.start === null &&
-                    travel.dateRange.end === null)
-            ) {
-                delete travel.dateRange;
-            } else {
-                if (travel.dateRange.start === null) {
-                    delete travel.dateRange.start;
-                }
-                if (travel.dateRange.end === null) {
-                    delete travel.dateRange.end;
-                }
-            }
-            if (travel.dateRange?.start) {
-                travel.dateRange.start = toUTCDate(travel.dateRange.start);
-            }
-            if (travel.dateRange?.end) {
-                travel.dateRange.end = toUTCDate(travel.dateRange.end);
-            }
-            if (travel.purpose === 'Unknown') {
-                travel.purpose = undefined;
-            }
-        });
-        return filteredTravel;
-    };
+    const submitCase = async (values: ParsedCase): Promise<void> => {
+        console.log(values);
+        if (!values.caseStatus) return;
+        console.log('Im here');
 
-    const filterGenomeSequences = (
-        genomeSequences: GenomeSequence[],
-    ): GenomeSequence[] => {
-        const filteredGenomeSequences = cloneDeep(genomeSequences) || [];
-        filteredGenomeSequences.forEach((genomeSequence) => {
-            delete genomeSequence.reactId;
-            if (genomeSequence.sampleCollectionDate) {
-                genomeSequence.sampleCollectionDate = toUTCDate(
-                    genomeSequence.sampleCollectionDate,
-                );
-            }
-        });
-        return filteredGenomeSequences;
-    };
-
-    const submitCase = async (values: CaseFormValues): Promise<void> => {
-        if (values.caseReference && values.caseReference.sourceId === '') {
-            try {
-                const newCaseReference = await submitSource({
-                    name: values.caseReference.sourceName as string,
-                    url: values.caseReference.sourceUrl,
-                    license: values.caseReference.sourceLicense as string,
-                    providerName: values.caseReference.sourceProviderName,
-                    providerWebsiteUrl: values.caseReference.sourceProviderUrl,
-                });
-                values.caseReference.sourceId = newCaseReference.sourceId;
-            } catch (e) {
-                setErrorMessage(
-                    `System error during source creation: ${JSON.stringify(e)}`,
-                );
-                return;
-            }
-        }
         const ageRange = values.age
-            ? { start: values.age, end: values.age }
-            : { start: values.minAge, end: values.maxAge };
+            ? values.age
+            : `${values.minAge}-${values.maxAge}`;
 
-        const country =
-            values.location?.country.length === 2
-                ? values.location?.country
-                : codeForCountry(values.location?.country ?? '');
-        const newCase = {
-            caseReference: {
-                ...values.caseReference,
-                verificationStatus: VerificationStatus.Verified,
-            },
-            list: true,
-            demographics: {
-                gender: unknownOrEmptyToUndefined(values.gender),
-                ageRange: ageRange,
-                ethnicity: values.ethnicity,
-                nationalities: values.nationalities,
-                occupation: unknownOrEmptyToUndefined(values.occupation),
-            },
-            location: {
-                ...values.location,
-                country,
-            },
-            events: [
-                {
-                    name: 'confirmed',
-                    dates: values.confirmedDate,
-                    value: values.methodOfConfirmation,
-                },
-                {
-                    name: 'onsetSymptoms',
-                    dates: values.onsetSymptomsDate,
-                    value: undefined,
-                },
-                {
-                    name: 'firstClinicalConsultation',
-                    dates: values.firstClinicalConsultationDate,
-                    value: undefined,
-                },
-                {
-                    name: 'selfIsolation',
-                    dates: values.selfIsolationDate,
-                    value: undefined,
-                },
-                {
-                    name: 'hospitalAdmission',
-                    dates:
-                        values.admittedToHospital === 'Yes'
-                            ? values.hospitalAdmissionDate
-                            : undefined,
-                    value: values.admittedToHospital,
-                },
-                {
-                    name: 'icuAdmission',
-                    dates:
-                        values.admittedToIcu === 'Yes'
-                            ? values.icuAdmissionDate
-                            : undefined,
-                    value: values.admittedToIcu,
-                },
-                {
-                    name: 'outcome',
-                    dates:
-                        values.outcome !== '' && values.outcome !== 'Unknown'
-                            ? values.outcomeDate
-                            : undefined,
-                    value: values.outcome,
-                },
-            ]
-                .filter((elem) => elem.dates || elem.value)
-                .map((elem) => {
-                    return {
-                        name: elem.name,
-                        dateRange: elem.dates
-                            ? {
-                                  start: toUTCDate(elem.dates),
-                                  end: toUTCDate(elem.dates),
-                              }
-                            : undefined,
-                        value: unknownOrEmptyToUndefined(elem.value),
-                    };
-                }),
-            symptoms: {
-                status: unknownOrEmptyToUndefined(values.symptomsStatus),
-                values:
-                    values.symptomsStatus === 'Symptomatic'
-                        ? values.symptoms
-                        : [],
-            },
-            variant: {
-                name: values.variantName,
-            },
-            SGTF: values.SGTF,
-            preexistingConditions: {
-                hasPreexistingConditions:
-                    values.hasPreexistingConditions === 'Yes'
-                        ? true
-                        : values.hasPreexistingConditions === 'No'
-                        ? false
-                        : undefined,
-                values:
-                    values.hasPreexistingConditions === 'Yes'
-                        ? values.preexistingConditions
-                        : [],
-            },
-            transmission: {
-                routes: values.transmissionRoutes,
-                places: values.transmissionPlaces,
-                linkedCaseIds: values.transmissionLinkedCaseIds,
-            },
-            travelHistory: {
-                traveledPrior30Days:
-                    values.traveledPrior30Days === 'Yes'
-                        ? true
-                        : values.traveledPrior30Days === 'No'
-                        ? false
-                        : undefined,
-                travel:
-                    values.traveledPrior30Days === 'Yes'
-                        ? filterTravel(values.travelHistory)
-                        : undefined,
-            },
-            genomeSequences: filterGenomeSequences(values.genomeSequences),
-            pathogens: values.pathogens,
-            notes: values.notes,
-            vaccines: values.vaccines,
+        const newCase: Day0Case = {
+            Case_status: values.caseStatus,
+            Date_entry:
+                values.entryDate || toUTCDate(new Date().toDateString())!,
+            Date_last_modified: toUTCDate(new Date().toDateString())!,
+            Source: values.caseReference.inputValue,
+            Source_II: values.sourceII,
+            Source_III: values.sourceIII,
+            Source_IV: values.sourceIV,
+            Source_V: values.sourceV,
+            Source_VI: values.sourceVI,
+            Source_VII: values.sourceVII,
+            Age: ageRange,
+            Gender: values.gender,
+            Occupation: values.occupation,
+            Healthcare_worker: values.healthcareWorker,
+            Country: values.country,
+            Country_ISO3: values.countryISO3,
+            Location: values.location,
+            City: values.city,
+            Date_onset: values.symptomsOnsetDate,
+            Date_confirmation: values.confirmationDate,
+            Confirmation_method: values.confirmationMethod,
+            Date_of_first_consult: values.firstConsultDate,
+            Hospitalized: values.hospitalized,
+            'Reason for hospitalition': values.hospitalizationReason,
+            Date_hospitalization: values.hospitalizationDate,
+            Date_discharge_hospital: values.hospitalDischargeDate,
+            Intensive_care: values.intensiveCare,
+            Date_admission_ICU: values.ICUAdmissionDate,
+            Date_discharge_ICU: values.ICUDischargeDate,
+            Home_monitoring: values.homeMonitoring,
+            Isolated: values.isolated,
+            Date_isolation: values.isolationDate,
+            Outcome: values.outcome,
+            Date_death: values.deathDat,
+            Date_recovered: values.recoveredDate,
+            Symptoms: values.symptoms ? values.symptoms.join(', ') : undefined,
+            Previous_infection: values.previousInfection,
+            Co_infection: values.coInfection,
+            Pre_existing_condition: values.preexistingCondition
+                ? values.preexistingCondition.join(', ')
+                : undefined,
+            Pregnancy_status: values.pregnancyStatus,
+            Contact_with_case: values.contactWithCase,
+            Contact_ID: values.contactID,
+            Contact_setting: values.contactSetting,
+            Contact_animal: values.contactAnimal,
+            Contact_comment: values.contactComment,
+            Transmission: values.transmission,
+            Travel_history: values.travelHistory,
+            Travel_history_entry: values.travelHistoryEntry,
+            Travel_history_start: values.travelHistoryStart,
+            Travel_history_location: values.travelHistoryLocation,
+            Travel_history_country: values.travelHistoryCountry,
+            Genomics_Metadata: values.genomicsMetadata,
+            'Accession Number': values.accessionNumber,
+            Pathogen: values.pathogen,
+            Vaccination: values.vaccination,
+            Vaccine_name: values.vaccineName,
+            Vaccine_date: values.vaccineDate,
+            Vaccine_side_effects: values.vaccineSideEffects
+                ? values.vaccineSideEffects.join(', ')
+                : undefined,
         };
-        let newCaseIds = [];
+        let newCaseId = '';
         try {
             // Update or create depending on the presence of the initial case ID.
-            if (props.initialCase?._id) {
-                await axios.put(
-                    `/api/cases/${props.initialCase?._id}`,
-                    newCase,
-                );
+            if (props.initialCase?.id) {
+                await axios.put(`/api/cases/${props.initialCase?.id}`, newCase);
             } else {
-                const numCases = values.numCases ?? 1;
-                const postResponse = await axios.post(
-                    `/api/cases?num_cases=${numCases}`,
-                    newCase,
-                );
-                if (numCases === 1) {
-                    newCaseIds = [postResponse.data._id];
-                } else {
-                    newCaseIds = postResponse.data.cases.map(
-                        (c: Case) => c._id,
-                    );
-                }
+                const postResponse = await axios.post(`/api/cases`, newCase);
+
+                newCaseId = postResponse.data._id;
             }
             setErrorMessage('');
+            console.log('success');
         } catch (e) {
+            console.log('error');
             setErrorMessage(e.response?.data?.message || e.toString());
             return;
         }
@@ -519,9 +308,9 @@ export default function CaseForm(props: Props): JSX.Element {
         history.push({
             pathname: '/cases',
             state: {
-                newCaseIds: newCaseIds,
-                editedCaseIds: props.initialCase?._id
-                    ? [props.initialCase._id]
+                newCaseIds: newCaseId,
+                editedCaseIds: props.initialCase?.id
+                    ? [props.initialCase.id]
                     : [],
             },
         });
@@ -546,14 +335,14 @@ export default function CaseForm(props: Props): JSX.Element {
                     color: green[500],
                     margin: '0.25em 0.5em',
                 }}
-            ></CheckCircleIcon>
+            />
         ) : (
             <RadioButtonUncheckedIcon
                 style={{
                     color: grey[500],
                     margin: '0.25em 0.5em',
                 }}
-            ></RadioButtonUncheckedIcon>
+            />
         );
     };
 
@@ -564,6 +353,24 @@ export default function CaseForm(props: Props): JSX.Element {
             offset: -64, // Account for header height
             containerId: 'scroll-container',
         });
+    };
+
+    const isChecked = ({
+        requiredValues,
+        optionalValues,
+    }: {
+        requiredValues?: any[];
+        optionalValues?: any[];
+    }): boolean => {
+        // When there are no required values provided check whether any of optional values is valid
+        if (!requiredValues || requiredValues.length === 0) {
+            return optionalValues
+                ? optionalValues.some((value) => !!value)
+                : false;
+        }
+
+        // Otherwise check if all the required values are valid
+        return requiredValues.every((value) => !!value);
     };
 
     return (
@@ -581,7 +388,7 @@ export default function CaseForm(props: Props): JSX.Element {
                 // Validating on change slows down the form too much. It will
                 // validate on blur and form submission.
                 validateOnChange={false}
-                onSubmit={(values) => submitCase(values)}
+                onSubmit={submitCase}
             >
                 {({
                     submitForm,
@@ -590,23 +397,36 @@ export default function CaseForm(props: Props): JSX.Element {
                     errors,
                     touched,
                 }): JSX.Element => (
-                    <div>
+                    <>
                         {showTableOfContents && (
                             <TableOfContents>
+                                <TableOfContentsRow
+                                    onClick={(): void => scrollTo('general')}
+                                >
+                                    {tableOfContentsIcon({
+                                        isChecked: isChecked({
+                                            requiredValues: [
+                                                values.caseStatus,
+                                                values.entryDate,
+                                            ],
+                                        }),
+                                        hasError: hasErrors(
+                                            ['caseStatus', 'entryDate'],
+                                            errors,
+                                            touched,
+                                        ),
+                                    })}
+                                    {'General'.toLocaleUpperCase()}
+                                </TableOfContentsRow>
                                 <TableOfContentsRow
                                     onClick={(): void => scrollTo('source')}
                                 >
                                     {tableOfContentsIcon({
-                                        isChecked:
-                                            values.caseReference !==
-                                                undefined &&
-                                            values.caseReference !== null &&
-                                            values.caseReference.sourceUrl !==
-                                                null &&
-                                            values.caseReference.sourceUrl !==
-                                                undefined &&
-                                            values.caseReference.sourceUrl !==
-                                                '',
+                                        isChecked: isChecked({
+                                            requiredValues: [
+                                                values.caseReference,
+                                            ],
+                                        }),
                                         hasError: hasErrors(
                                             ['caseReference'],
                                             errors,
@@ -621,28 +441,20 @@ export default function CaseForm(props: Props): JSX.Element {
                                     }
                                 >
                                     {tableOfContentsIcon({
-                                        isChecked:
-                                            values.gender !== '' ||
-                                            (values.age !== undefined &&
-                                                values.age.toString() !== '') ||
-                                            (values.minAge !== undefined &&
-                                                values.minAge.toString() !==
-                                                    '' &&
-                                                values.maxAge !== undefined &&
-                                                values.maxAge.toString() !==
-                                                    '') ||
-                                            values.ethnicity !== undefined ||
-                                            values.nationalities?.length > 0 ||
-                                            values.occupation !== '',
+                                        isChecked: isChecked({
+                                            optionalValues: [
+                                                values.gender,
+                                                values.age,
+                                                values.occupation,
+                                                values.healthcareWorker,
+                                            ],
+                                        }),
                                         hasError: hasErrors(
                                             [
                                                 'gender',
-                                                'minAge',
-                                                'maxAge',
                                                 'age',
-                                                'ethnicity',
-                                                'nationalities',
                                                 'occupation',
+                                                'healthcareWorker',
                                             ],
                                             errors,
                                             touched,
@@ -650,15 +462,19 @@ export default function CaseForm(props: Props): JSX.Element {
                                     })}
                                     {'Demographics'.toLocaleUpperCase()}
                                 </TableOfContentsRow>
+
                                 <TableOfContentsRow
                                     onClick={(): void => scrollTo('location')}
                                 >
                                     {tableOfContentsIcon({
-                                        isChecked:
-                                            values.location !== null &&
-                                            values.location !== undefined,
+                                        isChecked: isChecked({
+                                            requiredValues: [
+                                                values.countryISO3,
+                                                values.geocodeLocation,
+                                            ],
+                                        }),
                                         hasError: hasErrors(
-                                            ['location'],
+                                            ['location', 'city', 'countryISO3'],
                                             errors,
                                             touched,
                                         ),
@@ -669,20 +485,29 @@ export default function CaseForm(props: Props): JSX.Element {
                                     onClick={(): void => scrollTo('events')}
                                 >
                                     {tableOfContentsIcon({
-                                        isChecked:
-                                            values.confirmedDate !== null,
+                                        isChecked: isChecked({
+                                            requiredValues: [
+                                                values.confirmationDate,
+                                            ],
+                                        }),
                                         hasError: hasErrors(
                                             [
-                                                'confirmedDate',
-                                                'methodOfConfirmation',
-                                                'onsetSymptomsDate',
-                                                'firstClinicalConsultationDate',
-                                                'selfIsolationDate',
-                                                'admittedToHospital',
-                                                'hospitalAdmissionDate',
-                                                'icuAdmissionDate',
-                                                'outcomeDate',
+                                                'confirmationDate',
+                                                'confirmationMethod',
+                                                'symptomsOnsetDate',
+                                                'firstConsultDate',
+                                                'isolated',
+                                                'isolationDate',
+                                                'hospitalized',
+                                                'hospitalizationReason',
+                                                'hospitalizationDate',
+                                                'hospitalizationDischargeDate',
+                                                'intensiveCare',
+                                                'ICUAdmissionDate',
+                                                'ICUDischargeDate',
                                                 'outcome',
+                                                'deathDate',
+                                                'recoveredDate',
                                             ],
                                             errors,
                                             touched,
@@ -694,9 +519,11 @@ export default function CaseForm(props: Props): JSX.Element {
                                     onClick={(): void => scrollTo('symptoms')}
                                 >
                                     {tableOfContentsIcon({
-                                        isChecked: values.symptomsStatus !== '',
+                                        isChecked: isChecked({
+                                            optionalValues: [values.symptoms],
+                                        }),
                                         hasError: hasErrors(
-                                            ['symptomsStatus', 'symptoms'],
+                                            ['symptoms'],
                                             errors,
                                             touched,
                                         ),
@@ -709,13 +536,20 @@ export default function CaseForm(props: Props): JSX.Element {
                                     }
                                 >
                                     {tableOfContentsIcon({
-                                        isChecked:
-                                            values.hasPreexistingConditions !==
-                                            '',
+                                        isChecked: isChecked({
+                                            optionalValues: [
+                                                values.previousInfection,
+                                                values.coInfection,
+                                                values.preexistingCondition,
+                                                values.pregnancyStatus,
+                                            ],
+                                        }),
                                         hasError: hasErrors(
                                             [
-                                                'hasPreexistingConditions',
-                                                'preexistingConditions',
+                                                'previousInfection',
+                                                'coInfection',
+                                                'preexistingCondition',
+                                                'pregnancyStatus',
                                             ],
                                             errors,
                                             touched,
@@ -729,18 +563,24 @@ export default function CaseForm(props: Props): JSX.Element {
                                     }
                                 >
                                     {tableOfContentsIcon({
-                                        isChecked:
-                                            values.transmissionRoutes?.length >
-                                                0 ||
-                                            values.transmissionPlaces?.length >
-                                                0 ||
-                                            values.transmissionLinkedCaseIds
-                                                ?.length > 0,
+                                        isChecked: isChecked({
+                                            optionalValues: [
+                                                values.contactWithCase,
+                                                values.contactID,
+                                                values.contactSetting,
+                                                values.contactAnimal,
+                                                values.contactComment,
+                                                values.transmission,
+                                            ],
+                                        }),
                                         hasError: hasErrors(
                                             [
-                                                'transmissionRoutes',
-                                                'transmissionPlaces',
-                                                'transmissionLinkedCaseIds',
+                                                'contactWithCase',
+                                                'contactID',
+                                                'contactSetting',
+                                                'contactAnimal',
+                                                'contactComment',
+                                                'transmission',
                                             ],
                                             errors,
                                             touched,
@@ -754,12 +594,22 @@ export default function CaseForm(props: Props): JSX.Element {
                                     }
                                 >
                                     {tableOfContentsIcon({
-                                        isChecked:
-                                            values.traveledPrior30Days !== '',
+                                        isChecked: isChecked({
+                                            optionalValues: [
+                                                values.travelHistory,
+                                                values.travelHistoryEntry,
+                                                values.travelHistoryStart,
+                                                values.travelHistoryLocation,
+                                                values.travelHistoryCountry,
+                                            ],
+                                        }),
                                         hasError: hasErrors(
                                             [
-                                                'traveledPrior30Days',
                                                 'travelHistory',
+                                                'travelHistoryEntry',
+                                                'travelHistoryStart',
+                                                'travelHistoryLocation',
+                                                'travelHistoryCountry',
                                             ],
                                             errors,
                                             touched,
@@ -773,10 +623,17 @@ export default function CaseForm(props: Props): JSX.Element {
                                     }
                                 >
                                     {tableOfContentsIcon({
-                                        isChecked:
-                                            values.genomeSequences?.length > 0,
+                                        isChecked: isChecked({
+                                            optionalValues: [
+                                                values.genomicsMetadata,
+                                                values.accessionNumber,
+                                            ],
+                                        }),
                                         hasError: hasErrors(
-                                            ['genomeSequences'],
+                                            [
+                                                'genomicsMetadata',
+                                                'accessionNumber',
+                                            ],
                                             errors,
                                             touched,
                                         ),
@@ -784,30 +641,14 @@ export default function CaseForm(props: Props): JSX.Element {
                                     {'Genome Sequences'.toLocaleUpperCase()}
                                 </TableOfContentsRow>
                                 <TableOfContentsRow
-                                    onClick={(): void =>
-                                        scrollTo('variantOfConcern')
-                                    }
-                                >
-                                    {tableOfContentsIcon({
-                                        isChecked:
-                                            values?.variantName !== undefined &&
-                                            (values?.variantName?.length ?? 0) >
-                                                0,
-                                        hasError: hasErrors(
-                                            ['variant'],
-                                            errors,
-                                            touched,
-                                        ),
-                                    })}
-                                    {'Variant of Concern'.toLocaleUpperCase()}
-                                </TableOfContentsRow>
-                                <TableOfContentsRow
                                     onClick={(): void => scrollTo('pathogens')}
                                 >
                                     {tableOfContentsIcon({
-                                        isChecked: values.pathogens?.length > 0,
+                                        isChecked: isChecked({
+                                            requiredValues: [values.pathogen],
+                                        }),
                                         hasError: hasErrors(
-                                            ['pathogens'],
+                                            ['pathogen'],
                                             errors,
                                             touched,
                                         ),
@@ -818,27 +659,28 @@ export default function CaseForm(props: Props): JSX.Element {
                                     onClick={(): void => scrollTo('vaccines')}
                                 >
                                     {tableOfContentsIcon({
-                                        isChecked:
-                                            values.vaccines &&
-                                            values.vaccines.length > 0,
-                                        hasError: false,
-                                    })}
-                                    {'Vaccines'.toLocaleUpperCase()}
-                                </TableOfContentsRow>
-                                <TableOfContentsRow
-                                    onClick={(): void => scrollTo('notes')}
-                                >
-                                    {tableOfContentsIcon({
-                                        isChecked: values.notes?.trim() !== '',
+                                        isChecked: isChecked({
+                                            optionalValues: [
+                                                values.vaccination,
+                                                values.vaccineName,
+                                                values.vaccineDate,
+                                                values.vaccineSideEffects,
+                                            ],
+                                        }),
                                         hasError: hasErrors(
-                                            ['notes'],
+                                            [
+                                                'vaccination',
+                                                'vaccineName',
+                                                'vaccineDate',
+                                                'vaccineSideEffects',
+                                            ],
                                             errors,
                                             touched,
                                         ),
                                     })}
-                                    {'Notes'.toLocaleUpperCase()}
+                                    {'Vaccines'.toLocaleUpperCase()}
                                 </TableOfContentsRow>
-                                {!props.initialCase && (
+                                {/* {!props.initialCase && (
                                     <TableOfContentsRow
                                         onClick={(): void =>
                                             scrollTo('numCases')
@@ -854,7 +696,7 @@ export default function CaseForm(props: Props): JSX.Element {
                                         })}
                                         {'Number of cases'.toLocaleUpperCase()}
                                     </TableOfContentsRow>
-                                )}
+                                )} */}
                             </TableOfContents>
                         )}
                         <StyledForm showTableOfContents={showTableOfContents}>
@@ -870,54 +712,49 @@ export default function CaseForm(props: Props): JSX.Element {
                             </Typography>
                             <Form>
                                 <FormSection>
+                                    <General />
+                                </FormSection>
+                                <FormSection>
                                     <Source
                                         initialValue={values.caseReference}
-                                        hasSourceEntryId={true}
-                                    ></Source>
+                                        withAdditioanlSources
+                                    />
                                 </FormSection>
                                 <FormSection>
-                                    <Demographics></Demographics>
+                                    <Demographics />
                                 </FormSection>
                                 <FormSection>
-                                    <LocationForm></LocationForm>
+                                    <LocationForm />
                                 </FormSection>
                                 <FormSection>
-                                    <Events></Events>
+                                    <Events />
                                 </FormSection>
                                 <FormSection>
-                                    <Symptoms></Symptoms>
+                                    <Symptoms />
                                 </FormSection>
                                 <FormSection>
-                                    <PreexistingConditions></PreexistingConditions>
+                                    <PreexistingConditions />
                                 </FormSection>
                                 <FormSection>
-                                    <Transmission></Transmission>
+                                    <Transmission />
                                 </FormSection>
                                 <FormSection>
-                                    <TravelHistory></TravelHistory>
+                                    <TravelHistory />
                                 </FormSection>
                                 <FormSection>
-                                    <GenomeSequences></GenomeSequences>
+                                    <GenomeSequences />
                                 </FormSection>
                                 <FormSection>
-                                    <Variant></Variant>
+                                    <Pathogens />
                                 </FormSection>
                                 <FormSection>
-                                    <Pathogens></Pathogens>
+                                    <Vaccines />
                                 </FormSection>
-                                <FormSection>
-                                    <Vaccines></Vaccines>
-                                </FormSection>
-                                <FormSection>
-                                    <Notes></Notes>
-                                </FormSection>
-                                {!props.initialCase && (
-                                    <FormSection>
-                                        <NumCases></NumCases>
-                                    </FormSection>
+                                {isSubmitting && (
+                                    <LinearProgress
+                                        sx={{ marginBottom: '1rem' }}
+                                    />
                                 )}
-                                {isSubmitting && <LinearProgress />}
-                                <br />
                                 <Button
                                     variant="contained"
                                     color="primary"
@@ -950,7 +787,7 @@ export default function CaseForm(props: Props): JSX.Element {
                                 </MuiAlert>
                             )}
                         </StyledForm>
-                    </div>
+                    </>
                 )}
             </Formik>
         </AppModal>

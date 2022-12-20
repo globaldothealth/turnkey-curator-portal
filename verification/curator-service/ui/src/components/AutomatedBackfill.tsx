@@ -12,6 +12,7 @@ import { Paper } from '@mui/material';
 import axios from 'axios';
 import { styled } from '@mui/material/styles';
 import { useInterval } from '../hooks/useInterval';
+import { format } from 'date-fns';
 
 /**
  * The amount of time allowed before timing out a backfill.
@@ -278,7 +279,9 @@ export default function AutomatedBackfill(props: Props): JSX.Element {
                                     onChange={(newValue) => {
                                         setValues({
                                             ...values,
-                                            startDate: newValue as string,
+                                            startDate: newValue
+                                                ? format(newValue, 'dd-MM-yyyy')
+                                                : null,
                                         });
                                     }}
                                     required
@@ -290,7 +293,9 @@ export default function AutomatedBackfill(props: Props): JSX.Element {
                                     onChange={(newValue) => {
                                         setValues({
                                             ...values,
-                                            endDate: newValue as string,
+                                            endDate: newValue
+                                                ? format(newValue, 'dd-MM-yyyy')
+                                                : null,
                                         });
                                     }}
                                     required

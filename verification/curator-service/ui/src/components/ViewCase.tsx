@@ -1,25 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Grid, LinearProgress, Paper, Typography } from '@mui/material';
-import {
-    Case,
-    GenomeSequence,
-    Location,
-    Travel,
-    Variant,
-    Vaccine,
-    VerificationStatus,
-} from '../api/models/Case';
+import { ParsedCase, Outcome, YesNo, Day0Case } from '../api/models/Day0Case';
 import AppModal from './AppModal';
 import EditIcon from '@mui/icons-material/EditOutlined';
 import { Link } from 'react-router-dom';
 import MuiAlert from '@mui/material/Alert';
 import Scroll from 'react-scroll';
-import StaticMap from './StaticMap';
 import axios from 'axios';
 import createHref from './util/links';
 import makeStyles from '@mui/styles/makeStyles';
-import renderDate, { renderDateRange } from './util/date';
-import shortId from 'shortid';
+import renderDate from './util/date';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import Highlighter from 'react-highlight-words';
@@ -28,9 +18,9 @@ import { selectFilterBreadcrumbs } from '../redux/app/selectors';
 import { selectSearchQuery } from '../redux/linelistTable/selectors';
 import Chip from '@mui/material/Chip';
 import { nameCountry } from './util/countryNames';
-import { parseAgeRange } from './util/helperFunctions';
+import { parseCase } from '../redux/linelistTable/thunk';
 
-const styles = makeStyles((theme) => ({
+const styles = makeStyles(() => ({
     errorMessage: {
         height: 'fit-content',
         width: '100%',
@@ -44,16 +34,16 @@ interface Props {
 }
 
 export default function ViewCase(props: Props): JSX.Element {
-    const [c, setCase] = useState<Case>();
+    const [c, setCase] = useState<ParsedCase>();
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>();
 
     useEffect(() => {
         setLoading(true);
         axios
-            .get<Case[]>(`/api/cases/${props.id}`)
+            .get<Day0Case[]>(`/api/cases/${props.id}`)
             .then((resp) => {
-                setCase(resp.data[0]);
+                setCase(parseCase(resp.data[0]));
                 setErrorMessage(undefined);
             })
             .catch((e) => {
@@ -83,7 +73,7 @@ export default function ViewCase(props: Props): JSX.Element {
     );
 }
 interface CaseDetailsProps {
-    c: Case;
+    c: ParsedCase;
     enableEdit?: boolean;
 }
 
@@ -143,16 +133,53 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
         });
     };
 
-    const isExcluded = () => {
-        if (props.c.isSourceExcluded) {
-            return 'Excluded';
-        } else {
-            return props.c.caseReference.verificationStatus || 'Unverified';
-        }
-    };
+    // const isExcluded = () => {
+    //         return props.c.caseReference.verificationStatus || 'Unverified';
+    // };
 
     const searchedKeywords = useSelector(selectSearchQuery);
     const filtersBreadcrumb = useSelector(selectFilterBreadcrumbs);
+
+    const hasAdditionalSources =
+        props.c.sourceII ||
+        props.c.sourceIII ||
+        props.c.sourceIV ||
+        props.c.sourceV ||
+        props.c.sourceVI ||
+        props.c.sourceVII;
+
+    const additionalSources = () => {
+        if (!hasAdditionalSources) return <></>;
+
+        const sourceKeys = [
+            'sourceII',
+            'sourceIII',
+            'sourceIV',
+            'sourceV',
+            'sourceVI',
+            'sourceVII',
+        ];
+        const sources: string[] = [];
+
+        for (const source of sourceKeys) {
+            if (props.c[source]) {
+                sources.push(props.c[source] as string);
+            }
+        }
+
+        return (
+            <>
+                <RowHeader title="Additional sources" />
+                <MultilinkRowContent
+                    links={sources.map((source) => {
+                        return {
+                            link: source,
+                        };
+                    })}
+                />
+            </>
+        );
+    };
 
     return (
         <>
@@ -246,10 +273,10 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                     </>
                 )}
                 <Typography className={classes.caseTitle} variant="h5">
-                    Case {props.c._id}{' '}
+                    Case {props.c.id}{' '}
                     {props.enableEdit && (
                         <Link
-                            to={`/cases/edit/${props.c._id}`}
+                            to={`/cases/edit/${props.c.ID}`}
                             style={{ textDecoration: 'none' }}
                         >
                             <Button
@@ -263,7 +290,8 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                         </Link>
                     )}
                 </Typography>
-                {(props.c.caseReference.verificationStatus ===
+                {/* @TODO check whether excluding cases is still needed in the new tunrkey system */}
+                {/* {(props.c.caseReference.verificationStatus ===
                     VerificationStatus.Excluded ||
                     props.c.isSourceExcluded) && (
                     <MuiAlert
@@ -274,12 +302,13 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                         This case is excluded. That means it's ignored in the
                         automated ingestion process
                     </MuiAlert>
-                )}
+                )} */}
                 <Paper className={classes.paper} variant="outlined" square>
                     <Scroll.Element
                         name="case-data"
                         className={classes.casebox}
                     >
+                        {/* CASE DATA */}
                         <Typography
                             className={classes.sectionTitle}
                             variant="overline"
@@ -287,89 +316,34 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             Case data
                         </Typography>
                         <Grid container className={classes.grid}>
-                            <RowHeader title="Data source" />
-                            <RowContent
-                                content={props.c.caseReference?.sourceId}
-                            />
-
                             <RowHeader title="Data source URL" />
-                            <RowContent
-                                content={props.c.caseReference?.sourceUrl}
-                                isLink
-                            />
+                            <RowContent content={props.c.source} isLink />
 
-                            <RowHeader title="Data upload IDs" />
-                            <RowContent
-                                content={
-                                    props.c.caseReference?.uploadIds?.join(
-                                        ', ',
-                                    ) || ''
-                                }
-                            />
-
-                            {props.c.caseReference?.additionalSources && (
-                                <>
-                                    <RowHeader title="Additional sources" />
-                                    <MultilinkRowContent
-                                        links={props.c.caseReference?.additionalSources?.map(
-                                            (e) => {
-                                                return {
-                                                    title: e.sourceUrl,
-                                                    link: e.sourceUrl,
-                                                };
-                                            },
-                                        )}
-                                    />
-                                </>
-                            )}
+                            {additionalSources()}
 
                             <RowHeader title="Date of creation" />
                             <RowContent
-                                content={renderDate(
-                                    props.c.revisionMetadata?.creationMetadata
-                                        ?.date,
-                                )}
-                            />
-
-                            <RowHeader title="Created by" />
-                            <RowContent
-                                content={
-                                    props.c.revisionMetadata?.creationMetadata
-                                        ?.curator || ''
-                                }
+                                content={renderDate(props.c.entryDate)}
                             />
 
                             {/* Consider surfacing this as a top-level icon on this page. */}
-                            <RowHeader title="Verification status" />
-                            <RowContent content={isExcluded()} />
+                            {/* <RowHeader title="Verification status" />
+                            <RowContent content={isExcluded()} /> */}
 
-                            {props.c.revisionMetadata?.updateMetadata && (
-                                <>
-                                    <RowHeader title="Date of edit" />
-                                    <RowContent
-                                        content={renderDate(
-                                            props.c.revisionMetadata
-                                                ?.updateMetadata?.date,
-                                        )}
-                                    />
-
-                                    <RowHeader title="Edited by" />
-                                    <RowContent
-                                        content={
-                                            props.c.revisionMetadata
-                                                ?.updateMetadata?.curator || ''
-                                        }
-                                    />
-                                </>
-                            )}
+                            <RowHeader title="Date of edit" />
+                            <RowContent
+                                content={renderDate(props.c.lastModifiedDate)}
+                            />
                         </Grid>
                     </Scroll.Element>
                 </Paper>
+
+                {/* DEMOGRAPHICS */}
                 <Paper className={classes.paper} variant="outlined" square>
                     <Scroll.Element
                         name="demographics"
                         className={classes.casebox}
-                    ></Scroll.Element>
+                    />
                     <Typography
                         className={classes.sectionTitle}
                         variant="overline"
@@ -378,31 +352,20 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                     </Typography>
                     <Grid container className={classes.grid}>
                         <RowHeader title="Age" />
-                        <RowContent
-                            content={parseAgeRange(
-                                props.c.demographics?.ageRange,
-                            )}
-                        />
+                        <RowContent content={props.c.age} />
 
                         <RowHeader title="Gender" />
-                        <RowContent content={props.c.demographics?.gender} />
+                        <RowContent content={props.c.gender} />
 
                         <RowHeader title="Occupation" />
-                        <RowContent
-                            content={props.c.demographics?.occupation}
-                        />
+                        <RowContent content={props.c.occupation} />
 
-                        <RowHeader title="Nationalities" />
-                        <RowContent
-                            content={props.c.demographics?.nationalities?.join(
-                                ', ',
-                            )}
-                        />
-
-                        <RowHeader title="Race / Ethnicity" />
-                        <RowContent content={props.c.demographics?.ethnicity} />
+                        <RowHeader title="Healthcare worker" />
+                        <RowContent content={props.c.healthcareWorker} />
                     </Grid>
                 </Paper>
+
+                {/* LOCATION */}
                 <Paper className={classes.paper} variant="outlined" square>
                     <Scroll.Element name="location" className={classes.casebox}>
                         <Typography
@@ -412,10 +375,25 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             Location
                         </Typography>
                         <Grid container className={classes.grid}>
-                            <LocationRows loc={props.c.location} />
+                            <RowHeader title="Country" />
+                            <RowContent
+                                content={
+                                    props.c.countryISO3
+                                        ? nameCountry(props.c.countryISO3)
+                                        : ''
+                                }
+                            />
+
+                            <RowHeader title="City" />
+                            <RowContent content={props.c.city} />
+
+                            <RowHeader title="Location" />
+                            <RowContent content={props.c.location} />
                         </Grid>
                     </Scroll.Element>
                 </Paper>
+
+                {/* EVENT HISTORY */}
                 <Paper className={classes.paper} variant="outlined" square>
                     <Scroll.Element
                         name="event-history"
@@ -430,98 +408,100 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                         <Grid container className={classes.grid}>
                             <RowHeader title="Confirmed case date" />
                             <RowContent
-                                content={renderDateRange(
-                                    props.c.events?.find(
-                                        (e) => e.name === 'confirmed',
-                                    )?.dateRange,
-                                )}
+                                content={renderDate(props.c.confirmationDate)}
                             />
 
                             <RowHeader title="Confirmation method" />
-                            <RowContent
-                                content={
-                                    props.c.events?.find(
-                                        (e) => e.name === 'confirmed',
-                                    )?.value || ''
-                                }
-                            />
+                            <RowContent content={props.c.confirmationMethod} />
 
                             <RowHeader title="Symptom onset date" />
                             <RowContent
-                                content={renderDateRange(
-                                    props.c.events?.find(
-                                        (e) => e.name === 'onsetSymptoms',
-                                    )?.dateRange,
-                                )}
+                                content={renderDate(props.c.symptomsOnsetDate)}
                             />
 
                             <RowHeader title="First clinical consultation" />
                             <RowContent
-                                content={renderDateRange(
-                                    props.c.events?.find(
-                                        (e) =>
-                                            e.name ===
-                                            'firstClinicalConsultation',
-                                    )?.dateRange,
-                                )}
+                                content={renderDate(props.c.firstConsultDate)}
                             />
 
-                            <RowHeader title="Date of self isolation" />
-                            <RowContent
-                                content={renderDateRange(
-                                    props.c.events?.find(
-                                        (e) => e.name === 'selfIsolation',
-                                    )?.dateRange,
-                                )}
-                            />
+                            <RowHeader title="Home monitoring" />
+                            <RowContent content={props.c.homeMonitoring} />
+
+                            <RowHeader title="Isolation" />
+                            <RowContent content={props.c.isolated} />
+
+                            {props.c.Isolated === YesNo.Y && (
+                                <>
+                                    <RowHeader title="Date of isolation" />
+                                    <RowContent
+                                        content={renderDate(
+                                            props.c.isolationDate,
+                                        )}
+                                    />
+                                </>
+                            )}
 
                             <RowHeader title="Hospital admission" />
-                            <RowContent
-                                content={
-                                    props.c.events?.find(
-                                        (e) => e.name === 'hospitalAdmission',
-                                    )?.value || ''
-                                }
-                            />
+                            <RowContent content={props.c.hospitalized} />
 
-                            <RowHeader title="Hospital admission date" />
-                            <RowContent
-                                content={renderDateRange(
-                                    props.c.events?.find(
-                                        (e) => e.name === 'hospitalAdmission',
-                                    )?.dateRange,
-                                )}
-                            />
+                            {props.c.Hospitalized === YesNo.Y && (
+                                <>
+                                    <RowHeader title="Hospital admission date" />
+                                    <RowContent
+                                        content={renderDate(
+                                            props.c.hospitalizationDate,
+                                        )}
+                                    />
+                                </>
+                            )}
 
-                            <RowHeader title="Date admitted to isolation unit" />
-                            <RowContent
-                                content={renderDateRange(
-                                    props.c.events?.find(
-                                        (e) => e.name === 'icuAdmission',
-                                    )?.dateRange,
-                                )}
-                            />
+                            <RowHeader title="Intensive care" />
+                            <RowContent content={props.c.intensiveCare} />
+
+                            {props.c.Intensive_care === YesNo.Y && (
+                                <>
+                                    <RowHeader title="Intensive care admission date" />
+                                    <RowContent
+                                        content={renderDate(
+                                            props.c.ICUAdmissionDate,
+                                        )}
+                                    />
+
+                                    <RowHeader title="Intensive care discharge date" />
+                                    <RowContent
+                                        content={renderDate(
+                                            props.c.ICUDischargeDate,
+                                        )}
+                                    />
+                                </>
+                            )}
 
                             <RowHeader title="Outcome" />
-                            <RowContent
-                                content={
-                                    props.c.events?.find(
-                                        (e) => e.name === 'outcome',
-                                    )?.value || ''
-                                }
-                            />
+                            <RowContent content={props.c.outcome} />
 
-                            <RowHeader title="Outcome date" />
-                            <RowContent
-                                content={renderDateRange(
-                                    props.c.events?.find(
-                                        (e) => e.name === 'outcome',
-                                    )?.dateRange,
-                                )}
-                            />
+                            {props.c.Outcome && (
+                                <>
+                                    <RowHeader
+                                        title={`Date of ${
+                                            props.c.outcome === Outcome.Death
+                                                ? 'death'
+                                                : 'recovery'
+                                        }`}
+                                    />
+                                    <RowContent
+                                        content={renderDate(
+                                            props.c.outcome === Outcome.Death
+                                                ? props.c.deathDate
+                                                : props.c.recoveredDate,
+                                        )}
+                                    />
+                                </>
+                            )}
                         </Grid>
                     </Scroll.Element>
                 </Paper>
+
+                {/* SYMPTOMS */}
                 <Paper className={classes.paper} variant="outlined" square>
                     <Scroll.Element name="symptoms" className={classes.casebox}>
                         <Typography
@@ -531,15 +511,19 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             Symptoms
                         </Typography>
                         <Grid container className={classes.grid}>
-                            <RowHeader title="Symptoms status" />
-                            <RowContent content={props.c.symptoms?.status} />
                             <RowHeader title="Symptoms" />
                             <RowContent
-                                content={props.c.symptoms?.values?.join(', ')}
+                                content={
+                                    props.c.symptoms
+                                        ? props.c.symptoms.join(', ')
+                                        : ''
+                                }
                             />
                         </Grid>
                     </Scroll.Element>
                 </Paper>
+
+                {/* PREEXISTING CONDITIONS */}
                 <Paper className={classes.paper} variant="outlined" square>
                     <Typography
                         className={classes.sectionTitle}
@@ -548,29 +532,27 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                         Preexisting conditions
                     </Typography>
                     <Grid container className={classes.grid}>
-                        <RowHeader title="Has preexisting conditions" />
-                        <RowContent
-                            content={
-                                props.c.preexistingConditions
-                                    ?.hasPreexistingConditions === undefined
-                                    ? ''
-                                    : props.c.preexistingConditions
-                                          .hasPreexistingConditions
-                                    ? 'Yes'
-                                    : 'No'
-                            }
-                        />
-
                         <RowHeader title="Preexisting conditions" />
                         <RowContent
                             content={
-                                props.c.preexistingConditions?.values?.join(
-                                    ', ',
-                                ) || ''
+                                props.c.preexistingCondition
+                                    ? props.c.preexistingCondition.join(', ')
+                                    : ''
                             }
                         />
+
+                        <RowHeader title="Previous infection" />
+                        <RowContent content={props.c.previousInfection} />
+
+                        <RowHeader title="Coinfection" />
+                        <RowContent content={props.c.coInfection} />
+
+                        <RowHeader title="Pregnancy" />
+                        <RowContent content={props.c.pregnancyStatus} />
                     </Grid>
                 </Paper>
+
+                {/* TRANSMISSION */}
                 <Paper className={classes.paper} variant="outlined" square>
                     <Scroll.Element
                         name="transmission"
@@ -583,34 +565,30 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             Transmission
                         </Typography>
                         <Grid container className={classes.grid}>
-                            <RowHeader title="Route of transmission" />
+                            <RowHeader title="Transmission" />
+                            <RowContent content={props.c.transmission} />
+
+                            <RowHeader title="Contact with case" />
+                            <RowContent content={props.c.contactWithCase} />
+
+                            <RowHeader title="Contact ID" />
                             <RowContent
-                                content={props.c.transmission?.routes?.join(
-                                    ', ',
-                                )}
+                                content={props.c.contactID?.toString()}
                             />
 
-                            <RowHeader title="Places of transmission" />
-                            <RowContent
-                                content={props.c.transmission?.places?.join(
-                                    ', ',
-                                )}
-                            />
+                            <RowHeader title="Contact setting" />
+                            <RowContent content={props.c.contactSetting} />
 
-                            <RowHeader title="Related cases" />
-                            <MultilinkRowContent
-                                links={props.c.transmission?.linkedCaseIds?.map(
-                                    (e) => {
-                                        return {
-                                            title: e,
-                                            link: `/cases/view/${e}`,
-                                        };
-                                    },
-                                )}
-                            />
+                            <RowHeader title="Contact animal" />
+                            <RowContent content={props.c.contactAnimal} />
+
+                            <RowHeader title="Comment" />
+                            <RowContent content={props.c.contactComment} />
                         </Grid>
                     </Scroll.Element>
                 </Paper>
+
+                {/* TRAVEL HISTORY */}
                 <Paper className={classes.paper} variant="outlined" square>
                     <Scroll.Element
                         name="travel-history"
@@ -623,28 +601,31 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             Travel history
                         </Typography>
                         <Grid container className={classes.grid}>
-                            <RowHeader title="Travelled in last 30 days" />
+                            <RowHeader title="Has travel history" />
+                            <RowContent content={props.c.travelHistory} />
+
+                            <RowHeader title="Travel history entry" />
                             <RowContent
-                                content={
-                                    props.c.travelHistory
-                                        ?.traveledPrior30Days === undefined
-                                        ? ''
-                                        : props.c.travelHistory
-                                              .traveledPrior30Days
-                                        ? 'Yes'
-                                        : 'No'
-                                }
+                                content={renderDate(props.c.travelHistoryEntry)}
                             />
 
-                            {props.c.travelHistory?.travel?.map((e) => (
-                                <TravelRow
-                                    key={shortId.generate()}
-                                    travel={e}
-                                />
-                            ))}
+                            <RowHeader title="Has travel start" />
+                            <RowContent content={props.c.travelHistoryStart} />
+
+                            <RowHeader title="Last known location" />
+                            <RowContent
+                                content={props.c.travelHistoryLocation}
+                            />
+
+                            <RowHeader title="Last known country" />
+                            <RowContent
+                                content={props.c.travelHistoryCountry}
+                            />
                         </Grid>
                     </Scroll.Element>
                 </Paper>
+
+                {/* PATHOGENS */}
                 <Paper className={classes.paper} variant="outlined" square>
                     <Scroll.Element
                         name="pathogens"
@@ -658,25 +639,18 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                         </Typography>
                         <Grid container className={classes.grid}>
                             <RowHeader title="Pathogens" />
-                            <RowContent
-                                content={props.c.pathogens
-                                    ?.map((e) => `${e.name} (${e.id})`)
-                                    .join(', ')}
-                            />
+                            <RowContent content={props.c.pathogen} />
 
-                            {props.c.genomeSequences?.map((e) => (
-                                <GenomeSequenceRows
-                                    key={shortId.generate()}
-                                    sequence={e}
-                                />
-                            ))}
-                            <VariantRows
-                                variant={props.c.variant ?? { name: '' }}
-                                SGTF={props.c.SGTF}
-                            />
+                            <RowHeader title="Genomics metadata" />
+                            <RowContent content={props.c.genomicsMetadata} />
+
+                            <RowHeader title="Accession number" />
+                            <RowContent content={props.c.accessionNumber} />
                         </Grid>
                     </Scroll.Element>
                 </Paper>
+
+                {/* VACCINES */}
                 <Paper className={classes.paper} variant="outlined" square>
                     <Scroll.Element name="vaccines" className={classes.casebox}>
                         <Typography
@@ -686,142 +660,30 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             Vaccines
                         </Typography>
                         <Grid container className={classes.grid}>
-                            {props.c.vaccines?.map((e, i) => (
-                                <VaccineRows
-                                    key={shortId.generate()}
-                                    vaccine={e}
-                                    index={i}
-                                />
-                            ))}
+                            <RowHeader title="Vaccination" />
+                            <RowContent content={props.c.vaccination} />
+
+                            <RowHeader title="Vaccine name" />
+                            <RowContent content={props.c.vaccineName} />
+
+                            <RowHeader title="Date of first vaccination" />
+                            <RowContent
+                                content={renderDate(props.c.vaccineDate)}
+                            />
+
+                            <RowHeader title="Side effects" />
+                            <RowContent
+                                content={
+                                    props.c.vaccineSideEffects
+                                        ? props.c.vaccineSideEffects.join(', ')
+                                        : ''
+                                }
+                            />
                         </Grid>
                     </Scroll.Element>
                 </Paper>
             </div>
         </>
-    );
-}
-
-function GenomeSequenceRows(props: { sequence: GenomeSequence }): JSX.Element {
-    return (
-        <>
-            <RowHeader title="Date of sample collection" />
-            <RowContent
-                content={renderDate(props.sequence?.sampleCollectionDate)}
-            />
-
-            <RowHeader title="Genome sequence repository" />
-            <RowContent content={props.sequence?.repositoryUrl || ''} isLink />
-
-            <RowHeader title="Genome sequence name" />
-            <RowContent content={props.sequence?.sequenceName || ''} />
-
-            <RowHeader title="Genome sequence length" />
-            <RowContent content={`${props.sequence?.sequenceLength}` || ''} />
-
-            <RowHeader title="Genome sequence accession" />
-            <RowContent content={props.sequence?.sequenceId || ''} />
-        </>
-    );
-}
-
-function VaccineRows(props: { vaccine: Vaccine; index: number }): JSX.Element {
-    return (
-        <>
-            <RowHeader title={`Vaccine ${props.index + 1}`} />
-            <RowContent content="" />
-
-            <RowHeader title="Vaccine administered" />
-            <RowContent content={props.vaccine.name} />
-            <RowHeader title="Batch code" />
-            <RowContent content={props.vaccine.batch} />
-            <RowHeader title="Date of vaccine" />
-            <RowContent content={renderDate(props.vaccine.date)} />
-        </>
-    );
-}
-
-function VariantRows(props: { variant: Variant; SGTF?: string }): JSX.Element {
-    return (
-        <>
-            <RowHeader title="Variant of Concern" />
-            <RowContent content={props.variant?.name || ''} />
-            <RowHeader title="S-Gene Target Failure" />
-            <RowContent content={props.SGTF?.toString() || ''} />
-        </>
-    );
-}
-
-function LocationRows(props: { loc?: Location }): JSX.Element {
-    return (
-        <>
-            <RowHeader title="Location" />
-            <RowContent content={props.loc?.name || ''} />
-
-            <RowHeader title="Location type" />
-            <RowContent content={props.loc?.geoResolution || ''} />
-
-            <RowHeader title="Admin area 1" />
-            <RowContent content={props.loc?.administrativeAreaLevel1 || ''} />
-
-            <RowHeader title="Admin area 2" />
-            <RowContent content={props.loc?.administrativeAreaLevel2 || ''} />
-
-            <RowHeader title="Admin area 3" />
-            <RowContent content={props.loc?.administrativeAreaLevel3 || ''} />
-
-            <RowHeader title="Country" />
-            <RowContent
-                content={
-                    props.loc?.country ? nameCountry(props.loc?.country) : ''
-                }
-            />
-
-            <RowHeader title="Latitude" />
-            <RowContent
-                content={`${props.loc?.geometry?.latitude?.toFixed(4)}`}
-            />
-            <RowHeader title="Longitude" />
-            <RowContent
-                content={`${props.loc?.geometry?.longitude?.toFixed(4)}`}
-            />
-            <MapRow location={props.loc} />
-        </>
-    );
-}
-
-const headerStyles = makeStyles(() => ({
-    separatedHeader: {
-        marginTop: '3em',
-    },
-}));
-
-function TravelRow(props: { travel: Travel }): JSX.Element {
-    const classes = headerStyles();
-    return (
-        <>
-            <span className={classes.separatedHeader}></span>
-
-            <RowHeader title="Methods of travel" />
-            <RowContent content={props.travel.methods?.join(', ') || ''} />
-
-            <RowHeader title="Travel dates" />
-            <RowContent content={renderDateRange(props.travel.dateRange)} />
-
-            <RowHeader title="Primary reason of travel" />
-            <RowContent content={props.travel.purpose || ''} />
-
-            <LocationRows loc={props.travel.location} />
-        </>
-    );
-}
-
-function MapRow(props: { location?: Location }): JSX.Element {
-    return (
-        <Grid item xs={12}>
-            {props.location?.geometry && (
-                <StaticMap geometry={props.location.geometry} />
-            )}
-        </Grid>
     );
 }
 
@@ -833,7 +695,10 @@ function RowHeader(props: { title: string }): JSX.Element {
     );
 }
 
-function RowContent(props: { content: string; isLink?: boolean }): JSX.Element {
+function RowContent(props: {
+    content?: string;
+    isLink?: boolean;
+}): JSX.Element {
     const searchQuery = useSelector(selectSearchQuery);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const searchQueryArray: any[] = [];
@@ -878,18 +743,18 @@ function RowContent(props: { content: string; isLink?: boolean }): JSX.Element {
 }
 
 function MultilinkRowContent(props: {
-    links?: { title: string; link: string }[];
+    links?: { link: string }[];
 }): JSX.Element {
     return (
         <Grid item xs={8} style={{ fontSize: 14 }}>
             {props.links?.map((e) => (
-                <p key={e.title} style={{ margin: 0 }}>
+                <p key={e.link} style={{ margin: 0 }}>
                     <a
                         href={createHref(e.link)}
                         rel="noopener noreferrer"
                         target="_blank"
                     >
-                        {e.title}
+                        {e.link}
                     </a>
                 </p>
             ))}

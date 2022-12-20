@@ -1,22 +1,19 @@
 import { DateField, SelectField } from '../common-form-fields/FormikFields';
 
-import CaseFormValues from './CaseFormValues';
 import FieldTitle from '../common-form-fields/FieldTitle';
 import { StyledTooltip } from './StyledTooltip';
 import Scroll from 'react-scroll';
-import { useFormikContext } from 'formik';
+import { FastField, useFormikContext } from 'formik';
+import { TextField } from 'formik-mui';
+import { Outcome, ParsedCase } from '../../api/models/Day0Case';
+import { format } from 'date-fns';
+import { useStyles } from './styled';
+import clsx from 'clsx';
+import { toUTCDate } from '../util/date';
 
-const yesNoUndefined = ['Unknown', 'Yes', 'No'];
+const yesNoUndefined = ['Y', 'N', 'NA'];
 
-const methodsOfConfirmation = [
-    'Unknown',
-    'PCR test',
-    'Serological test',
-    'Clinical diagnosis',
-    'Other',
-];
-
-const outcomes = ['Unknown', 'Death', 'Recovered'];
+const outcomes = ['recovered', 'death'];
 
 const TooltipText = () => (
     <StyledTooltip>
@@ -40,32 +37,7 @@ const TooltipText = () => (
             </li>
             <li>
                 <strong>Method of confirmation:</strong> Provide the type of
-                method used to confirm the case. If there is no method provided
-                selected unknown.
-                <ul>
-                    <li>
-                        <strong>PCR test:</strong> Confirms if the virus is
-                        currently present in the person.
-                    </li>
-                    <li>
-                        <strong>Serological test:</strong> Confirms if there is
-                        a presence of antibodies in the person, indicating the
-                        virus has previously been present.
-                    </li>
-                    <li>
-                        <strong>Clinical diagnosis:</strong> A diagnosis is made
-                        on the basis of medical signs and reported symptoms that
-                        the person has the virus.
-                    </li>
-                    <li>
-                        <strong>Other:</strong> Another method was used to
-                        confirm the virus is/was present.
-                    </li>
-                    <li>
-                        <strong>Unknown:</strong> The method used to confirm the
-                        case was not reported in the source.
-                    </li>
-                </ul>
+                method used to confirm the case.
             </li>
             <li>
                 <strong>Onset of symptoms date:</strong> Enter the date if
@@ -88,44 +60,61 @@ const TooltipText = () => (
                 </ul>
             </li>
             <li>
-                <strong>Self isolation date:</strong> Enter the date the case
-                went into self isolation.
-                <ul>
-                    <li>
-                        If the case did not go into self isolation, or the
-                        source does not report the information, leave blank.
-                    </li>
-                </ul>
+                <strong>Home monitoring:</strong> Enter if the case was home
+                monitoring.
+            </li>
+            <li>
+                <strong>Isolated:</strong> Enter if the case went into
+                isolation.
+            </li>
+            <li>
+                <strong>Isolation date:</strong> Enter the date the case was
+                isolated.
             </li>
             <li>
                 <strong>Hospital admission:</strong> Enter if the case was
                 admitted to hospital.
             </li>
             <li>
-                If the case did not get admitted to hospital or the source does
-                not provide any information leave blank.
+                <strong>Hospital admission date:</strong> Enter the date the
+                case was admitted to hospital
             </li>
             <li>
-                <strong>ICU admission:</strong> Enter if the case was admitted
-                to ICU ward.
+                <strong>Hospital discharge date:</strong> Enter the date the
+                case was discharged from hospital.
             </li>
             <li>
-                If the case did not get admitted to ICU or the source does not
-                provide any information leave blank.
+                <strong>Intensive care:</strong> Enter if the case was in
+                intensive care.
             </li>
             <li>
-                <strong>Outcome:</strong> Enter the outcome of the case
+                <strong>ICU admission date:</strong> Enter the date the case was
+                admitted to ICU.
             </li>
             <li>
-                If the source does not provide any information enter unknown.
+                <strong>ICU discharge date:</strong> Enter the date the case was
+                discharged from hospital.
             </li>
-            <li>This is a required field so must be entered</li>
+            <li>
+                <strong>Outcome:</strong> Enter the outcome of the case.
+            </li>
+            <li>
+                <strong>Date of death:</strong> Enter the date the case died.
+            </li>
+            <li>
+                <strong>Date of recovery:</strong> Enter the date the case
+                recovered.
+            </li>
         </ul>
     </StyledTooltip>
 );
 
 export default function Events(): JSX.Element {
-    const { values, setValues } = useFormikContext<CaseFormValues>();
+    const { values, setFieldValue } = useFormikContext<ParsedCase>();
+    const classes = useStyles();
+
+    console.log(values);
+
     return (
         <Scroll.Element name="events">
             <FieldTitle
@@ -133,113 +122,188 @@ export default function Events(): JSX.Element {
                 interactive
                 widetooltip
                 tooltip={<TooltipText />}
-            ></FieldTitle>
+            />
             <DateField
-                name="confirmedDate"
+                name="confirmationDate"
                 label="Confirmed case date"
-                value={values.confirmedDate}
+                value={values.confirmationDate}
                 onChange={(newValue) => {
-                    setValues({ ...values, confirmedDate: newValue as string });
+                    setFieldValue(
+                        'confirmationDate',
+                        toUTCDate(
+                            newValue ? newValue.toDateString() : undefined,
+                        ),
+                    );
                 }}
-                required
-            ></DateField>
-            <SelectField
-                name="methodOfConfirmation"
-                label="Method of confirmation"
-                values={methodsOfConfirmation}
-            ></SelectField>
+            />
+            <div className={clsx([classes.fieldRow, classes.halfWidth])}>
+                <FastField
+                    name="confirmationMethod"
+                    label="Method of confirmation"
+                    type="text"
+                    component={TextField}
+                    fullWidth
+                />
+            </div>
             <DateField
-                name="onsetSymptomsDate"
+                name="symptomsOnsetDate"
                 label="Onset of symptoms date"
-                value={values.onsetSymptomsDate}
+                value={values.symptomsOnsetDate}
                 onChange={(newValue) => {
-                    setValues({
-                        ...values,
-                        onsetSymptomsDate: newValue as string,
-                    });
+                    setFieldValue(
+                        'symptomsOnsetDate',
+                        toUTCDate(
+                            newValue ? newValue.toDateString() : undefined,
+                        ),
+                    );
                 }}
-                initialFocusedDate={values.confirmedDate}
-            ></DateField>
+            />
             <DateField
-                name="firstClinicalConsultationDate"
+                name="firstConsultDate"
                 label="First clinical consultation date"
-                value={values.firstClinicalConsultationDate}
+                value={values.firstConsultDate}
                 onChange={(newValue) => {
-                    setValues({
-                        ...values,
-                        firstClinicalConsultationDate: newValue as string,
-                    });
+                    setFieldValue(
+                        'firstConsultDate',
+                        toUTCDate(
+                            newValue ? newValue.toDateString() : undefined,
+                        ),
+                    );
                 }}
-                initialFocusedDate={values.confirmedDate}
-            ></DateField>
-            <DateField
-                name="selfIsolationDate"
-                label="Self isolation date"
-                value={values.selfIsolationDate}
-                onChange={(newValue) => {
-                    setValues({
-                        ...values,
-                        selfIsolationDate: newValue as string,
-                    });
-                }}
-                initialFocusedDate={values.confirmedDate}
-            ></DateField>
+            />
             <SelectField
-                name="admittedToHospital"
+                name="homeMonitoring"
+                label="Home monitoring"
+                values={yesNoUndefined}
+            />
+            <SelectField
+                name="isolated"
+                label="Isolated"
+                values={yesNoUndefined}
+            />
+            {values.isolated === 'Y' && (
+                <DateField
+                    name="isolationDate"
+                    label="Date of isolation"
+                    value={values.isolationDate}
+                    onChange={(newValue) => {
+                        setFieldValue(
+                            'isolationDate',
+                            toUTCDate(
+                                newValue ? newValue.toDateString() : undefined,
+                            ),
+                        );
+                    }}
+                />
+            )}
+            <SelectField
+                name="hospitalized"
                 label="Hospital admission"
                 values={yesNoUndefined}
-            ></SelectField>
-            {values.admittedToHospital === 'Yes' && (
-                <DateField
-                    name="hospitalAdmissionDate"
-                    label="Hospital admission date"
-                    value={values.hospitalAdmissionDate}
-                    onChange={(newValue) => {
-                        setValues({
-                            ...values,
-                            hospitalAdmissionDate: newValue as string,
-                        });
-                    }}
-                    initialFocusedDate={values.confirmedDate}
-                ></DateField>
+            />
+            {values.hospitalized === 'Y' && (
+                <>
+                    <DateField
+                        name="hospitalizationDate"
+                        label="Hospital admission date"
+                        value={values.hospitalizationDate}
+                        onChange={(newValue) => {
+                            setFieldValue(
+                                'hospitalAdmissionDate',
+                                toUTCDate(
+                                    newValue
+                                        ? newValue.toDateString()
+                                        : undefined,
+                                ),
+                            );
+                        }}
+                    />
+                    <DateField
+                        name="hospitalDischargeDate"
+                        label="Hospital discharge date"
+                        value={values.hospitalDischargeDate}
+                        onChange={(newValue) => {
+                            setFieldValue(
+                                'hospitalDischargeDate',
+                                toUTCDate(
+                                    newValue
+                                        ? newValue.toDateString()
+                                        : undefined,
+                                ),
+                            );
+                        }}
+                    />
+                </>
             )}
             <SelectField
-                name="admittedToIcu"
-                label="ICU admission"
+                name="intensiveCare"
+                label="Intensive care"
                 values={yesNoUndefined}
-            ></SelectField>
-            {values.admittedToIcu === 'Yes' && (
-                <DateField
-                    name="icuAdmissionDate"
-                    label="ICU admission date"
-                    value={values.icuAdmissionDate}
-                    onChange={(newValue) => {
-                        setValues({
-                            ...values,
-                            icuAdmissionDate: newValue as string,
-                        });
-                    }}
-                    initialFocusedDate={values.confirmedDate}
-                ></DateField>
+            />
+            {values.intensiveCare === 'Y' && (
+                <>
+                    <DateField
+                        name="ICUAdmissionDate"
+                        label="ICU admission date"
+                        value={values.ICUAdmissionDate}
+                        onChange={(newValue) => {
+                            setFieldValue(
+                                'ICUAdmissionDate',
+                                toUTCDate(
+                                    newValue
+                                        ? newValue.toDateString()
+                                        : undefined,
+                                ),
+                            );
+                        }}
+                    />
+                    <DateField
+                        name="ICUDischargeDate"
+                        label="ICU discharge date"
+                        value={values.ICUDischargeDate}
+                        onChange={(newValue) => {
+                            setFieldValue(
+                                'ICUDischargeDate',
+                                toUTCDate(
+                                    newValue
+                                        ? newValue.toDateString()
+                                        : undefined,
+                                ),
+                            );
+                        }}
+                    />
+                </>
             )}
-            <SelectField
-                name="outcome"
-                label="Outcome"
-                values={outcomes}
-            ></SelectField>
-            {values.outcome !== undefined && values.outcome !== 'Unknown' && (
+            <SelectField name="outcome" label="Outcome" values={outcomes} />
+            {values.outcome === Outcome.Recovered && (
                 <DateField
-                    name="outcomeDate"
-                    label="Outcome date"
-                    value={values.outcomeDate}
+                    name="recoveredDate"
+                    label="Date of recovery"
+                    value={values.recoveredDate}
                     onChange={(newValue) => {
-                        setValues({
-                            ...values,
-                            outcomeDate: newValue as string,
-                        });
+                        setFieldValue(
+                            'recoveredDate',
+                            toUTCDate(
+                                newValue ? newValue.toDateString() : undefined,
+                            ),
+                        );
                     }}
-                    initialFocusedDate={values.confirmedDate}
-                ></DateField>
+                />
+            )}
+            {values.outcome === Outcome.Death && (
+                <DateField
+                    name="deathDate"
+                    label="Date of death"
+                    value={values.deathDate}
+                    onChange={(newValue) => {
+                        setFieldValue(
+                            'deathDate',
+                            toUTCDate(
+                                newValue ? newValue.toDateString() : undefined,
+                            ),
+                        );
+                    }}
+                />
             )}
         </Scroll.Element>
     );

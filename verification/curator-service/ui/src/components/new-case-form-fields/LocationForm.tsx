@@ -7,7 +7,6 @@ import { makeStyles } from '@mui/styles';
 import AddIcon from '@mui/icons-material/Add';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
-import CaseFormValues from './CaseFormValues';
 import FieldTitle from '../common-form-fields/FieldTitle';
 import { Location as Loc } from '../../api/models/Case';
 import Location from './Location';
@@ -19,6 +18,9 @@ import { StyledTooltip } from './StyledTooltip';
 import axios from 'axios';
 import { hasKey } from '../Utils';
 import throttle from 'lodash/throttle';
+import { Day0Case, ParsedCase } from '../../api/models/Day0Case';
+
+// @TODO
 
 const TooltipText = () => (
     <StyledTooltip>
@@ -61,31 +63,26 @@ const TooltipText = () => (
 
 function LocationForm(): JSX.Element {
     const { values, initialValues, setFieldValue } =
-        useFormikContext<CaseFormValues>();
+        useFormikContext<ParsedCase>();
     return (
         <Scroll.Element name="location">
-            <FieldTitle title="Location" tooltip={<TooltipText />}></FieldTitle>
+            <FieldTitle title="Location" tooltip={<TooltipText />} />
             <PlacesAutocomplete
-                initialValue={initialValues.location?.name}
-                name="location"
+                initialValue={initialValues.location}
+                name="geocodeLocation"
                 required
             />
-            {!values.location && (
+            {!values.geocodeLocation && (
                 <Button
                     variant="outlined"
                     id="add-location"
                     startIcon={<AddIcon />}
-                    onClick={() => setFieldValue('location', {})}
+                    onClick={() => setFieldValue('geocodeLocation', {})}
                 >
                     Specify geocode manually
                 </Button>
             )}
-            {values.location && (
-                <Location
-                    locationPath="location"
-                    geometry={values.location?.geometry}
-                />
-            )}
+            {values.geocodeLocation && <Location />}
         </Scroll.Element>
     );
 }
@@ -125,7 +122,7 @@ export function PlacesAutocomplete(
     const [inputValue, setInputValue] = React.useState('');
     const [options, setOptions] = React.useState<Loc[]>([]);
     const { setFieldValue, setTouched, touched } =
-        useFormikContext<CaseFormValues>();
+        useFormikContext<ParsedCase>();
 
     const fetch = React.useMemo(
         () =>
@@ -181,8 +178,8 @@ export function PlacesAutocomplete(
             getOptionLabel={(option: Loc): string => option.name}
             options={options}
             value={value}
+            sx={{ width: '50%' }}
             onChange={(event: unknown, newValue: Loc | null): void => {
-                console.log('change');
                 setOptions(newValue ? [newValue, ...options] : options);
                 setValue(newValue);
                 setFieldValue(props.name, newValue);
@@ -211,13 +208,12 @@ export function PlacesAutocomplete(
                         }
                         component={TextField}
                         fullWidth
-                        variant="standard"
-                    ></Field>
+                    />
                     {props.required && (
                         <RequiredHelperText
                             name={props.name}
                             locationRequiredText="A location must be provided"
-                        ></RequiredHelperText>
+                        />
                     )}
                 </>
             )}

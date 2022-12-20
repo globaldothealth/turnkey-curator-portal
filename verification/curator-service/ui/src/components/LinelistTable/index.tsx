@@ -43,11 +43,11 @@ import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
 
 import { nameCountry } from '../util/countryNames';
-import renderDate, { renderDateRange } from '../util/date';
+import renderDate from '../util/date';
 import { createData, labels } from './helperFunctions';
 import { LoaderContainer, StyledAlert } from './styled';
 import { URLToSearchQuery } from '../util/searchQuery';
-import { hasAnyRole, parseAgeRange } from '../util/helperFunctions';
+import { hasAnyRole } from '../util/helperFunctions';
 import { Helmet } from 'react-helmet';
 
 import Pagination from './Pagination';
@@ -55,7 +55,6 @@ import EnhancedTableToolbar from './EnhancedTableToolbar';
 import { CaseExcludeDialog } from '../Dialogs/CaseExcludeDialog';
 import { CaseDeleteDialog } from '../Dialogs/CaseDeleteDialog';
 import { CaseIncludeDialog } from '../Dialogs/CaseIncludeDialog';
-import VerificationStatusIndicator from '../VerificationStatusIndicator';
 import { ActionMenu } from './ActionMenu';
 
 const dataLimit = 10000;
@@ -121,33 +120,18 @@ const LinelistTable = () => {
         cases &&
         cases.map((data) => {
             return createData(
-                data._id || '',
-                renderDate(data.confirmationDate) || '',
-                data.location?.administrativeAreaLevel3 || '',
-                data.location?.administrativeAreaLevel2 || '',
-                data.location?.administrativeAreaLevel1 || '',
-                nameCountry(data.location?.country) || '',
-                parseFloat(data.location?.geometry.latitude.toFixed(4)) || 0,
-                parseFloat(data.location?.geometry.longitude.toFixed(4)) || 0,
-                data.demographics?.nationalities || '',
-                parseAgeRange(data.demographics?.ageRange),
-                data.demographics?.gender || '',
-                data.importedCase?.outcome ||
-                    data.events?.find((event) => event.name === 'outcome')
-                        ?.value ||
-                    '',
-                renderDateRange(
-                    data.events?.find(
-                        (event) => event.name === 'hospitalAdmission',
-                    )?.dateRange,
-                ),
-                renderDateRange(
-                    data.events?.find((event) => event.name === 'onsetSymptoms')
-                        ?.dateRange,
-                ),
-                data.caseReference?.sourceUrl || '',
-                data.caseReference?.verificationStatus,
-                data.exclusionData,
+                data.id || '',
+                nameCountry(data.countryISO3),
+                data.city,
+                data.location,
+                renderDate(data.confirmationDate || ''),
+                data.age,
+                data.gender,
+                data.outcome,
+                renderDate(data.hospitalizationDate || ''),
+                renderDate(data.symptomsOnsetDate || ''),
+                data.source,
+                data.caseStatus,
             );
         });
 
@@ -413,67 +397,45 @@ const LinelistTable = () => {
                                                     />
                                                 </TableCell>
 
-                                                <TableCell
+                                                {/* <TableCell
                                                     component="th"
                                                     scope="row"
                                                 >
                                                     <ActionMenu
                                                         caseId={row.caseId}
                                                     />
-                                                </TableCell>
-
-                                                <TableCell
-                                                    component="th"
-                                                    scope="row"
-                                                >
-                                                    <VerificationStatusIndicator
-                                                        status={
-                                                            row.verificationStatus
-                                                        }
-                                                        exclusionData={
-                                                            row.exclusionData
-                                                        }
-                                                    />
-                                                </TableCell>
+                                                </TableCell> */}
                                             </>
                                         )}
                                         <TableCell component="th" scope="row">
                                             {row.caseId}
                                         </TableCell>
                                         <TableCell align="left">
-                                            {row.confirmedDate}
+                                            {row.confirmationDate}
                                         </TableCell>
                                         <TableCell
                                             align="left"
                                             sx={{ minWidth: 100 }}
                                         >
-                                            {row.admin3}
+                                            {row.caseStatus}
                                         </TableCell>
                                         <TableCell
                                             align="left"
                                             sx={{ minWidth: 100 }}
                                         >
-                                            {row.admin2}
-                                        </TableCell>
-                                        <TableCell
-                                            align="left"
-                                            sx={{ minWidth: 100 }}
-                                        >
-                                            {row.admin1}
-                                        </TableCell>
-                                        <TableCell align="left">
                                             {row.country}
                                         </TableCell>
-                                        <TableCell align="left">
-                                            {row.latitude}
+                                        <TableCell
+                                            align="left"
+                                            sx={{ minWidth: 100 }}
+                                        >
+                                            {row.city}
                                         </TableCell>
-                                        <TableCell align="left">
-                                            {row.longitude}
-                                        </TableCell>
-                                        <TableCell align="left">
-                                            {row.nationality
-                                                ? row.nationality.join(', ')
-                                                : ''}
+                                        <TableCell
+                                            align="left"
+                                            sx={{ minWidth: 100 }}
+                                        >
+                                            {row.location}
                                         </TableCell>
                                         <TableCell
                                             align="left"
@@ -536,19 +498,19 @@ const LinelistTable = () => {
                 </Table>
             </Stack>
 
-            <CaseIncludeDialog
+            {/* <CaseIncludeDialog
                 isOpen={reincludeCasesDialogOpen}
                 onClose={() => dispatch(setReincludeCasesDialogOpen(false))}
                 caseIds={rowsAcrossPagesSelected ? undefined : casesSelected}
                 query={rowsAcrossPagesSelected ? searchQuery : undefined}
-            />
+            /> */}
 
-            <CaseExcludeDialog
+            {/* <CaseExcludeDialog
                 isOpen={excludeCasesDialogOpen}
                 onClose={() => dispatch(setExcludeCasesDialogOpen(false))}
                 caseIds={rowsAcrossPagesSelected ? undefined : casesSelected}
                 query={rowsAcrossPagesSelected ? searchQuery : undefined}
-            />
+            /> */}
 
             <CaseDeleteDialog
                 isOpen={deleteCasesDialogOpen}

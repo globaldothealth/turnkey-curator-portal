@@ -1,24 +1,18 @@
-import React from 'react';
-import {
-    DateField,
-    FormikAutocomplete,
-    SelectField,
-} from '../common-form-fields/FormikFields';
-import { FieldArray, useFormikContext } from 'formik';
+import { DateField, SelectField } from '../common-form-fields/FormikFields';
+import { FastField, useFormikContext } from 'formik';
 
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import Button from '@mui/material/Button';
-import CancelIcon from '@mui/icons-material/Cancel';
-import CaseFormValues from './CaseFormValues';
 import FieldTitle from '../common-form-fields/FieldTitle';
-import Location from './Location';
-import { PlacesAutocomplete } from './LocationForm';
 import { StyledTooltip } from './StyledTooltip';
 import Scroll from 'react-scroll';
 import makeStyles from '@mui/styles/makeStyles';
-import shortId from 'shortid';
+import { ParsedCase } from '../../api/models/Day0Case';
+import { format } from 'date-fns';
+import { TextField } from 'formik-mui';
+import { useStyles } from './styled';
+import clsx from 'clsx';
+import { toUTCDate } from '../util/date';
 
-const useStyles = makeStyles(() => ({
+const styles = makeStyles(() => ({
     travelLocationTitle: {
         alignItems: 'center',
         display: 'flex',
@@ -34,339 +28,119 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const hasTravelledValues = ['Unknown', 'Yes', 'No'];
-
-// If changing this list, also modify https://github.com/globaldothealth/list/blob/main/data-serving/data-service/api/openapi.yaml
-const travelPurposes = ['Unknown', 'Business', 'Leisure', 'Family', 'Other'];
-
-const travelMethods = [
-    'Bus',
-    'Car',
-    'Coach',
-    'Ferry',
-    'Plane',
-    'Train',
-    'Other',
-];
+const hasTravelledValues = ['Y', 'N', 'NA'];
 
 const TooltipText = () => (
     <StyledTooltip>
         <ul>
             <li>
-                <strong>Travelled in the last 30 days:</strong> Enter if the
-                source reports the case travelled in the 30 days prior to
-                confirmation.
+                <strong>Travel history:</strong> Whether individual has travel
+                history, domestic and/or international (Y=Yes, N=No, NA=Not
+                applicable).
                 <ul>
                     <li>
                         If you select yes then you will be able to fill in more
-                        details as to the location and details of the travel,
-                        duration and purpose.
+                        details as to the location and details of the travel.{' '}
                     </li>
                     <li>
                         If the source does not provide information on if the
-                        case traveled in the previous 30 days select unknown.
+                        case traveled select unknown.
                     </li>
                 </ul>
             </li>
             <li>
-                <strong>Add travel location:</strong> Enter the location of
-                travel for each reported destination.
-                <ul>
-                    <li>
-                        Location is entered using the same rules as location for
-                        the case, allowing a depth of location to Admin level 1,
-                        2 or 3. Enter the level of depth the source provides.
-                    </li>
-                    <li>
-                        If no specific location information is provided do not
-                        add a travel location but complete the 'Travelled in the
-                        last 30 days' field as 'yes'.
-                    </li>
-                </ul>
+                <strong>Travel history entry:</strong> Date when individual
+                entered the country.
             </li>
             <li>
-                <strong>Start date:</strong> Enter the date travel at the
-                location started
+                <strong>Travel history start:</strong> Free text describing
+                travel.
             </li>
             <li>
-                <strong>End date:</strong> Enter the date travel at the location
-                ended
+                <strong>Travel history location:</strong> Last known location
+                where individual had travelled from.
             </li>
             <li>
-                <strong>Primary reason for travel:</strong> Enter the primary
-                reason for travel:
-                <ul>
-                    <li>
-                        <strong>Business:</strong> The case was traveling on
-                        business
-                    </li>
-                    <li>
-                        <strong>Lesiure:</strong> The case was traveling for
-                        leisure purposes e.g. holiday
-                    </li>
-                    <li>
-                        <strong>Family:</strong> The case was traveling to meet
-                        family
-                    </li>
-                    <li>
-                        <strong>Other:</strong> Another reason for travel
-                    </li>
-                    <li>
-                        <strong>Unknown:</strong> The reason for travel was not
-                        reported or unknown
-                    </li>
-                </ul>
-            </li>
-            <li>
-                <strong>Methods of travel:</strong> Enter the method for travel
-                if known:
-                <ul>
-                    <li>Bus</li>
-                    <li>Car</li>
-                    <li>Coach</li>
-                    <li>Ferry</li>
-                    <li>Plane</li>
-                    <li>Train</li>
-                    <li>Other</li>
-                </ul>
+                <strong>Travel history country:</strong> Last known country
+                where individual had travelled from.
             </li>
         </ul>
     </StyledTooltip>
 );
 
-export default function Events(): JSX.Element {
-    const { values, initialValues, setValues } =
-        useFormikContext<CaseFormValues>();
-    const classes = useStyles();
-
-    const getDate = (index: number, startDate: boolean) => {
-        const dateRange = values.travelHistory[index].dateRange;
-        if (!dateRange) return null;
-
-        const date = startDate ? dateRange.start : dateRange.end;
-
-        return date ? date : null;
-    };
+export default function TravelHistory(): JSX.Element {
+    const { values, initialValues, setValues } = useFormikContext<ParsedCase>();
+    const classes = styles();
+    const globalClasses = useStyles();
 
     return (
         <Scroll.Element name="travelHistory">
-            <FieldTitle
-                title="Travel History"
-                tooltip={<TooltipText />}
-            ></FieldTitle>
+            <FieldTitle title="Travel History" tooltip={<TooltipText />} />
             <SelectField
-                name={`traveledPrior30Days`}
-                label="Travelled in the last 30 days"
+                name="travelHistory"
+                label="Travel history"
                 values={hasTravelledValues}
-            ></SelectField>
-            {values.traveledPrior30Days === 'Yes' && (
-                <FieldArray name="travelHistory">
-                    {({ push, remove }): JSX.Element => {
-                        return (
-                            <div>
-                                {values.travelHistory &&
-                                    values.travelHistory.map(
-                                        (travelHistoryElement, index) => {
-                                            return (
-                                                <div
-                                                    key={
-                                                        travelHistoryElement.reactId
-                                                    }
-                                                    data-testid={
-                                                        'travel-history-section'
-                                                    }
-                                                >
-                                                    <div
-                                                        className={
-                                                            classes.travelLocationTitle
-                                                        }
-                                                    >
-                                                        {`Travel location ${
-                                                            index + 1
-                                                        }`}
-                                                        <span
-                                                            className={
-                                                                classes.spacer
-                                                            }
-                                                        ></span>
-                                                        <Button
-                                                            startIcon={
-                                                                <CancelIcon />
-                                                            }
-                                                            data-testid={
-                                                                'remove-travel-history-button'
-                                                            }
-                                                            onClick={(): void => {
-                                                                remove(index);
-                                                            }}
-                                                        >
-                                                            Remove
-                                                        </Button>
-                                                    </div>
-                                                    <PlacesAutocomplete
-                                                        initialValue={
-                                                            initialValues
-                                                                .travelHistory[
-                                                                index
-                                                            ]?.location?.name
-                                                        }
-                                                        name={`travelHistory[${index}].location`}
-                                                    ></PlacesAutocomplete>
-                                                    {travelHistoryElement.location && (
-                                                        <Location
-                                                            locationPath={`travelHistory[${index}].location`}
-                                                            geometry={
-                                                                values
-                                                                    .travelHistory[
-                                                                    index
-                                                                ]?.location
-                                                                    ?.geometry
-                                                            }
-                                                        ></Location>
-                                                    )}
-                                                    <div
-                                                        className={
-                                                            classes.fieldRowTop
-                                                        }
-                                                    >
-                                                        <DateField
-                                                            name={`travelHistory[${index}].dateRange.start`}
-                                                            label="Start date"
-                                                            value={getDate(
-                                                                index,
-                                                                true,
-                                                            )}
-                                                            onChange={(
-                                                                newValue,
-                                                            ) => {
-                                                                const reactId =
-                                                                    values
-                                                                        .travelHistory[
-                                                                        index
-                                                                    ].reactId;
-
-                                                                const newTravelHistory =
-                                                                    values.travelHistory.map(
-                                                                        (
-                                                                            element,
-                                                                        ) =>
-                                                                            element.reactId ===
-                                                                            reactId
-                                                                                ? {
-                                                                                      ...element,
-                                                                                      dateRange:
-                                                                                          {
-                                                                                              ...element.dateRange,
-                                                                                              start: newValue as string,
-                                                                                          },
-                                                                                  }
-                                                                                : element,
-                                                                    );
-
-                                                                setValues({
-                                                                    ...values,
-                                                                    travelHistory:
-                                                                        newTravelHistory,
-                                                                });
-                                                            }}
-                                                            initialFocusedDate={
-                                                                values.confirmedDate
-                                                            }
-                                                        ></DateField>
-                                                    </div>
-                                                    <DateField
-                                                        name={`travelHistory[${index}].dateRange.end`}
-                                                        label="End date"
-                                                        // eslint-disable-next-line
-                                                        value={getDate(
-                                                            index,
-                                                            false,
-                                                        )}
-                                                        onChange={(
-                                                            newValue,
-                                                        ) => {
-                                                            const reactId =
-                                                                values
-                                                                    .travelHistory[
-                                                                    index
-                                                                ].reactId;
-
-                                                            const newTravelHistory =
-                                                                values.travelHistory.map(
-                                                                    (element) =>
-                                                                        element.reactId ===
-                                                                        reactId
-                                                                            ? {
-                                                                                  ...element,
-                                                                                  dateRange:
-                                                                                      {
-                                                                                          ...element.dateRange,
-                                                                                          end: newValue as string,
-                                                                                      },
-                                                                              }
-                                                                            : element,
-                                                                );
-
-                                                            setValues({
-                                                                ...values,
-                                                                travelHistory:
-                                                                    newTravelHistory,
-                                                            });
-                                                        }}
-                                                        initialFocusedDate={
-                                                            values.confirmedDate
-                                                        }
-                                                    ></DateField>
-                                                    <SelectField
-                                                        name={`travelHistory[${index}].purpose`}
-                                                        label="Primary reason for travel"
-                                                        values={travelPurposes}
-                                                    ></SelectField>
-                                                    <div
-                                                        className={
-                                                            classes.fieldRow
-                                                        }
-                                                    >
-                                                        <FormikAutocomplete
-                                                            name={`travelHistory[${index}].methods`}
-                                                            label="Methods of travel"
-                                                            initialValue={
-                                                                initialValues
-                                                                    .travelHistory[
-                                                                    index
-                                                                ]?.methods
-                                                            }
-                                                            multiple
-                                                            freeSolo
-                                                            optionsList={
-                                                                travelMethods
-                                                            }
-                                                        />
-                                                    </div>
-                                                </div>
-                                            );
-                                        },
-                                    )}
-
-                                <Button
-                                    data-testid="addTravelHistory"
-                                    startIcon={<AddCircleIcon />}
-                                    onClick={(): void => {
-                                        push({
-                                            reactId: shortId.generate(),
-                                            dateRange: {
-                                                start: null,
-                                                end: null,
-                                            },
-                                        });
-                                    }}
-                                >
-                                    Add travel location
-                                </Button>
-                            </div>
-                        );
-                    }}
-                </FieldArray>
+            />
+            {values.travelHistory === 'Y' && (
+                <>
+                    <DateField
+                        name="travelHistoryEntry"
+                        label="Travel history entry"
+                        value={values.travelHistoryEntry}
+                        onChange={(newValue) => {
+                            setValues({
+                                ...values,
+                                travelHistoryEntry: toUTCDate(
+                                    newValue
+                                        ? newValue.toDateString()
+                                        : undefined,
+                                ),
+                            });
+                        }}
+                    />
+                    <div
+                        className={clsx([
+                            globalClasses.fieldRow,
+                            globalClasses.halfWidth,
+                        ])}
+                    >
+                        <FastField
+                            name="travelHistoryStart"
+                            type="text"
+                            label="Travel history start"
+                            component={TextField}
+                            fullWidth
+                        />
+                    </div>
+                    <div
+                        className={clsx([
+                            globalClasses.fieldRow,
+                            globalClasses.halfWidth,
+                        ])}
+                    >
+                        <FastField
+                            name="travelHistoryLocation"
+                            type="text"
+                            label="Travel history location"
+                            component={TextField}
+                            fullWidth
+                        />
+                    </div>
+                    <div
+                        className={clsx([
+                            globalClasses.fieldRow,
+                            globalClasses.halfWidth,
+                        ])}
+                    >
+                        <FastField
+                            name="travelHistoryCountry"
+                            type="text"
+                            label="Travel history country"
+                            component={TextField}
+                            fullWidth
+                        />
+                    </div>
+                </>
             )}
         </Scroll.Element>
     );
