@@ -4,22 +4,8 @@ import FieldTitle from '../common-form-fields/FieldTitle';
 import { StyledTooltip } from './StyledTooltip';
 import Scroll from 'react-scroll';
 import { TextField } from 'formik-mui';
-import makeStyles from '@mui/styles/makeStyles';
 import { useStyles } from './styled';
 import clsx from 'clsx';
-
-const styles = makeStyles(() => ({
-    genomeSequenceTitle: {
-        alignItems: 'center',
-        display: 'flex',
-    },
-    spacer: {
-        flex: '1',
-    },
-    field: {
-        marginBottom: '2em',
-    },
-}));
 
 const TooltipText = () => (
     <StyledTooltip>
@@ -45,7 +31,6 @@ const TooltipText = () => (
 );
 
 export default function GenomeSequences(): JSX.Element {
-    const classes = styles();
     const globalClasses = useStyles();
 
     return (

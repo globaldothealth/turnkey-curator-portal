@@ -388,7 +388,7 @@ export class CasesController {
                 res.status(422).json({ message: e.message });
                 return;
             }
-            logger.error(`non-parsing error for query:`);
+            logger.error('non-parsing error for query:');
             logger.error(req.query);
             logger.error(e);
             res.status(500).json(e);
@@ -486,6 +486,12 @@ export class CasesController {
         }
         return errors;
     };
+
+    /**
+     * Batch validate cases with day 0 schema
+     * This is a temp function, once the API will use Day 0 schema
+     * it should substitute the above function
+     */
 
     /**
      * Perform geocoding for each case (of multiple `cases` specified in the

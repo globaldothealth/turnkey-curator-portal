@@ -1,5 +1,3 @@
-//@TODO
-
 import React, { RefObject } from 'react';
 import {
     Button,

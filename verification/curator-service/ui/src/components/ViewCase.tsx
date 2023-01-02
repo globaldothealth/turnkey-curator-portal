@@ -290,19 +290,6 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                         </Link>
                     )}
                 </Typography>
-                {/* @TODO check whether excluding cases is still needed in the new tunrkey system */}
-                {/* {(props.c.caseReference.verificationStatus ===
-                    VerificationStatus.Excluded ||
-                    props.c.isSourceExcluded) && (
-                    <MuiAlert
-                        classes={{ root: classes.alert }}
-                        variant="outlined"
-                        severity="error"
-                    >
-                        This case is excluded. That means it's ignored in the
-                        automated ingestion process
-                    </MuiAlert>
-                )} */}
                 <Paper className={classes.paper} variant="outlined" square>
                     <Scroll.Element
                         name="case-data"

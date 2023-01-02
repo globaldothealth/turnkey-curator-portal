@@ -4,29 +4,11 @@ import { FastField, useFormikContext } from 'formik';
 import FieldTitle from '../common-form-fields/FieldTitle';
 import { StyledTooltip } from './StyledTooltip';
 import Scroll from 'react-scroll';
-import makeStyles from '@mui/styles/makeStyles';
 import { ParsedCase } from '../../api/models/Day0Case';
-import { format } from 'date-fns';
 import { TextField } from 'formik-mui';
 import { useStyles } from './styled';
 import clsx from 'clsx';
 import { toUTCDate } from '../util/date';
-
-const styles = makeStyles(() => ({
-    travelLocationTitle: {
-        alignItems: 'center',
-        display: 'flex',
-    },
-    spacer: {
-        flex: '1',
-    },
-    fieldRow: {
-        marginBottom: '2em',
-    },
-    fieldRowTop: {
-        marginTop: '2em',
-    },
-}));
 
 const hasTravelledValues = ['Y', 'N', 'NA'];
 
@@ -69,8 +51,7 @@ const TooltipText = () => (
 );
 
 export default function TravelHistory(): JSX.Element {
-    const { values, initialValues, setValues } = useFormikContext<ParsedCase>();
-    const classes = styles();
+    const { values, setValues } = useFormikContext<ParsedCase>();
     const globalClasses = useStyles();
 
     return (

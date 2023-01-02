@@ -124,6 +124,7 @@ const linelistTableSlice = createSlice({
             state.rowsAcrossPagesSelected = false;
             if (updatedIds) {
                 state.cases = state.cases.map((data) =>
+                    // eslint-disable-next-line
                     updatedIds.includes(data.id!)
                         ? {
                               ...data,

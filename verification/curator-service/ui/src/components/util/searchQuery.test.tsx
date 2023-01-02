@@ -5,6 +5,7 @@ import {
     URLToFilters,
 } from './searchQuery';
 import { FilterFormValues } from '../FiltersDialog';
+import { Gender, Outcome } from '../../api/models/Day0Case';
 
 describe('Search query - string to url', () => {
     it('converts given string to url search parameters', () => {
@@ -16,8 +17,8 @@ describe('Search query - string to url', () => {
     it('converts filter keywords - values object to url search parameters', () => {
         const testFilters: FilterFormValues = {
             country: 'France',
-            gender: 'Female',
-            outcome: 'Recovered',
+            gender: Gender.Female,
+            outcome: Outcome.Recovered,
         };
         expect(filtersToURL(testFilters)).toEqual(
             'country=France&gender=Female&outcome=Recovered',
@@ -51,7 +52,7 @@ describe('Search query - url to string', () => {
     it('converts url search parameters to filters object', () => {
         const testResponse: FilterFormValues = {
             country: 'France',
-            gender: 'Female',
+            gender: Gender.Female,
         };
 
         expect(URLToFilters('?country=France&gender=Female')).toEqual(

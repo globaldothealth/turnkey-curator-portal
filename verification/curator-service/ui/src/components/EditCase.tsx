@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from 'react';
-
-import { Case } from '../api/models/Case';
+import { useEffect, useState } from 'react';
 import CaseForm from './CaseForm';
 import { LinearProgress } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';

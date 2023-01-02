@@ -1,0 +1,20 @@
+[
+  {
+    "ID": "123456789",
+    "Case_status": "confirmed",
+    "Date_entry": {
+      "$date": {
+        "$numberLong": "1578891600000"
+      }
+    },
+    "Date_last_modified": {
+      "$date": {
+        "$numberLong": "1578891600000"
+      }
+    },
+    "Source": "https://www.colorado.gov/pacific/cdphe/news/10-new-presumptive-positive-cases-colorado-cdphe-confirms-limited-community-spread-covid-19",
+    "Country": "Poland",
+    "Country_ISO3": "POL",
+    "Pathogen": "COVID-19"
+  }
+]

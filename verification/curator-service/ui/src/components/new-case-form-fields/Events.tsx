@@ -6,7 +6,6 @@ import Scroll from 'react-scroll';
 import { FastField, useFormikContext } from 'formik';
 import { TextField } from 'formik-mui';
 import { Outcome, ParsedCase } from '../../api/models/Day0Case';
-import { format } from 'date-fns';
 import { useStyles } from './styled';
 import clsx from 'clsx';
 import { toUTCDate } from '../util/date';

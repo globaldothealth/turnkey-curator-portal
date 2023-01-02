@@ -30,10 +30,10 @@ export enum Outcome {
 
 export interface Day0Case {
     // GENERAL
-    ID?: string; // ID
-    Case_status: CaseStatus; // caseStatus
-    Date_entry: string | null; // entryDate
-    Date_last_modified: string; // lastModifiedDate
+    ID?: string;
+    Case_status: CaseStatus;
+    Date_entry: string | null;
+    Date_last_modified: string;
 
     // SOURCE
     Source: string; // source
@@ -45,73 +45,72 @@ export interface Day0Case {
     Source_VII?: string;
 
     // DEMOGRAPHICS
-    // @TODO: implement age as an integer range
-    Age?: string; // age
-    Gender?: Gender; // gender
-    Occupation?: string; // occupation
-    Healthcare_worker?: YesNo; // healthcareWorker
+    Age?: string;
+    Gender?: Gender;
+    Occupation?: string;
+    Healthcare_worker?: YesNo;
 
     // LOCATION
-    Country: string; // country
-    Country_ISO3: string; // countryISO3
-    Location?: string; // location
-    City?: string; // city
+    Country: string;
+    Country_ISO3: string;
+    Location?: string;
+    City?: string;
 
     // EVENTS
-    Date_onset?: string | null; // symptomsOnsetDate
-    Date_confirmation?: string | null; // confirmationDate
-    Confirmation_method?: string; // confirmationMethod
-    Date_of_first_consult?: string | null; // firstConsultDate
-    Hospitalized?: YesNo; // hospitalized
-    'Reason for hospitalition'?: HospitalizationReason; // hospitalizationReason
-    Date_hospitalization?: string | null; // hospitalizationDate
-    Date_discharge_hospital?: string | null; // hospitalDischargeDate
-    Intensive_care?: YesNo; // intensiveCare
-    Date_admission_ICU?: string | null; // ICUAdmissionDate
-    Date_discharge_ICU?: string | null; // ICUDischargeDate
-    Home_monitoring?: YesNo; // homeMonitoring
-    Isolated?: YesNo; // isolated
-    Date_isolation?: string | null; // isolationDate
-    Outcome?: Outcome; //outcome
-    Date_death?: string | null; // deathDate
-    Date_recovered?: string | null; // recoveredDate
+    Date_onset?: string | null;
+    Date_confirmation?: string | null;
+    Confirmation_method?: string;
+    Date_of_first_consult?: string | null;
+    Hospitalized?: YesNo;
+    'Reason for hospitalition'?: HospitalizationReason;
+    Date_hospitalization?: string | null;
+    Date_discharge_hospital?: string | null;
+    Intensive_care?: YesNo;
+    Date_admission_ICU?: string | null;
+    Date_discharge_ICU?: string | null;
+    Home_monitoring?: YesNo;
+    Isolated?: YesNo;
+    Date_isolation?: string | null;
+    Outcome?: Outcome;
+    Date_death?: string | null;
+    Date_recovered?: string | null;
 
     // SYMPTOPMS
     Symptoms?: string;
 
     // PRE-EXISTING CONDITIONS
-    Previous_infection?: YesNo; // previousInfection
-    Co_infection?: string; // coInfection
-    Pre_existing_condition?: string; // preexistingCondition
-    Pregnancy_status?: YesNo; // pregnancyStatus
+    Previous_infection?: YesNo;
+    Co_infection?: string;
+    Pre_existing_condition?: string;
+    Pregnancy_status?: YesNo;
 
     // TRANSMISSION
-    Contact_with_case?: YesNo; // contactWithCase
-    Contact_ID?: string; // contactID
-    Contact_setting?: string; // contactSetting
-    Contact_animal?: string; // contactAnimal
-    Contact_comment?: string; // contactComment
-    Transmission?: string; // transmission
+    Contact_with_case?: YesNo;
+    Contact_ID?: string;
+    Contact_setting?: string;
+    Contact_animal?: string;
+    Contact_comment?: string;
+    Transmission?: string;
 
     // TRAVEL HISTORY
-    Travel_history?: YesNo; // travelHistory
-    Travel_history_entry?: string; // travelHistoryEntry
-    Travel_history_start?: string; // travelHistoryStart
-    Travel_history_location?: string; // travelHistoryLocation
-    Travel_history_country?: string; // travelHistoryCountry
+    Travel_history?: YesNo;
+    Travel_history_entry?: string;
+    Travel_history_start?: string;
+    Travel_history_location?: string;
+    Travel_history_country?: string;
 
     // GENOME SEQUENCES
-    Genomics_Metadata?: string; // genomicsMetadata
-    'Accession Number'?: string; // accessionNumber
+    Genomics_Metadata?: string;
+    'Accession Number'?: string;
 
     // PATHOGENS
-    Pathogen: string; // pathogen
+    Pathogen: string;
 
     // VACCINATION
-    Vaccination?: YesNo; // vaccination
-    Vaccine_name?: string; // vaccineName
-    Vaccine_date?: string | null; // vaccineDate
-    Vaccine_side_effects?: string; // vaccineSideEffects
+    Vaccination?: YesNo;
+    Vaccine_name?: string;
+    Vaccine_date?: string | null;
+    Vaccine_side_effects?: string;
 
     [key: string]:
         | HospitalizationReason
@@ -186,5 +185,6 @@ export interface ParsedCase {
     sourceVII?: string;
     entryDate: string | null;
     lastModifiedDate: string | null;
+    // eslint-disable-next-line
     [key: string]: any;
 }

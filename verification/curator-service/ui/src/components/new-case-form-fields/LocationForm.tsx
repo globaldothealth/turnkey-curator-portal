@@ -18,9 +18,7 @@ import { StyledTooltip } from './StyledTooltip';
 import axios from 'axios';
 import { hasKey } from '../Utils';
 import throttle from 'lodash/throttle';
-import { Day0Case, ParsedCase } from '../../api/models/Day0Case';
-
-// @TODO
+import { ParsedCase } from '../../api/models/Day0Case';
 
 const TooltipText = () => (
     <StyledTooltip>

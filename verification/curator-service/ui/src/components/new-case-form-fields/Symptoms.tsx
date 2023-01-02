@@ -19,9 +19,6 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-// @TODO
-// If changing this list, also modify https://github.com/globaldothealth/list/blob/main/data-serving/data-service/api/openapi.yaml
-
 const TooltipText = () => (
     <StyledTooltip>
         <ul>

@@ -7,7 +7,6 @@ import { AutomatedSourceFormValues } from '../AutomatedSourceForm';
 import BulkCaseFormValues from '../bulk-case-form-fields/BulkCaseFormValues';
 import FormControl from '@mui/material/FormControl';
 import { FormHelperText } from '@mui/material';
-import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';

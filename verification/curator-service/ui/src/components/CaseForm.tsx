@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 
 import { Button, LinearProgress, Typography } from '@mui/material';
-import { FastField, Form, Formik } from 'formik';
+import { Form, Formik } from 'formik';
 import { Paper } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { green, grey, red } from '@mui/material/colors';
@@ -27,8 +27,7 @@ import { hasKey } from './Utils';
 import { useHistory } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import { CaseStatus, ParsedCase, Day0Case } from '../api/models/Day0Case';
-import TextField from '@mui/material/TextField';
+import { ParsedCase, Day0Case } from '../api/models/Day0Case';
 import { toUTCDate } from './util/date';
 import axios from 'axios';
 import Source from './common-form-fields/Source';
@@ -225,7 +224,9 @@ export default function CaseForm(props: Props): JSX.Element {
         const newCase: Day0Case = {
             Case_status: values.caseStatus,
             Date_entry:
+                // eslint-disable-next-line
                 values.entryDate || toUTCDate(new Date().toDateString())!,
+            // eslint-disable-next-line
             Date_last_modified: toUTCDate(new Date().toDateString())!,
             Source: values.caseReference.inputValue,
             Source_II: values.sourceII,
@@ -359,7 +360,9 @@ export default function CaseForm(props: Props): JSX.Element {
         requiredValues,
         optionalValues,
     }: {
+        // eslint-disable-next-line
         requiredValues?: any[];
+        // eslint-disable-next-line
         optionalValues?: any[];
     }): boolean => {
         // When there are no required values provided check whether any of optional values is valid

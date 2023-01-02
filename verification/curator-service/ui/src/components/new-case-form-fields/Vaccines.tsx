@@ -4,10 +4,8 @@ import FieldTitle from '../common-form-fields/FieldTitle';
 import { StyledTooltip } from './StyledTooltip';
 import Scroll from 'react-scroll';
 import { TextField } from 'formik-mui';
-import makeStyles from '@mui/styles/makeStyles';
 import { VaccineSideEffects } from './Symptoms';
 import { ParsedCase } from '../../api/models/Day0Case';
-import { format } from 'date-fns';
 import { useStyles } from './styled';
 import clsx from 'clsx';
 import { toUTCDate } from '../util/date';
@@ -33,23 +31,8 @@ const TooltipText = () => (
     </StyledTooltip>
 );
 
-const styles = makeStyles(() => ({
-    vaccineTitle: {
-        alignItems: 'left',
-    },
-    spacer: {
-        flex: '1',
-    },
-    field: {
-        marginBottom: '1em',
-        marginLeft: '1em',
-        marginRight: '1em',
-    },
-}));
-
 export default function Vaccines(): JSX.Element {
     const { values, setValues } = useFormikContext<ParsedCase>();
-    const classes = styles();
     const globalClasses = useStyles();
 
     return (

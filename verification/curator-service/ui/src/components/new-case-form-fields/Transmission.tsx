@@ -1,27 +1,15 @@
-import makeStyles from '@mui/styles/makeStyles';
 import FieldTitle from '../common-form-fields/FieldTitle';
 import { StyledTooltip } from './StyledTooltip';
 import {
     FormikAutocomplete,
     SelectField,
 } from '../common-form-fields/FormikFields';
-import React from 'react';
 import Scroll from 'react-scroll';
-import axios from 'axios';
 import { FastField, useFormikContext } from 'formik';
 import { ParsedCase } from '../../api/models/Day0Case';
 import { TextField } from 'formik-mui';
 import { useStyles } from './styled';
 import clsx from 'clsx';
-
-const styles = makeStyles(() => ({
-    chip: {
-        margin: '0.5em',
-    },
-    section: {
-        marginBottom: '1em',
-    },
-}));
 
 const TooltipText = () => (
     <StyledTooltip>
@@ -35,7 +23,6 @@ const TooltipText = () => (
                 <strong>Contact ID:</strong> If specified, is the case ID from
                 which this patient contracted the virus.
             </li>
-            {/* @TODO */}
             <li>
                 <strong>Contact setting:</strong> Setting where contact occurred
                 that led to transmission.
@@ -48,7 +35,6 @@ const TooltipText = () => (
                 <strong>Contact comment:</strong> Free text describing any
                 additional contact information.
             </li>
-            {/* @TODO */}
             <li>
                 <strong>Transmission:</strong> Setting where contact occurred
                 that led to transmission.
@@ -58,26 +44,8 @@ const TooltipText = () => (
 );
 
 export default function Transmission(): JSX.Element {
-    const { setFieldValue, initialValues, values } =
-        useFormikContext<ParsedCase>();
-    const [commonPlacesOfTransmission, setCommonPlacesOfTransmission] =
-        React.useState([]);
-    const classes = styles();
+    const { initialValues } = useFormikContext<ParsedCase>();
     const globalClasses = useStyles();
-
-    React.useEffect(
-        () => {
-            axios
-                .get('/api/cases/placesOfTransmission?limit=5')
-                .then((response) =>
-                    setCommonPlacesOfTransmission(
-                        response.data.placesOfTransmission ?? [],
-                    ),
-                );
-        },
-        // Using [] here means this will only be called once at the beginning of the lifecycle
-        [],
-    );
 
     return (
         <Scroll.Element name="transmission">

@@ -3,8 +3,6 @@ import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import {
     setExcludeCasesDialogOpen,
     setDeleteCasesDialogOpen,
-    setReincludeCasesDialogOpen,
-    setVerificationStatus,
     setRowsAcrossPagesSelected,
     setCasesSelected,
 } from '../../redux/linelistTable/slice';
@@ -47,49 +45,6 @@ const EnhancedTableToolbar = () => {
         setNumSelectedCases(selectedCases.length);
     }, [selectedCases]);
 
-    // const handleActionClick = (action: Actions) => {
-    //     // Check if any of the selected cases is excluded
-    //     const excludedCases: string[] = [];
-    //     cases.forEach((caseObj) => {
-    //         if (
-    //             selectedCases.includes(caseObj._id) &&
-    //             caseObj.caseReference.verificationStatus ===
-    //                 VerificationStatus.Excluded
-    //         ) {
-    //             excludedCases.push(caseObj._id);
-    //         }
-    //     });
-
-    //     let verificationStatus: VerificationStatus;
-
-    //     switch (action) {
-    //         case Actions.Verify:
-    //             verificationStatus = VerificationStatus.Verified;
-    //             break;
-
-    //         case Actions.Unverify:
-    //             verificationStatus = VerificationStatus.Unverified;
-    //             break;
-    //     }
-
-    //     if (excludedCases.length !== 0) {
-    //         dispatch(setReincludeCasesDialogOpen(true));
-    //         dispatch(setVerificationStatus(verificationStatus));
-    //     } else {
-    //         dispatch(
-    //             changeCasesStatus({
-    //                 status: verificationStatus,
-    //                 caseIds: rowsAcrossPagesSelected
-    //                     ? undefined
-    //                     : selectedCases,
-    //                 query: rowsAcrossPagesSelected
-    //                     ? decodeURIComponent(searchQuery)
-    //                     : undefined,
-    //             }),
-    //         );
-    //     }
-    // };
-
     const handleSelectAllRowsAcrossPagesClick = () => {
         if (rowsAcrossPagesSelected || numSelectedCases === totalCases) {
             dispatch(setRowsAcrossPagesSelected(false));
@@ -97,6 +52,7 @@ const EnhancedTableToolbar = () => {
             setNumSelectedCases(0);
         } else {
             dispatch(setRowsAcrossPagesSelected(cases.length < totalCases));
+            // eslint-disable-next-line
             dispatch(setCasesSelected(cases.map((caseObj) => caseObj.id!)));
             setNumSelectedCases(totalCases);
         }

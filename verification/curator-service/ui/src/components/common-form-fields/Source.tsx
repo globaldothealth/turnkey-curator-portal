@@ -6,7 +6,6 @@ import { Typography } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 
 import BulkCaseFormValues from '../bulk-case-form-fields/BulkCaseFormValues';
-import CaseFormValues from '../new-case-form-fields/CaseFormValues';
 import { CaseReference } from '../../api/models/Case';
 import FieldTitle from './FieldTitle';
 import React, { useState } from 'react';

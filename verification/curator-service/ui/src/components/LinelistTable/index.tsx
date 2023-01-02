@@ -4,10 +4,8 @@ import { fetchLinelistData } from '../../redux/linelistTable/thunk';
 import {
     setCurrentPage,
     setRowsPerPage,
-    setExcludeCasesDialogOpen,
     setCasesSelected,
     setDeleteCasesDialogOpen,
-    setReincludeCasesDialogOpen,
     setRowsAcrossPagesSelected,
 } from '../../redux/linelistTable/slice';
 import {
@@ -18,11 +16,9 @@ import {
     selectTotalCases,
     selectRowsPerPage,
     selectSort,
-    selectExcludeCasesDialogOpen,
     selectCasesSelected,
     selectDeleteCasesDialogOpen,
     selectRefetchData,
-    selectReincludeCasesDialogOpen,
     selectRowsAcrossPages,
 } from '../../redux/linelistTable/selectors';
 import { selectUser } from '../../redux/auth/selectors';
@@ -52,10 +48,7 @@ import { Helmet } from 'react-helmet';
 
 import Pagination from './Pagination';
 import EnhancedTableToolbar from './EnhancedTableToolbar';
-import { CaseExcludeDialog } from '../Dialogs/CaseExcludeDialog';
 import { CaseDeleteDialog } from '../Dialogs/CaseDeleteDialog';
-import { CaseIncludeDialog } from '../Dialogs/CaseIncludeDialog';
-import { ActionMenu } from './ActionMenu';
 
 const dataLimit = 10000;
 
@@ -79,12 +72,8 @@ const LinelistTable = () => {
     const rowsPerPage = useAppSelector(selectRowsPerPage);
     const sort = useAppSelector(selectSort);
     const user = useAppSelector(selectUser);
-    const excludeCasesDialogOpen = useAppSelector(selectExcludeCasesDialogOpen);
     const casesSelected = useAppSelector(selectCasesSelected);
     const deleteCasesDialogOpen = useAppSelector(selectDeleteCasesDialogOpen);
-    const reincludeCasesDialogOpen = useAppSelector(
-        selectReincludeCasesDialogOpen,
-    );
     const refetchData = useAppSelector(selectRefetchData);
     const rowsAcrossPagesSelected = useAppSelector(selectRowsAcrossPages);
 
@@ -497,20 +486,6 @@ const LinelistTable = () => {
                     </TableFooter>
                 </Table>
             </Stack>
-
-            {/* <CaseIncludeDialog
-                isOpen={reincludeCasesDialogOpen}
-                onClose={() => dispatch(setReincludeCasesDialogOpen(false))}
-                caseIds={rowsAcrossPagesSelected ? undefined : casesSelected}
-                query={rowsAcrossPagesSelected ? searchQuery : undefined}
-            /> */}
-
-            {/* <CaseExcludeDialog
-                isOpen={excludeCasesDialogOpen}
-                onClose={() => dispatch(setExcludeCasesDialogOpen(false))}
-                caseIds={rowsAcrossPagesSelected ? undefined : casesSelected}
-                query={rowsAcrossPagesSelected ? searchQuery : undefined}
-            /> */}
 
             <CaseDeleteDialog
                 isOpen={deleteCasesDialogOpen}
