@@ -6,6 +6,8 @@ import { Paper } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { green, grey, red } from '@mui/material/colors';
 
+import { selectDiseaseName } from '../redux/app/selectors';
+import { useAppSelector } from '../hooks/redux';
 import AppModal from './AppModal';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import Demographics from './new-case-form-fields/Demographics';
@@ -55,11 +57,11 @@ const FormSection = styled(Paper)(() => ({
     margin: '2em 0',
 }));
 
-const initialValuesFromCase = (c?: ParsedCase) => {
+const initialValuesFromCase = (pathogen: string, c?: ParsedCase) => {
     if (!c) {
         return {
             id: undefined,
-            pathogen: 'COVID-19',
+            pathogen,
             caseStatus: undefined,
             country: '',
             countryISO3: '',
@@ -211,11 +213,10 @@ export default function CaseForm(props: Props): JSX.Element {
     const showTableOfContents = useMediaQuery(theme.breakpoints.up('sm'));
     const history = useHistory();
     const [errorMessage, setErrorMessage] = React.useState('');
+    const diseaseName = useAppSelector(selectDiseaseName);
 
     const submitCase = async (values: ParsedCase): Promise<void> => {
-        console.log(values);
         if (!values.caseStatus) return;
-        console.log('Im here');
 
         const ageRange = values.age
             ? values.age
@@ -386,7 +387,7 @@ export default function CaseForm(props: Props): JSX.Element {
             onModalClose={props.onModalClose}
         >
             <Formik
-                initialValues={initialValuesFromCase(initialCase)}
+                initialValues={initialValuesFromCase(diseaseName, initialCase)}
                 validationSchema={NewCaseValidation}
                 // Validating on change slows down the form too much. It will
                 // validate on blur and form submission.
