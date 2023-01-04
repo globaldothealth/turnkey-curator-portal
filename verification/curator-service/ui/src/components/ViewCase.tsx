@@ -133,10 +133,6 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
         });
     };
 
-    // const isExcluded = () => {
-    //         return props.c.caseReference.verificationStatus || 'Unverified';
-    // };
-
     const searchedKeywords = useSelector(selectSearchQuery);
     const filtersBreadcrumb = useSelector(selectFilterBreadcrumbs);
 
@@ -276,7 +272,7 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                     Case {props.c.id}{' '}
                     {props.enableEdit && (
                         <Link
-                            to={`/cases/edit/${props.c.ID}`}
+                            to={`/cases/edit/${props.c.id}`}
                             style={{ textDecoration: 'none' }}
                         >
                             <Button
@@ -417,7 +413,7 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             <RowHeader title="Isolation" />
                             <RowContent content={props.c.isolated} />
 
-                            {props.c.Isolated === YesNo.Y && (
+                            {props.c.isolated === YesNo.Y && (
                                 <>
                                     <RowHeader title="Date of isolation" />
                                     <RowContent
@@ -431,7 +427,7 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             <RowHeader title="Hospital admission" />
                             <RowContent content={props.c.hospitalized} />
 
-                            {props.c.Hospitalized === YesNo.Y && (
+                            {props.c.hospitalized === YesNo.Y && (
                                 <>
                                     <RowHeader title="Hospital admission date" />
                                     <RowContent
@@ -445,7 +441,7 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             <RowHeader title="Intensive care" />
                             <RowContent content={props.c.intensiveCare} />
 
-                            {props.c.Intensive_care === YesNo.Y && (
+                            {props.c.intensiveCare === YesNo.Y && (
                                 <>
                                     <RowHeader title="Intensive care admission date" />
                                     <RowContent
@@ -466,7 +462,7 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             <RowHeader title="Outcome" />
                             <RowContent content={props.c.outcome} />
 
-                            {props.c.Outcome && (
+                            {props.c.outcome && (
                                 <>
                                     <RowHeader
                                         title={`Date of ${

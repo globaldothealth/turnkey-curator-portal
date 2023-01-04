@@ -1,8 +1,6 @@
 import { render, screen } from '../util/test-utils';
 import userEvent from '@testing-library/user-event';
-import FiltersDialog from './index';
 import App from '../App';
-import { MemoryRouter } from 'react-router-dom';
 import { format } from 'date-fns';
 import { initialLoggedInState } from '../../redux/store';
 import axios from 'axios';
@@ -74,11 +72,11 @@ describe('<FiltersDialog />', () => {
         date.setDate(date.getDate() + 1);
         const futureDate = format(date, 'yyyy-MM-dd');
 
-        const dateBeforeInput = screen.getByLabelText(/Date confirmed before/i);
-        const dateAfterInput = screen.getByLabelText(/Date confirmed after/i);
+        const toDateInput = screen.getByLabelText(/Date confirmed to/i);
+        const fromDateInput = screen.getByLabelText(/Date confirmed from/i);
 
-        await user.type(dateBeforeInput, futureDate);
-        await user.type(dateAfterInput, futureDate);
+        await user.type(toDateInput, futureDate);
+        await user.type(fromDateInput, futureDate);
 
         await user.click(screen.getByRole('button', { name: 'Apply' }));
 

@@ -112,8 +112,6 @@ export default function Events(): JSX.Element {
     const { values, setFieldValue } = useFormikContext<ParsedCase>();
     const classes = useStyles();
 
-    console.log(values);
-
     return (
         <Scroll.Element name="events">
             <FieldTitle

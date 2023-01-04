@@ -12,7 +12,7 @@ import { TextField } from 'formik-mui';
 import { StyledTooltip } from './StyledTooltip';
 import axios from 'axios';
 import makeStyles from '@mui/styles/makeStyles';
-import { ParsedCase } from '../../api/models/Day0Case';
+import { Gender, ParsedCase } from '../../api/models/Day0Case';
 import { useStyles } from './styled';
 
 const styles = makeStyles(() => ({
@@ -36,9 +36,6 @@ const styles = makeStyles(() => ({
         marginBottom: '1em',
     },
 }));
-
-// If changing this list, also modify https://github.com/globaldothealth/list/blob/main/data-serving/data-service/api/openapi.yaml
-const genderValues = ['Male', 'Female', 'Other'];
 
 const TooltipText = () => (
     <StyledTooltip>
@@ -103,7 +100,11 @@ export default function Demographics(): JSX.Element {
     return (
         <Scroll.Element name="demographics">
             <FieldTitle title="Demographics" tooltip={<TooltipText />} />
-            <SelectField name="gender" label="Gender" values={genderValues} />
+            <SelectField
+                name="gender"
+                label="Gender"
+                values={Object.values(Gender)}
+            />
             <div className={`${globalClasses.fieldRow} ${classes.ageRow}`}>
                 <FastField
                     className={classes.ageField}

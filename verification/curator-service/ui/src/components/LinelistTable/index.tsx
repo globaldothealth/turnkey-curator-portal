@@ -38,7 +38,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
 
-import { nameCountry } from '../util/countryNames';
 import renderDate from '../util/date';
 import { createData, labels } from './helperFunctions';
 import { LoaderContainer, StyledAlert } from './styled';
@@ -110,7 +109,7 @@ const LinelistTable = () => {
         cases.map((data) => {
             return createData(
                 data.id || '',
-                nameCountry(data.countryISO3),
+                data.country,
                 data.city,
                 data.location,
                 renderDate(data.confirmationDate || ''),
@@ -282,57 +281,37 @@ const LinelistTable = () => {
                         <TableHead>
                             <TableRow>
                                 {hasAnyRole(user, ['curator', 'admin']) && (
-                                    <>
-                                        <TableCell
-                                            padding="checkbox"
-                                            sx={{
-                                                backgroundColor: '#fff',
-                                            }}
-                                        >
-                                            <Checkbox
-                                                color="primary"
-                                                indeterminate={
-                                                    casesSelected.length > 0 &&
-                                                    casesSelected.length <
-                                                        rows.length
-                                                }
-                                                checked={
-                                                    rows.length > 0 &&
-                                                    casesSelected.length ===
-                                                        rows.length
-                                                }
-                                                onChange={handleSelectAllClick}
-                                                inputProps={{
-                                                    'aria-label':
-                                                        'select all cases',
-                                                }}
-                                            />
-                                        </TableCell>
-
-                                        {/* Empty table cell for actions menu */}
-                                        <TableCell
-                                            sx={{
-                                                backgroundColor: '#fff',
+                                    <TableCell
+                                        padding="checkbox"
+                                        sx={{
+                                            backgroundColor: '#fff',
+                                        }}
+                                    >
+                                        <Checkbox
+                                            color="primary"
+                                            indeterminate={
+                                                casesSelected.length > 0 &&
+                                                casesSelected.length <
+                                                    rows.length
+                                            }
+                                            checked={
+                                                rows.length > 0 &&
+                                                casesSelected.length ===
+                                                    rows.length
+                                            }
+                                            onChange={handleSelectAllClick}
+                                            inputProps={{
+                                                'aria-label':
+                                                    'select all cases',
                                             }}
                                         />
-
-                                        <TableCell
-                                            align="center"
-                                            sx={{
-                                                backgroundColor: '#fff',
-                                                fontWeight: 600,
-                                                whiteSpace: 'nowrap',
-                                            }}
-                                        >
-                                            Status
-                                        </TableCell>
-                                    </>
+                                    </TableCell>
                                 )}
 
                                 {labels.map((label) => (
                                     <TableCell
                                         key={label}
-                                        align="center"
+                                        align="left"
                                         sx={{
                                             backgroundColor: '#fff',
                                             fontWeight: 600,
@@ -385,27 +364,18 @@ const LinelistTable = () => {
                                                         }
                                                     />
                                                 </TableCell>
-
-                                                {/* <TableCell
-                                                    component="th"
-                                                    scope="row"
-                                                >
-                                                    <ActionMenu
-                                                        caseId={row.caseId}
-                                                    />
-                                                </TableCell> */}
                                             </>
                                         )}
-                                        <TableCell component="th" scope="row">
-                                            {row.caseId}
-                                        </TableCell>
                                         <TableCell align="left">
-                                            {row.confirmationDate}
+                                            {row.caseId}
                                         </TableCell>
                                         <TableCell
                                             align="left"
                                             sx={{ minWidth: 100 }}
                                         >
+                                            {row.confirmationDate}
+                                        </TableCell>
+                                        <TableCell component="th" scope="row">
                                             {row.caseStatus}
                                         </TableCell>
                                         <TableCell

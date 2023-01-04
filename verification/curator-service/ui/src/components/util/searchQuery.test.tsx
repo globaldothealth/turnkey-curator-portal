@@ -21,7 +21,7 @@ describe('Search query - string to url', () => {
             outcome: Outcome.Recovered,
         };
         expect(filtersToURL(testFilters)).toEqual(
-            'country=France&gender=Female&outcome=Recovered',
+            'country=France&gender=female&outcome=recovered',
         );
     });
 
@@ -55,7 +55,7 @@ describe('Search query - url to string', () => {
             gender: Gender.Female,
         };
 
-        expect(URLToFilters('?country=France&gender=Female')).toEqual(
+        expect(URLToFilters('?country=France&gender=female')).toEqual(
             testResponse,
         );
     });

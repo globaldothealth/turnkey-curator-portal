@@ -57,7 +57,21 @@ const FormSection = styled(Paper)(() => ({
     margin: '2em 0',
 }));
 
-const initialValuesFromCase = (pathogen: string, c?: ParsedCase) => {
+const parseAge = (age?: string) => {
+    if (!age) return null;
+
+    const ageArr = age.split('-');
+    if (ageArr.length === 2) {
+        return { minAge: ageArr[0], maxAge: ageArr[1] };
+    }
+
+    return { age };
+};
+
+const initialValuesFromCase = (
+    pathogen: string,
+    c?: ParsedCase,
+): ParsedCase => {
     if (!c) {
         return {
             id: undefined,
@@ -124,7 +138,7 @@ const initialValuesFromCase = (pathogen: string, c?: ParsedCase) => {
         };
     }
 
-    return c;
+    return { ...c, ...parseAge(c.age) };
 };
 
 interface Props {
@@ -300,9 +314,7 @@ export default function CaseForm(props: Props): JSX.Element {
                 newCaseId = postResponse.data._id;
             }
             setErrorMessage('');
-            console.log('success');
         } catch (e) {
-            console.log('error');
             setErrorMessage(e.response?.data?.message || e.toString());
             return;
         }

@@ -8,7 +8,7 @@ interface ListResponse {
     total: number;
 }
 
-export const parseCase = (day0Case: Day0Case): ParsedCase => {
+export const parseCase = (day0Case: Day0Case) => {
     return {
         id: day0Case.ID,
         pathogen: day0Case.Pathogen,
