@@ -84,7 +84,7 @@ describe('<EditCase />', () => {
         });
         expect(mockedAxios.get).toHaveBeenCalledWith('/api/sources', {
             params: {
-                url: fullCase.caseReference.sourceUrl,
+                url: fullCase.Source,
             },
         });
         expect(mockedAxios.get).toHaveBeenCalledWith(
