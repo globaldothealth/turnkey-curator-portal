@@ -8,35 +8,6 @@ import {
 import { CaseRevision } from '../model/case-revision';
 import { DocumentQuery } from 'mongoose';
 import _ from 'lodash';
-import { nextTick } from 'process';
-
-// TODO: Type this as RevisionMetadataDocument.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const createNewMetadata = (curatorEmail: string): any => {
-    return {
-        revisionNumber: 0,
-        creationMetadata: {
-            curator: curatorEmail,
-            date: Date.now(),
-        },
-    };
-};
-
-// TODO: Type this as RevisionMetadataDocument.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const createUpdateMetadata = (c: CaseDocument, curatorEmail: string): any => {
-    return {
-        revisionNumber: ++c.revisionMetadata.revisionNumber,
-        creationMetadata: {
-            curator: c.revisionMetadata.creationMetadata.curator,
-            date: c.revisionMetadata.creationMetadata.date.getTime(),
-        },
-        updateMetadata: {
-            curator: curatorEmail,
-            date: Date.now(),
-        },
-    };
-};
 
 export const getCase = async (
     request: Request,
@@ -49,45 +20,9 @@ export const getCase = async (
     ) {
         // Update or delete.
         return Case.findById(request.params.id);
-    } else if (
-        request.method == 'PUT' &&
-        caseReference &&
-        caseReference.sourceId &&
-        caseReference.sourceEntryId
-    ) {
-        // Upsert.
-        // TODO: Upserts should only generate update metadata if there is a
-        // diff with what's already in the database.
-        return Case.findOne({
-            'caseReference.sourceId': caseReference.sourceId,
-            'caseReference.sourceEntryId': caseReference.sourceEntryId,
-        });
     }
 
     return null;
-};
-
-export const setRevisionMetadata = async (
-    request: Request,
-    response: Response,
-    next: NextFunction,
-): Promise<void> => {
-    const curatorEmail = request.body.curator.email;
-
-    // Single case update or upsert.
-    const c = await getCase(request);
-
-    // Set the correct, server-generated revisionMetadata for subsequent
-    // processors to use.
-    const revisionMetadata = c
-        ? createUpdateMetadata(c, curatorEmail)
-        : createNewMetadata(curatorEmail);
-    request.body.revisionMetadata = revisionMetadata;
-
-    // Clean up the additional metadata that falls outside the `case` entity.
-    delete request.body.curator;
-
-    next();
 };
 
 // Remove cases from the request that don't need to be updated.
@@ -370,7 +305,7 @@ export const createBatchUpsertCaseRevisions = async (
             // documentation: https://mongoosejs.com/docs/api.html#model_Model.insertMany
             lean: true,
         });
-    } catch(err) {
+    } catch (err) {
         console.log('Failed to insert some case revisions');
         console.log(err);
     }
@@ -406,7 +341,7 @@ export const createBatchUpdateCaseRevisions = async (
             // documentation: https://mongoosejs.com/docs/api.html#model_Model.insertMany
             lean: true,
         });
-    } catch(err) {
+    } catch (err) {
         console.log('Failed to insert some case revisions');
         console.log(err);
     }

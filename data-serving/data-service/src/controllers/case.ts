@@ -1,14 +1,5 @@
-import {
-    Case,
-    caseAgeRange,
-    CaseDocument,
-    CaseDTO,
-    caseWithDenormalisedConfirmationDate,
-    RestrictedCase,
-} from '../model/case';
-import { EventDocument } from '../model/event';
+import { Case, CaseDocument } from '../model/day0-case';
 import caseFields from '../model/fields.json';
-import { Source } from '../model/source';
 import {
     DocumentQuery,
     Error,
@@ -16,22 +7,16 @@ import {
     Query,
     QueryCursor,
 } from 'mongoose';
-import { ObjectId, QuerySelector } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import { GeocodeOptions, Geocoder, Resolution } from '../geocoding/geocoder';
 import { NextFunction, Request, Response } from 'express';
 import parseSearchQuery, { ParsingError } from '../util/search';
 import { SortByOrder, getSortByKeyword, SortBy } from '../util/case';
-import {
-    denormalizeFields,
-    denormalizeEventsHeaders,
-    parseDownloadedCase,
-    removeBlankHeader,
-} from '../util/case';
+import { denormalizeEventsHeaders, removeBlankHeader } from '../util/case';
 
 import { logger } from '../util/logger';
 import stringify from 'csv-stringify/lib/sync';
 import _ from 'lodash';
-import { AgeBucket } from '../model/age-bucket';
 
 class GeocodeNotFoundError extends Error {}
 
@@ -39,55 +24,55 @@ class InvalidParamError extends Error {}
 
 type BatchValidationErrors = { index: number; message: string }[];
 
-const caseFromDTO = async (receivedCase: CaseDTO) => {
-    const aCase = (receivedCase as unknown) as LeanDocument<CaseDocument>;
-    if (receivedCase.demographics?.ageRange) {
-        // won't be many age buckets, so fetch all of them.
-        const allBuckets = await AgeBucket.find({});
-        const caseStart = receivedCase.demographics?.ageRange.start;
-        const caseEnd = receivedCase.demographics?.ageRange.end;
-        validateCaseAges(caseStart, caseEnd);
-        const matchingBucketIDs = allBuckets
-            .filter((b) => {
-                const bucketContainsStart =
-                    b.start <= caseStart && b.end >= caseStart;
-                const bucketContainsEnd =
-                    b.start <= caseEnd && b.end >= caseEnd;
-                const bucketWithinCaseRange =
-                    b.start > caseStart && b.end < caseEnd;
-                return (
-                    bucketContainsStart ||
-                    bucketContainsEnd ||
-                    bucketWithinCaseRange
-                );
-            })
-            .map((b) => b._id);
-        aCase.demographics.ageBuckets = matchingBucketIDs;
-    }
-    return aCase;
-};
+// const caseFromDTO = async (receivedCase: CaseDTO) => {
+//     const aCase = (receivedCase as unknown) as LeanDocument<CaseDocument>;
+//     if (receivedCase.demographics?.ageRange) {
+//         // won't be many age buckets, so fetch all of them.
+//         const allBuckets = await AgeBucket.find({});
+//         const caseStart = receivedCase.demographics?.ageRange.start;
+//         const caseEnd = receivedCase.demographics?.ageRange.end;
+//         validateCaseAges(caseStart, caseEnd);
+//         const matchingBucketIDs = allBuckets
+//             .filter((b) => {
+//                 const bucketContainsStart =
+//                     b.start <= caseStart && b.end >= caseStart;
+//                 const bucketContainsEnd =
+//                     b.start <= caseEnd && b.end >= caseEnd;
+//                 const bucketWithinCaseRange =
+//                     b.start > caseStart && b.end < caseEnd;
+//                 return (
+//                     bucketContainsStart ||
+//                     bucketContainsEnd ||
+//                     bucketWithinCaseRange
+//                 );
+//             })
+//             .map((b) => b._id);
+//         aCase.demographics.ageBuckets = matchingBucketIDs;
+//     }
+//     return aCase;
+// };
 
-const dtoFromCase = async (storedCase: LeanDocument<CaseDocument>) => {
-    let dto = (storedCase as unknown) as CaseDTO;
-    const ageRange = await caseAgeRange(storedCase);
-    if (ageRange) {
-        dto = {
-            ...dto,
-            demographics: {
-                ...dto.demographics!,
-                ageRange,
-            },
-        };
-        // although the type system can't see it, there's an ageBuckets property on the demographics DTO now
-        delete ((dto as unknown) as {
-            demographics: { ageBuckets?: [ObjectId] };
-        }).demographics.ageBuckets;
-    }
-    delete dto.restrictedNotes;
-    delete dto.notes;
+// const dtoFromCase = async (storedCase: LeanDocument<CaseDocument>) => {
+//     let dto = (storedCase as unknown) as CaseDTO;
+//     const ageRange = await caseAgeRange(storedCase);
+//     if (ageRange) {
+//         dto = {
+//             ...dto,
+//             demographics: {
+//                 ...dto.demographics!,
+//                 ageRange,
+//             },
+//         };
+//         // although the type system can't see it, there's an ageBuckets property on the demographics DTO now
+//         delete ((dto as unknown) as {
+//             demographics: { ageBuckets?: [ObjectId] };
+//         }).demographics.ageBuckets;
+//     }
+//     delete dto.restrictedNotes;
+//     delete dto.notes;
 
-    return dto;
-};
+//     return dto;
+// };
 
 export class CasesController {
     private csvHeaders: string[];
@@ -124,14 +109,7 @@ export class CasesController {
             return;
         }
 
-        // don't export notes or sourceEntryIds
-        c.forEach((aCase: LeanDocument<CaseDocument>) => {
-            delete aCase.restrictedNotes;
-            delete aCase.notes;
-            delete aCase.caseReference.sourceEntryId;
-        });
-
-        res.json(await Promise.all(c.map((aCase) => dtoFromCase(aCase))));
+        res.json(c);
     };
 
     /**
@@ -236,12 +214,7 @@ export class CasesController {
 
                 doc = await cursor.next();
                 while (doc != null) {
-                    delete doc.restrictedNotes;
-                    delete doc.notes;
-                    delete doc.caseReference.sourceEntryId;
-                    const caseDTO = await dtoFromCase(doc);
-                    const parsedCase = parseDownloadedCase(caseDTO);
-                    const stringifiedCase = stringify([parsedCase], {
+                    const stringifiedCase = stringify([doc], {
                         header: false,
                         columns: this.csvHeaders,
                         delimiter: delimiter,
@@ -259,14 +232,7 @@ export class CasesController {
                 res.write('[');
                 doc = await cursor.next();
                 while (doc != null) {
-                    delete doc.restrictedNotes;
-                    delete doc.notes;
-                    delete doc.caseReference.sourceEntryId;
-                    const normalizedDoc = await denormalizeFields(doc);
-                    if (!doc.hasOwnProperty('SGTF')) {
-                        normalizedDoc.SGTF = 'NA';
-                    }
-                    res.write(JSON.stringify(normalizedDoc));
+                    res.write(JSON.stringify(doc));
                     doc = await cursor.next();
                     if (doc != null) {
                         res.write(',');
@@ -363,7 +329,6 @@ export class CasesController {
                 }),
             ]);
 
-            const dtos = await Promise.all(docs.map(dtoFromCase));
             logger.info('got results');
             // total is actually stored in a count index in mongo, so the query is fast.
             // however to maintain existing behaviour, only return the count limit
@@ -372,7 +337,7 @@ export class CasesController {
             // indicating that there is more to fetch on the next page.
             if (total > limit * page) {
                 res.json({
-                    cases: dtos,
+                    cases: docs,
                     nextPage: page + 1,
                     total: reportedTotal,
                 });
@@ -381,8 +346,8 @@ export class CasesController {
             }
             // If we fetched all available data, just return it.
             logger.info('Got one page of results');
-            res.json({ cases: dtos, total: reportedTotal });
-        } catch (e) {
+            res.json({ cases: docs, total: reportedTotal });
+        } catch (e: any) {
             if (e instanceof ParsingError) {
                 logger.error(`Parsing error ${e.message}`);
                 res.status(422).json({ message: e.message });
@@ -402,36 +367,17 @@ export class CasesController {
      * Handles HTTP POST /api/cases.
      */
     create = async (req: Request, res: Response): Promise<void> => {
-        const numCases = Number(req.query.num_cases) || 1;
-
         try {
             await this.geocode(req);
-            const receivedCase = req.body as CaseDTO;
-            let c = new Case(await caseFromDTO(receivedCase));
-            let restrictedCases = false;
-            if (c.caseReference.sourceId) {
-                const s = await Source.find({ _id: c.caseReference.sourceId });
-                if (s.length > 0 && s[0].excludeFromLineList === true) {
-                    c = new RestrictedCase(req.body);
-                    restrictedCases = true;
-                }
-            }
+            const receivedCase = req.body as CaseDocument;
+            let c = new Case(receivedCase);
 
             let result;
             if (req.query.validate_only) {
                 await c.validate();
                 result = c;
             } else {
-                if (numCases === 1) {
-                    result = await c.save();
-                } else {
-                    const ctor = restrictedCases ? RestrictedCase : Case;
-                    const cases = Array.from(
-                        { length: numCases },
-                        () => new ctor(req.body),
-                    ).map((c) => caseWithDenormalisedConfirmationDate(c));
-                    result = { cases: await ctor.insertMany(cases) };
-                }
+                result = await c.save();
             }
             res.status(201).json(result);
         } catch (e) {
@@ -471,8 +417,9 @@ export class CasesController {
         // sequentially, so if Mongo creates a batch validate method that should be used here.
         for (let index = 0; index < cases.length; index++) {
             const c = cases[index];
-            const ageStart = c.demographics?.ageRange?.start;
-            const ageEnd = c.demographics?.ageRange?.end;
+            const ageArr = c.Age.split('-');
+            const ageStart = ageArr[0];
+            const ageEnd = ageArr.length === 2 ? ageArr[1] : ageArr[0];
             try {
                 validateCaseAges(ageStart, ageEnd);
             } catch (e) {
@@ -572,61 +519,57 @@ export class CasesController {
                 );
             }
             logger.info('batchUpsert: splitting cases by sourceID');
-            const {
-                unrestrictedCases,
-                restrictedCases,
-            } = this.filterCasesBySourceRestricted(cases);
+            // const {
+            //     unrestrictedCases,
+            //     restrictedCases,
+            // } = this.filterCasesBySourceRestricted(cases);
             logger.info('batchUpsert: preparing bulk write');
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const upsertLambda = async (c: any) => {
                 delete c.caseCount;
-                c = caseWithDenormalisedConfirmationDate(
-                    await caseFromDTO(c as CaseDTO),
-                );
-                if (
-                    c.caseReference?.sourceId &&
-                    c.caseReference?.sourceEntryId
-                ) {
-                    return {
-                        updateOne: {
-                            filter: {
-                                'caseReference.sourceId':
-                                    c.caseReference.sourceId,
-                                'caseReference.sourceEntryId':
-                                    c.caseReference.sourceEntryId,
-                            },
-                            update: c,
-                            upsert: true,
-                        },
-                    };
-                } else {
-                    return {
-                        insertOne: {
-                            document: c,
-                        },
-                    };
-                }
+                // if (
+                //     c.caseReference?.sourceId &&
+                //     c.caseReference?.sourceEntryId
+                // ) {
+                //     return {
+                //         updateOne: {
+                //             filter: {
+                //                 'caseReference.sourceId':
+                //                     c.caseReference.sourceId,
+                //                 'caseReference.sourceEntryId':
+                //                     c.caseReference.sourceEntryId,
+                //             },
+                //             update: c,
+                //             upsert: true,
+                //         },
+                //     };
+                // } else {
+                return {
+                    insertOne: {
+                        document: c,
+                    },
+                };
+                // }
             };
             const unrestrictedBulkWriteResult = await Case.bulkWrite(
-                await Promise.all(unrestrictedCases.map(upsertLambda)),
+                await Promise.all(cases.map(upsertLambda)),
                 { ordered: false },
             );
-            const restrictedBulkWriteResult = await RestrictedCase.bulkWrite(
-                await Promise.all(restrictedCases.map(upsertLambda)),
-                { ordered: false },
-            );
+            // const restrictedBulkWriteResult = await RestrictedCase.bulkWrite(
+            //     await Promise.all(restrictedCases.map(upsertLambda)),
+            //     { ordered: false },
+            // );
             logger.info('batchUpsert: finished bulk write');
             const status = errors.length > 0 ? 207 : 200;
             res.status(status).json({
                 phase: 'UPSERT',
                 numCreated:
                     (unrestrictedBulkWriteResult.insertedCount || 0) +
-                    (restrictedBulkWriteResult.insertedCount || 0) +
-                    (unrestrictedBulkWriteResult.upsertedCount || 0) +
-                    (restrictedBulkWriteResult.upsertedCount || 0),
-                numUpdated:
-                    (unrestrictedBulkWriteResult.modifiedCount || 0) +
-                    (restrictedBulkWriteResult.modifiedCount || 0),
+                    // (restrictedBulkWriteResult.insertedCount || 0) +
+                    (unrestrictedBulkWriteResult.upsertedCount || 0),
+                // (restrictedBulkWriteResult.upsertedCount || 0),
+                numUpdated: unrestrictedBulkWriteResult.modifiedCount || 0,
+                // (restrictedBulkWriteResult.modifiedCount || 0),
                 errors,
             });
             return;
@@ -652,19 +595,16 @@ export class CasesController {
         try {
             let c = await Case.findById(req.params.id);
             if (!c) {
-                c = await RestrictedCase.findById(req.params.id);
-            }
-            if (!c) {
                 res.status(404).send({
                     message: `Case with ID ${req.params.id} not found.`,
                 });
                 return;
             }
-            const caseDetails = await caseFromDTO(req.body);
+            const caseDetails = req.body;
             c.set(caseDetails);
             await c.save();
-            res.json(await dtoFromCase(c));
-        } catch (err) {
+            res.json(c);
+        } catch (err: any) {
             if (err.name === 'ValidationError') {
                 res.status(422).json(err);
                 return;
@@ -689,24 +629,18 @@ export class CasesController {
             return;
         }
         try {
-            const unrestrictedCases: LeanDocument<CaseDocument>[] = [];
-            const restrictedCases: LeanDocument<CaseDocument>[] = [];
+            const cases: LeanDocument<CaseDocument>[] = [];
 
             for (const c in req.body.cases) {
-                const caseDoc = await caseFromDTO(req.body.cases[c] as CaseDTO);
+                const caseDoc = req.body.cases[c] as CaseDocument;
                 let aCase = await Case.findOne({ _id: caseDoc._id });
                 if (aCase) {
-                    unrestrictedCases.push(caseDoc);
+                    cases.push(caseDoc);
                 } else {
-                    aCase = await RestrictedCase.findOne({ _id: caseDoc._id });
-                    if (aCase) {
-                        restrictedCases.push(caseDoc);
-                    } else {
-                        res.status(400).json({
-                            error: `case with id ${caseDoc._id} not present to update`,
-                        });
-                        return;
-                    }
+                    res.status(400).json({
+                        error: `case with id ${caseDoc._id} not present to update`,
+                    });
+                    return;
                 }
             }
             const caseLambda = (c: any) => ({
@@ -717,20 +651,14 @@ export class CasesController {
                     update: c,
                 },
             });
-            const unrestrictedBulkWriteResult = await Case.bulkWrite(
+            const bulkWriteResult = await Case.bulkWrite(
                 // Consider defining a type for the request-format cases.
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                unrestrictedCases.map(caseLambda),
-                { ordered: false },
-            );
-            const restrictedBulkWriteResult = await RestrictedCase.bulkWrite(
-                restrictedCases.map(caseLambda),
+                cases.map(caseLambda),
                 { ordered: false },
             );
             res.json({
-                numModified:
-                    (unrestrictedBulkWriteResult.modifiedCount || 0) +
-                    (restrictedBulkWriteResult.modifiedCount || 0),
+                numModified: bulkWriteResult.modifiedCount || 0,
             });
         } catch (err) {
             res.status(500).json(err);
@@ -747,55 +675,56 @@ export class CasesController {
      *
      * Handles HTTP PUT /api/cases.
      */
-    upsert = async (req: Request, res: Response): Promise<void> => {
-        try {
-            let c = await Case.findOne({
-                'caseReference.sourceId': req.body.caseReference?.sourceId,
-                'caseReference.sourceEntryId':
-                    req.body.caseReference?.sourceEntryId,
-            });
-            if (!c) {
-                c = await RestrictedCase.findOne({
-                    'caseReference.sourceId': req.body.caseReference?.sourceId,
-                    'caseReference.sourceEntryId':
-                        req.body.caseReference?.sourceEntryId,
-                });
-            }
-            if (
-                req.body.caseReference?.sourceId &&
-                req.body.caseReference?.sourceEntryId &&
-                c
-            ) {
-                const update = await caseFromDTO(req.body as CaseDTO);
-                c.set(update);
-                const result = await c.save();
-                res.status(200).json(result);
-                return;
-            } else {
-                // Geocode new cases.
-                await this.geocode(req);
-                const update = await caseFromDTO(req.body as CaseDTO);
-                const c = new Case(update);
-                const result = await c.save();
-                res.status(201).json(result);
-                return;
-            }
-        } catch (e) {
-            const err = e as Error;
-            if (err instanceof GeocodeNotFoundError) {
-                res.status(404).json({ message: err.message });
-            }
-            if (
-                err.name === 'ValidationError' ||
-                err instanceof InvalidParamError
-            ) {
-                res.status(422).json(err.message);
-                return;
-            }
-            res.status(500).json(err.message);
-            return;
-        }
-    };
+    // @TODO
+    // upsert = async (req: Request, res: Response): Promise<void> => {
+    //     try {
+    //         let c = await Case.findOne({
+    //             'caseReference.sourceId': req.body.caseReference?.sourceId,
+    //             'caseReference.sourceEntryId':
+    //                 req.body.caseReference?.sourceEntryId,
+    //         });
+    //         if (!c) {
+    //             c = await RestrictedCase.findOne({
+    //                 'caseReference.sourceId': req.body.caseReference?.sourceId,
+    //                 'caseReference.sourceEntryId':
+    //                     req.body.caseReference?.sourceEntryId,
+    //             });
+    //         }
+    //         if (
+    //             req.body.caseReference?.sourceId &&
+    //             req.body.caseReference?.sourceEntryId &&
+    //             c
+    //         ) {
+    //             const update = await caseFromDTO(req.body as CaseDTO);
+    //             c.set(update);
+    //             const result = await c.save();
+    //             res.status(200).json(result);
+    //             return;
+    //         } else {
+    //             // Geocode new cases.
+    //             await this.geocode(req);
+    //             const update = await caseFromDTO(req.body as CaseDTO);
+    //             const c = new Case(update);
+    //             const result = await c.save();
+    //             res.status(201).json(result);
+    //             return;
+    //         }
+    //     } catch (e) {
+    //         const err = e as Error;
+    //         if (err instanceof GeocodeNotFoundError) {
+    //             res.status(404).json({ message: err.message });
+    //         }
+    //         if (
+    //             err.name === 'ValidationError' ||
+    //             err instanceof InvalidParamError
+    //         ) {
+    //             res.status(422).json(err.message);
+    //             return;
+    //         }
+    //         res.status(500).json(err.message);
+    //         return;
+    //     }
+    // };
 
     /**
      * Deletes multiple cases.
@@ -807,15 +736,10 @@ export class CasesController {
             for (const i in req.body.caseIds) {
                 let deleted = await Case.findByIdAndDelete(req.body.caseIds[i]);
                 if (!deleted) {
-                    deleted = await RestrictedCase.findByIdAndDelete(
-                        req.body.caseIds[i],
-                    );
-                    if (!deleted) {
-                        res.status(404).send({
-                            message: `Case with ID ${req.body.caseIds[i]} not found.`,
-                        });
-                        return;
-                    }
+                    res.status(404).send({
+                        message: `Case with ID ${req.body.caseIds[i]} not found.`,
+                    });
+                    return;
                 }
             }
             res.status(204).end();
@@ -828,9 +752,8 @@ export class CasesController {
         }).collation({ locale: 'en_US', strength: 2 });
         try {
             await Case.deleteMany(casesQuery);
-            await RestrictedCase.deleteMany(casesQuery);
             res.status(204).end();
-        } catch (err) {
+        } catch (err: any) {
             logger.error(err);
             res.status(500).json(err);
         }
@@ -844,16 +767,10 @@ export class CasesController {
     del = async (req: Request, res: Response): Promise<void> => {
         const c = await Case.findByIdAndDelete(req.params.id, req.body);
         if (!c) {
-            const r = await RestrictedCase.findByIdAndDelete(
-                req.params.id,
-                req.body,
-            );
-            if (!r) {
-                res.status(404).send({
-                    message: `Case with ID ${req.params.id} not found.`,
-                });
-                return;
-            }
+            res.status(404).send({
+                message: `Case with ID ${req.params.id} not found.`,
+            });
+            return;
         }
         res.status(204).end();
     };
@@ -865,159 +782,148 @@ export class CasesController {
      * Receives an array of MongoDB IDs, status to be set for them and optional note.
      * Note is used only when excluding cases (status set to "Excluded").
      */
-    batchStatusChange = async (req: Request, res: Response): Promise<void> => {
-        const newStatus = req.body.status.toUpperCase();
-        const caseIds = req.body.caseIds;
+    // @TODO
+    // batchStatusChange = async (req: Request, res: Response): Promise<void> => {
+    //     const newStatus = req.body.status.toUpperCase();
+    //     const caseIds = req.body.caseIds;
 
-        if (newStatus === 'EXCLUDED' && !req.body.note) {
-            res.status(422)
-                .send({
-                    message: 'Note is required when excluding cases.',
-                })
-                .end();
-            return;
-        }
+    //     if (newStatus === 'EXCLUDED' && !req.body.note) {
+    //         res.status(422)
+    //             .send({
+    //                 message: 'Note is required when excluding cases.',
+    //             })
+    //             .end();
+    //         return;
+    //     }
 
-        let updateQuery = {};
+    //     let updateQuery = {};
 
-        try {
-            if (!caseIds) {
-                updateQuery = casesMatchingSearchQuery({
-                    searchQuery: req.body.query,
-                    count: false,
-                }).collation({ locale: 'en_US', strength: 2 });
-            } else {
-                updateQuery = {
-                    _id: { $in: caseIds },
-                };
-                const validIdsCount = await Case.countDocuments(updateQuery);
-                const validRestrictedIdsCount = await RestrictedCase.countDocuments(
-                    updateQuery,
-                );
-                if (validIdsCount + validRestrictedIdsCount != caseIds.length) {
-                    res.status(422)
-                        .send({
-                            message:
-                                'At least one of provided case IDs was not found. No records changed.',
-                        })
-                        .end();
-                    return;
-                }
-            }
-        } catch (err) {
-            if (err.name === 'CastError') {
-                res.status(422)
-                    .send({
-                        message: `Provided ID (${err.value}) is not valid. More IDs may be invalid. No records changed.`,
-                    })
-                    .end();
-                return;
-            }
-            logger.error(err);
-            res.status(500).json(err).end();
-            return;
-        }
+    //     try {
+    //         if (!caseIds) {
+    //             updateQuery = casesMatchingSearchQuery({
+    //                 searchQuery: req.body.query,
+    //                 count: false,
+    //             }).collation({ locale: 'en_US', strength: 2 });
+    //         } else {
+    //             updateQuery = {
+    //                 _id: { $in: caseIds },
+    //             };
+    //             const validIdsCount = await Case.countDocuments(updateQuery);
+    //             const validRestrictedIdsCount = await RestrictedCase.countDocuments(
+    //                 updateQuery,
+    //             );
+    //             if (validIdsCount + validRestrictedIdsCount != caseIds.length) {
+    //                 res.status(422)
+    //                     .send({
+    //                         message:
+    //                             'At least one of provided case IDs was not found. No records changed.',
+    //                     })
+    //                     .end();
+    //                 return;
+    //             }
+    //         }
+    //     } catch (err) {
+    //         if (err.name === 'CastError') {
+    //             res.status(422)
+    //                 .send({
+    //                     message: `Provided ID (${err.value}) is not valid. More IDs may be invalid. No records changed.`,
+    //                 })
+    //                 .end();
+    //             return;
+    //         }
+    //         logger.error(err);
+    //         res.status(500).json(err).end();
+    //         return;
+    //     }
 
-        try {
-            let updateDocument = {};
-            if (newStatus === 'EXCLUDED') {
-                updateDocument = {
-                    $set: {
-                        'caseReference.verificationStatus': newStatus,
-                        'exclusionData.date': Date.now(),
-                        'exclusionData.note': req.body.note,
-                    },
-                };
-            } else {
-                updateDocument = {
-                    $set: {
-                        'caseReference.verificationStatus': newStatus,
-                    },
-                    $unset: {
-                        exclusionData: '',
-                    },
-                };
-            }
-            await Case.updateMany(updateQuery, updateDocument);
-            await RestrictedCase.updateMany(updateQuery, updateDocument);
+    //     try {
+    //         let updateDocument = {};
+    //         if (newStatus === 'EXCLUDED') {
+    //             updateDocument = {
+    //                 $set: {
+    //                     'caseReference.verificationStatus': newStatus,
+    //                     'exclusionData.date': Date.now(),
+    //                     'exclusionData.note': req.body.note,
+    //                 },
+    //             };
+    //         } else {
+    //             updateDocument = {
+    //                 $set: {
+    //                     'caseReference.verificationStatus': newStatus,
+    //                 },
+    //                 $unset: {
+    //                     exclusionData: '',
+    //                 },
+    //             };
+    //         }
+    //         await Case.updateMany(updateQuery, updateDocument);
+    //         await RestrictedCase.updateMany(updateQuery, updateDocument);
 
-            res.status(200).end();
-        } catch (err) {
-            logger.error(err);
-            res.status(500).json(err).end();
-        }
-        return;
-    };
+    //         res.status(200).end();
+    //     } catch (err) {
+    //         logger.error(err);
+    //         res.status(500).json(err).end();
+    //     }
+    //     return;
+    // };
 
     /**
      * Get a list of excluded cases IDs for a specific source ID.
      *
      * Handles HTTP GET /api/excludedCaseIds.
      */
-    listExcludedCaseIds = async (
-        req: Request,
-        res: Response,
-    ): Promise<void> => {
-        /*
-            We need to be able to include date filtering or
-            not - requiring events to be an optional property.
-         */
-        const searchQuery: {
-            'caseReference.verificationStatus': string;
-            'caseReference.sourceId': string | undefined;
-            events?: QuerySelector<EventDocument | [EventDocument]>;
-        } = {
-            'caseReference.verificationStatus': 'EXCLUDED',
-            'caseReference.sourceId': req.query.sourceId?.toString(),
-        };
 
-        if (req.query.dateFrom || req.query.dateTo) {
-            let dateRangeFilter = {};
+    // @TODO
+    // listExcludedCaseIds = async (
+    //     req: Request,
+    //     res: Response,
+    // ): Promise<void> => {
+    //     /*
+    //         We need to be able to include date filtering or
+    //         not - requiring events to be an optional property.
+    //      */
+    //     const searchQuery: {
+    //         'caseReference.verificationStatus': string;
+    //         'caseReference.sourceId': string | undefined;
+    //         events?: QuerySelector<EventDocument | [EventDocument]>;
+    //     } = {
+    //         'caseReference.verificationStatus': 'EXCLUDED',
+    //         'caseReference.sourceId': req.query.sourceId?.toString(),
+    //     };
 
-            if (req.query.dateFrom) {
-                dateRangeFilter = {
-                    ...dateRangeFilter,
-                    $gte: new Date(req.query.dateFrom.toString()),
-                };
-            }
+    //     if (req.query.dateFrom || req.query.dateTo) {
+    //         let dateRangeFilter = {};
 
-            if (req.query.dateTo) {
-                dateRangeFilter = {
-                    ...dateRangeFilter,
-                    $lte: new Date(req.query.dateTo.toString()),
-                };
-            }
+    //         if (req.query.dateFrom) {
+    //             dateRangeFilter = {
+    //                 ...dateRangeFilter,
+    //                 $gte: new Date(req.query.dateFrom.toString()),
+    //             };
+    //         }
 
-            searchQuery['events'] = {
-                $elemMatch: {
-                    name: 'confirmed',
-                    'dateRange.start': dateRangeFilter,
-                },
-            };
-        }
+    //         if (req.query.dateTo) {
+    //             dateRangeFilter = {
+    //                 ...dateRangeFilter,
+    //                 $lte: new Date(req.query.dateTo.toString()),
+    //             };
+    //         }
 
-        const cases = await Case.find(searchQuery).lean();
+    //         searchQuery['events'] = {
+    //             $elemMatch: {
+    //                 name: 'confirmed',
+    //                 'dateRange.start': dateRangeFilter,
+    //             },
+    //         };
+    //     }
 
-        const caseIds = cases
-            .filter((c) => !!c.caseReference.sourceEntryId)
-            .map((c) => c.caseReference.sourceEntryId);
+    //     const cases = await Case.find(searchQuery).lean();
 
-        res.status(200).json({ cases: caseIds }).end();
-    };
+    //     const caseIds = cases
+    //         .filter((c) => !!c.caseReference.sourceEntryId)
+    //         .map((c) => c.caseReference.sourceEntryId);
 
-    private filterCasesBySourceRestricted(cases: any) {
-        const unrestrictedCases = _.filter(cases, async (c) => {
-            const source = await Source.findOne({
-                _id: c.caseReference.sourceId,
-            });
-            return source?.excludeFromLineList !== true;
-        });
-        const restrictedCases = _.filter(
-            cases,
-            (c) => !unrestrictedCases.includes(c),
-        );
-        return { unrestrictedCases, restrictedCases };
-    }
+    //     res.status(200).json({ cases: caseIds }).end();
+    // };
 
     /**
      * Geocodes a single location.
@@ -1181,10 +1087,7 @@ export const casesMatchingSearchQuery = (opts: {
                         [f.dateOperator]: f.values[0],
                     },
                 });
-            } else if (
-                f.path === 'demographics.gender' &&
-                f.values[0] === 'notProvided'
-            ) {
+            } else if (f.path === 'gender' && f.values[0] === 'notProvided') {
                 casesQuery.where(f.path).exists(false);
                 countQuery.where(f.path).exists(false);
             } else {
@@ -1212,6 +1115,7 @@ export const casesMatchingSearchQuery = (opts: {
  *   cases, filtering on provided case reference data, in order to provide
  *   an accurate list of updated case IDs.
  */
+// @TODO
 export const findCasesWithCaseReferenceData = async (
     req: Request,
     fieldsToSelect: any = undefined,
@@ -1274,6 +1178,7 @@ export const findCaseIdsWithCaseReferenceData = async (
  *
  * Handles HTTP GET /api/cases/symptoms.
  */
+// @TODO
 export const listSymptoms = async (
     req: Request,
     res: Response,
@@ -1289,7 +1194,7 @@ export const listSymptoms = async (
             symptoms: symptoms.map((symptomObject) => symptomObject._id),
         });
         return;
-    } catch (e) {
+    } catch (e: any) {
         logger.error(e);
         res.status(500).json(e);
         return;
@@ -1301,6 +1206,7 @@ export const listSymptoms = async (
  *
  * Handles HTTP GET /api/cases/placesOfTransmission.
  */
+// @TODO
 export const listPlacesOfTransmission = async (
     req: Request,
     res: Response,
@@ -1318,7 +1224,7 @@ export const listPlacesOfTransmission = async (
             ),
         });
         return;
-    } catch (e) {
+    } catch (e: any) {
         logger.error(e);
         res.status(500).json(e);
         return;
@@ -1330,6 +1236,7 @@ export const listPlacesOfTransmission = async (
  *
  * Handles HTTP GET /api/cases/occupations.
  */
+// @TODO
 export const listOccupations = async (
     req: Request,
     res: Response,
@@ -1351,7 +1258,7 @@ export const listOccupations = async (
             ),
         });
         return;
-    } catch (e) {
+    } catch (e: any) {
         logger.error(e);
         res.status(500).json(e);
         return;

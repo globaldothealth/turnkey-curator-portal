@@ -1,35 +1,6 @@
-import { CaseReferenceDocument, caseReferenceSchema } from './case-reference';
-import {
-    demographicsAgeRange,
-    DemographicsDocument,
-    DemographicsDTO,
-    demographicsSchema,
-} from './demographics';
-import { EventDocument, eventSchema } from './event';
-import {
-    GenomeSequenceDocument,
-    genomeSequenceSchema,
-} from './genome-sequence';
-import { LocationDocument, locationSchema } from './location';
-import { PathogenDocument, pathogenSchema } from './pathogen';
-import {
-    PreexistingConditionsDocument,
-    preexistingConditionsSchema,
-} from './preexisting-conditions';
-import {
-    RevisionMetadataDocument,
-    revisionMetadataSchema,
-} from './revision-metadata';
-import { SymptomsDocument, symptomsSchema } from './symptoms';
-import { TransmissionDocument, transmissionSchema } from './transmission';
-import { TravelHistoryDocument, travelHistorySchema } from './travel-history';
-import { VaccineDocument, vaccineSchema } from './vaccine';
-import { VariantDocument, variantSchema } from './variant';
-
 import { ObjectId } from 'mongodb';
 import _ from 'lodash';
-import mongoose, { LeanDocument } from 'mongoose';
-import { ExclusionDataDocument, exclusionDataSchema } from './exclusion-data';
+import mongoose from 'mongoose';
 import { dateFieldInfo } from './date';
 import validateEnv from '../util/validate-env';
 
@@ -41,11 +12,6 @@ import validateEnv from '../util/validate-env';
  * mongoose document only has age buckets, and that the cases controller converts between the
  * two so that outside you only see a single age range.
  */
-
-const requiredDateField = {
-    ...dateFieldInfo(validateEnv().OUTBREAK_DATE),
-    required: true,
-};
 
 export enum CaseStatus {
     Confirmed = 'confirmed',
@@ -85,11 +51,11 @@ export const caseSchema = new mongoose.Schema(
             required: true,
         },
         Date_entry: {
-            type: String,
+            type: Date,
             required: true,
         },
         Date_last_modified: {
-            type: String,
+            type: Date,
             required: true,
         },
         Source: String,
@@ -113,23 +79,23 @@ export const caseSchema = new mongoose.Schema(
         },
         Location: String,
         City: String,
-        Date_onset: String,
-        Date_confirmation: String,
+        Date_onset: Date,
+        Date_confirmation: Date,
         Confirmation_method: String,
-        Date_of_first_consult: String,
+        Date_of_first_consult: Date,
         Hospitalized: YesNo,
         'Reason for hospitalization': HospitalizationReason,
-        Date_hospitalization: String,
-        Date_discharge_hospital: String,
+        Date_hospitalization: Date,
+        Date_discharge_hospital: Date,
         Intensive_care: YesNo,
-        Date_admission_ICU: String,
-        Date_discharge_ICU: String,
+        Date_admission_ICU: Date,
+        Date_discharge_ICU: Date,
         Home_monitoring: YesNo,
         Isolated: YesNo,
-        Date_isolation: String,
+        Date_isolation: Date,
         Outcome: Outcome,
-        Date_death: String,
-        Date_recovered: String,
+        Date_death: Date,
+        Date_recovered: Date,
         Symptoms: String,
         Previous_infection: YesNo,
         Co_infection: String,
@@ -154,7 +120,7 @@ export const caseSchema = new mongoose.Schema(
         },
         Vaccination: YesNo,
         Vaccine_name: String,
-        Vaccine_date: String,
+        Vaccine_date: Date,
         Vaccine_side_effects: String,
     },
     {
@@ -185,7 +151,7 @@ export const caseSchema = new mongoose.Schema(
  * @param jsonCase - JSON object representing a case document.
  * @returns Whether or not the provided JSON is equivalent.
  */
-// TODO: Type request Cases.
+// @TODO: Type request Cases.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 caseSchema.methods.equalsJSON = function (jsonCase: any): boolean {
     const thisJson = this.toJSON() as any;
@@ -211,82 +177,96 @@ caseSchema.methods.equalsJSON = function (jsonCase: any): boolean {
 };
 
 export type ICase = {
-    caseReference: CaseReferenceDocument;
-    confirmationDate: Date;
-    events: [EventDocument];
-    exclusionData: ExclusionDataDocument;
-    genomeSequences: [GenomeSequenceDocument];
-    importedCase: unknown;
-    location: LocationDocument;
-    revisionMetadata: RevisionMetadataDocument;
-    notes?: string;
-    restrictedNotes?: string;
-    pathogens: [PathogenDocument];
-    list: boolean;
-    SGTF: '0' | '1' | 'NA';
-    preexistingConditions: PreexistingConditionsDocument;
-    symptoms: SymptomsDocument;
-    transmission: TransmissionDocument;
-    travelHistory: TravelHistoryDocument;
-    vaccines: [VaccineDocument];
-    variant: VariantDocument;
-};
+    // GENERAL
+    Case_status: CaseStatus;
+    Date_entry: string | null;
+    Date_last_modified: string;
 
-export type CaseDTO = ICase & {
-    demographics?: DemographicsDTO;
+    // SOURCE
+    Source: string; // source
+    Source_II?: string;
+    Source_III?: string;
+    Source_IV?: string;
+    Source_V?: string;
+    Source_VI?: string;
+    Source_VII?: string;
+
+    // DEMOGRAPHICS
+    Age?: string;
+    Gender?: Gender;
+    Occupation?: string;
+    Healthcare_worker?: YesNo;
+
+    // LOCATION
+    Country: string;
+    Country_ISO3: string;
+    Location?: string;
+    City?: string;
+
+    // EVENTS
+    Date_onset?: string | null;
+    Date_confirmation?: string | null;
+    Confirmation_method?: string;
+    Date_of_first_consult?: string | null;
+    Hospitalized?: YesNo;
+    'Reason for hospitalition'?: HospitalizationReason;
+    Date_hospitalization?: string | null;
+    Date_discharge_hospital?: string | null;
+    Intensive_care?: YesNo;
+    Date_admission_ICU?: string | null;
+    Date_discharge_ICU?: string | null;
+    Home_monitoring?: YesNo;
+    Isolated?: YesNo;
+    Date_isolation?: string | null;
+    Outcome?: Outcome;
+    Date_death?: string | null;
+    Date_recovered?: string | null;
+
+    // SYMPTOPMS
+    Symptoms?: string;
+
+    // PRE-EXISTING CONDITIONS
+    Previous_infection?: YesNo;
+    Co_infection?: string;
+    Pre_existing_condition?: string;
+    Pregnancy_status?: YesNo;
+
+    // TRANSMISSION
+    Contact_with_case?: YesNo;
+    Contact_ID?: string;
+    Contact_setting?: string;
+    Contact_animal?: string;
+    Contact_comment?: string;
+    Transmission?: string;
+
+    // TRAVEL HISTORY
+    Travel_history?: YesNo;
+    Travel_history_entry?: string;
+    Travel_history_start?: string;
+    Travel_history_location?: string;
+    Travel_history_country?: string;
+
+    // GENOME SEQUENCES
+    Genomics_Metadata?: string;
+    'Accession Number'?: string;
+
+    // PATHOGENS
+    Pathogen: string;
+
+    // VACCINATION
+    Vaccination?: YesNo;
+    Vaccine_name?: string;
+    Vaccine_date?: string | null;
+    Vaccine_side_effects?: string;
 };
 
 export type CaseDocument = mongoose.Document &
     ICase & {
         _id: ObjectId;
-        demographics: DemographicsDocument;
         // TODO: Type request Cases.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         equalsJSON(jsonCase: any): boolean;
     };
-
-/* Denormalise the confirmation date before saving or updating any case object */
-
-function denormaliseConfirmationDate(
-    aCase: CaseDocument | LeanDocument<CaseDocument>,
-) {
-    const confirmationEvents = _.filter(
-        aCase.events,
-        (e) => e.name === 'confirmed',
-    );
-    if (confirmationEvents.length) {
-        aCase.confirmationDate = confirmationEvents[0].dateRange.start;
-    }
-}
-
-export function caseWithDenormalisedConfirmationDate(
-    aCase: CaseDocument | LeanDocument<CaseDocument>,
-) {
-    denormaliseConfirmationDate(aCase);
-    return aCase;
-}
-
-caseSchema.pre('save', async function (this: CaseDocument) {
-    denormaliseConfirmationDate(this);
-});
-
-caseSchema.pre('validate', async function (this: CaseDocument) {
-    denormaliseConfirmationDate(this);
-});
-
-caseSchema.pre('insertMany', async function (
-    next: (err?: mongoose.CallbackError | undefined) => void,
-    docs: CaseDocument[],
-) {
-    _.forEach(docs, denormaliseConfirmationDate);
-    next();
-});
-
-caseSchema.pre('updateOne', { document: true, query: false }, async function (
-    this: CaseDocument,
-) {
-    denormaliseConfirmationDate(this);
-});
 
 export const Case = mongoose.model<CaseDocument>('Case', caseSchema);
 export const RestrictedCase = mongoose.model<CaseDocument>(
@@ -294,6 +274,6 @@ export const RestrictedCase = mongoose.model<CaseDocument>(
     caseSchema,
 );
 
-export const caseAgeRange = async (aCase: LeanDocument<CaseDocument>) => {
-    return await demographicsAgeRange(aCase.demographics);
-};
+// export const caseAgeRange = async (aCase: LeanDocument<CaseDocument>) => {
+//     return await demographicsAgeRange(aCase.demographics);
+// };

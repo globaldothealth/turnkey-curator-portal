@@ -17,23 +17,16 @@ export class ParsingError extends Error {}
 // Map of keywords to their case data path.
 // IMPORTANT: If you change this mapping, reflect the new keys in the openapi.yaml file as well.
 const keywords = new Map<string, string>([
-    ['curator', 'revisionMetadata.creationMetadata.curator'],
-    ['gender', 'demographics.gender'],
-    ['nationality', 'demographics.nationalities'],
-    ['occupation', 'demographics.occupation'],
-    ['country', 'location.country'],
-    ['outcome', 'events.value'],
-    ['caseid', '_id'],
-    ['uploadid', 'caseReference.uploadIds'],
-    ['sourceid', 'caseReference.sourceId'],
-    ['sourceurl', 'caseReference.sourceUrl'],
-    ['verificationstatus', 'caseReference.verificationStatus'],
-    ['admin1', 'location.administrativeAreaLevel1'],
-    ['admin2', 'location.administrativeAreaLevel2'],
-    ['admin3', 'location.administrativeAreaLevel3'],
-    ['variant', 'variant.name'],
-    ['dateconfirmedafter', 'confirmationDate'],
-    ['dateconfirmedbefore', 'confirmationDate'],
+    ['gender', 'Gender'],
+    ['occupation', 'Occupation'],
+    ['country', 'Country'],
+    ['city', 'City'],
+    ['location', 'Location'],
+    ['outcome', 'Outcome'],
+    ['caseId', '_id'],
+    ['sourceUrl', 'Source'],
+    ['dateConfirmedFrom', 'Date_confirmation'],
+    ['dateConfirmedTo', 'Date_confirmation'],
 ]);
 
 export default function parseSearchQuery(q: string): ParsedSearch {
@@ -65,10 +58,10 @@ export default function parseSearchQuery(q: string): ParsedSearch {
         // Get the keywords into our result struct.
         keywords.forEach((path, keyword): void => {
             // Enable to filter by date
-            keyword === 'dateconfirmedafter'
+            keyword === 'dateConfirmedFrom'
                 ? (searchParsedResult.dateOperator = '$gt')
                 : null;
-            keyword === 'dateconfirmedbefore'
+            keyword === 'dateConfirmedTo'
                 ? (searchParsedResult.dateOperator = '$lt')
                 : null;
 
@@ -76,7 +69,7 @@ export default function parseSearchQuery(q: string): ParsedSearch {
                 return;
             }
 
-            if (keyword === 'caseid') {
+            if (keyword === 'caseId') {
                 const caseIds: ObjectId[] = [];
                 searchParsedResult[keyword].forEach((caseId: string) => {
                     caseIds.push(new ObjectId(caseId));

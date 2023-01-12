@@ -222,7 +222,9 @@ export default function FiltersDialog({
                                 value={formik.values.gender || ''}
                                 onChange={formik.handleChange}
                             >
-                                <MenuItem value="">Not selected</MenuItem>
+                                <MenuItem value="notProvided">
+                                    Not provided
+                                </MenuItem>
                                 {Object.values(Gender).map((value) => (
                                     <MenuItem key={value} value={value}>
                                         {value}
