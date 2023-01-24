@@ -6,7 +6,6 @@ import { Typography } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 
 import BulkCaseFormValues from '../bulk-case-form-fields/BulkCaseFormValues';
-import { CaseReference } from '../../api/models/Case';
 import FieldTitle from './FieldTitle';
 import React, { useState } from 'react';
 import { RequiredHelperText } from './FormikFields';
@@ -15,7 +14,12 @@ import { TextField } from 'formik-mui';
 import { StyledTooltip } from '../new-case-form-fields/StyledTooltip';
 import axios from 'axios';
 import { throttle } from 'lodash';
-import { ParsedCase } from '../../api/models/Day0Case';
+import {
+    Day0CaseFormValues,
+    Day0Case,
+    CaseReference,
+    ISource,
+} from '../../api/models/Day0Case';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -39,7 +43,7 @@ const TooltipText = () => (
                 “Honduras ministry of health”. The provider name needs to
                 reflect the actual provider of the data, not the method of
                 reporting. The source name can be anything informative to
-                curators. The source URL should be a link to the data you’re
+                curators. The source URL should be a link to the data you`re
                 uploading, while the provider website URL should link to an
                 informative website.
             </li>
@@ -148,10 +152,6 @@ interface SourceData {
     hasStableIdentifiers?: boolean;
 }
 
-interface ListSourcesResponse {
-    sources: SourceData[];
-}
-
 export interface CaseReferenceForm extends CaseReference {
     inputValue?: string;
     sourceName?: string;
@@ -160,8 +160,12 @@ export interface CaseReferenceForm extends CaseReference {
     sourceProviderUrl?: string;
 }
 
+interface ListSourcesResponse {
+    sources: SourceData[];
+}
+
 interface SourceAutocompleteProps {
-    initialValue?: CaseReferenceForm;
+    initialValue?: CaseReference;
     freeSolo: boolean;
     sourcesWithStableIdentifiers?: boolean;
 }
@@ -192,7 +196,7 @@ export async function submitSource(opts: {
     };
 }
 
-const filter = createFilterOptions<CaseReferenceForm>();
+const filter = createFilterOptions<ISource>();
 
 const useStyles = makeStyles(() => ({
     sourceTextField: {
@@ -209,13 +213,13 @@ export function SourcesAutocomplete(
     const classes = useStyles();
     const name = 'caseReference';
     const [value, setValue] = React.useState<CaseReferenceForm | null>(
-        props.initialValue ? props.initialValue : null,
+        props.initialValue || null,
     );
 
     const [inputValue, setInputValue] = React.useState('');
     const [options, setOptions] = React.useState<CaseReferenceForm[]>([]);
     const { setFieldValue, setTouched, values } = useFormikContext<
-        ParsedCase | BulkCaseFormValues
+        Day0CaseFormValues | BulkCaseFormValues
     >();
 
     const fetch = React.useMemo(
@@ -272,7 +276,7 @@ export function SourcesAutocomplete(
 
         fetch({ url: inputValue }, (results?: SourceData[]) => {
             if (active) {
-                let newOptions = [] as CaseReferenceForm[];
+                let newOptions = [] as ISource[];
 
                 if (results) {
                     newOptions = [
@@ -339,9 +343,6 @@ export function SourcesAutocomplete(
                                 values.caseReference?.sourceProviderName ?? '',
                             sourceProviderUrl:
                                 values.caseReference?.sourceProviderUrl ?? '',
-                            additionalSources: [] as unknown as [
-                                { sourceUrl: string },
-                            ],
                         };
                     }
                     setValue(newValue);
@@ -381,9 +382,6 @@ export function SourcesAutocomplete(
                                 values.caseReference?.sourceProviderName ?? '',
                             sourceProviderUrl:
                                 values.caseReference?.sourceProviderUrl ?? '',
-                            additionalSources: [] as unknown as [
-                                { sourceUrl: string },
-                            ],
                         });
                     }
 
@@ -395,7 +393,7 @@ export function SourcesAutocomplete(
                 handleHomeEndKeys
                 options={options}
                 value={value}
-                onBlur={(): void => setTouched({ [name]: true })}
+                // onBlur={(): void => setTouched({ [name]: true })}
                 onInputChange={(event, newInputValue): void => {
                     setInputValue(newInputValue);
                 }}

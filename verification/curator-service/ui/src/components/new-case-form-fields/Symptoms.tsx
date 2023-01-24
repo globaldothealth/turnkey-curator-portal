@@ -8,7 +8,7 @@ import Scroll from 'react-scroll';
 import axios from 'axios';
 import makeStyles from '@mui/styles/makeStyles';
 import { useFormikContext } from 'formik';
-import { ParsedCase } from '../../api/models/Day0Case';
+import { Day0CaseFormValues } from '../../api/models/Day0Case';
 
 const useStyles = makeStyles(() => ({
     chip: {
@@ -48,7 +48,7 @@ interface SymptomListProps {
 
 function SymptomList(props: SymptomListProps): JSX.Element {
     const { values, initialValues, setFieldValue } =
-        useFormikContext<ParsedCase>();
+        useFormikContext<Day0CaseFormValues>();
     const [commonSymptoms, setCommonSymptoms] = React.useState([]);
 
     React.useEffect(
@@ -64,6 +64,11 @@ function SymptomList(props: SymptomListProps): JSX.Element {
     );
 
     const classes = useStyles();
+
+    const rawInitialValues = initialValues[props.collectionName];
+    const splittedValues =
+        rawInitialValues && String(rawInitialValues).split(', ');
+
     return (
         <Scroll.Element name={props.collectionName}>
             <FieldTitle title={props.title} tooltip={<TooltipText />} />
@@ -102,7 +107,7 @@ function SymptomList(props: SymptomListProps): JSX.Element {
             <FormikAutocomplete
                 name={props.collectionName}
                 label={props.title}
-                initialValue={initialValues[props.collectionName] || undefined}
+                initialValue={splittedValues || undefined}
                 multiple
                 freeSolo
                 optionsLocation="https://raw.githubusercontent.com/globaldothealth/list/main/suggest/symptoms.txt"
@@ -116,7 +121,11 @@ const Symptoms: () => JSX.Element = () => (
 );
 
 export const VaccineSideEffects: () => JSX.Element = () => (
-    <SymptomList title="Side Effects" collectionName="vaccineSideEffects" />
+    // <SymptomList
+    //     title="Side Effects"
+    //     collectionName="vaccination.vaccineSideEffects"
+    // />
+    <></>
 );
 
 export default Symptoms;

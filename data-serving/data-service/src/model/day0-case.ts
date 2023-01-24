@@ -43,6 +43,22 @@ export enum Outcome {
     Death = 'death',
 }
 
+// this is not an official day 0 case schema field but it has
+// to be declared for specific use cases
+export const sourceSchema = new mongoose.Schema({
+    sourceId: { type: String, required: true },
+    sourceUrl: {
+        type: String,
+        required: true,
+    },
+    sourceName: String,
+    sourceLicense: String,
+    sourceProviderName: String,
+    sourceProviderUrl: String,
+    sourceEntryId: String,
+    uploadIds: [String],
+});
+
 export const caseSchema = new mongoose.Schema(
     {
         ID: String,
@@ -58,7 +74,9 @@ export const caseSchema = new mongoose.Schema(
             type: Date,
             required: true,
         },
-        Source: String,
+        Source: {
+            type: sourceSchema,
+        },
         Source_II: String,
         Source_III: String,
         Source_IV: String,
@@ -66,9 +84,13 @@ export const caseSchema = new mongoose.Schema(
         Source_VI: String,
         Source_VII: String,
         Age: String,
-        Gender: Gender,
+        Gender: {
+            type: Gender,
+        },
         Occupation: String,
-        Healthcare_worker: YesNo,
+        Healthcare_worker: {
+            type: YesNo,
+        },
         Country: {
             type: String,
             required: true,
@@ -83,31 +105,51 @@ export const caseSchema = new mongoose.Schema(
         Date_confirmation: Date,
         Confirmation_method: String,
         Date_of_first_consult: Date,
-        Hospitalized: YesNo,
-        'Reason for hospitalization': HospitalizationReason,
+        Hospitalized: {
+            type: YesNo,
+        },
+        'Reason for hospitalization': {
+            type: HospitalizationReason,
+        },
         Date_hospitalization: Date,
         Date_discharge_hospital: Date,
-        Intensive_care: YesNo,
+        Intensive_care: {
+            type: YesNo,
+        },
         Date_admission_ICU: Date,
         Date_discharge_ICU: Date,
-        Home_monitoring: YesNo,
-        Isolated: YesNo,
+        Home_monitoring: {
+            type: YesNo,
+        },
+        Isolated: {
+            type: YesNo,
+        },
         Date_isolation: Date,
-        Outcome: Outcome,
+        Outcome: {
+            type: Outcome,
+        },
         Date_death: Date,
         Date_recovered: Date,
         Symptoms: String,
-        Previous_infection: YesNo,
+        Previous_infection: {
+            type: YesNo,
+        },
         Co_infection: String,
         Pre_existing_condition: String,
-        Pregnancy_status: YesNo,
-        Contact_with_case: YesNo,
+        Pregnancy_status: {
+            type: YesNo,
+        },
+        Contact_with_case: {
+            type: YesNo,
+        },
         Contact_ID: String,
         Contact_setting: String,
         Contact_animal: String,
         Contact_comment: String,
         Transmission: String,
-        Travel_history: YesNo,
+        Travel_history: {
+            type: YesNo,
+        },
         Travel_history_entry: String,
         Travel_history_start: String,
         Travel_history_location: String,
@@ -118,7 +160,9 @@ export const caseSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        Vaccination: YesNo,
+        Vaccination: {
+            type: YesNo,
+        },
         Vaccine_name: String,
         Vaccine_date: Date,
         Vaccine_side_effects: String,
@@ -155,7 +199,7 @@ export const caseSchema = new mongoose.Schema(
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 caseSchema.methods.equalsJSON = function (jsonCase: any): boolean {
     const thisJson = this.toJSON() as any;
-    const other = new Case(jsonCase).toJSON() as any;
+    const other = new Day0Case(jsonCase).toJSON() as any;
     return (
         _.isEqual(thisJson.demographics, other.demographics) &&
         _.isEqual(thisJson.events, other.events) &&
@@ -176,6 +220,17 @@ caseSchema.methods.equalsJSON = function (jsonCase: any): boolean {
     );
 };
 
+export interface ISource {
+    sourceUrl: string;
+    sourceId: string;
+    sourceName?: string;
+    sourceLicense?: string;
+    sourceProviderName?: string;
+    sourceProviderUrl?: string;
+    sourceEntryId?: string;
+    uploadIds: string[];
+}
+
 export type ICase = {
     // GENERAL
     Case_status: CaseStatus;
@@ -183,7 +238,7 @@ export type ICase = {
     Date_last_modified: string;
 
     // SOURCE
-    Source: string; // source
+    Source: ISource;
     Source_II?: string;
     Source_III?: string;
     Source_IV?: string;
@@ -268,11 +323,27 @@ export type CaseDocument = mongoose.Document &
         equalsJSON(jsonCase: any): boolean;
     };
 
-export const Case = mongoose.model<CaseDocument>('Case', caseSchema);
-export const RestrictedCase = mongoose.model<CaseDocument>(
-    'RestrictedCase',
-    caseSchema,
-);
+caseSchema.pre('save', async function (this: CaseDocument) {
+    this.Date_entry = new Date().toUTCString();
+    this.Date_last_modified = new Date().toUTCString();
+});
+
+caseSchema.pre('insertMany', async function (
+    next: (err?: mongoose.CallbackError | undefined) => void,
+    docs: CaseDocument[],
+) {
+    docs.forEach((doc) => {
+        doc.Date_entry = new Date().toUTCString();
+        doc.Date_last_modified = new Date().toUTCString();
+    });
+    next();
+});
+
+caseSchema.pre('updateOne', async function (this: CaseDocument) {
+    this.Date_last_modified = new Date().toUTCString();
+});
+
+export const Day0Case = mongoose.model<CaseDocument>('Day0Case', caseSchema);
 
 // export const caseAgeRange = async (aCase: LeanDocument<CaseDocument>) => {
 //     return await demographicsAgeRange(aCase.demographics);

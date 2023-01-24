@@ -1,12 +1,12 @@
 import { cleanEnv, makeValidator, port, str } from 'envalid';
 
-const date = makeValidator(x => {
-try {
+const date = makeValidator((x) => {
+    try {
         return new Date(x);
-    } catch(e) {
+    } catch (e) {
         throw new Error('Expect the date to be a day in ISO8601 format');
     }
-})
+});
 
 export default function validateEnv(): Readonly<{
     LOCATION_SERVICE_URL: string;
@@ -15,9 +15,9 @@ export default function validateEnv(): Readonly<{
     SERVICE_ENV: string;
     OUTBREAK_DATE: Date;
 }> & {
-        readonly [varName: string]: string | boolean | number | Date | undefined;
-        // eslint-disable-next-line indent
-    } {
+    readonly [varName: string]: string | boolean | number | Date | undefined;
+    // eslint-disable-next-line indent
+} {
     return cleanEnv(process.env, {
         LOCATION_SERVICE_URL: str({
             desc: 'Base location for the geocoding service',

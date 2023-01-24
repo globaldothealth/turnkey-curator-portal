@@ -53,7 +53,11 @@ const EnhancedTableToolbar = () => {
         } else {
             dispatch(setRowsAcrossPagesSelected(cases.length < totalCases));
             // eslint-disable-next-line
-            dispatch(setCasesSelected(cases.map((caseObj) => caseObj.id!)));
+            dispatch(
+                setCasesSelected(
+                    cases.map((caseObj) => caseObj.caseReference.id!),
+                ),
+            );
             setNumSelectedCases(totalCases);
         }
     };

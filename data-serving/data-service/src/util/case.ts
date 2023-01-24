@@ -1,6 +1,9 @@
 import { CaseDocument, CaseDTO } from '../model/case';
 import { CaseReferenceDocument } from '../model/case-reference';
-import { demographicsAgeRange, DemographicsDocument } from '../model/demographics';
+import {
+    demographicsAgeRange,
+    DemographicsDocument,
+} from '../model/demographics';
 import { EventDocument } from '../model/event';
 import { LocationDocument } from '../model/location';
 import { PathogenDocument } from '../model/pathogen';
@@ -97,12 +100,13 @@ export const parseDownloadedCase = (caseDocument: CaseDTO) => {
  */
 export enum SortBy {
     Default = 'default',
-    ConfirmationDate = 'confirmationDate',
-    Country = 'country',
-    Admin1 = 'admin1',
-    Admin2 = 'admin2',
-    Admin3 = 'admin3',
-    Age = 'age',
+    ConfirmationDate = 'Date_confirmation',
+    Country = 'Country_ISO3',
+    City = 'City',
+    Location = 'Location',
+    Age = 'Age',
+    Occupation = 'Occupation',
+    Outcome = 'Outcome',
 }
 
 /**
@@ -116,35 +120,32 @@ export enum SortByOrder {
 /**
  * Returns correct keyword to sort by
  */
-export const getSortByKeyword = (sortBy: SortBy): string => {
-    let keyword: string;
+// export const getSortByKeyword = (sortBy: SortBy): string => {
+//     let keyword: string;
 
-    switch (sortBy) {
-        case SortBy.ConfirmationDate:
-            keyword = 'confirmationDate';
-            break;
-        case SortBy.Country:
-            keyword = 'location.country';
-            break;
-        case SortBy.Admin1:
-            keyword = 'location.administrativeAreaLevel1';
-            break;
-        case SortBy.Admin2:
-            keyword = 'location.administrativeAreaLevel2';
-            break;
-        case SortBy.Admin3:
-            keyword = 'location.administrativeAreaLevel3';
-            break;
-        case SortBy.Age:
-            keyword = 'demographics.ageRange.start';
-            break;
-        default:
-            keyword = 'revisionMetadata.creationMetadata.date';
-            break;
-    }
+//     switch (sortBy) {
+//         case SortBy.ConfirmationDate:
+//             keyword = 'Date_confirmation';
+//             break;
+//         case SortBy.Country:
+//             keyword = 'Country_ISO3';
+//             break;
+//         case SortBy.City:
+//             keyword = 'Country_ISO3';
+//             break;
+//         case SortBy.Location:
+//             keyword = 'Location';
+//             break;
+//         case SortBy.Age:
+//             keyword = 'Age';
+//             break;
+//         default:
+//             keyword = 'Date_confirmation';
+//             break;
+//     }
 
-    return keyword;
-};
+//     return keyword;
+// };
 
 export const denormalizeEventsHeaders = (headers: string[]): string[] => {
     const index = headers.indexOf('events');
@@ -170,11 +171,15 @@ export const removeBlankHeader = (headers: string[]): string[] => {
     return headers;
 };
 
-export const denormalizeFields = async (doc: CaseDocument): Promise<Partial<CaseDocument>> => {
+export const denormalizeFields = async (
+    doc: CaseDocument,
+): Promise<Partial<CaseDocument>> => {
     const caseReferenceFields = denormalizeCaseReferenceFields(
         doc.caseReference,
     );
-    const demographicsFields = await denormalizeDemographicsFields(doc.demographics);
+    const demographicsFields = await denormalizeDemographicsFields(
+        doc.demographics,
+    );
     const eventFields = denormalizeEventsFields(doc.events);
     const locationFields = denormalizeLocationFields(doc.location);
     const pathogenFields = denormalizePathogenFields(doc.pathogens);

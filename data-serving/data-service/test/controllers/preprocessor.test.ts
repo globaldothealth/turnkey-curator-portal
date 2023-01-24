@@ -6,9 +6,7 @@ import {
     createBatchUpdateCaseRevisions,
     createBatchUpsertCaseRevisions,
     createCaseRevision,
-    setBatchUpdateRevisionMetadata,
     setBatchUpsertFields,
-    setRevisionMetadata,
 } from '../../src/controllers/preprocessor';
 
 import { Case } from '../../src/model/case';
@@ -42,30 +40,6 @@ afterAll(() => {
 });
 
 describe('create', () => {
-    it('sets create metadata', async () => {
-        const requestBody = {
-            ...minimalCase,
-            curator: { email: 'creator@gmail.com' },
-        };
-        const nextFn = jest.fn();
-        await setRevisionMetadata(
-            { body: requestBody, method: 'POST' } as Request,
-            {} as Response,
-            nextFn,
-        );
-
-        expect(nextFn).toHaveBeenCalledTimes(1);
-        expect(requestBody).toEqual({
-            ...minimalCase,
-            revisionMetadata: {
-                revisionNumber: 0,
-                creationMetadata: {
-                    curator: 'creator@gmail.com',
-                    date: Date.now(),
-                },
-            },
-        });
-    });
     it('does not create a case revision', async () => {
         const requestBody = {
             ...minimalCase,
@@ -84,98 +58,6 @@ describe('create', () => {
 });
 
 describe('update', () => {
-    it('sets update metadata and preserves create metadata', async () => {
-        const c = new Case({
-            ...minimalCase,
-            revisionMetadata: {
-                revisionNumber: 0,
-                creationMetadata: {
-                    curator: 'creator@gmail.com',
-                    date: Date.parse('2020-01-01'),
-                },
-            },
-        });
-        await c.save();
-
-        const requestBody = {
-            ...minimalCase,
-            curator: { email: 'updater@gmail.com' },
-        };
-        const nextFn = jest.fn();
-        await setRevisionMetadata(
-            {
-                body: requestBody,
-                method: 'PUT',
-                params: { id: c._id },
-            } as Request<any>,
-            {} as Response,
-            nextFn,
-        );
-
-        expect(nextFn).toHaveBeenCalledTimes(1);
-        expect(requestBody).toEqual({
-            ...minimalCase,
-            revisionMetadata: {
-                revisionNumber: 1,
-                creationMetadata: {
-                    curator: 'creator@gmail.com',
-                    date: Date.parse('2020-01-01'),
-                },
-                updateMetadata: {
-                    curator: 'updater@gmail.com',
-                    date: Date.now(),
-                },
-            },
-        });
-    });
-    it('sets update metadata and replaces existing update metadata', async () => {
-        const c = new Case({
-            ...minimalCase,
-            revisionMetadata: {
-                revisionNumber: 1,
-                creationMetadata: {
-                    curator: 'creator@gmail.com',
-                    date: Date.parse('2020-01-01'),
-                },
-                updateMetadata: {
-                    curator: 'updater1@gmail.com',
-                    date: Date.parse('2020-02-02'),
-                },
-            },
-        });
-        await c.save();
-
-        const requestBody = {
-            ...minimalCase,
-            curator: { email: 'updater2@gmail.com' },
-        };
-        const nextFn = jest.fn();
-        await setRevisionMetadata(
-            {
-                body: requestBody,
-                method: 'PUT',
-                params: { id: c._id },
-            } as Request<any>,
-            {} as Response,
-            nextFn,
-        );
-
-        expect(nextFn).toHaveBeenCalledTimes(1);
-        expect(requestBody).toEqual({
-            ...minimalCase,
-            revisionMetadata: {
-                revisionNumber: 2,
-                creationMetadata: {
-                    curator: 'creator@gmail.com',
-                    date: Date.parse('2020-01-01'),
-                },
-                updateMetadata: {
-                    curator: 'updater2@gmail.com',
-                    date: Date.now(),
-                },
-            },
-        });
-    });
     it('creates a case revision', async () => {
         const c = new Case({
             ...minimalCase,
@@ -213,84 +95,6 @@ describe('update', () => {
 });
 
 describe('upsert', () => {
-    it('with no existing case sets create metadata', async () => {
-        const upsertCase = {
-            ...minimalCase,
-            caseReference: {
-                ...minimalCase.caseReference,
-                sourceEntryId: 'case_id',
-            },
-        };
-        const requestBody = {
-            ...upsertCase,
-            curator: { email: 'creator@gmail.com' },
-        };
-        const nextFn = jest.fn();
-        await setRevisionMetadata(
-            { body: requestBody, method: 'PUT' } as Request,
-            {} as Response,
-            nextFn,
-        );
-
-        expect(nextFn).toHaveBeenCalledTimes(1);
-        expect(requestBody).toEqual({
-            ...upsertCase,
-            revisionMetadata: {
-                revisionNumber: 0,
-                creationMetadata: {
-                    curator: 'creator@gmail.com',
-                    date: Date.now(),
-                },
-            },
-        });
-    });
-    it('with existing case sets update metadata', async () => {
-        const upsertCase = {
-            ...minimalCase,
-            caseReference: {
-                ...minimalCase.caseReference,
-                sourceEntryId: 'case_id',
-            },
-        };
-        const c = new Case({
-            ...upsertCase,
-            revisionMetadata: {
-                revisionNumber: 0,
-                creationMetadata: {
-                    curator: 'creator@gmail.com',
-                    date: Date.parse('2020-01-01'),
-                },
-            },
-        });
-        await c.save();
-
-        const requestBody = {
-            ...upsertCase,
-            curator: { email: 'updater@gmail.com' },
-        };
-        const nextFn = jest.fn();
-        await setRevisionMetadata(
-            { body: requestBody, method: 'PUT' } as Request,
-            {} as Response,
-            nextFn,
-        );
-
-        expect(nextFn).toHaveBeenCalledTimes(1);
-        expect(requestBody).toEqual({
-            ...upsertCase,
-            revisionMetadata: {
-                revisionNumber: 1,
-                creationMetadata: {
-                    curator: 'creator@gmail.com',
-                    date: Date.parse('2020-01-01'),
-                },
-                updateMetadata: {
-                    curator: 'updater@gmail.com',
-                    date: Date.now(),
-                },
-            },
-        });
-    });
     it('with no existing case does not create a case revision', async () => {
         const upsertCase = {
             ...minimalCase,
@@ -352,102 +156,6 @@ describe('upsert', () => {
     });
 });
 describe('batch upsert', () => {
-    it('sets create and update metadata', async () => {
-        const existingCase = {
-            ...minimalCase,
-            caseReference: {
-                ...minimalCase.caseReference,
-                sourceEntryId: 'case_id_exists',
-            },
-        };
-        const c = new Case({
-            ...existingCase,
-            revisionMetadata: {
-                revisionNumber: 0,
-                creationMetadata: {
-                    curator: 'creator@gmail.com',
-                    date: Date.parse('2020-01-01'),
-                },
-            },
-        });
-        await c.save();
-        const existingCaseWithUpdate = { ...existingCase, notes: 'new notes' };
-
-        const newCase = {
-            ...minimalCase,
-            caseReference: {
-                ...minimalCase.caseReference,
-                sourceEntryId: 'case_id_new',
-            },
-        };
-
-        const requestBody = {
-            cases: [existingCaseWithUpdate, newCase],
-            curator: { email: 'updater@gmail.com' },
-        };
-        const nextFn = jest.fn();
-        await setBatchUpsertFields(
-            { body: requestBody, method: 'PUT' } as Request,
-            { locals: {} } as Response,
-            nextFn,
-        );
-
-        expect(nextFn).toHaveBeenCalledTimes(1);
-        expect(requestBody).toEqual({
-            cases: [
-                {
-                    ...existingCaseWithUpdate,
-                    revisionMetadata: {
-                        revisionNumber: 1,
-                        creationMetadata: {
-                            curator: 'creator@gmail.com',
-                            date: Date.parse('2020-01-01'),
-                        },
-                        updateMetadata: {
-                            curator: 'updater@gmail.com',
-                            date: Date.now(),
-                        },
-                    },
-                },
-                {
-                    ...newCase,
-                    revisionMetadata: {
-                        revisionNumber: 0,
-                        creationMetadata: {
-                            curator: 'updater@gmail.com',
-                            date: Date.now(),
-                        },
-                    },
-                },
-            ],
-        });
-    });
-    it('does not add update metadata if case semantically unchanged', async () => {
-        const existingCase = {
-            ...minimalCase,
-            caseReference: {
-                ...minimalCase.caseReference,
-                sourceEntryId: 'case_id_exists',
-            },
-        };
-        await new Case(existingCase).save();
-
-        const requestBody = {
-            cases: [existingCase],
-            curator: { email: 'updater@gmail.com' },
-        };
-        const nextFn = jest.fn();
-        await setBatchUpsertFields(
-            { body: requestBody, method: 'PUT' } as Request,
-            { locals: {} } as Response,
-            nextFn,
-        );
-
-        expect(nextFn).toHaveBeenCalledTimes(1);
-        expect(requestBody).toEqual({
-            cases: [existingCase],
-        });
-    });
     it('with existing cases creates case revisions', async () => {
         const existingCase = {
             ...minimalCase,
@@ -559,85 +267,6 @@ describe('batch upsert', () => {
     });
 });
 describe('batch update', () => {
-    it('sets update metadata', async () => {
-        const c = new Case({
-            ...minimalCase,
-            revisionMetadata: {
-                revisionNumber: 0,
-                creationMetadata: {
-                    curator: 'creator@gmail.com',
-                    date: Date.parse('2020-01-01'),
-                },
-            },
-        });
-        await c.save();
-
-        const c2 = new Case({
-            ...minimalCase,
-            revisionMetadata: {
-                revisionNumber: 1,
-                updateMetadata: {
-                    curator: 'test@gmail.com',
-                    date: Date.now(),
-                },
-                creationMetadata: {
-                    curator: 'creator2@gmail.com',
-                    date: Date.parse('2020-01-01'),
-                },
-            },
-        });
-        await c2.save();
-
-        const requestBody = {
-            cases: [
-                { ...minimalCase, _id: c._id },
-                { ...minimalCase, _id: c2._id },
-            ],
-            curator: { email: 'updater@gmail.com' },
-        };
-        const nextFn = jest.fn();
-        await setBatchUpdateRevisionMetadata(
-            { body: requestBody, method: 'POST' } as Request,
-            {} as Response,
-            nextFn,
-        );
-
-        expect(nextFn).toHaveBeenCalledTimes(1);
-        expect(requestBody).toEqual({
-            cases: [
-                {
-                    ...minimalCase,
-                    _id: c._id,
-                    revisionMetadata: {
-                        revisionNumber: 1,
-                        creationMetadata: {
-                            curator: 'creator@gmail.com',
-                            date: Date.parse('2020-01-01'),
-                        },
-                        updateMetadata: {
-                            curator: 'updater@gmail.com',
-                            date: Date.now(),
-                        },
-                    },
-                },
-                {
-                    ...minimalCase,
-                    _id: c2._id,
-                    revisionMetadata: {
-                        revisionNumber: 2,
-                        creationMetadata: {
-                            curator: 'creator2@gmail.com',
-                            date: Date.parse('2020-01-01'),
-                        },
-                        updateMetadata: {
-                            curator: 'updater@gmail.com',
-                            date: Date.now(),
-                        },
-                    },
-                },
-            ],
-        });
-    });
     it('with existing cases creates case revisions', async () => {
         const c = new Case({
             ...minimalCase,

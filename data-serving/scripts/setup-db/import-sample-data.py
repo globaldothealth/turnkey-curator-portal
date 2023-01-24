@@ -91,7 +91,7 @@ def main():
     if not (api_key := os.getenv('GH_API_KEY')):
         api_key = api_key_for_generated_curator(base_url)
     batch_upsert_endpoint = f"{base_url}/api/cases/batchUpsert"
-    with open("../../samples/cases.json") as f:
+    with open("../../samples/day0cases.json") as f:
         sample_cases = json.load(f)
         converted_cases = [convert_case(c) for c in sample_cases]
         request_body = {

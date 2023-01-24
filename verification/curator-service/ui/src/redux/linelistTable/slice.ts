@@ -1,12 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { fetchLinelistData, changeCasesStatus, deleteCases } from './thunk';
 import { VerificationStatus } from '../../api/models/Case';
-import { ParsedCase } from '../../api/models/Day0Case';
+import { Day0Case } from '../../api/models/Day0Case';
 import { SortBy, SortByOrder } from '../../constants/types';
 
 interface LinelistTableState {
     isLoading: boolean;
-    cases: ParsedCase[];
+    cases: Day0Case[];
     currentPage: number;
     nextPage: number;
     rowsPerPage: number;
@@ -125,7 +125,7 @@ const linelistTableSlice = createSlice({
             if (updatedIds) {
                 state.cases = state.cases.map((data) =>
                     // eslint-disable-next-line
-                    updatedIds.includes(data.id!)
+                    updatedIds.includes(data.caseReference.id!)
                         ? {
                               ...data,
                               caseStatus: newStatus,

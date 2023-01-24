@@ -3,8 +3,7 @@ import CaseForm from './CaseForm';
 import { LinearProgress } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import axios from 'axios';
-import { Day0Case, ParsedCase } from '../api/models/Day0Case';
-import { parseCase } from '../redux/linelistTable/thunk';
+import { Day0Case } from '../api/models/Day0Case';
 
 interface Props {
     id: string;
@@ -13,7 +12,7 @@ interface Props {
 }
 
 export default function EditCase(props: Props): JSX.Element {
-    const [c, setCase] = useState<ParsedCase>();
+    const [c, setCase] = useState<Day0Case>();
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>();
 
@@ -22,7 +21,7 @@ export default function EditCase(props: Props): JSX.Element {
         axios
             .get<Day0Case[]>(`/api/cases/${props.id}`)
             .then((resp) => {
-                setCase(parseCase(resp.data[0]));
+                setCase(resp.data[0]);
                 setErrorMessage(undefined);
             })
             .catch((e) => {

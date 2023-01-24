@@ -638,9 +638,7 @@ describe('POST', () => {
         const res = await request(app)
             .post('/api/cases/batchUpsert')
             .send({
-                cases: [
-                    newCaseWithEntryId,
-                ],
+                cases: [newCaseWithEntryId],
                 ...curatorMetadata,
             })
             .expect(200);

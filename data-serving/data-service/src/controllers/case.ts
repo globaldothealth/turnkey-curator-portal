@@ -1,4 +1,4 @@
-import { Case, CaseDocument } from '../model/day0-case';
+import { Day0Case, CaseDocument } from '../model/day0-case';
 import caseFields from '../model/fields.json';
 import {
     DocumentQuery,
@@ -11,7 +11,7 @@ import { ObjectId } from 'mongodb';
 import { GeocodeOptions, Geocoder, Resolution } from '../geocoding/geocoder';
 import { NextFunction, Request, Response } from 'express';
 import parseSearchQuery, { ParsingError } from '../util/search';
-import { SortByOrder, getSortByKeyword, SortBy } from '../util/case';
+import { SortByOrder, SortBy } from '../util/case';
 import { denormalizeEventsHeaders, removeBlankHeader } from '../util/case';
 
 import { logger } from '../util/logger';
@@ -98,13 +98,13 @@ export class CasesController {
      */
     get = async (req: Request, res: Response): Promise<void> => {
         // Don't look in the restricted collection
-        const c = await Case.find({
+        const c = await Day0Case.find({
             _id: new ObjectId(req.params.id),
         }).lean();
 
         if (c.length === 0) {
             res.status(404).send({
-                message: `Case with ID ${req.params.id} not found.`,
+                message: `Day0Case with ID ${req.params.id} not found.`,
             });
             return;
         }
@@ -147,7 +147,7 @@ export class CasesController {
                     .cursor();
             } else if (req.body.caseIds && queryLimit) {
                 logger.info('Request body with case IDs and limit');
-                cursor = Case.find({
+                cursor = Day0Case.find({
                     _id: { $in: req.body.caseIds },
                 })
                     .lean()
@@ -159,7 +159,7 @@ export class CasesController {
                     .cursor();
             } else if (req.body.caseIds) {
                 logger.info('Request body with case IDs and no limit');
-                cursor = Case.find({
+                cursor = Day0Case.find({
                     _id: { $in: req.body.caseIds },
                 })
                     .lean()
@@ -170,7 +170,7 @@ export class CasesController {
                     .cursor();
             } else if (queryLimit) {
                 logger.info('Request body with limit and no case IDs');
-                cursor = Case.find({ list: true })
+                cursor = Day0Case.find({ list: true })
                     .lean()
                     .limit(queryLimit)
                     .collation({
@@ -180,7 +180,7 @@ export class CasesController {
                     .cursor();
             } else {
                 logger.info('Request body with no query, limit, or case IDs');
-                cursor = Case.find({ list: true })
+                cursor = Day0Case.find({ list: true })
                     .lean()
                     .collation({
                         locale: 'en_US',
@@ -306,16 +306,16 @@ export class CasesController {
                 count: true,
             });
 
-            const sortByKeyword = getSortByKeyword(sortBy as SortBy);
+            const sortByKeyword = sortBy as SortBy;
 
-            const sortedQuery = casesQuery.sort({
-                [sortByKeyword]: sortByOrder === SortByOrder.Ascending ? 1 : -1,
-            });
+            // const sortedQuery = casesQuery.sort({
+            //     [sortByKeyword]: sortByOrder === SortByOrder.Ascending ? 1 : -1,
+            // });
 
             // Do a fetch of documents and another fetch in parallel for total documents
             // count used in pagination.
             const [docs, total] = await Promise.all([
-                sortedQuery
+                casesQuery
                     .skip(limit * (page - 1))
                     .limit(limit)
                     .lean()
@@ -347,7 +347,7 @@ export class CasesController {
             // If we fetched all available data, just return it.
             logger.info('Got one page of results');
             res.json({ cases: docs, total: reportedTotal });
-        } catch (e: any) {
+        } catch (e) {
             if (e instanceof ParsingError) {
                 logger.error(`Parsing error ${e.message}`);
                 res.status(422).json({ message: e.message });
@@ -370,7 +370,7 @@ export class CasesController {
         try {
             await this.geocode(req);
             const receivedCase = req.body as CaseDocument;
-            let c = new Case(receivedCase);
+            const c = new Day0Case(receivedCase);
 
             let result;
             if (req.query.validate_only) {
@@ -427,7 +427,7 @@ export class CasesController {
                 errors.push({ index, message: err.message });
                 continue;
             }
-            await new Case(c).validate().catch((e) => {
+            await new Day0Case(c).validate().catch((e) => {
                 errors.push({ index: index, message: e.message });
             });
         }
@@ -519,57 +519,43 @@ export class CasesController {
                 );
             }
             logger.info('batchUpsert: splitting cases by sourceID');
-            // const {
-            //     unrestrictedCases,
-            //     restrictedCases,
-            // } = this.filterCasesBySourceRestricted(cases);
             logger.info('batchUpsert: preparing bulk write');
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const upsertLambda = async (c: any) => {
                 delete c.caseCount;
-                // if (
-                //     c.caseReference?.sourceId &&
-                //     c.caseReference?.sourceEntryId
-                // ) {
-                //     return {
-                //         updateOne: {
-                //             filter: {
-                //                 'caseReference.sourceId':
-                //                     c.caseReference.sourceId,
-                //                 'caseReference.sourceEntryId':
-                //                     c.caseReference.sourceEntryId,
-                //             },
-                //             update: c,
-                //             upsert: true,
-                //         },
-                //     };
-                // } else {
-                return {
-                    insertOne: {
-                        document: c,
-                    },
-                };
-                // }
+                if (c.Source.sourceId && c.Source.sourceEntryId) {
+                    return {
+                        updateOne: {
+                            filter: {
+                                'Source.sourceId': c.Source.sourceId,
+                                'Source.sourceEntryId': c.Source.sourceEntryId,
+                            },
+                            update: c,
+                            upsert: true,
+                        },
+                    };
+                } else {
+                    return {
+                        insertOne: {
+                            document: c,
+                        },
+                    };
+                }
             };
-            const unrestrictedBulkWriteResult = await Case.bulkWrite(
+
+            const unrestrictedBulkWriteResult = await Day0Case.bulkWrite(
                 await Promise.all(cases.map(upsertLambda)),
                 { ordered: false },
             );
-            // const restrictedBulkWriteResult = await RestrictedCase.bulkWrite(
-            //     await Promise.all(restrictedCases.map(upsertLambda)),
-            //     { ordered: false },
-            // );
+
             logger.info('batchUpsert: finished bulk write');
             const status = errors.length > 0 ? 207 : 200;
             res.status(status).json({
                 phase: 'UPSERT',
                 numCreated:
                     (unrestrictedBulkWriteResult.insertedCount || 0) +
-                    // (restrictedBulkWriteResult.insertedCount || 0) +
                     (unrestrictedBulkWriteResult.upsertedCount || 0),
-                // (restrictedBulkWriteResult.upsertedCount || 0),
                 numUpdated: unrestrictedBulkWriteResult.modifiedCount || 0,
-                // (restrictedBulkWriteResult.modifiedCount || 0),
                 errors,
             });
             return;
@@ -593,10 +579,10 @@ export class CasesController {
      */
     update = async (req: Request, res: Response): Promise<void> => {
         try {
-            let c = await Case.findById(req.params.id);
+            const c = await Day0Case.findById(req.params.id);
             if (!c) {
                 res.status(404).send({
-                    message: `Case with ID ${req.params.id} not found.`,
+                    message: `Day0Case with ID ${req.params.id} not found.`,
                 });
                 return;
             }
@@ -604,7 +590,7 @@ export class CasesController {
             c.set(caseDetails);
             await c.save();
             res.json(c);
-        } catch (err: any) {
+        } catch (err) {
             if (err.name === 'ValidationError') {
                 res.status(422).json(err);
                 return;
@@ -633,7 +619,7 @@ export class CasesController {
 
             for (const c in req.body.cases) {
                 const caseDoc = req.body.cases[c] as CaseDocument;
-                let aCase = await Case.findOne({ _id: caseDoc._id });
+                const aCase = await Day0Case.findOne({ _id: caseDoc._id });
                 if (aCase) {
                     cases.push(caseDoc);
                 } else {
@@ -651,7 +637,7 @@ export class CasesController {
                     update: c,
                 },
             });
-            const bulkWriteResult = await Case.bulkWrite(
+            const bulkWriteResult = await Day0Case.bulkWrite(
                 // Consider defining a type for the request-format cases.
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 cases.map(caseLambda),
@@ -675,56 +661,45 @@ export class CasesController {
      *
      * Handles HTTP PUT /api/cases.
      */
-    // @TODO
-    // upsert = async (req: Request, res: Response): Promise<void> => {
-    //     try {
-    //         let c = await Case.findOne({
-    //             'caseReference.sourceId': req.body.caseReference?.sourceId,
-    //             'caseReference.sourceEntryId':
-    //                 req.body.caseReference?.sourceEntryId,
-    //         });
-    //         if (!c) {
-    //             c = await RestrictedCase.findOne({
-    //                 'caseReference.sourceId': req.body.caseReference?.sourceId,
-    //                 'caseReference.sourceEntryId':
-    //                     req.body.caseReference?.sourceEntryId,
-    //             });
-    //         }
-    //         if (
-    //             req.body.caseReference?.sourceId &&
-    //             req.body.caseReference?.sourceEntryId &&
-    //             c
-    //         ) {
-    //             const update = await caseFromDTO(req.body as CaseDTO);
-    //             c.set(update);
-    //             const result = await c.save();
-    //             res.status(200).json(result);
-    //             return;
-    //         } else {
-    //             // Geocode new cases.
-    //             await this.geocode(req);
-    //             const update = await caseFromDTO(req.body as CaseDTO);
-    //             const c = new Case(update);
-    //             const result = await c.save();
-    //             res.status(201).json(result);
-    //             return;
-    //         }
-    //     } catch (e) {
-    //         const err = e as Error;
-    //         if (err instanceof GeocodeNotFoundError) {
-    //             res.status(404).json({ message: err.message });
-    //         }
-    //         if (
-    //             err.name === 'ValidationError' ||
-    //             err instanceof InvalidParamError
-    //         ) {
-    //             res.status(422).json(err.message);
-    //             return;
-    //         }
-    //         res.status(500).json(err.message);
-    //         return;
-    //     }
-    // };
+    upsert = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const c = await Day0Case.findOne({
+                'Source.sourceId': req.body.Source?.sourceId,
+                'Source.sourceEntryId': req.body.Source?.sourceEntryId,
+            });
+            if (
+                req.body.Source?.sourceId &&
+                req.body.Source?.sourceEntryId &&
+                c
+            ) {
+                c.set(req.body);
+                const result = await c.save();
+                res.status(200).json(result);
+                return;
+            } else {
+                // Geocode new cases.
+                await this.geocode(req);
+                const c = new Day0Case(req.body);
+                const result = await c.save();
+                res.status(201).json(result);
+                return;
+            }
+        } catch (e) {
+            const err = e as Error;
+            if (err instanceof GeocodeNotFoundError) {
+                res.status(404).json({ message: err.message });
+            }
+            if (
+                err.name === 'ValidationError' ||
+                err instanceof InvalidParamError
+            ) {
+                res.status(422).json(err.message);
+                return;
+            }
+            res.status(500).json(err.message);
+            return;
+        }
+    };
 
     /**
      * Deletes multiple cases.
@@ -734,10 +709,12 @@ export class CasesController {
     batchDel = async (req: Request, res: Response): Promise<void> => {
         if (req.body.caseIds !== undefined) {
             for (const i in req.body.caseIds) {
-                let deleted = await Case.findByIdAndDelete(req.body.caseIds[i]);
+                const deleted = await Day0Case.findByIdAndDelete(
+                    req.body.caseIds[i],
+                );
                 if (!deleted) {
                     res.status(404).send({
-                        message: `Case with ID ${req.body.caseIds[i]} not found.`,
+                        message: `Day0Case with ID ${req.body.caseIds[i]} not found.`,
                     });
                     return;
                 }
@@ -751,9 +728,9 @@ export class CasesController {
             count: false,
         }).collation({ locale: 'en_US', strength: 2 });
         try {
-            await Case.deleteMany(casesQuery);
+            await Day0Case.deleteMany(casesQuery);
             res.status(204).end();
-        } catch (err: any) {
+        } catch (err) {
             logger.error(err);
             res.status(500).json(err);
         }
@@ -765,10 +742,10 @@ export class CasesController {
      * Handles HTTP DELETE /api/cases/:id.
      */
     del = async (req: Request, res: Response): Promise<void> => {
-        const c = await Case.findByIdAndDelete(req.params.id, req.body);
+        const c = await Day0Case.findByIdAndDelete(req.params.id, req.body);
         if (!c) {
             res.status(404).send({
-                message: `Case with ID ${req.params.id} not found.`,
+                message: `Day0Case with ID ${req.params.id} not found.`,
             });
             return;
         }
@@ -808,7 +785,7 @@ export class CasesController {
     //             updateQuery = {
     //                 _id: { $in: caseIds },
     //             };
-    //             const validIdsCount = await Case.countDocuments(updateQuery);
+    //             const validIdsCount = await Day0Case.countDocuments(updateQuery);
     //             const validRestrictedIdsCount = await RestrictedCase.countDocuments(
     //                 updateQuery,
     //             );
@@ -856,7 +833,7 @@ export class CasesController {
     //                 },
     //             };
     //         }
-    //         await Case.updateMany(updateQuery, updateDocument);
+    //         await Day0Case.updateMany(updateQuery, updateDocument);
     //         await RestrictedCase.updateMany(updateQuery, updateDocument);
 
     //         res.status(200).end();
@@ -916,7 +893,7 @@ export class CasesController {
     //         };
     //     }
 
-    //     const cases = await Case.find(searchQuery).lean();
+    //     const cases = await Day0Case.find(searchQuery).lean();
 
     //     const caseIds = cases
     //         .filter((c) => !!c.caseReference.sourceEntryId)
@@ -1061,11 +1038,11 @@ export const casesMatchingSearchQuery = (opts: {
         : { list: true };
 
     // Always search with case-insensitivity.
-    const casesQuery: Query<CaseDocument[], CaseDocument> = Case.find(
+    const casesQuery: Query<CaseDocument[], CaseDocument> = Day0Case.find(
         queryOpts,
     );
 
-    const countQuery: Query<number, CaseDocument> = Case.countDocuments(
+    const countQuery: Query<number, CaseDocument> = Day0Case.countDocuments(
         queryOpts,
     ).limit(countLimit);
 
@@ -1122,12 +1099,12 @@ export const findCasesWithCaseReferenceData = async (
 ): Promise<CaseDocument[]> => {
     const providedCaseReferenceData = req.body.cases
         .filter(
-            // Case data should be validated prior to this point.
+            // Day0Case data should be validated prior to this point.
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (c: any) =>
                 c.caseReference?.sourceId && c.caseReference?.sourceEntryId,
         )
-        // Case data should be validated prior to this point.
+        // Day0Case data should be validated prior to this point.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .map((c: any) => {
             return {
@@ -1138,9 +1115,9 @@ export const findCasesWithCaseReferenceData = async (
 
     if (providedCaseReferenceData.length > 0) {
         if (fieldsToSelect === undefined)
-            return Case.find().or(providedCaseReferenceData).exec();
+            return Day0Case.find().or(providedCaseReferenceData).exec();
         else
-            return Case.find()
+            return Day0Case.find()
                 .or(providedCaseReferenceData)
                 .select(fieldsToSelect)
                 .exec();
@@ -1185,7 +1162,7 @@ export const listSymptoms = async (
 ): Promise<void> => {
     const limit = Number(req.query.limit);
     try {
-        const symptoms = await Case.aggregate([
+        const symptoms = await Day0Case.aggregate([
             { $unwind: '$symptoms.values' },
             { $sortByCount: '$symptoms.values' },
             { $sort: { count: -1, _id: 1 } },
@@ -1194,7 +1171,7 @@ export const listSymptoms = async (
             symptoms: symptoms.map((symptomObject) => symptomObject._id),
         });
         return;
-    } catch (e: any) {
+    } catch (e) {
         logger.error(e);
         res.status(500).json(e);
         return;
@@ -1213,7 +1190,7 @@ export const listPlacesOfTransmission = async (
 ): Promise<void> => {
     const limit = Number(req.query.limit);
     try {
-        const placesOfTransmission = await Case.aggregate([
+        const placesOfTransmission = await Day0Case.aggregate([
             { $unwind: '$transmission.places' },
             { $sortByCount: '$transmission.places' },
             { $sort: { count: -1, _id: 1 } },
@@ -1224,7 +1201,7 @@ export const listPlacesOfTransmission = async (
             ),
         });
         return;
-    } catch (e: any) {
+    } catch (e) {
         logger.error(e);
         res.status(500).json(e);
         return;
@@ -1243,7 +1220,7 @@ export const listOccupations = async (
 ): Promise<void> => {
     const limit = Number(req.query.limit);
     try {
-        const occupations = await Case.aggregate([
+        const occupations = await Day0Case.aggregate([
             { $sortByCount: '$demographics.occupation' },
             { $sort: { count: -1, _id: 1 } },
         ]).limit(limit);
@@ -1258,7 +1235,7 @@ export const listOccupations = async (
             ),
         });
         return;
-    } catch (e: any) {
+    } catch (e) {
         logger.error(e);
         res.status(500).json(e);
         return;
@@ -1272,7 +1249,7 @@ function validateCaseAges(caseStart: number, caseEnd: number) {
         caseEnd > 120
     ) {
         throw new InvalidParamError(
-            `Case validation failed: age range ${caseStart}-${caseEnd} invalid (must be within 0-120)`,
+            `Day0Case validation failed: age range ${caseStart}-${caseEnd} invalid (must be within 0-120)`,
         );
     }
 }

@@ -5,7 +5,7 @@ import Scroll from 'react-scroll';
 import { SelectField } from '../common-form-fields/FormikFields';
 import { FastField, useFormikContext } from 'formik';
 import { TextField } from 'formik-mui';
-import { ParsedCase } from '../../api/models/Day0Case';
+import { Day0CaseFormValues } from '../../api/models/Day0Case';
 import { useStyles } from './styled';
 import clsx from 'clsx';
 
@@ -45,7 +45,7 @@ const TooltipText = () => (
 );
 
 export default function PreexistingConditions(): JSX.Element {
-    const { initialValues } = useFormikContext<ParsedCase>();
+    const { initialValues } = useFormikContext<Day0CaseFormValues>();
     const classes = useStyles();
 
     return (
@@ -55,14 +55,14 @@ export default function PreexistingConditions(): JSX.Element {
                 tooltip={<TooltipText />}
             />
             <SelectField
-                name="previousInfection"
+                name="preexistingConditions.previousInfection"
                 label="Previous infection"
                 values={hasPreexistingConditionsValues}
             />
 
             <div className={clsx([classes.fieldRow, classes.halfWidth])}>
                 <FastField
-                    name="coInfection"
+                    name="preexistingConditions.coInfection"
                     type="text"
                     label="Co infection"
                     component={TextField}
@@ -71,17 +71,18 @@ export default function PreexistingConditions(): JSX.Element {
             </div>
             <div className={classes.fieldRow}>
                 <FormikAutocomplete
-                    name="preexistingCondition"
+                    name="preexistingConditions.preexistingCondition"
                     label="Pre-existing conditions"
                     initialValue={
-                        initialValues.preexistingCondition || undefined
+                        initialValues.preexistingConditions
+                            .preexistingCondition || undefined
                     }
                     multiple
                     optionsLocation="https://raw.githubusercontent.com/globaldothealth/list/main/suggest/preexisting_conditions.txt"
                 />
             </div>
             <SelectField
-                name="pregnancyStatus"
+                name="preexistingConditions.pregnancyStatus"
                 label="Pregnancy status"
                 values={hasPreexistingConditionsValues}
             />

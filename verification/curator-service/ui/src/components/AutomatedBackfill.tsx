@@ -191,7 +191,7 @@ export default function AutomatedBackfill(props: Props): JSX.Element {
                 setErrorMessage('Please enter valid source and dates');
                 return;
             }
-            setSourceId(values.caseReference.sourceId);
+            setSourceId(values.caseReference.sourceId ?? '');
             const utcStartDateString = isoDateString(
                 new Date(values.startDate),
             );

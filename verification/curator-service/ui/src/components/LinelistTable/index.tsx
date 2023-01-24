@@ -108,17 +108,17 @@ const LinelistTable = () => {
         cases &&
         cases.map((data) => {
             return createData(
-                data.id || '',
-                data.country,
-                data.city,
-                data.location,
-                renderDate(data.confirmationDate || ''),
-                data.age,
-                data.gender,
-                data.outcome,
-                renderDate(data.hospitalizationDate || ''),
-                renderDate(data.symptomsOnsetDate || ''),
-                data.source,
+                data.caseReference.id || '',
+                data.location.country,
+                data.location.city,
+                data.location.location,
+                renderDate(data.events.dateConfirmation || ''),
+                data.demographics.age,
+                data.demographics.gender,
+                data.events.outcome,
+                renderDate(data.events.dateHospitalization || ''),
+                renderDate(data.events.dateOnset || ''),
+                data.sources.source,
                 data.caseStatus,
             );
         });
@@ -373,7 +373,7 @@ const LinelistTable = () => {
                                             align="left"
                                             sx={{ minWidth: 100 }}
                                         >
-                                            {row.confirmationDate}
+                                            {row.dateConfirmation}
                                         </TableCell>
                                         <TableCell component="th" scope="row">
                                             {row.caseStatus}
@@ -409,13 +409,13 @@ const LinelistTable = () => {
                                             {row.outcome}
                                         </TableCell>
                                         <TableCell align="left">
-                                            {row.hospitalizationDate}
+                                            {row.dateHospitalization}
                                         </TableCell>
                                         <TableCell align="left">
-                                            {row.symptomsOnsetDate}
+                                            {row.dateOnset}
                                         </TableCell>
                                         <TableCell align="left">
-                                            {row.sourceUrl}
+                                            {row.source}
                                         </TableCell>
                                     </TableRow>
                                 ))

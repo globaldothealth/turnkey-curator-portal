@@ -2,7 +2,7 @@ import { TextField } from 'formik-mui';
 
 import { FastField, useFormikContext } from 'formik';
 import makeStyles from '@mui/styles/makeStyles';
-import { ParsedCase } from '../../api/models/Day0Case';
+import { Day0CaseFormValues } from '../../api/models/Day0Case';
 import { useEffect } from 'react';
 import { getName } from 'i18n-iso-countries';
 
@@ -27,26 +27,27 @@ const styles = makeStyles(() => ({
 
 export default function Location(): JSX.Element {
     const classes = styles();
-    const { values, setFieldValue } = useFormikContext<ParsedCase>();
+    const { values, setFieldValue } = useFormikContext<Day0CaseFormValues>();
 
     useEffect(() => {
-        if (!values.geocodeLocation) return;
+        if (!values.location.geocodeLocation) return;
 
-        const countryName = getName(values.geocodeLocation.country, 'en');
-
-        console.log(values.geocodeLocation);
-        setFieldValue('countryISO3', values.geocodeLocation.country);
-        setFieldValue('country', countryName);
-        setFieldValue(
-            'city',
-            values.geocodeLocation.administrativeAreaLevel2 || '',
+        const countryName = getName(
+            values.location.geocodeLocation.country,
+            'en',
         );
+
         setFieldValue(
-            'location',
-            values.geocodeLocation.administrativeAreaLevel3 || '',
+            'location.countryISO3',
+            values.location.geocodeLocation.country,
+        );
+        setFieldValue('location.country', countryName);
+        setFieldValue(
+            'location.location',
+            values.location.geocodeLocation.name || '',
         );
         // eslint-disable-next-line
-    }, [values.geocodeLocation]);
+    }, [values.location.geocodeLocation]);
 
     return (
         <div className={classes.root}>
@@ -54,7 +55,7 @@ export default function Location(): JSX.Element {
                 variant="outlined"
                 className={classes.field}
                 label="Country code"
-                name="countryISO3"
+                name="location.countryISO3"
                 type="text"
                 required
                 component={TextField}
@@ -64,7 +65,7 @@ export default function Location(): JSX.Element {
                 variant="outlined"
                 className={classes.field}
                 label="Country"
-                name="country"
+                name="location.country"
                 type="text"
                 required
                 component={TextField}
@@ -74,7 +75,7 @@ export default function Location(): JSX.Element {
                 variant="outlined"
                 className={classes.field}
                 label="City"
-                name="city"
+                name="location.city"
                 type="text"
                 component={TextField}
                 sx={{ minWidth: '13rem' }}
@@ -83,7 +84,7 @@ export default function Location(): JSX.Element {
                 variant="outlined"
                 className={classes.field}
                 label="Location"
-                name="location"
+                name="location.location"
                 type="text"
                 component={TextField}
                 sx={{ minWidth: '13rem' }}

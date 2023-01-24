@@ -5,7 +5,7 @@ import { StyledTooltip } from './StyledTooltip';
 import Scroll from 'react-scroll';
 import { TextField } from 'formik-mui';
 import { VaccineSideEffects } from './Symptoms';
-import { ParsedCase } from '../../api/models/Day0Case';
+import { Day0CaseFormValues } from '../../api/models/Day0Case';
 import { useStyles } from './styled';
 import clsx from 'clsx';
 import { toUTCDate } from '../util/date';
@@ -32,7 +32,7 @@ const TooltipText = () => (
 );
 
 export default function Vaccines(): JSX.Element {
-    const { values, setValues } = useFormikContext<ParsedCase>();
+    const { values, setValues } = useFormikContext<Day0CaseFormValues>();
     const globalClasses = useStyles();
 
     return (
@@ -43,11 +43,11 @@ export default function Vaccines(): JSX.Element {
                 tooltip={<TooltipText />}
             />
             <SelectField
-                name="vaccination"
+                name="vaccination.vaccination"
                 label="Vaccination"
                 values={['Y', 'N', 'NA']}
             />
-            {values.vaccination === 'Y' && (
+            {values.vaccination.vaccination === 'Y' && (
                 <>
                     <div
                         className={clsx([
@@ -56,7 +56,7 @@ export default function Vaccines(): JSX.Element {
                         ])}
                     >
                         <FastField
-                            name="vaccineName"
+                            name="vaccination.vaccineName"
                             type="text"
                             label="Vaccine name"
                             component={TextField}
@@ -64,21 +64,24 @@ export default function Vaccines(): JSX.Element {
                         />
                     </div>
                     <DateField
-                        name="vaccineDate"
+                        name="vaccination.vaccineDate"
                         label="Vaccine date"
-                        value={values.vaccineDate}
+                        value={values.vaccination.vaccineDate}
                         onChange={(newValue) => {
                             setValues({
                                 ...values,
-                                vaccineDate: toUTCDate(
-                                    newValue
-                                        ? newValue.toDateString()
-                                        : undefined,
-                                ),
+                                vaccination: {
+                                    ...values.vaccination,
+                                    vaccineDate: toUTCDate(
+                                        newValue
+                                            ? newValue.toDateString()
+                                            : undefined,
+                                    ),
+                                },
                             });
                         }}
                     />
-                    <VaccineSideEffects />
+                    {/* <VaccineSideEffects /> */}
                 </>
             )}
         </Scroll.Element>

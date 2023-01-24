@@ -132,6 +132,8 @@ export default function FiltersDialog({
 
             const searchQuery = filtersToURL(values);
 
+            console.log(searchQuery);
+
             sendCustomGtmEvent('filters_applied', { query: searchQuery });
 
             history.push({ pathname: '/cases', search: searchQuery });

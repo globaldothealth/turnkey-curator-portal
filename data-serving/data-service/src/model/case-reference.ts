@@ -14,7 +14,7 @@ export const caseReferenceSchema = new mongoose.Schema(
         },
         uploadIds: {
             ...uniqueStringsArrayFieldInfo,
-            required: true
+            required: true,
         },
         verificationStatus: {
             type: String,

@@ -5,7 +5,7 @@ import { StyledTooltip } from './StyledTooltip';
 import Scroll from 'react-scroll';
 import { FastField, useFormikContext } from 'formik';
 import { TextField } from 'formik-mui';
-import { Outcome, ParsedCase } from '../../api/models/Day0Case';
+import { Outcome, Day0CaseFormValues } from '../../api/models/Day0Case';
 import { useStyles } from './styled';
 import clsx from 'clsx';
 import { toUTCDate } from '../util/date';
@@ -109,7 +109,7 @@ const TooltipText = () => (
 );
 
 export default function Events(): JSX.Element {
-    const { values, setFieldValue } = useFormikContext<ParsedCase>();
+    const { values, setFieldValue } = useFormikContext<Day0CaseFormValues>();
     const classes = useStyles();
 
     return (
@@ -121,12 +121,26 @@ export default function Events(): JSX.Element {
                 tooltip={<TooltipText />}
             />
             <DateField
-                name="confirmationDate"
-                label="Confirmed case date"
-                value={values.confirmationDate}
+                name="events.dateEntry"
+                label="Entry date"
+                value={values.events.dateEntry}
                 onChange={(newValue) => {
                     setFieldValue(
-                        'confirmationDate',
+                        'events.dateEntry',
+                        toUTCDate(
+                            newValue ? newValue.toDateString() : undefined,
+                        ),
+                    );
+                }}
+                required
+            />
+            <DateField
+                name="events.dateConfirmation"
+                label="Confirmed case date"
+                value={values.events.dateConfirmation}
+                onChange={(newValue) => {
+                    setFieldValue(
+                        'events.dateConfirmation',
                         toUTCDate(
                             newValue ? newValue.toDateString() : undefined,
                         ),
@@ -135,7 +149,7 @@ export default function Events(): JSX.Element {
             />
             <div className={clsx([classes.fieldRow, classes.halfWidth])}>
                 <FastField
-                    name="confirmationMethod"
+                    name="events.confirmationMethod"
                     label="Method of confirmation"
                     type="text"
                     component={TextField}
@@ -145,10 +159,10 @@ export default function Events(): JSX.Element {
             <DateField
                 name="symptomsOnsetDate"
                 label="Onset of symptoms date"
-                value={values.symptomsOnsetDate}
+                value={values.events.dateOnset}
                 onChange={(newValue) => {
                     setFieldValue(
-                        'symptomsOnsetDate',
+                        'values.dateOnset',
                         toUTCDate(
                             newValue ? newValue.toDateString() : undefined,
                         ),
@@ -156,12 +170,12 @@ export default function Events(): JSX.Element {
                 }}
             />
             <DateField
-                name="firstConsultDate"
+                name="events.dateOfFirstConsult"
                 label="First clinical consultation date"
-                value={values.firstConsultDate}
+                value={values.events.dateOfFirstConsult}
                 onChange={(newValue) => {
                     setFieldValue(
-                        'firstConsultDate',
+                        'events.dateOfFirstConsult',
                         toUTCDate(
                             newValue ? newValue.toDateString() : undefined,
                         ),
@@ -169,23 +183,23 @@ export default function Events(): JSX.Element {
                 }}
             />
             <SelectField
-                name="homeMonitoring"
+                name="events.homeMonitoring"
                 label="Home monitoring"
                 values={yesNoUndefined}
             />
             <SelectField
-                name="isolated"
+                name="events.isolated"
                 label="Isolated"
                 values={yesNoUndefined}
             />
-            {values.isolated === 'Y' && (
+            {values.events.isolated === 'Y' && (
                 <DateField
-                    name="isolationDate"
+                    name="events.dateIsolation"
                     label="Date of isolation"
-                    value={values.isolationDate}
+                    value={values.events.dateIsolation}
                     onChange={(newValue) => {
                         setFieldValue(
-                            'isolationDate',
+                            'events.dateIsolation',
                             toUTCDate(
                                 newValue ? newValue.toDateString() : undefined,
                             ),
@@ -194,19 +208,19 @@ export default function Events(): JSX.Element {
                 />
             )}
             <SelectField
-                name="hospitalized"
+                name="events.hospitalized"
                 label="Hospital admission"
                 values={yesNoUndefined}
             />
-            {values.hospitalized === 'Y' && (
+            {values.events.hospitalized === 'Y' && (
                 <>
                     <DateField
-                        name="hospitalizationDate"
+                        name="events.dateHospitalization"
                         label="Hospital admission date"
-                        value={values.hospitalizationDate}
+                        value={values.events.dateHospitalization}
                         onChange={(newValue) => {
                             setFieldValue(
-                                'hospitalAdmissionDate',
+                                'events.dateHospitalization',
                                 toUTCDate(
                                     newValue
                                         ? newValue.toDateString()
@@ -218,10 +232,10 @@ export default function Events(): JSX.Element {
                     <DateField
                         name="hospitalDischargeDate"
                         label="Hospital discharge date"
-                        value={values.hospitalDischargeDate}
+                        value={values.events.dateDischargeHospital}
                         onChange={(newValue) => {
                             setFieldValue(
-                                'hospitalDischargeDate',
+                                'events.dateDischargeHospital',
                                 toUTCDate(
                                     newValue
                                         ? newValue.toDateString()
@@ -233,19 +247,19 @@ export default function Events(): JSX.Element {
                 </>
             )}
             <SelectField
-                name="intensiveCare"
+                name="events.intensiveCare"
                 label="Intensive care"
                 values={yesNoUndefined}
             />
-            {values.intensiveCare === 'Y' && (
+            {values.events.intensiveCare === 'Y' && (
                 <>
                     <DateField
-                        name="ICUAdmissionDate"
+                        name="events.dateAdmissionICU"
                         label="ICU admission date"
-                        value={values.ICUAdmissionDate}
+                        value={values.events.dateAdmissionICU}
                         onChange={(newValue) => {
                             setFieldValue(
-                                'ICUAdmissionDate',
+                                'events.dateAdmissionICU',
                                 toUTCDate(
                                     newValue
                                         ? newValue.toDateString()
@@ -255,12 +269,12 @@ export default function Events(): JSX.Element {
                         }}
                     />
                     <DateField
-                        name="ICUDischargeDate"
+                        name="events.dateDischargeICU"
                         label="ICU discharge date"
-                        value={values.ICUDischargeDate}
+                        value={values.events.dateDischargeICU}
                         onChange={(newValue) => {
                             setFieldValue(
-                                'ICUDischargeDate',
+                                'events.dateDischargeICU',
                                 toUTCDate(
                                     newValue
                                         ? newValue.toDateString()
@@ -271,15 +285,19 @@ export default function Events(): JSX.Element {
                     />
                 </>
             )}
-            <SelectField name="outcome" label="Outcome" values={outcomes} />
-            {values.outcome === Outcome.Recovered && (
+            <SelectField
+                name="events.outcome"
+                label="Outcome"
+                values={outcomes}
+            />
+            {values.events.outcome === Outcome.Recovered && (
                 <DateField
-                    name="recoveredDate"
+                    name="events.dateRecovered"
                     label="Date of recovery"
-                    value={values.recoveredDate}
+                    value={values.events.dateRecovered}
                     onChange={(newValue) => {
                         setFieldValue(
-                            'recoveredDate',
+                            'events.dateRecovered',
                             toUTCDate(
                                 newValue ? newValue.toDateString() : undefined,
                             ),
@@ -287,14 +305,14 @@ export default function Events(): JSX.Element {
                     }}
                 />
             )}
-            {values.outcome === Outcome.Death && (
+            {values.events.outcome === Outcome.Death && (
                 <DateField
-                    name="deathDate"
+                    name="events.dateDeath"
                     label="Date of death"
-                    value={values.deathDate}
+                    value={values.events.dateDeath}
                     onChange={(newValue) => {
                         setFieldValue(
-                            'deathDate',
+                            'events.dateDeath',
                             toUTCDate(
                                 newValue ? newValue.toDateString() : undefined,
                             ),

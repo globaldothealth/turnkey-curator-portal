@@ -327,7 +327,7 @@ export default class CasesController {
                 this.dataServerURL + '/api' + req.url,
             );
             res.status(response.status).json(response.data);
-        } catch (err: any) {
+        } catch (err) {
             logger.error(err);
             if (err.response?.status && err.response?.data) {
                 res.status(err.response.status).send(err.response.data);

@@ -12,7 +12,7 @@ import { TextField } from 'formik-mui';
 import { StyledTooltip } from './StyledTooltip';
 import axios from 'axios';
 import makeStyles from '@mui/styles/makeStyles';
-import { Gender, ParsedCase } from '../../api/models/Day0Case';
+import { Gender, Day0CaseFormValues } from '../../api/models/Day0Case';
 import { useStyles } from './styled';
 
 const styles = makeStyles(() => ({
@@ -82,7 +82,8 @@ const TooltipText = () => (
 export default function Demographics(): JSX.Element {
     const classes = styles();
     const globalClasses = useStyles();
-    const { initialValues, setFieldValue } = useFormikContext<ParsedCase>();
+    const { initialValues, setFieldValue } =
+        useFormikContext<Day0CaseFormValues>();
     const [commonOccupations, setCommonOccupations] = React.useState([]);
 
     React.useEffect(
@@ -101,14 +102,14 @@ export default function Demographics(): JSX.Element {
         <Scroll.Element name="demographics">
             <FieldTitle title="Demographics" tooltip={<TooltipText />} />
             <SelectField
-                name="gender"
+                name="demographics.gender"
                 label="Gender"
                 values={Object.values(Gender)}
             />
             <div className={`${globalClasses.fieldRow} ${classes.ageRow}`}>
                 <FastField
                     className={classes.ageField}
-                    name="minAge"
+                    name="demographics.minAge"
                     type="number"
                     label="Min age"
                     component={TextField}
@@ -116,7 +117,7 @@ export default function Demographics(): JSX.Element {
                 <span className={classes.ageSeparator}>to</span>
                 <FastField
                     className={classes.ageField}
-                    name="maxAge"
+                    name="demographics.maxAge"
                     type="number"
                     label="Max age"
                     component={TextField}
@@ -124,7 +125,7 @@ export default function Demographics(): JSX.Element {
                 <span className={classes.ageSeparator}>or</span>
                 <FastField
                     className={classes.ageField}
-                    name="age"
+                    name="demographics.age"
                     type="number"
                     label="Age"
                     component={TextField}
@@ -145,7 +146,7 @@ export default function Demographics(): JSX.Element {
                                         label={occupation}
                                         onClick={(): void =>
                                             setFieldValue(
-                                                'occupation',
+                                                'demographics.occupation',
                                                 occupation,
                                             )
                                         }
@@ -157,16 +158,16 @@ export default function Demographics(): JSX.Element {
             )}
             <div className={globalClasses.fieldRow}>
                 <FormikAutocomplete
-                    name="occupation"
+                    name="demographics.occupation"
                     label="Occupation"
-                    initialValue={initialValues.occupation}
+                    initialValue={initialValues.demographics.occupation}
                     multiple={false}
                     freeSolo
                     optionsLocation="https://raw.githubusercontent.com/globaldothealth/list/main/suggest/occupations.txt"
                 />
             </div>
             <SelectField
-                name="healthcareWorker"
+                name="demographics.healthcareWorker"
                 label="Healthcare worker"
                 values={['Y', 'N', 'NA']}
             />

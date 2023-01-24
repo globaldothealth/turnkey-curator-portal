@@ -16,7 +16,7 @@ import { Select, TextField } from 'formik-mui';
 import axios from 'axios';
 import { hasKey } from '../Utils';
 import makeStyles from '@mui/styles/makeStyles';
-import { ParsedCase } from '../../api/models/Day0Case';
+import { Day0CaseFormValues } from '../../api/models/Day0Case';
 
 const useStyles = makeStyles(() => ({
     fieldRow: {
@@ -50,7 +50,7 @@ export function FormikAutocomplete(
     const [options, setOptions] = React.useState<string[]>([]);
     const loading = open && options.length === 0;
     const { setFieldValue, setTouched, initialValues, values } =
-        useFormikContext<ParsedCase>();
+        useFormikContext<Day0CaseFormValues>();
 
     React.useEffect(() => {
         let active = true;
@@ -90,6 +90,8 @@ export function FormikAutocomplete(
         }
     }, [open]);
 
+    const fallbackValue = props.multiple ? [] : '';
+
     return (
         <Autocomplete
             multiple={props.multiple}
@@ -104,7 +106,7 @@ export function FormikAutocomplete(
             onClose={(): void => {
                 setOpen(false);
             }}
-            value={hasKey(values, props.name) ? values[props.name] : undefined}
+            value={values[props.name] || fallbackValue}
             options={options}
             filterOptions={(options: string[], params): string[] => {
                 const filtered = filter(options, params) as string[];
@@ -217,7 +219,7 @@ export function RequiredHelperText(
     props: RequiredHelperTextProps,
 ): JSX.Element {
     const { values, touched } = useFormikContext<
-        ParsedCase | BulkCaseFormValues | AutomatedSourceFormValues
+        Day0CaseFormValues | BulkCaseFormValues | AutomatedSourceFormValues
     >();
 
     let finalHelperText = 'Required';

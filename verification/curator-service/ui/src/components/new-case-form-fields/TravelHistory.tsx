@@ -4,7 +4,7 @@ import { FastField, useFormikContext } from 'formik';
 import FieldTitle from '../common-form-fields/FieldTitle';
 import { StyledTooltip } from './StyledTooltip';
 import Scroll from 'react-scroll';
-import { ParsedCase } from '../../api/models/Day0Case';
+import { Day0CaseFormValues } from '../../api/models/Day0Case';
 import { TextField } from 'formik-mui';
 import { useStyles } from './styled';
 import clsx from 'clsx';
@@ -51,31 +51,34 @@ const TooltipText = () => (
 );
 
 export default function TravelHistory(): JSX.Element {
-    const { values, setValues } = useFormikContext<ParsedCase>();
+    const { values, setValues } = useFormikContext<Day0CaseFormValues>();
     const globalClasses = useStyles();
 
     return (
         <Scroll.Element name="travelHistory">
             <FieldTitle title="Travel History" tooltip={<TooltipText />} />
             <SelectField
-                name="travelHistory"
+                name="travelHistory.travelHistory"
                 label="Travel history"
                 values={hasTravelledValues}
             />
-            {values.travelHistory === 'Y' && (
+            {values.travelHistory.travelHistory === 'Y' && (
                 <>
                     <DateField
-                        name="travelHistoryEntry"
+                        name="travelHistory.travelHistoryEntry"
                         label="Travel history entry"
-                        value={values.travelHistoryEntry}
+                        value={values.travelHistory.travelHistoryEntry}
                         onChange={(newValue) => {
                             setValues({
                                 ...values,
-                                travelHistoryEntry: toUTCDate(
-                                    newValue
-                                        ? newValue.toDateString()
-                                        : undefined,
-                                ),
+                                travelHistory: {
+                                    ...values.travelHistory,
+                                    travelHistoryEntry: toUTCDate(
+                                        newValue
+                                            ? newValue.toDateString()
+                                            : undefined,
+                                    ),
+                                },
                             });
                         }}
                     />
@@ -86,7 +89,7 @@ export default function TravelHistory(): JSX.Element {
                         ])}
                     >
                         <FastField
-                            name="travelHistoryStart"
+                            name="travelHistory.travelHistoryStart"
                             type="text"
                             label="Travel history start"
                             component={TextField}
@@ -100,7 +103,7 @@ export default function TravelHistory(): JSX.Element {
                         ])}
                     >
                         <FastField
-                            name="travelHistoryLocation"
+                            name="travelHistory.travelHistoryLocation"
                             type="text"
                             label="Travel history location"
                             component={TextField}
@@ -114,7 +117,7 @@ export default function TravelHistory(): JSX.Element {
                         ])}
                     >
                         <FastField
-                            name="travelHistoryCountry"
+                            name="travelHistory.travelHistoryCountry"
                             type="text"
                             label="Travel history country"
                             component={TextField}

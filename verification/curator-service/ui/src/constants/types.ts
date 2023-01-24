@@ -1,11 +1,12 @@
 export enum SortBy {
     Default = 'default',
-    ConfirmationDate = 'confirmationDate',
-    Country = 'country',
-    Admin1 = 'admin1',
-    Admin2 = 'admin2',
-    Admin3 = 'admin3',
-    Age = 'age',
+    ConfirmationDate = 'Date_confirmation',
+    Country = 'Country_ISO3',
+    City = 'City',
+    Location = 'Location',
+    Age = 'Age',
+    Occupation = 'Occupation',
+    Outcome = 'Outcome',
 }
 
 export enum SortByOrder {

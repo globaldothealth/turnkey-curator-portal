@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, Grid, LinearProgress, Paper, Typography } from '@mui/material';
-import { ParsedCase, Outcome, YesNo, Day0Case } from '../api/models/Day0Case';
+import { Day0Case, Outcome, YesNo } from '../api/models/Day0Case';
 import AppModal from './AppModal';
 import EditIcon from '@mui/icons-material/EditOutlined';
 import { Link } from 'react-router-dom';
@@ -18,7 +18,6 @@ import { selectFilterBreadcrumbs } from '../redux/app/selectors';
 import { selectSearchQuery } from '../redux/linelistTable/selectors';
 import Chip from '@mui/material/Chip';
 import { nameCountry } from './util/countryNames';
-import { parseCase } from '../redux/linelistTable/thunk';
 
 const styles = makeStyles(() => ({
     errorMessage: {
@@ -34,7 +33,7 @@ interface Props {
 }
 
 export default function ViewCase(props: Props): JSX.Element {
-    const [c, setCase] = useState<ParsedCase>();
+    const [c, setCase] = useState<Day0Case>();
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>();
 
@@ -43,7 +42,7 @@ export default function ViewCase(props: Props): JSX.Element {
         axios
             .get<Day0Case[]>(`/api/cases/${props.id}`)
             .then((resp) => {
-                setCase(parseCase(resp.data[0]));
+                setCase(resp.data[0]);
                 setErrorMessage(undefined);
             })
             .catch((e) => {
@@ -73,7 +72,7 @@ export default function ViewCase(props: Props): JSX.Element {
     );
 }
 interface CaseDetailsProps {
-    c: ParsedCase;
+    c: Day0Case;
     enableEdit?: boolean;
 }
 
@@ -137,12 +136,12 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
     const filtersBreadcrumb = useSelector(selectFilterBreadcrumbs);
 
     const hasAdditionalSources =
-        props.c.sourceII ||
-        props.c.sourceIII ||
-        props.c.sourceIV ||
-        props.c.sourceV ||
-        props.c.sourceVI ||
-        props.c.sourceVII;
+        props.c.sources.sourceII ||
+        props.c.sources.sourceIII ||
+        props.c.sources.sourceIV ||
+        props.c.sources.sourceV ||
+        props.c.sources.sourceVI ||
+        props.c.sources.sourceVII;
 
     const additionalSources = () => {
         if (!hasAdditionalSources) return <></>;
@@ -158,8 +157,8 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
         const sources: string[] = [];
 
         for (const source of sourceKeys) {
-            if (props.c[source]) {
-                sources.push(props.c[source] as string);
+            if (props.c.sources[source]) {
+                sources.push(props.c.sources[source] as string);
             }
         }
 
@@ -269,10 +268,10 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                     </>
                 )}
                 <Typography className={classes.caseTitle} variant="h5">
-                    Case {props.c.id}{' '}
+                    Case {props.c.caseReference.id}{' '}
                     {props.enableEdit && (
                         <Link
-                            to={`/cases/edit/${props.c.id}`}
+                            to={`/cases/edit/${props.c.caseReference.id}`}
                             style={{ textDecoration: 'none' }}
                         >
                             <Button
@@ -300,13 +299,16 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                         </Typography>
                         <Grid container className={classes.grid}>
                             <RowHeader title="Data source URL" />
-                            <RowContent content={props.c.source} isLink />
+                            <RowContent
+                                content={props.c.sources.source || ''}
+                                isLink
+                            />
 
                             {additionalSources()}
 
                             <RowHeader title="Date of creation" />
                             <RowContent
-                                content={renderDate(props.c.entryDate)}
+                                content={renderDate(props.c.events.dateEntry)}
                             />
 
                             {/* Consider surfacing this as a top-level icon on this page. */}
@@ -315,7 +317,9 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
 
                             <RowHeader title="Date of edit" />
                             <RowContent
-                                content={renderDate(props.c.lastModifiedDate)}
+                                content={renderDate(
+                                    props.c.events.dateLastModified,
+                                )}
                             />
                         </Grid>
                     </Scroll.Element>
@@ -335,16 +339,18 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                     </Typography>
                     <Grid container className={classes.grid}>
                         <RowHeader title="Age" />
-                        <RowContent content={props.c.age} />
+                        <RowContent content={props.c.demographics.age} />
 
                         <RowHeader title="Gender" />
-                        <RowContent content={props.c.gender} />
+                        <RowContent content={props.c.demographics.gender} />
 
                         <RowHeader title="Occupation" />
-                        <RowContent content={props.c.occupation} />
+                        <RowContent content={props.c.demographics.occupation} />
 
                         <RowHeader title="Healthcare worker" />
-                        <RowContent content={props.c.healthcareWorker} />
+                        <RowContent
+                            content={props.c.demographics.healthcareWorker}
+                        />
                     </Grid>
                 </Paper>
 
@@ -361,17 +367,19 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             <RowHeader title="Country" />
                             <RowContent
                                 content={
-                                    props.c.countryISO3
-                                        ? nameCountry(props.c.countryISO3)
+                                    props.c.location.countryISO3
+                                        ? nameCountry(
+                                              props.c.location.countryISO3,
+                                          )
                                         : ''
                                 }
                             />
 
                             <RowHeader title="City" />
-                            <RowContent content={props.c.city} />
+                            <RowContent content={props.c.location.city} />
 
                             <RowHeader title="Location" />
-                            <RowContent content={props.c.location} />
+                            <RowContent content={props.c.location.location} />
                         </Grid>
                     </Scroll.Element>
                 </Paper>
@@ -391,91 +399,103 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                         <Grid container className={classes.grid}>
                             <RowHeader title="Confirmed case date" />
                             <RowContent
-                                content={renderDate(props.c.confirmationDate)}
+                                content={renderDate(
+                                    props.c.events.dateConfirmation,
+                                )}
                             />
 
                             <RowHeader title="Confirmation method" />
-                            <RowContent content={props.c.confirmationMethod} />
+                            <RowContent
+                                content={props.c.events.confirmationMethod}
+                            />
 
                             <RowHeader title="Symptom onset date" />
                             <RowContent
-                                content={renderDate(props.c.symptomsOnsetDate)}
+                                content={renderDate(props.c.events.dateOnset)}
                             />
 
                             <RowHeader title="First clinical consultation" />
                             <RowContent
-                                content={renderDate(props.c.firstConsultDate)}
+                                content={renderDate(
+                                    props.c.events.dateOfFirstConsult,
+                                )}
                             />
 
                             <RowHeader title="Home monitoring" />
-                            <RowContent content={props.c.homeMonitoring} />
+                            <RowContent
+                                content={props.c.events.homeMonitoring}
+                            />
 
                             <RowHeader title="Isolation" />
-                            <RowContent content={props.c.isolated} />
+                            <RowContent content={props.c.events.isolated} />
 
-                            {props.c.isolated === YesNo.Y && (
+                            {props.c.events.isolated === YesNo.Y && (
                                 <>
                                     <RowHeader title="Date of isolation" />
                                     <RowContent
                                         content={renderDate(
-                                            props.c.isolationDate,
+                                            props.c.events.dateIsolation,
                                         )}
                                     />
                                 </>
                             )}
 
                             <RowHeader title="Hospital admission" />
-                            <RowContent content={props.c.hospitalized} />
+                            <RowContent content={props.c.events.hospitalized} />
 
-                            {props.c.hospitalized === YesNo.Y && (
+                            {props.c.events.hospitalized === YesNo.Y && (
                                 <>
                                     <RowHeader title="Hospital admission date" />
                                     <RowContent
                                         content={renderDate(
-                                            props.c.hospitalizationDate,
+                                            props.c.events.dateHospitalization,
                                         )}
                                     />
                                 </>
                             )}
 
                             <RowHeader title="Intensive care" />
-                            <RowContent content={props.c.intensiveCare} />
+                            <RowContent
+                                content={props.c.events.intensiveCare}
+                            />
 
-                            {props.c.intensiveCare === YesNo.Y && (
+                            {props.c.events.intensiveCare === YesNo.Y && (
                                 <>
                                     <RowHeader title="Intensive care admission date" />
                                     <RowContent
                                         content={renderDate(
-                                            props.c.ICUAdmissionDate,
+                                            props.c.events.dateAdmissionICU,
                                         )}
                                     />
 
                                     <RowHeader title="Intensive care discharge date" />
                                     <RowContent
                                         content={renderDate(
-                                            props.c.ICUDischargeDate,
+                                            props.c.events.dateDischargeICU,
                                         )}
                                     />
                                 </>
                             )}
 
                             <RowHeader title="Outcome" />
-                            <RowContent content={props.c.outcome} />
+                            <RowContent content={props.c.events.outcome} />
 
-                            {props.c.outcome && (
+                            {props.c.events.outcome && (
                                 <>
                                     <RowHeader
                                         title={`Date of ${
-                                            props.c.outcome === Outcome.Death
+                                            props.c.events.outcome ===
+                                            Outcome.Death
                                                 ? 'death'
                                                 : 'recovery'
                                         }`}
                                     />
                                     <RowContent
                                         content={renderDate(
-                                            props.c.outcome === Outcome.Death
-                                                ? props.c.deathDate
-                                                : props.c.recoveredDate,
+                                            props.c.events.outcome ===
+                                                Outcome.Death
+                                                ? props.c.events.dateDeath
+                                                : props.c.events.dateRecovered,
                                         )}
                                     />
                                 </>
@@ -497,8 +517,8 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             <RowHeader title="Symptoms" />
                             <RowContent
                                 content={
-                                    props.c.symptoms
-                                        ? props.c.symptoms.join(', ')
+                                    typeof props.c.symptoms === 'string'
+                                        ? props.c.symptoms
                                         : ''
                                 }
                             />
@@ -518,20 +538,29 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                         <RowHeader title="Preexisting conditions" />
                         <RowContent
                             content={
-                                props.c.preexistingCondition
-                                    ? props.c.preexistingCondition.join(', ')
-                                    : ''
+                                props.c.preexistingConditions
+                                    .preexistingCondition
                             }
                         />
 
                         <RowHeader title="Previous infection" />
-                        <RowContent content={props.c.previousInfection} />
+                        <RowContent
+                            content={
+                                props.c.preexistingConditions.previousInfection
+                            }
+                        />
 
                         <RowHeader title="Coinfection" />
-                        <RowContent content={props.c.coInfection} />
+                        <RowContent
+                            content={props.c.preexistingConditions.coInfection}
+                        />
 
                         <RowHeader title="Pregnancy" />
-                        <RowContent content={props.c.pregnancyStatus} />
+                        <RowContent
+                            content={
+                                props.c.preexistingConditions.pregnancyStatus
+                            }
+                        />
                     </Grid>
                 </Paper>
 
@@ -549,24 +578,34 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                         </Typography>
                         <Grid container className={classes.grid}>
                             <RowHeader title="Transmission" />
-                            <RowContent content={props.c.transmission} />
+                            <RowContent
+                                content={props.c.transmission.transmission}
+                            />
 
                             <RowHeader title="Contact with case" />
-                            <RowContent content={props.c.contactWithCase} />
+                            <RowContent
+                                content={props.c.transmission.contactWithCase}
+                            />
 
                             <RowHeader title="Contact ID" />
                             <RowContent
-                                content={props.c.contactID?.toString()}
+                                content={props.c.transmission.contactId?.toString()}
                             />
 
                             <RowHeader title="Contact setting" />
-                            <RowContent content={props.c.contactSetting} />
+                            <RowContent
+                                content={props.c.transmission.contactSetting}
+                            />
 
                             <RowHeader title="Contact animal" />
-                            <RowContent content={props.c.contactAnimal} />
+                            <RowContent
+                                content={props.c.transmission.contactAnimal}
+                            />
 
                             <RowHeader title="Comment" />
-                            <RowContent content={props.c.contactComment} />
+                            <RowContent
+                                content={props.c.transmission.contactComment}
+                            />
                         </Grid>
                     </Scroll.Element>
                 </Paper>
@@ -585,24 +624,36 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                         </Typography>
                         <Grid container className={classes.grid}>
                             <RowHeader title="Has travel history" />
-                            <RowContent content={props.c.travelHistory} />
+                            <RowContent
+                                content={props.c.travelHistory.travelHistory}
+                            />
 
                             <RowHeader title="Travel history entry" />
                             <RowContent
-                                content={renderDate(props.c.travelHistoryEntry)}
+                                content={renderDate(
+                                    props.c.travelHistory.travelHistoryEntry,
+                                )}
                             />
 
                             <RowHeader title="Has travel start" />
-                            <RowContent content={props.c.travelHistoryStart} />
+                            <RowContent
+                                content={
+                                    props.c.travelHistory.travelHistoryStart
+                                }
+                            />
 
                             <RowHeader title="Last known location" />
                             <RowContent
-                                content={props.c.travelHistoryLocation}
+                                content={
+                                    props.c.travelHistory.travelHistoryLocation
+                                }
                             />
 
                             <RowHeader title="Last known country" />
                             <RowContent
-                                content={props.c.travelHistoryCountry}
+                                content={
+                                    props.c.travelHistory.travelHistoryCountry
+                                }
                             />
                         </Grid>
                     </Scroll.Element>
@@ -625,10 +676,18 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             <RowContent content={props.c.pathogen} />
 
                             <RowHeader title="Genomics metadata" />
-                            <RowContent content={props.c.genomicsMetadata} />
+                            <RowContent
+                                content={
+                                    props.c.genomeSequences.genomicsMetadata
+                                }
+                            />
 
                             <RowHeader title="Accession number" />
-                            <RowContent content={props.c.accessionNumber} />
+                            <RowContent
+                                content={
+                                    props.c.genomeSequences.accessionNumber
+                                }
+                            />
                         </Grid>
                     </Scroll.Element>
                 </Paper>
@@ -644,21 +703,28 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                         </Typography>
                         <Grid container className={classes.grid}>
                             <RowHeader title="Vaccination" />
-                            <RowContent content={props.c.vaccination} />
+                            <RowContent
+                                content={props.c.vaccination.vaccination}
+                            />
 
                             <RowHeader title="Vaccine name" />
-                            <RowContent content={props.c.vaccineName} />
+                            <RowContent
+                                content={props.c.vaccination.vaccineName}
+                            />
 
                             <RowHeader title="Date of first vaccination" />
                             <RowContent
-                                content={renderDate(props.c.vaccineDate)}
+                                content={renderDate(
+                                    props.c.vaccination.vaccineDate,
+                                )}
                             />
 
                             <RowHeader title="Side effects" />
                             <RowContent
                                 content={
-                                    props.c.vaccineSideEffects
-                                        ? props.c.vaccineSideEffects.join(', ')
+                                    typeof props.c.vaccination
+                                        .vaccineSideEffects === 'string'
+                                        ? props.c.vaccination.vaccineSideEffects
                                         : ''
                                 }
                             />

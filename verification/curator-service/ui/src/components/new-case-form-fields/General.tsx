@@ -1,12 +1,13 @@
-import { useFormikContext } from 'formik';
-import { DateField, SelectField } from '../common-form-fields/FormikFields';
+import { SelectField } from '../common-form-fields/FormikFields';
 
 import FieldTitle from '../common-form-fields/FieldTitle';
 import Scroll from 'react-scroll';
 import { StyledTooltip } from './StyledTooltip';
-import { ParsedCase } from '../../api/models/Day0Case';
 import { CaseStatus } from '../../api/models/Day0Case';
-import { toUTCDate } from '../util/date';
+import clsx from 'clsx';
+import { useStyles } from './styled';
+import { FastField } from 'formik';
+import { TextField } from 'formik-mui';
 
 const TooltipText = () => (
     <StyledTooltip>
@@ -27,7 +28,7 @@ const TooltipText = () => (
 );
 
 export default function General(): JSX.Element {
-    const { setFieldValue, values } = useFormikContext<ParsedCase>();
+    const classes = useStyles();
 
     return (
         <Scroll.Element name="general">
@@ -38,20 +39,17 @@ export default function General(): JSX.Element {
                 values={Object.values(CaseStatus)}
                 required
             />
-            <DateField
-                name="entryDate"
-                label="Entry date"
-                value={values.entryDate}
-                onChange={(newValue) => {
-                    setFieldValue(
-                        'entryDate',
-                        toUTCDate(
-                            newValue ? newValue.toDateString() : undefined,
-                        ),
-                    );
-                }}
-                required
-            />
+
+            <div className={clsx([classes.fieldRow, classes.halfWidth])}>
+                <FastField
+                    name="pathogen"
+                    type="text"
+                    label="Pathogen"
+                    disabled
+                    component={TextField}
+                    fullWidth
+                />
+            </div>
         </Scroll.Element>
     );
 }

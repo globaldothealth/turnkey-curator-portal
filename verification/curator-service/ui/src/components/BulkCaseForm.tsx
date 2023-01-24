@@ -4,12 +4,12 @@ import { Button, CircularProgress, Typography } from '@mui/material';
 import withStyles from '@mui/styles/withStyles';
 import {
     Case,
-    CaseReference,
     Event,
     PreexistingConditions,
     Symptoms,
     VerificationStatus,
 } from '../api/models/Case';
+import { CaseReference } from '../api/models/Day0Case';
 import { Form, Formik } from 'formik';
 import Papa, { ParseLocalConfig, ParseResult } from 'papaparse';
 import { RouteComponentProps, withRouter } from 'react-router-dom';

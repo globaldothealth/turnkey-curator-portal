@@ -6,7 +6,7 @@ import {
 } from '../common-form-fields/FormikFields';
 import Scroll from 'react-scroll';
 import { FastField, useFormikContext } from 'formik';
-import { ParsedCase } from '../../api/models/Day0Case';
+import { Day0CaseFormValues } from '../../api/models/Day0Case';
 import { TextField } from 'formik-mui';
 import { useStyles } from './styled';
 import clsx from 'clsx';
@@ -44,14 +44,14 @@ const TooltipText = () => (
 );
 
 export default function Transmission(): JSX.Element {
-    const { initialValues } = useFormikContext<ParsedCase>();
+    const { initialValues } = useFormikContext<Day0CaseFormValues>();
     const globalClasses = useStyles();
 
     return (
         <Scroll.Element name="transmission">
             <FieldTitle title="Transmission" tooltip={<TooltipText />} />
             <SelectField
-                name="contactWithCase"
+                name="transmission.contactWithCase"
                 label="Contact with case"
                 values={['Y', 'N', 'NA']}
             />
@@ -62,7 +62,7 @@ export default function Transmission(): JSX.Element {
                 ])}
             >
                 <FastField
-                    name="contactID"
+                    name="transmission.contactId"
                     type="text"
                     label="Contact ID"
                     component={TextField}
@@ -76,7 +76,7 @@ export default function Transmission(): JSX.Element {
                 ])}
             >
                 <FastField
-                    name="contactSetting"
+                    name="transmission.contactSetting"
                     type="text"
                     label="Contact setting"
                     component={TextField}
@@ -90,7 +90,7 @@ export default function Transmission(): JSX.Element {
                 ])}
             >
                 <FastField
-                    name="contactAnimal"
+                    name="transmission.contactAnimal"
                     type="text"
                     label="Contact animal"
                     component={TextField}
@@ -104,7 +104,7 @@ export default function Transmission(): JSX.Element {
                 ])}
             >
                 <FastField
-                    name="contactComment"
+                    name="transmission.contactComment"
                     type="text"
                     label="Contact comment"
                     component={TextField}
@@ -113,11 +113,11 @@ export default function Transmission(): JSX.Element {
             </div>
             <div className={globalClasses.fieldRow}>
                 <FormikAutocomplete
-                    name="transmission"
+                    name="transmission.transmission"
                     freeSolo
                     label="Transmission"
                     multiple={false}
-                    initialValue={initialValues.transmission}
+                    initialValue={initialValues.transmission.transmission}
                     optionsLocation="https://raw.githubusercontent.com/globaldothealth/list/main/suggest/route_of_transmission.txt"
                 />
             </div>

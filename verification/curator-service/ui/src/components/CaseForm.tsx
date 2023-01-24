@@ -16,7 +16,6 @@ import Events from './new-case-form-fields/Events';
 import GenomeSequences from './new-case-form-fields/GenomeSequences';
 import LocationForm from './new-case-form-fields/LocationForm';
 import MuiAlert from '@mui/material/Alert';
-import Pathogens from './new-case-form-fields/Pathogens';
 import PreexistingConditions from './new-case-form-fields/PreexistingConditions';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import React from 'react';
@@ -29,10 +28,14 @@ import { hasKey } from './Utils';
 import { useHistory } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import { ParsedCase, Day0Case } from '../api/models/Day0Case';
+import {
+    CaseStatus,
+    Day0Case,
+    Day0CaseFormValues,
+} from '../api/models/Day0Case';
 import { toUTCDate } from './util/date';
 import axios from 'axios';
-import Source from './common-form-fields/Source';
+import Source, { submitSource } from './common-form-fields/Source';
 import General from './new-case-form-fields/General';
 
 const TableOfContents = styled('nav')(() => ({
@@ -62,7 +65,7 @@ const parseAge = (age?: string) => {
 
     const ageArr = age.split('-');
     if (ageArr.length === 2) {
-        return { minAge: ageArr[0], maxAge: ageArr[1] };
+        return { minAge: Number(ageArr[0]), maxAge: Number(ageArr[1]) };
     }
 
     return { age };
@@ -70,79 +73,116 @@ const parseAge = (age?: string) => {
 
 const initialValuesFromCase = (
     pathogen: string,
-    c?: ParsedCase,
-): ParsedCase => {
+    c?: Day0Case,
+): Day0CaseFormValues => {
     if (!c) {
+        // return minimal vialable case
         return {
-            id: undefined,
+            caseStatus: '',
+            caseReference: {
+                sourceId: '',
+                sourceUrl: '',
+            },
+            sources: {
+                source: '',
+                sourceII: '',
+                sourceIII: '',
+                sourceIV: '',
+                sourceV: '',
+                sourceVI: '',
+                sourceVII: '',
+            },
+            demographics: {
+                age: '',
+                gender: '',
+                occupation: '',
+                healthcareWorker: '',
+            },
+            location: {
+                country: '',
+                countryISO3: '',
+                location: '',
+                city: '',
+            },
+            events: {
+                dateEntry: null,
+                dateLastModified: null,
+                dateOnset: null,
+                dateConfirmation: null,
+                dateOfFirstConsult: null,
+                dateHospitalization: null,
+                dateDischargeHospital: null,
+                dateAdmissionICU: null,
+                dateDischargeICU: null,
+                dateIsolation: null,
+                dateDeath: null,
+                dateRecovered: null,
+                confirmationMethod: '',
+                outcome: '',
+                hospitalized: '',
+                reasonForHospitalization: '',
+                intensiveCare: '',
+                homeMonitoring: '',
+                isolated: '',
+            },
+            symptoms: [],
+            preexistingConditions: {
+                previousInfection: '',
+                pregnancyStatus: '',
+                coInfection: '',
+                preexistingCondition: '',
+            },
+            transmission: {
+                contactWithCase: '',
+                contactId: '',
+                contactSetting: '',
+                contactAnimal: '',
+                contactComment: '',
+                transmission: '',
+            },
+            travelHistory: {
+                travelHistory: '',
+                travelHistoryEntry: '',
+                travelHistoryStart: '',
+                travelHistoryLocation: '',
+                travelHistoryCountry: '',
+            },
+            genomeSequences: {
+                genomicsMetadata: '',
+                accessionNumber: '',
+            },
+            vaccination: {
+                vaccination: '',
+                vaccineName: '',
+                vaccineSideEffects: [],
+                vaccineDate: null,
+            },
             pathogen,
-            caseStatus: undefined,
-            country: '',
-            countryISO3: '',
-            location: '',
-            // geocodeLocation is a helper value used in places autocomplete
-            geocodeLocation: undefined,
-            city: '',
-            age: '',
-            gender: undefined,
-            occupation: '',
-            healthcareWorker: undefined,
-            symptoms: undefined,
-            symptomsOnsetDate: null,
-            confirmationDate: null,
-            confirmationMethod: '',
-            previousInfection: undefined,
-            coInfection: '',
-            preexistingCondition: undefined,
-            pregnancyStatus: undefined,
-            vaccination: undefined,
-            vaccineName: '',
-            vaccineDate: null,
-            vaccineSideEffects: undefined,
-            firstConsultDate: null,
-            hospitalized: undefined,
-            hospitalizationReason: undefined,
-            hospitalizationDate: null,
-            hospitalDischargeDate: null,
-            intensiveCare: undefined,
-            ICUAdmissionDate: null,
-            ICUDischargeDate: null,
-            homeMonitoring: undefined,
-            isolated: undefined,
-            isolationDate: null,
-            outcome: undefined,
-            deathDate: null,
-            recoveredDate: null,
-            contactWithCase: undefined,
-            contactID: undefined,
-            contactSetting: '',
-            contactAnimal: '',
-            contactComment: '',
-            transmission: '',
-            travelHistory: undefined,
-            travelHistoryEntry: '',
-            travelHistoryStart: '',
-            travelHistoryLocation: '',
-            travelHistoryCountry: '',
-            genomicsMetadata: '',
-            accessionNumber: '',
-            source: '',
-            sourceII: '',
-            sourceIII: '',
-            sourceIV: '',
-            sourceV: '',
-            sourceVI: '',
-            sourceVII: '',
-            entryDate: null,
-            lastModifiedDate: null,
+            numCases: 1,
         };
     }
 
-    return { ...c, ...parseAge(c.age) };
+    return {
+        ...c,
+        demographics: { ...c.demographics, ...parseAge(c.demographics.age) },
+        pathogen,
+        symptoms:
+            c.symptoms && typeof c.symptoms === 'string'
+                ? c.symptoms.split(', ')
+                : [],
+        vaccination: {
+            ...c.vaccination,
+            vaccineSideEffects:
+                c.vaccination.vaccineSideEffects &&
+                typeof c.vaccination.vaccineSideEffects === 'string'
+                    ? c.vaccination.vaccineSideEffects.split(', ')
+                    : [],
+        },
+    };
 };
 
 interface Props {
-    initialCase?: ParsedCase;
+    initialCase?: Day0Case;
     onModalClose: () => void;
     diseaseName: string;
 }
@@ -153,57 +193,73 @@ const NewCaseValidation = Yup.object().shape(
         caseStatus: Yup.string()
             .oneOf(['confirmed', 'suspected', 'discarded', 'omit_error'])
             .required(),
+        caseReference: Yup.object().shape({
+            sourceUrl: Yup.string().required('Required'),
+            sourceName: Yup.string().when('caseReference.sourceId', {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                is: (sourceId: any) => !sourceId,
+                then: Yup.string().required('Required'),
+            }),
+        }),
         pathogen: Yup.string().required('Required'),
-        country: Yup.string().required('Required'),
-        countryISO3: Yup.string().required('Required'),
-        entryDate: Yup.date().required('Required'),
-        source: Yup.string().required('Required'),
-        minAge: Yup.number()
-            .min(0, 'Age must be between 0 and 120')
-            .max(120, 'Age must be between 0 and 120')
-            .when('maxAge', {
-                is: (maxAge: number | string) =>
-                    maxAge !== undefined && maxAge !== '',
-                then: Yup.number().required(
-                    'Min age required in range. Minimum value is 0.',
-                ),
-            }),
-        maxAge: Yup.number()
-            .min(0, 'Age must be between 0 and 120')
-            .max(120, 'Age must be between 0 and 120')
-            .when('minAge', {
-                is: (minAge: number | string) =>
-                    minAge !== undefined && minAge !== '',
-                then: Yup.number()
-                    .min(
-                        Yup.ref('minAge'),
-                        'Max age must be greater than than min age',
-                    )
-                    .required(
-                        'Max age required in range. Maximum value is 120.',
+        location: Yup.object().shape({
+            country: Yup.string().required('Required'),
+            countryISO3: Yup.string().required('Required'),
+        }),
+        sources: Yup.object().shape({
+            source: Yup.string().required('Required'),
+        }),
+        events: Yup.object().shape({
+            dateEntry: Yup.date().required('Required'),
+        }),
+        demographics: Yup.object().shape({
+            minAge: Yup.number()
+                .min(0, 'Age must be between 0 and 120')
+                .max(120, 'Age must be between 0 and 120')
+                .when('demographics.maxAge', {
+                    is: (maxAge: number | string) =>
+                        maxAge !== undefined && maxAge !== '',
+                    then: Yup.number().required(
+                        'Min age required in range. Minimum value is 0.',
                     ),
-            }),
-        age: Yup.number()
-            .min(0, 'Age must be between 0 and 120')
-            .max(120, 'Age must be between 0 and 120')
-            .when('minAge', {
-                is: (minAge: number | string) =>
-                    minAge !== undefined && minAge !== '',
-                then: Yup.number().oneOf(
-                    [undefined],
-                    'Cannot enter age and age range',
-                ),
-            })
-            .when('maxAge', {
-                is: (maxAge: number | string) =>
-                    maxAge !== undefined && maxAge !== '',
-                then: Yup.number().oneOf(
-                    [undefined],
-                    'Cannot enter age and age range',
-                ),
-            }),
+                }),
+            maxAge: Yup.number()
+                .min(0, 'Age must be between 0 and 120')
+                .max(120, 'Age must be between 0 and 120')
+                .when('demographics.minAge', {
+                    is: (minAge: number | string) =>
+                        minAge !== undefined && minAge !== '',
+                    then: Yup.number()
+                        .min(
+                            Yup.ref('demographics.minAge'),
+                            'Max age must be greater than than min age',
+                        )
+                        .required(
+                            'Max age required in range. Maximum value is 120.',
+                        ),
+                }),
+            age: Yup.number()
+                .min(0, 'Age must be between 0 and 120')
+                .max(120, 'Age must be between 0 and 120')
+                .when('demographics.minAge', {
+                    is: (minAge: number | string) =>
+                        minAge !== undefined && minAge !== '',
+                    then: Yup.number().oneOf(
+                        [undefined],
+                        'Cannot enter age and age range',
+                    ),
+                })
+                .when('demographics.maxAge', {
+                    is: (maxAge: number | string) =>
+                        maxAge !== undefined && maxAge !== '',
+                    then: Yup.number().oneOf(
+                        [undefined],
+                        'Cannot enter age and age range',
+                    ),
+                }),
+        }),
     },
-    [['maxAge', 'minAge']],
+    [['demographics.maxAge', 'demographics.minAge']],
 );
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -229,88 +285,48 @@ export default function CaseForm(props: Props): JSX.Element {
     const [errorMessage, setErrorMessage] = React.useState('');
     const diseaseName = useAppSelector(selectDiseaseName);
 
-    const submitCase = async (values: ParsedCase): Promise<void> => {
-        if (!values.caseStatus) return;
+    const submitCase = async (values: Day0CaseFormValues): Promise<void> => {
+        console.log(values);
 
-        const ageRange = values.age
-            ? values.age
-            : `${values.minAge}-${values.maxAge}`;
+        if (values.caseReference && values.caseReference.sourceId === '') {
+            try {
+                const newCaseReference = await submitSource({
+                    name: values.caseReference.sourceName as string,
+                    url: values.caseReference.sourceUrl,
+                    license: values.caseReference.sourceLicense as string,
+                    providerName: values.caseReference.sourceProviderName,
+                    providerWebsiteUrl: values.caseReference.sourceProviderUrl,
+                });
+                values.caseReference.sourceId = newCaseReference.sourceId;
+            } catch (e) {
+                setErrorMessage(
+                    `System error during source creation: ${JSON.stringify(e)}`,
+                );
+                return;
+            }
+        }
+
+        const ageRange = values.demographics.age
+            ? values.demographics.age
+            : `${values.demographics.minAge}-${values.demographics.maxAge}`;
 
         const newCase: Day0Case = {
-            Case_status: values.caseStatus,
-            Date_entry:
-                // eslint-disable-next-line
-                values.entryDate || toUTCDate(new Date().toDateString())!,
-            // eslint-disable-next-line
-            Date_last_modified: toUTCDate(new Date().toDateString())!,
-            Source: values.caseReference.inputValue,
-            Source_II: values.sourceII,
-            Source_III: values.sourceIII,
-            Source_IV: values.sourceIV,
-            Source_V: values.sourceV,
-            Source_VI: values.sourceVI,
-            Source_VII: values.sourceVII,
-            Age: ageRange,
-            Gender: values.gender,
-            Occupation: values.occupation,
-            Healthcare_worker: values.healthcareWorker,
-            Country: values.country,
-            Country_ISO3: values.countryISO3,
-            Location: values.location,
-            City: values.city,
-            Date_onset: values.symptomsOnsetDate,
-            Date_confirmation: values.confirmationDate,
-            Confirmation_method: values.confirmationMethod,
-            Date_of_first_consult: values.firstConsultDate,
-            Hospitalized: values.hospitalized,
-            'Reason for hospitalition': values.hospitalizationReason,
-            Date_hospitalization: values.hospitalizationDate,
-            Date_discharge_hospital: values.hospitalDischargeDate,
-            Intensive_care: values.intensiveCare,
-            Date_admission_ICU: values.ICUAdmissionDate,
-            Date_discharge_ICU: values.ICUDischargeDate,
-            Home_monitoring: values.homeMonitoring,
-            Isolated: values.isolated,
-            Date_isolation: values.isolationDate,
-            Outcome: values.outcome,
-            Date_death: values.deathDat,
-            Date_recovered: values.recoveredDate,
-            Symptoms: values.symptoms ? values.symptoms.join(', ') : undefined,
-            Previous_infection: values.previousInfection,
-            Co_infection: values.coInfection,
-            Pre_existing_condition: values.preexistingCondition
-                ? values.preexistingCondition.join(', ')
-                : undefined,
-            Pregnancy_status: values.pregnancyStatus,
-            Contact_with_case: values.contactWithCase,
-            Contact_ID: values.contactID,
-            Contact_setting: values.contactSetting,
-            Contact_animal: values.contactAnimal,
-            Contact_comment: values.contactComment,
-            Transmission: values.transmission,
-            Travel_history: values.travelHistory,
-            Travel_history_entry: values.travelHistoryEntry,
-            Travel_history_start: values.travelHistoryStart,
-            Travel_history_location: values.travelHistoryLocation,
-            Travel_history_country: values.travelHistoryCountry,
-            Genomics_Metadata: values.genomicsMetadata,
-            'Accession Number': values.accessionNumber,
-            Pathogen: values.pathogen,
-            Vaccination: values.vaccination,
-            Vaccine_name: values.vaccineName,
-            Vaccine_date: values.vaccineDate,
-            Vaccine_side_effects: values.vaccineSideEffects
-                ? values.vaccineSideEffects.join(', ')
-                : undefined,
+            ...values,
+            demographics: {
+                ...values.demographics,
+                age: ageRange,
+            },
         };
         let newCaseId = '';
         try {
             // Update or create depending on the presence of the initial case ID.
-            if (props.initialCase?.id) {
-                await axios.put(`/api/cases/${props.initialCase?.id}`, newCase);
+            if (props.initialCase?.caseReference.id) {
+                await axios.put(
+                    `/api/cases/${props.initialCase?.caseReference.id}`,
+                    newCase,
+                );
             } else {
                 const postResponse = await axios.post(`/api/cases`, newCase);
-
                 newCaseId = postResponse.data._id;
             }
             setErrorMessage('');
@@ -323,8 +339,8 @@ export default function CaseForm(props: Props): JSX.Element {
             pathname: '/cases',
             state: {
                 newCaseIds: newCaseId,
-                editedCaseIds: props.initialCase?.id
-                    ? [props.initialCase.id]
+                editedCaseIds: props.initialCase?.caseReference.id
+                    ? [props.initialCase.caseReference.id]
                     : [],
             },
         });
@@ -381,7 +397,13 @@ export default function CaseForm(props: Props): JSX.Element {
         // When there are no required values provided check whether any of optional values is valid
         if (!requiredValues || requiredValues.length === 0) {
             return optionalValues
-                ? optionalValues.some((value) => !!value)
+                ? optionalValues.some((value) => {
+                      if (value && typeof value === 'object') {
+                          return value.length > 0;
+                      }
+
+                      return !!value;
+                  })
                 : false;
         }
 
@@ -398,414 +420,420 @@ export default function CaseForm(props: Props): JSX.Element {
             }
             onModalClose={props.onModalClose}
         >
-            <Formik
-                initialValues={initialValuesFromCase(diseaseName, initialCase)}
-                validationSchema={NewCaseValidation}
-                // Validating on change slows down the form too much. It will
-                // validate on blur and form submission.
-                validateOnChange={false}
-                onSubmit={submitCase}
-            >
-                {({
-                    submitForm,
-                    isSubmitting,
-                    values,
-                    errors,
-                    touched,
-                }): JSX.Element => (
-                    <>
-                        {showTableOfContents && (
-                            <TableOfContents>
-                                <TableOfContentsRow
-                                    onClick={(): void => scrollTo('general')}
-                                >
-                                    {tableOfContentsIcon({
-                                        isChecked: isChecked({
-                                            requiredValues: [
-                                                values.caseStatus,
-                                                values.entryDate,
-                                            ],
-                                        }),
-                                        hasError: hasErrors(
-                                            ['caseStatus', 'entryDate'],
-                                            errors,
-                                            touched,
-                                        ),
-                                    })}
-                                    {'General'.toLocaleUpperCase()}
-                                </TableOfContentsRow>
-                                <TableOfContentsRow
-                                    onClick={(): void => scrollTo('source')}
-                                >
-                                    {tableOfContentsIcon({
-                                        isChecked: isChecked({
-                                            requiredValues: [
-                                                values.caseReference,
-                                            ],
-                                        }),
-                                        hasError: hasErrors(
-                                            ['caseReference'],
-                                            errors,
-                                            touched,
-                                        ),
-                                    })}
-                                    {'Source'.toLocaleUpperCase()}
-                                </TableOfContentsRow>
-                                <TableOfContentsRow
-                                    onClick={(): void =>
-                                        scrollTo('demographics')
-                                    }
-                                >
-                                    {tableOfContentsIcon({
-                                        isChecked: isChecked({
-                                            optionalValues: [
-                                                values.gender,
-                                                values.age,
-                                                values.occupation,
-                                                values.healthcareWorker,
-                                            ],
-                                        }),
-                                        hasError: hasErrors(
-                                            [
-                                                'gender',
-                                                'age',
-                                                'occupation',
-                                                'healthcareWorker',
-                                            ],
-                                            errors,
-                                            touched,
-                                        ),
-                                    })}
-                                    {'Demographics'.toLocaleUpperCase()}
-                                </TableOfContentsRow>
-
-                                <TableOfContentsRow
-                                    onClick={(): void => scrollTo('location')}
-                                >
-                                    {tableOfContentsIcon({
-                                        isChecked: isChecked({
-                                            requiredValues: [
-                                                values.countryISO3,
-                                                values.geocodeLocation,
-                                            ],
-                                        }),
-                                        hasError: hasErrors(
-                                            ['location', 'city', 'countryISO3'],
-                                            errors,
-                                            touched,
-                                        ),
-                                    })}
-                                    {'Location'.toLocaleUpperCase()}
-                                </TableOfContentsRow>
-                                <TableOfContentsRow
-                                    onClick={(): void => scrollTo('events')}
-                                >
-                                    {tableOfContentsIcon({
-                                        isChecked: isChecked({
-                                            requiredValues: [
-                                                values.confirmationDate,
-                                            ],
-                                        }),
-                                        hasError: hasErrors(
-                                            [
-                                                'confirmationDate',
-                                                'confirmationMethod',
-                                                'symptomsOnsetDate',
-                                                'firstConsultDate',
-                                                'isolated',
-                                                'isolationDate',
-                                                'hospitalized',
-                                                'hospitalizationReason',
-                                                'hospitalizationDate',
-                                                'hospitalizationDischargeDate',
-                                                'intensiveCare',
-                                                'ICUAdmissionDate',
-                                                'ICUDischargeDate',
-                                                'outcome',
-                                                'deathDate',
-                                                'recoveredDate',
-                                            ],
-                                            errors,
-                                            touched,
-                                        ),
-                                    })}
-                                    {'Events'.toLocaleUpperCase()}
-                                </TableOfContentsRow>
-                                <TableOfContentsRow
-                                    onClick={(): void => scrollTo('symptoms')}
-                                >
-                                    {tableOfContentsIcon({
-                                        isChecked: isChecked({
-                                            optionalValues: [values.symptoms],
-                                        }),
-                                        hasError: hasErrors(
-                                            ['symptoms'],
-                                            errors,
-                                            touched,
-                                        ),
-                                    })}
-                                    {'Symptoms'.toLocaleUpperCase()}
-                                </TableOfContentsRow>
-                                <TableOfContentsRow
-                                    onClick={(): void =>
-                                        scrollTo('preexistingConditions')
-                                    }
-                                >
-                                    {tableOfContentsIcon({
-                                        isChecked: isChecked({
-                                            optionalValues: [
-                                                values.previousInfection,
-                                                values.coInfection,
-                                                values.preexistingCondition,
-                                                values.pregnancyStatus,
-                                            ],
-                                        }),
-                                        hasError: hasErrors(
-                                            [
-                                                'previousInfection',
-                                                'coInfection',
-                                                'preexistingCondition',
-                                                'pregnancyStatus',
-                                            ],
-                                            errors,
-                                            touched,
-                                        ),
-                                    })}
-                                    {'Preexisting conditions'.toLocaleUpperCase()}
-                                </TableOfContentsRow>
-                                <TableOfContentsRow
-                                    onClick={(): void =>
-                                        scrollTo('transmission')
-                                    }
-                                >
-                                    {tableOfContentsIcon({
-                                        isChecked: isChecked({
-                                            optionalValues: [
-                                                values.contactWithCase,
-                                                values.contactID,
-                                                values.contactSetting,
-                                                values.contactAnimal,
-                                                values.contactComment,
-                                                values.transmission,
-                                            ],
-                                        }),
-                                        hasError: hasErrors(
-                                            [
-                                                'contactWithCase',
-                                                'contactID',
-                                                'contactSetting',
-                                                'contactAnimal',
-                                                'contactComment',
-                                                'transmission',
-                                            ],
-                                            errors,
-                                            touched,
-                                        ),
-                                    })}
-                                    {'Transmission'.toLocaleUpperCase()}
-                                </TableOfContentsRow>
-                                <TableOfContentsRow
-                                    onClick={(): void =>
-                                        scrollTo('travelHistory')
-                                    }
-                                >
-                                    {tableOfContentsIcon({
-                                        isChecked: isChecked({
-                                            optionalValues: [
-                                                values.travelHistory,
-                                                values.travelHistoryEntry,
-                                                values.travelHistoryStart,
-                                                values.travelHistoryLocation,
-                                                values.travelHistoryCountry,
-                                            ],
-                                        }),
-                                        hasError: hasErrors(
-                                            [
-                                                'travelHistory',
-                                                'travelHistoryEntry',
-                                                'travelHistoryStart',
-                                                'travelHistoryLocation',
-                                                'travelHistoryCountry',
-                                            ],
-                                            errors,
-                                            touched,
-                                        ),
-                                    })}
-                                    {'Travel History'.toLocaleUpperCase()}
-                                </TableOfContentsRow>
-                                <TableOfContentsRow
-                                    onClick={(): void =>
-                                        scrollTo('genomeSequences')
-                                    }
-                                >
-                                    {tableOfContentsIcon({
-                                        isChecked: isChecked({
-                                            optionalValues: [
-                                                values.genomicsMetadata,
-                                                values.accessionNumber,
-                                            ],
-                                        }),
-                                        hasError: hasErrors(
-                                            [
-                                                'genomicsMetadata',
-                                                'accessionNumber',
-                                            ],
-                                            errors,
-                                            touched,
-                                        ),
-                                    })}
-                                    {'Genome Sequences'.toLocaleUpperCase()}
-                                </TableOfContentsRow>
-                                <TableOfContentsRow
-                                    onClick={(): void => scrollTo('pathogens')}
-                                >
-                                    {tableOfContentsIcon({
-                                        isChecked: isChecked({
-                                            requiredValues: [values.pathogen],
-                                        }),
-                                        hasError: hasErrors(
-                                            ['pathogen'],
-                                            errors,
-                                            touched,
-                                        ),
-                                    })}
-                                    {'Pathogens'.toLocaleUpperCase()}
-                                </TableOfContentsRow>
-                                <TableOfContentsRow
-                                    onClick={(): void => scrollTo('vaccines')}
-                                >
-                                    {tableOfContentsIcon({
-                                        isChecked: isChecked({
-                                            optionalValues: [
-                                                values.vaccination,
-                                                values.vaccineName,
-                                                values.vaccineDate,
-                                                values.vaccineSideEffects,
-                                            ],
-                                        }),
-                                        hasError: hasErrors(
-                                            [
-                                                'vaccination',
-                                                'vaccineName',
-                                                'vaccineDate',
-                                                'vaccineSideEffects',
-                                            ],
-                                            errors,
-                                            touched,
-                                        ),
-                                    })}
-                                    {'Vaccines'.toLocaleUpperCase()}
-                                </TableOfContentsRow>
-                                {/* {!props.initialCase && (
+            {diseaseName && (
+                <Formik
+                    initialValues={initialValuesFromCase(
+                        diseaseName,
+                        initialCase,
+                    )}
+                    validationSchema={NewCaseValidation}
+                    // Validating on change slows down the form too much. It will
+                    // validate on blur and form submission.
+                    validateOnChange={false}
+                    onSubmit={submitCase}
+                >
+                    {({
+                        submitForm,
+                        isSubmitting,
+                        values,
+                        errors,
+                        touched,
+                    }): JSX.Element => (
+                        <>
+                            {showTableOfContents && (
+                                <TableOfContents>
                                     <TableOfContentsRow
                                         onClick={(): void =>
-                                            scrollTo('numCases')
+                                            scrollTo('general')
                                         }
                                     >
                                         {tableOfContentsIcon({
-                                            isChecked: values.numCases !== 1,
+                                            isChecked: isChecked({
+                                                requiredValues: [
+                                                    values.caseStatus,
+                                                    values.pathogen,
+                                                ],
+                                            }),
                                             hasError: hasErrors(
-                                                ['numCases'],
+                                                ['caseStatus', 'pathogen'],
                                                 errors,
                                                 touched,
                                             ),
                                         })}
-                                        {'Number of cases'.toLocaleUpperCase()}
+                                        {'General'.toLocaleUpperCase()}
                                     </TableOfContentsRow>
-                                )} */}
-                            </TableOfContents>
-                        )}
-                        <StyledForm showTableOfContents={showTableOfContents}>
-                            <Typography variant="h4">
-                                Enter the details for{' '}
-                                {props.initialCase
-                                    ? 'an existing case'
-                                    : 'a new case'}
-                            </Typography>
-                            <Typography variant="body2">
-                                Complete all available data for the case.
-                                Required fields are marked.
-                            </Typography>
-                            <Form>
-                                <FormSection>
-                                    <General />
-                                </FormSection>
-                                <FormSection>
-                                    <Source
-                                        initialValue={values.caseReference}
-                                        withAdditioanlSources
-                                    />
-                                </FormSection>
-                                <FormSection>
-                                    <Demographics />
-                                </FormSection>
-                                <FormSection>
-                                    <LocationForm />
-                                </FormSection>
-                                <FormSection>
-                                    <Events />
-                                </FormSection>
-                                <FormSection>
-                                    <Symptoms />
-                                </FormSection>
-                                <FormSection>
-                                    <PreexistingConditions />
-                                </FormSection>
-                                <FormSection>
-                                    <Transmission />
-                                </FormSection>
-                                <FormSection>
-                                    <TravelHistory />
-                                </FormSection>
-                                <FormSection>
-                                    <GenomeSequences />
-                                </FormSection>
-                                <FormSection>
-                                    <Pathogens />
-                                </FormSection>
-                                <FormSection>
-                                    <Vaccines />
-                                </FormSection>
-                                {isSubmitting && (
-                                    <LinearProgress
-                                        sx={{ marginBottom: '1rem' }}
-                                    />
-                                )}
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    disableElevation
-                                    data-testid="submit"
-                                    disabled={isSubmitting}
-                                    onClick={submitForm}
-                                >
-                                    {props.initialCase
-                                        ? 'Submit case edit'
-                                        : 'Submit case'}
-                                </Button>
-                                <Button
-                                    sx={{ marginLeft: '1em' }}
-                                    color="primary"
-                                    variant="outlined"
-                                    onClick={props.onModalClose}
-                                >
-                                    Cancel
-                                </Button>
-                            </Form>
-                            {errorMessage && (
-                                <MuiAlert
-                                    sx={{ marginTop: '1em', maxWidth: '80%' }}
-                                    elevation={6}
-                                    variant="filled"
-                                    severity="error"
-                                >
-                                    {errorMessage}
-                                </MuiAlert>
+                                    <TableOfContentsRow
+                                        onClick={(): void => scrollTo('source')}
+                                    >
+                                        {tableOfContentsIcon({
+                                            isChecked: isChecked({
+                                                requiredValues: [
+                                                    values.caseReference
+                                                        .sourceUrl,
+                                                ],
+                                            }),
+                                            hasError: hasErrors(
+                                                ['caseReference'],
+                                                errors,
+                                                touched,
+                                            ),
+                                        })}
+                                        {'Source'.toLocaleUpperCase()}
+                                    </TableOfContentsRow>
+                                    <TableOfContentsRow
+                                        onClick={(): void =>
+                                            scrollTo('demographics')
+                                        }
+                                    >
+                                        {tableOfContentsIcon({
+                                            isChecked: isChecked({
+                                                optionalValues: [
+                                                    values.demographics.gender,
+                                                    values.demographics.age,
+                                                    values.demographics
+                                                        .occupation,
+                                                    values.demographics
+                                                        .healthcareWorker,
+                                                ],
+                                            }),
+                                            hasError: hasErrors(
+                                                ['demographics'],
+                                                errors,
+                                                touched,
+                                            ),
+                                        })}
+                                        {'Demographics'.toLocaleUpperCase()}
+                                    </TableOfContentsRow>
+
+                                    <TableOfContentsRow
+                                        onClick={(): void =>
+                                            scrollTo('location')
+                                        }
+                                    >
+                                        {tableOfContentsIcon({
+                                            isChecked: isChecked({
+                                                requiredValues: [
+                                                    values.location.countryISO3,
+                                                    values.location
+                                                        .geocodeLocation,
+                                                ],
+                                            }),
+                                            hasError: hasErrors(
+                                                ['location'],
+                                                errors,
+                                                touched,
+                                            ),
+                                        })}
+                                        {'Location'.toLocaleUpperCase()}
+                                    </TableOfContentsRow>
+                                    <TableOfContentsRow
+                                        onClick={(): void => scrollTo('events')}
+                                    >
+                                        {tableOfContentsIcon({
+                                            isChecked: isChecked({
+                                                requiredValues: [
+                                                    values.events.dateEntry,
+                                                ],
+                                            }),
+                                            hasError: hasErrors(
+                                                ['events'],
+                                                errors,
+                                                touched,
+                                            ),
+                                        })}
+                                        {'Events'.toLocaleUpperCase()}
+                                    </TableOfContentsRow>
+                                    <TableOfContentsRow
+                                        onClick={(): void =>
+                                            scrollTo('symptoms')
+                                        }
+                                    >
+                                        {tableOfContentsIcon({
+                                            isChecked: isChecked({
+                                                optionalValues: [
+                                                    values.symptoms,
+                                                ],
+                                            }),
+                                            hasError: hasErrors(
+                                                ['symptoms'],
+                                                errors,
+                                                touched,
+                                            ),
+                                        })}
+                                        {'Symptoms'.toLocaleUpperCase()}
+                                    </TableOfContentsRow>
+                                    <TableOfContentsRow
+                                        onClick={(): void =>
+                                            scrollTo('preexistingConditions')
+                                        }
+                                    >
+                                        {tableOfContentsIcon({
+                                            isChecked: isChecked({
+                                                optionalValues: [
+                                                    values.preexistingConditions
+                                                        .previousInfection,
+                                                    values.preexistingConditions
+                                                        .coInfection,
+                                                    values.preexistingConditions
+                                                        .preexistingCondition,
+                                                    values.preexistingConditions
+                                                        .pregnancyStatus,
+                                                ],
+                                            }),
+                                            hasError: hasErrors(
+                                                [
+                                                    'previousInfection',
+                                                    'coInfection',
+                                                    'preexistingCondition',
+                                                    'pregnancyStatus',
+                                                ],
+                                                errors,
+                                                touched,
+                                            ),
+                                        })}
+                                        {'Preexisting conditions'.toLocaleUpperCase()}
+                                    </TableOfContentsRow>
+                                    <TableOfContentsRow
+                                        onClick={(): void =>
+                                            scrollTo('transmission')
+                                        }
+                                    >
+                                        {tableOfContentsIcon({
+                                            isChecked: isChecked({
+                                                optionalValues: [
+                                                    values.transmission
+                                                        .contactWithCase,
+                                                    values.transmission
+                                                        .contactId,
+                                                    values.transmission
+                                                        .contactSetting,
+                                                    values.transmission
+                                                        .contactAnimal,
+                                                    values.transmission
+                                                        .contactComment,
+                                                    values.transmission
+                                                        .transmission,
+                                                ],
+                                            }),
+                                            hasError: hasErrors(
+                                                [
+                                                    'contactWithCase',
+                                                    'contactID',
+                                                    'contactSetting',
+                                                    'contactAnimal',
+                                                    'contactComment',
+                                                    'transmission',
+                                                ],
+                                                errors,
+                                                touched,
+                                            ),
+                                        })}
+                                        {'Transmission'.toLocaleUpperCase()}
+                                    </TableOfContentsRow>
+                                    <TableOfContentsRow
+                                        onClick={(): void =>
+                                            scrollTo('travelHistory')
+                                        }
+                                    >
+                                        {tableOfContentsIcon({
+                                            isChecked: isChecked({
+                                                optionalValues: [
+                                                    values.travelHistory
+                                                        .travelHistory,
+                                                    values.travelHistory
+                                                        .travelHistoryEntry,
+                                                    values.travelHistory
+                                                        .travelHistoryStart,
+                                                    values.travelHistory
+                                                        .travelHistoryLocation,
+                                                    values.travelHistory
+                                                        .travelHistoryCountry,
+                                                ],
+                                            }),
+                                            hasError: hasErrors(
+                                                [
+                                                    'travelHistory',
+                                                    'travelHistoryEntry',
+                                                    'travelHistoryStart',
+                                                    'travelHistoryLocation',
+                                                    'travelHistoryCountry',
+                                                ],
+                                                errors,
+                                                touched,
+                                            ),
+                                        })}
+                                        {'Travel History'.toLocaleUpperCase()}
+                                    </TableOfContentsRow>
+                                    <TableOfContentsRow
+                                        onClick={(): void =>
+                                            scrollTo('genomeSequences')
+                                        }
+                                    >
+                                        {tableOfContentsIcon({
+                                            isChecked: isChecked({
+                                                optionalValues: [
+                                                    values.genomeSequences
+                                                        .genomicsMetadata,
+                                                    values.genomeSequences
+                                                        .accessionNumber,
+                                                ],
+                                            }),
+                                            hasError: hasErrors(
+                                                [
+                                                    'genomicsMetadata',
+                                                    'accessionNumber',
+                                                ],
+                                                errors,
+                                                touched,
+                                            ),
+                                        })}
+                                        {'Genome Sequences'.toLocaleUpperCase()}
+                                    </TableOfContentsRow>
+                                    <TableOfContentsRow
+                                        onClick={(): void =>
+                                            scrollTo('vaccines')
+                                        }
+                                    >
+                                        {tableOfContentsIcon({
+                                            isChecked: isChecked({
+                                                optionalValues: [
+                                                    values.vaccination
+                                                        .vaccination,
+                                                    values.vaccination
+                                                        .vaccineName,
+                                                    values.vaccination
+                                                        .vaccineDate,
+                                                    values.vaccination
+                                                        .vaccineSideEffects,
+                                                ],
+                                            }),
+                                            hasError: hasErrors(
+                                                [
+                                                    'vaccination',
+                                                    'vaccineName',
+                                                    'vaccineDate',
+                                                    'vaccineSideEffects',
+                                                ],
+                                                errors,
+                                                touched,
+                                            ),
+                                        })}
+                                        {'Vaccines'.toLocaleUpperCase()}
+                                    </TableOfContentsRow>
+                                    {!props.initialCase && (
+                                        <TableOfContentsRow
+                                            onClick={(): void =>
+                                                scrollTo('numCases')
+                                            }
+                                        >
+                                            {tableOfContentsIcon({
+                                                isChecked:
+                                                    values.numCases !== 1,
+                                                hasError: hasErrors(
+                                                    ['numCases'],
+                                                    errors,
+                                                    touched,
+                                                ),
+                                            })}
+                                            {'Number of cases'.toLocaleUpperCase()}
+                                        </TableOfContentsRow>
+                                    )}
+                                </TableOfContents>
                             )}
-                        </StyledForm>
-                    </>
-                )}
-            </Formik>
+                            <StyledForm
+                                showTableOfContents={showTableOfContents}
+                            >
+                                <Typography variant="h4">
+                                    Enter the details for{' '}
+                                    {props.initialCase
+                                        ? 'an existing case'
+                                        : 'a new case'}
+                                </Typography>
+                                <Typography variant="body2">
+                                    Complete all available data for the case.
+                                    Required fields are marked.
+                                </Typography>
+                                <Form>
+                                    <FormSection>
+                                        <General />
+                                    </FormSection>
+                                    <FormSection>
+                                        <Source
+                                            initialValue={values.caseReference}
+                                            withAdditioanlSources
+                                        />
+                                    </FormSection>
+                                    <FormSection>
+                                        <Demographics />
+                                    </FormSection>
+                                    <FormSection>
+                                        <LocationForm />
+                                    </FormSection>
+                                    <FormSection>
+                                        <Events />
+                                    </FormSection>
+                                    <FormSection>
+                                        <Symptoms />
+                                    </FormSection>
+                                    <FormSection>
+                                        <PreexistingConditions />
+                                    </FormSection>
+                                    <FormSection>
+                                        <Transmission />
+                                    </FormSection>
+                                    <FormSection>
+                                        <TravelHistory />
+                                    </FormSection>
+                                    <FormSection>
+                                        <GenomeSequences />
+                                    </FormSection>
+                                    <FormSection>
+                                        <Vaccines />
+                                    </FormSection>
+                                    {isSubmitting && (
+                                        <LinearProgress
+                                            sx={{ marginBottom: '1rem' }}
+                                        />
+                                    )}
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        disableElevation
+                                        data-testid="submit"
+                                        disabled={isSubmitting}
+                                        onClick={submitForm}
+                                    >
+                                        {props.initialCase
+                                            ? 'Submit case edit'
+                                            : 'Submit case'}
+                                    </Button>
+                                    <Button
+                                        sx={{ marginLeft: '1em' }}
+                                        color="primary"
+                                        variant="outlined"
+                                        onClick={props.onModalClose}
+                                    >
+                                        Cancel
+                                    </Button>
+                                </Form>
+                                {errorMessage && (
+                                    <MuiAlert
+                                        sx={{
+                                            marginTop: '1em',
+                                            maxWidth: '80%',
+                                        }}
+                                        elevation={6}
+                                        variant="filled"
+                                        severity="error"
+                                    >
+                                        {errorMessage}
+                                    </MuiAlert>
+                                )}
+                            </StyledForm>
+                        </>
+                    )}
+                </Formik>
+            )}
         </AppModal>
     );
 }
