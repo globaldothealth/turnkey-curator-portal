@@ -81,7 +81,7 @@ export default function Vaccines(): JSX.Element {
                             });
                         }}
                     />
-                    {/* <VaccineSideEffects /> */}
+                    <VaccineSideEffects />
                 </>
             )}
         </Scroll.Element>

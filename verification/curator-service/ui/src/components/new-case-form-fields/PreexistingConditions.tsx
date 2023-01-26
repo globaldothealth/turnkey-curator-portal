@@ -71,7 +71,7 @@ export default function PreexistingConditions(): JSX.Element {
             </div>
             <div className={classes.fieldRow}>
                 <FormikAutocomplete
-                    name="preexistingConditions.preexistingCondition"
+                    name="preexistingConditionsHelper"
                     label="Pre-existing conditions"
                     initialValue={
                         initialValues.preexistingConditions

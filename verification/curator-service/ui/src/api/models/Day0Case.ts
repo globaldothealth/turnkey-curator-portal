@@ -133,7 +133,7 @@ export interface Vaccination {
     vaccination?: YesNo | '';
     vaccineName?: string;
     vaccineDate?: string | null;
-    vaccineSideEffects?: string | string[];
+    vaccineSideEffects?: string;
 }
 
 // this is not an official day 0 case schema field but it has
@@ -155,13 +155,16 @@ export interface Day0Case {
     demographics: Demographics;
     location: Location;
     events: Events;
-    symptoms?: string | string[];
+    symptoms?: string;
     preexistingConditions: PreexistingConditions;
     transmission: Transmission;
     travelHistory: TravelHistory;
     genomeSequences: GenomeSequences;
     pathogen: string;
     vaccination: Vaccination;
+    // helper values
+    vaccineSideEffects?: string[];
+    preexistingConditionsHelper?: string[];
     [key: string]:
         | CaseReference
         | Sources
@@ -174,15 +177,29 @@ export interface Day0Case {
         | GenomeSequences
         | Vaccination
         | string
-        | string
         | string[]
         | number
         | undefined
         | null;
 }
 
+interface PreexistingConditionsFormValues {
+    previousInfection?: YesNo | '';
+    coInfection?: string;
+    preexistingCondition?: string[];
+    pregnancyStatus?: YesNo | '';
+}
+
+interface VaccinationFormValues {
+    vaccination?: YesNo | '';
+    vaccineName?: string;
+    vaccineDate?: string | null;
+    vaccineSideEffects?: string[];
+}
+
 // contains all the fields present in manual case entry form
-export interface Day0CaseFormValues extends Day0Case {
+export interface Day0CaseFormValues {
+    caseStatus: CaseStatus | '';
     caseReference: {
         sourceId: string;
         sourceUrl: string;
@@ -197,6 +214,7 @@ export interface Day0CaseFormValues extends Day0Case {
             sourceUrl: string;
         }[];
     };
+    sources: Sources;
     demographics: {
         minAge?: number;
         maxAge?: number;
@@ -212,12 +230,32 @@ export interface Day0CaseFormValues extends Day0Case {
         city?: string;
         geocodeLocation?: GeocodeLocation;
     };
-    vaccination: {
-        vaccination?: YesNo | '';
-        vaccineName?: string;
-        vaccineDate?: string | null;
-        vaccineSideEffects?: string[];
-    };
-    numCases?: number;
+    events: Events;
     symptoms?: string[];
+    preexistingConditions: PreexistingConditionsFormValues;
+    transmission: Transmission;
+    travelHistory: TravelHistory;
+    genomeSequences: GenomeSequences;
+    pathogen: string;
+    vaccination: VaccinationFormValues;
+    numCases?: number;
+    // helper value
+    vaccineSideEffects?: string[];
+    preexistingConditionsHelper?: string[];
+    [key: string]:
+        | CaseReference
+        | Sources
+        | Demographics
+        | Location
+        | Events
+        | Transmission
+        | TravelHistory
+        | GenomeSequences
+        | PreexistingConditionsFormValues
+        | VaccinationFormValues
+        | string
+        | string[]
+        | number
+        | undefined
+        | null;
 }

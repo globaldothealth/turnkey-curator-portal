@@ -28,15 +28,11 @@ import { hasKey } from './Utils';
 import { useHistory } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import {
-    CaseStatus,
-    Day0Case,
-    Day0CaseFormValues,
-} from '../api/models/Day0Case';
-import { toUTCDate } from './util/date';
+import { Day0Case, Day0CaseFormValues } from '../api/models/Day0Case';
 import axios from 'axios';
 import Source, { submitSource } from './common-form-fields/Source';
 import General from './new-case-form-fields/General';
+import NumCases from './new-case-form-fields/NumCases';
 
 const TableOfContents = styled('nav')(() => ({
     position: 'fixed',
@@ -130,7 +126,7 @@ const initialValuesFromCase = (
                 previousInfection: '',
                 pregnancyStatus: '',
                 coInfection: '',
-                preexistingCondition: '',
+                preexistingCondition: [],
             },
             transmission: {
                 contactWithCase: '',
@@ -166,17 +162,15 @@ const initialValuesFromCase = (
         ...c,
         demographics: { ...c.demographics, ...parseAge(c.demographics.age) },
         pathogen,
-        symptoms:
-            c.symptoms && typeof c.symptoms === 'string'
-                ? c.symptoms.split(', ')
-                : [],
+        symptoms: c.symptoms?.split(', '),
         vaccination: {
             ...c.vaccination,
-            vaccineSideEffects:
-                c.vaccination.vaccineSideEffects &&
-                typeof c.vaccination.vaccineSideEffects === 'string'
-                    ? c.vaccination.vaccineSideEffects.split(', ')
-                    : [],
+            vaccineSideEffects: c.vaccination.vaccineSideEffects?.split(', '),
+        },
+        preexistingConditions: {
+            ...c.preexistingConditions,
+            preexistingCondition:
+                c.preexistingConditions.preexistingCondition?.split(', '),
         },
     };
 };
@@ -205,9 +199,6 @@ const NewCaseValidation = Yup.object().shape(
         location: Yup.object().shape({
             country: Yup.string().required('Required'),
             countryISO3: Yup.string().required('Required'),
-        }),
-        sources: Yup.object().shape({
-            source: Yup.string().required('Required'),
         }),
         events: Yup.object().shape({
             dateEntry: Yup.date().required('Required'),
@@ -258,6 +249,9 @@ const NewCaseValidation = Yup.object().shape(
                     ),
                 }),
         }),
+        numCases: Yup.number()
+            .nullable()
+            .min(1, 'Must enter one or more cases'),
     },
     [['demographics.maxAge', 'demographics.minAge']],
 );
@@ -286,8 +280,6 @@ export default function CaseForm(props: Props): JSX.Element {
     const diseaseName = useAppSelector(selectDiseaseName);
 
     const submitCase = async (values: Day0CaseFormValues): Promise<void> => {
-        console.log(values);
-
         if (values.caseReference && values.caseReference.sourceId === '') {
             try {
                 const newCaseReference = await submitSource({
@@ -306,9 +298,15 @@ export default function CaseForm(props: Props): JSX.Element {
             }
         }
 
-        const ageRange = values.demographics.age
-            ? values.demographics.age
-            : `${values.demographics.minAge}-${values.demographics.maxAge}`;
+        let ageRange = '';
+        const { minAge, maxAge, age } = values.demographics;
+        if (age || (minAge && maxAge)) {
+            ageRange = age ? age : `${minAge}-${maxAge}`;
+        }
+
+        const preexistingConditions = values.preexistingConditionsHelper || [];
+        const vaccineSideEffects = values.vaccineSideEffects || [];
+        const symptoms = values.symptoms || [];
 
         const newCase: Day0Case = {
             ...values,
@@ -316,7 +314,19 @@ export default function CaseForm(props: Props): JSX.Element {
                 ...values.demographics,
                 age: ageRange,
             },
+            preexistingConditions: {
+                ...values.preexistingConditions,
+                preexistingCondition: preexistingConditions.join(', '),
+            },
+            vaccination: {
+                ...values.vaccination,
+                vaccineSideEffects: vaccineSideEffects.join(', '),
+            },
+            symptoms: symptoms.join(', '),
         };
+
+        console.log(`new case: ${JSON.stringify(newCase, null, 2)}`);
+
         let newCaseId = '';
         try {
             // Update or create depending on the presence of the initial case ID.
@@ -574,8 +584,7 @@ export default function CaseForm(props: Props): JSX.Element {
                                                         .previousInfection,
                                                     values.preexistingConditions
                                                         .coInfection,
-                                                    values.preexistingConditions
-                                                        .preexistingCondition,
+                                                    values.preexistingConditionsHelper,
                                                     values.preexistingConditions
                                                         .pregnancyStatus,
                                                 ],
@@ -703,8 +712,7 @@ export default function CaseForm(props: Props): JSX.Element {
                                                         .vaccineName,
                                                     values.vaccination
                                                         .vaccineDate,
-                                                    values.vaccination
-                                                        .vaccineSideEffects,
+                                                    values.vaccineSideEffects,
                                                 ],
                                             }),
                                             hasError: hasErrors(
@@ -790,6 +798,11 @@ export default function CaseForm(props: Props): JSX.Element {
                                     <FormSection>
                                         <Vaccines />
                                     </FormSection>
+                                    {!props.initialCase && (
+                                        <FormSection>
+                                            <NumCases />
+                                        </FormSection>
+                                    )}
                                     {isSubmitting && (
                                         <LinearProgress
                                             sx={{ marginBottom: '1rem' }}

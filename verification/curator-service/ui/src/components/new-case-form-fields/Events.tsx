@@ -109,7 +109,8 @@ const TooltipText = () => (
 );
 
 export default function Events(): JSX.Element {
-    const { values, setFieldValue } = useFormikContext<Day0CaseFormValues>();
+    const { values, setFieldValue, errors } =
+        useFormikContext<Day0CaseFormValues>();
     const classes = useStyles();
 
     return (

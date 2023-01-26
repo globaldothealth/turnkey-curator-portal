@@ -16,7 +16,6 @@ import axios from 'axios';
 import { throttle } from 'lodash';
 import {
     Day0CaseFormValues,
-    Day0Case,
     CaseReference,
     ISource,
 } from '../../api/models/Day0Case';
@@ -348,7 +347,7 @@ export function SourcesAutocomplete(
                     setValue(newValue);
                     setFieldValue(name, newValue);
                     setFieldValue(
-                        'source',
+                        'sources.source',
                         typeof newValue === 'string'
                             ? newValue
                             : newValue?.sourceUrl,

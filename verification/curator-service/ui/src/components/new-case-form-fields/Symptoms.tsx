@@ -69,6 +69,13 @@ function SymptomList(props: SymptomListProps): JSX.Element {
     const splittedValues =
         rawInitialValues && String(rawInitialValues).split(', ');
 
+    let collectionValues: string[];
+    if (props.collectionName === 'vaccination.vaccineSideEffects') {
+        collectionValues = values.vaccination.vaccineSideEffects as string[];
+    } else {
+        collectionValues = values[props.collectionName] as string[];
+    }
+
     return (
         <Scroll.Element name={props.collectionName}>
             <FieldTitle title={props.title} tooltip={<TooltipText />} />
@@ -85,18 +92,13 @@ function SymptomList(props: SymptomListProps): JSX.Element {
                                 label={symptom}
                                 onClick={(): void => {
                                     if (
-                                        values.symptoms &&
-                                        !values.symptoms.includes(symptom)
+                                        collectionValues &&
+                                        !collectionValues.includes(symptom)
                                     ) {
-                                        setFieldValue(
-                                            props.collectionName,
-                                            values.symptoms &&
-                                                values.symptoms.length > 0
-                                                ? values.symptoms.concat(
-                                                      `, ${symptom}`,
-                                                  )
-                                                : symptom,
-                                        );
+                                        setFieldValue(props.collectionName, [
+                                            ...collectionValues,
+                                            symptom,
+                                        ]);
                                     }
                                 }}
                             />
@@ -121,11 +123,7 @@ const Symptoms: () => JSX.Element = () => (
 );
 
 export const VaccineSideEffects: () => JSX.Element = () => (
-    // <SymptomList
-    //     title="Side Effects"
-    //     collectionName="vaccination.vaccineSideEffects"
-    // />
-    <></>
+    <SymptomList title="Side Effects" collectionName="vaccineSideEffects" />
 );
 
 export default Symptoms;

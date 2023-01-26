@@ -63,8 +63,6 @@ function LocationForm(): JSX.Element {
     const { values, initialValues, setFieldValue } =
         useFormikContext<Day0CaseFormValues>();
 
-    console.log(values);
-
     return (
         <Scroll.Element name="location">
             <FieldTitle title="Location" tooltip={<TooltipText />} />
@@ -124,7 +122,7 @@ export function PlacesAutocomplete(
     const [value, setValue] = React.useState<GeocodeLocation | null>(null);
     const [inputValue, setInputValue] = React.useState('');
     const [options, setOptions] = React.useState<GeocodeLocation[]>([]);
-    const { setFieldValue, setTouched } =
+    const { setFieldValue, setTouched, errors } =
         useFormikContext<Day0CaseFormValues>();
 
     const fetch = React.useMemo(

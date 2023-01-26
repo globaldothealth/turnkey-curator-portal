@@ -202,9 +202,7 @@ export function DateField(props: DateFieldProps): JSX.Element {
                     )}
                 />
             </LocalizationProvider>
-            {props.required && (
-                <RequiredHelperText name={props.name}></RequiredHelperText>
-            )}
+            {props.required && <RequiredHelperText name={props.name} />}
         </div>
     );
 }
