@@ -1,8 +1,26 @@
 import { ObjectId } from 'mongodb';
 import _ from 'lodash';
-import mongoose from 'mongoose';
-import { dateFieldInfo } from './date';
-import validateEnv from '../util/validate-env';
+import mongoose, { LeanDocument } from 'mongoose';
+import { CaseReferenceDocument, caseReferenceSchema } from './case-reference';
+import {
+    demographicsAgeRange,
+    DemographicsDocument,
+    DemographicsDTO,
+    demographicsSchema,
+} from './demographics';
+import { EventsDocument, EventsSchema } from './events';
+import { LocationDocument, locationSchema } from './location';
+import {
+    GenomeSequenceDocument,
+    genomeSequenceSchema,
+} from './genome-sequence';
+import { TravelHistoryDocument, travelHistorySchema } from './travel-history';
+import { TransmissionDocument, transmissionSchema } from './transmission';
+import { VaccineDocument, vaccineSchema } from './vaccine';
+import {
+    PreexistingConditionsDocument,
+    preexistingConditionsSchema,
+} from './preexisting-conditions';
 
 /*
  * There are separate types for case for data storage (the mongoose document) and
@@ -20,27 +38,10 @@ export enum CaseStatus {
     OmitError = 'omit_error',
 }
 
-export enum Gender {
-    Male = 'male',
-    Female = 'female',
-    Other = 'other',
-}
-
 export enum YesNo {
     Y = 'Y',
     N = 'N',
     NA = 'NA',
-}
-
-export enum HospitalizationReason {
-    Monitoring = 'monitoring',
-    Treatment = 'treatment',
-    Unknown = 'unknown',
-}
-
-export enum Outcome {
-    Recovered = 'recovered',
-    Death = 'death',
 }
 
 // this is not an official day 0 case schema field but it has
@@ -61,111 +62,27 @@ export const sourceSchema = new mongoose.Schema({
 
 export const caseSchema = new mongoose.Schema(
     {
-        ID: String,
-        Case_status: {
+        caseStatus: {
             type: CaseStatus,
             required: true,
         },
-        Date_entry: {
-            type: Date,
-            required: true,
-        },
-        Date_last_modified: {
-            type: Date,
-            required: true,
-        },
-        Source: {
-            type: sourceSchema,
-        },
-        Source_II: String,
-        Source_III: String,
-        Source_IV: String,
-        Source_V: String,
-        Source_VI: String,
-        Source_VII: String,
-        Age: String,
-        Gender: {
-            type: Gender,
-        },
-        Occupation: String,
-        Healthcare_worker: {
-            type: YesNo,
-        },
-        Country: {
+        pathogen: {
             type: String,
             required: true,
         },
-        Country_ISO3: {
-            type: String,
+        caseReference: {
+            type: caseReferenceSchema,
             required: true,
         },
-        Location: String,
-        City: String,
-        Date_onset: Date,
-        Date_confirmation: Date,
-        Confirmation_method: String,
-        Date_of_first_consult: Date,
-        Hospitalized: {
-            type: YesNo,
-        },
-        'Reason for hospitalization': {
-            type: HospitalizationReason,
-        },
-        Date_hospitalization: Date,
-        Date_discharge_hospital: Date,
-        Intensive_care: {
-            type: YesNo,
-        },
-        Date_admission_ICU: Date,
-        Date_discharge_ICU: Date,
-        Home_monitoring: {
-            type: YesNo,
-        },
-        Isolated: {
-            type: YesNo,
-        },
-        Date_isolation: Date,
-        Outcome: {
-            type: Outcome,
-        },
-        Date_death: Date,
-        Date_recovered: Date,
-        Symptoms: String,
-        Previous_infection: {
-            type: YesNo,
-        },
-        Co_infection: String,
-        Pre_existing_condition: String,
-        Pregnancy_status: {
-            type: YesNo,
-        },
-        Contact_with_case: {
-            type: YesNo,
-        },
-        Contact_ID: String,
-        Contact_setting: String,
-        Contact_animal: String,
-        Contact_comment: String,
-        Transmission: String,
-        Travel_history: {
-            type: YesNo,
-        },
-        Travel_history_entry: String,
-        Travel_history_start: String,
-        Travel_history_location: String,
-        Travel_history_country: String,
-        Genomics_Metadata: String,
-        'Accession Number': String,
-        Pathogen: {
-            type: String,
-            required: true,
-        },
-        Vaccination: {
-            type: YesNo,
-        },
-        Vaccine_name: String,
-        Vaccine_date: Date,
-        Vaccine_side_effects: String,
+        demographics: demographicsSchema,
+        location: locationSchema,
+        events: EventsSchema,
+        symptoms: String,
+        preexistingConditions: preexistingConditionsSchema,
+        transmission: transmissionSchema,
+        travelHistory: travelHistorySchema,
+        genomeSequences: genomeSequenceSchema,
+        vaccination: vaccineSchema,
     },
     {
         toObject: {
@@ -201,12 +118,12 @@ caseSchema.methods.equalsJSON = function (jsonCase: any): boolean {
     const thisJson = this.toJSON() as any;
     const other = new Day0Case(jsonCase).toJSON() as any;
     return (
+        _.isEqual(thisJson.caseStatus, other.caseStatus) &&
         _.isEqual(thisJson.demographics, other.demographics) &&
         _.isEqual(thisJson.events, other.events) &&
-        _.isEqual(thisJson.exclusionData, other.exclusionData) &&
         _.isEqual(thisJson.genomeSequences, other.genomeSequences) &&
         _.isEqual(thisJson.location, other.location) &&
-        _.isEqual(thisJson.pathogens, other.pathogens) &&
+        _.isEqual(thisJson.pathogen, other.pathogen) &&
         _.isEqual(
             thisJson.preexistingConditions,
             other.preexistingConditions,
@@ -214,9 +131,7 @@ caseSchema.methods.equalsJSON = function (jsonCase: any): boolean {
         _.isEqual(thisJson.symptoms, other.symptoms) &&
         _.isEqual(thisJson.transmission, other.transmission) &&
         _.isEqual(thisJson.travelHistory, other.travelHistory) &&
-        _.isEqual(thisJson.vaccines, other.vaccines) &&
-        _.isEqual(thisJson.variant, other.variant) &&
-        _.isEqual(thisJson.SGTF, other.SGTF)
+        _.isEqual(thisJson.vacination, other.vaccination)
     );
 };
 
@@ -232,100 +147,35 @@ export interface ISource {
 }
 
 export type ICase = {
-    // GENERAL
-    Case_status: CaseStatus;
-    Date_entry: string | null;
-    Date_last_modified: string;
+    caseStatus: CaseStatus;
+    pathogen: string;
+    symptoms: string;
+    dateLastModified: string;
+    caseReference: CaseReferenceDocument;
+    events: EventsDocument;
+    location: LocationDocument;
+    preexistingConditions: PreexistingConditionsDocument;
+    transmission: TransmissionDocument;
+    travelHistory: TravelHistoryDocument;
+    genomeSequences: GenomeSequenceDocument;
+    vaccination: VaccineDocument;
+};
 
-    // SOURCE
-    Source: ISource;
-    Source_II?: string;
-    Source_III?: string;
-    Source_IV?: string;
-    Source_V?: string;
-    Source_VI?: string;
-    Source_VII?: string;
-
-    // DEMOGRAPHICS
-    Age?: string;
-    Gender?: Gender;
-    Occupation?: string;
-    Healthcare_worker?: YesNo;
-
-    // LOCATION
-    Country: string;
-    Country_ISO3: string;
-    Location?: string;
-    City?: string;
-
-    // EVENTS
-    Date_onset?: string | null;
-    Date_confirmation?: string | null;
-    Confirmation_method?: string;
-    Date_of_first_consult?: string | null;
-    Hospitalized?: YesNo;
-    'Reason for hospitalition'?: HospitalizationReason;
-    Date_hospitalization?: string | null;
-    Date_discharge_hospital?: string | null;
-    Intensive_care?: YesNo;
-    Date_admission_ICU?: string | null;
-    Date_discharge_ICU?: string | null;
-    Home_monitoring?: YesNo;
-    Isolated?: YesNo;
-    Date_isolation?: string | null;
-    Outcome?: Outcome;
-    Date_death?: string | null;
-    Date_recovered?: string | null;
-
-    // SYMPTOPMS
-    Symptoms?: string;
-
-    // PRE-EXISTING CONDITIONS
-    Previous_infection?: YesNo;
-    Co_infection?: string;
-    Pre_existing_condition?: string;
-    Pregnancy_status?: YesNo;
-
-    // TRANSMISSION
-    Contact_with_case?: YesNo;
-    Contact_ID?: string;
-    Contact_setting?: string;
-    Contact_animal?: string;
-    Contact_comment?: string;
-    Transmission?: string;
-
-    // TRAVEL HISTORY
-    Travel_history?: YesNo;
-    Travel_history_entry?: string;
-    Travel_history_start?: string;
-    Travel_history_location?: string;
-    Travel_history_country?: string;
-
-    // GENOME SEQUENCES
-    Genomics_Metadata?: string;
-    'Accession Number'?: string;
-
-    // PATHOGENS
-    Pathogen: string;
-
-    // VACCINATION
-    Vaccination?: YesNo;
-    Vaccine_name?: string;
-    Vaccine_date?: string | null;
-    Vaccine_side_effects?: string;
+export type CaseDTO = ICase & {
+    demographics?: DemographicsDTO;
 };
 
 export type CaseDocument = mongoose.Document &
     ICase & {
         _id: ObjectId;
+        demographics: DemographicsDocument;
         // TODO: Type request Cases.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         equalsJSON(jsonCase: any): boolean;
     };
 
 caseSchema.pre('save', async function (this: CaseDocument) {
-    this.Date_entry = new Date().toUTCString();
-    this.Date_last_modified = new Date().toUTCString();
+    this.dateLastModified = new Date().toUTCString();
 });
 
 caseSchema.pre('insertMany', async function (
@@ -333,18 +183,17 @@ caseSchema.pre('insertMany', async function (
     docs: CaseDocument[],
 ) {
     docs.forEach((doc) => {
-        doc.Date_entry = new Date().toUTCString();
-        doc.Date_last_modified = new Date().toUTCString();
+        doc.dateLastModified = new Date().toUTCString();
     });
     next();
 });
 
 caseSchema.pre('updateOne', async function (this: CaseDocument) {
-    this.Date_last_modified = new Date().toUTCString();
+    this.dateLastModified = new Date().toUTCString();
 });
 
 export const Day0Case = mongoose.model<CaseDocument>('Day0Case', caseSchema);
 
-// export const caseAgeRange = async (aCase: LeanDocument<CaseDocument>) => {
-//     return await demographicsAgeRange(aCase.demographics);
-// };
+export const caseAgeRange = async (aCase: LeanDocument<CaseDocument>) => {
+    return await demographicsAgeRange(aCase.demographics);
+};

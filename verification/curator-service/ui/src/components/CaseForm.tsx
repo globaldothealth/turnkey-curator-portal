@@ -56,17 +56,6 @@ const FormSection = styled(Paper)(() => ({
     margin: '2em 0',
 }));
 
-const parseAge = (age?: string) => {
-    if (!age) return null;
-
-    const ageArr = age.split('-');
-    if (ageArr.length === 2) {
-        return { minAge: Number(ageArr[0]), maxAge: Number(ageArr[1]) };
-    }
-
-    return { age };
-};
-
 const initialValuesFromCase = (
     pathogen: string,
     c?: Day0Case,
@@ -79,17 +68,10 @@ const initialValuesFromCase = (
                 sourceId: '',
                 sourceUrl: '',
             },
-            sources: {
-                source: '',
-                sourceII: '',
-                sourceIII: '',
-                sourceIV: '',
-                sourceV: '',
-                sourceVI: '',
-                sourceVII: '',
-            },
             demographics: {
-                age: '',
+                minAge: undefined,
+                maxAge: undefined,
+                age: undefined,
                 gender: '',
                 occupation: '',
                 healthcareWorker: '',
@@ -138,7 +120,7 @@ const initialValuesFromCase = (
             },
             travelHistory: {
                 travelHistory: '',
-                travelHistoryEntry: '',
+                travelHistoryEntry: null,
                 travelHistoryStart: '',
                 travelHistoryLocation: '',
                 travelHistoryCountry: '',
@@ -160,17 +142,53 @@ const initialValuesFromCase = (
 
     return {
         ...c,
-        demographics: { ...c.demographics, ...parseAge(c.demographics.age) },
+        demographics: {
+            ...c.demographics,
+            minAge:
+                c.demographics?.ageRange?.start !==
+                c.demographics?.ageRange?.end
+                    ? c.demographics?.ageRange?.start
+                    : undefined,
+            maxAge:
+                c.demographics?.ageRange?.start !==
+                c.demographics?.ageRange?.end
+                    ? c.demographics?.ageRange?.end
+                    : undefined,
+            age:
+                c.demographics?.ageRange?.start ===
+                c.demographics?.ageRange?.end
+                    ? c.demographics?.ageRange?.start
+                    : undefined,
+        },
         pathogen,
-        symptoms: c.symptoms?.split(', '),
+        symptoms: c.symptoms ? c.symptoms.split(', ') : [],
         vaccination: {
             ...c.vaccination,
             vaccineSideEffects: c.vaccination.vaccineSideEffects?.split(', '),
+            vaccineDate: c.vaccination.vaccineDate || null,
         },
         preexistingConditions: {
             ...c.preexistingConditions,
-            preexistingCondition:
-                c.preexistingConditions.preexistingCondition?.split(', '),
+            preexistingCondition: c.preexistingConditions.preexistingCondition
+                ? c.preexistingConditions.preexistingCondition.split(', ')
+                : [],
+        },
+        travelHistory: {
+            ...c.travelHistory,
+            travelHistoryEntry: c.travelHistory.travelHistoryEntry || null,
+        },
+        events: {
+            ...c.events,
+            dateOnset: c.events.dateOnset || null,
+            dateConfirmation: c.events.dateConfirmation || null,
+            dateOfFirstConsult: c.events.dateOfFirstConsult || null,
+            dateHospitalization: c.events.dateHospitalization || null,
+            dateDischargeHospital: c.events.dateDischargeHospital || null,
+            dateAdmissionICU: c.events.dateAdmissionICU || null,
+            dateDischargeICU: c.events.dateDischargeICU || null,
+            dateIsolation: c.events.dateIsolation || null,
+            dateDeath: c.events.dateDeath || null,
+            dateRecovered: c.events.dateRecovered || null,
         },
     };
 };
@@ -189,7 +207,7 @@ const NewCaseValidation = Yup.object().shape(
             .required(),
         caseReference: Yup.object().shape({
             sourceUrl: Yup.string().required('Required'),
-            sourceName: Yup.string().when('caseReference.sourceId', {
+            sourceName: Yup.string().when('sourceId', {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 is: (sourceId: any) => !sourceId,
                 then: Yup.string().required('Required'),
@@ -298,11 +316,15 @@ export default function CaseForm(props: Props): JSX.Element {
             }
         }
 
-        let ageRange = '';
-        const { minAge, maxAge, age } = values.demographics;
-        if (age || (minAge && maxAge)) {
-            ageRange = age ? age : `${minAge}-${maxAge}`;
-        }
+        const ageRange = values.demographics.age
+            ? {
+                  start: Number(values.demographics.age),
+                  end: Number(values.demographics.age),
+              }
+            : {
+                  start: Number(values.demographics.minAge),
+                  end: Number(values.demographics.maxAge),
+              };
 
         const preexistingConditions = values.preexistingConditionsHelper || [];
         const vaccineSideEffects = values.vaccineSideEffects || [];
@@ -312,32 +334,93 @@ export default function CaseForm(props: Props): JSX.Element {
             ...values,
             demographics: {
                 ...values.demographics,
-                age: ageRange,
+                ageRange:
+                    values.demographics.age ||
+                    (values.demographics.minAge && values.demographics.minAge)
+                        ? ageRange
+                        : undefined,
+                gender: values.demographics.gender || undefined,
+                healthcareWorker:
+                    values.demographics.healthcareWorker || undefined,
+            },
+            events: {
+                ...values.events,
+                dateOnset: values.events.dateOnset || undefined,
+                dateConfirmation: values.events.dateConfirmation || undefined,
+                confirmationMethod:
+                    values.events.confirmationMethod || undefined,
+                dateOfFirstConsult:
+                    values.events.dateOfFirstConsult || undefined,
+                hospitalized: values.events.hospitalized || undefined,
+                reasonForHospitalization:
+                    values.events.reasonForHospitalization || undefined,
+                dateHospitalization:
+                    values.events.dateHospitalization || undefined,
+                dateDischargeHospital:
+                    values.events.dateDischargeHospital || undefined,
+                intensiveCare: values.events.intensiveCare || undefined,
+                dateAdmissionICU: values.events.dateAdmissionICU || undefined,
+                dateDischargeICU: values.events.dateDischargeICU || undefined,
+                homeMonitoring: values.events.homeMonitoring || undefined,
+                isolated: values.events.isolated || undefined,
+                dateIsolation: values.events.dateIsolation || undefined,
+                outcome: values.events.outcome || undefined,
+                dateDeath: values.events.dateDeath || undefined,
+                dateRecovered: values.events.dateRecovered || undefined,
             },
             preexistingConditions: {
                 ...values.preexistingConditions,
                 preexistingCondition: preexistingConditions.join(', '),
+                previousInfection:
+                    values.preexistingConditions.previousInfection || undefined,
+                pregnancyStatus:
+                    values.preexistingConditions.pregnancyStatus || undefined,
             },
             vaccination: {
                 ...values.vaccination,
                 vaccineSideEffects: vaccineSideEffects.join(', '),
+                vaccination: values.vaccination.vaccination || undefined,
+                vaccineDate: values.vaccination.vaccineDate || undefined,
+            },
+            transmission: {
+                ...values.transmission,
+                contactWithCase:
+                    values.transmission.contactWithCase || undefined,
+            },
+            travelHistory: {
+                ...values.travelHistory,
+                travelHistory: values.travelHistory.travelHistory || undefined,
+                travelHistoryEntry:
+                    values.travelHistory.travelHistoryEntry || undefined,
+            },
+            location: {
+                ...values.location,
+                query: values.location.geocodeLocation?.query || '',
             },
             symptoms: symptoms.join(', '),
         };
 
-        console.log(`new case: ${JSON.stringify(newCase, null, 2)}`);
-
-        let newCaseId = '';
+        let newCaseIds = [];
         try {
             // Update or create depending on the presence of the initial case ID.
-            if (props.initialCase?.caseReference.id) {
+            if (props.initialCase?._id) {
                 await axios.put(
-                    `/api/cases/${props.initialCase?.caseReference.id}`,
+                    `/api/cases/${props.initialCase?._id}`,
                     newCase,
                 );
             } else {
-                const postResponse = await axios.post(`/api/cases`, newCase);
-                newCaseId = postResponse.data._id;
+                const numCases = values.numCases ?? 1;
+                const postResponse = await axios.post(
+                    `/api/cases?num_cases=${numCases}`,
+                    newCase,
+                );
+                if (numCases === 1) {
+                    newCaseIds = [postResponse.data._id];
+                } else {
+                    newCaseIds = postResponse.data.cases.map(
+                        (c: Day0Case) => c._id,
+                    );
+                }
             }
             setErrorMessage('');
         } catch (e) {
@@ -348,9 +431,9 @@ export default function CaseForm(props: Props): JSX.Element {
         history.push({
             pathname: '/cases',
             state: {
-                newCaseIds: newCaseId,
-                editedCaseIds: props.initialCase?.caseReference.id
-                    ? [props.initialCase.caseReference.id]
+                newCaseIds: newCaseIds,
+                editedCaseIds: props.initialCase?._id
+                    ? [props.initialCase._id]
                     : [],
             },
         });

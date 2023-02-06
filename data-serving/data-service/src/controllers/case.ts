@@ -1,4 +1,9 @@
-import { Day0Case, CaseDocument } from '../model/day0-case';
+import {
+    Day0Case,
+    CaseDocument,
+    CaseDTO,
+    caseAgeRange,
+} from '../model/day0-case';
 import caseFields from '../model/fields.json';
 import {
     DocumentQuery,
@@ -11,12 +16,13 @@ import { ObjectId } from 'mongodb';
 import { GeocodeOptions, Geocoder, Resolution } from '../geocoding/geocoder';
 import { NextFunction, Request, Response } from 'express';
 import parseSearchQuery, { ParsingError } from '../util/search';
-import { SortByOrder, SortBy } from '../util/case';
+import { SortByOrder, SortBy, denormalizeFields } from '../util/case';
 import { denormalizeEventsHeaders, removeBlankHeader } from '../util/case';
 
 import { logger } from '../util/logger';
 import stringify from 'csv-stringify/lib/sync';
 import _ from 'lodash';
+import { AgeBucket } from '../model/age-bucket';
 
 class GeocodeNotFoundError extends Error {}
 
@@ -24,55 +30,55 @@ class InvalidParamError extends Error {}
 
 type BatchValidationErrors = { index: number; message: string }[];
 
-// const caseFromDTO = async (receivedCase: CaseDTO) => {
-//     const aCase = (receivedCase as unknown) as LeanDocument<CaseDocument>;
-//     if (receivedCase.demographics?.ageRange) {
-//         // won't be many age buckets, so fetch all of them.
-//         const allBuckets = await AgeBucket.find({});
-//         const caseStart = receivedCase.demographics?.ageRange.start;
-//         const caseEnd = receivedCase.demographics?.ageRange.end;
-//         validateCaseAges(caseStart, caseEnd);
-//         const matchingBucketIDs = allBuckets
-//             .filter((b) => {
-//                 const bucketContainsStart =
-//                     b.start <= caseStart && b.end >= caseStart;
-//                 const bucketContainsEnd =
-//                     b.start <= caseEnd && b.end >= caseEnd;
-//                 const bucketWithinCaseRange =
-//                     b.start > caseStart && b.end < caseEnd;
-//                 return (
-//                     bucketContainsStart ||
-//                     bucketContainsEnd ||
-//                     bucketWithinCaseRange
-//                 );
-//             })
-//             .map((b) => b._id);
-//         aCase.demographics.ageBuckets = matchingBucketIDs;
-//     }
-//     return aCase;
-// };
+const caseFromDTO = async (receivedCase: CaseDTO) => {
+    const aCase = (receivedCase as unknown) as LeanDocument<CaseDocument>;
+    if (receivedCase.demographics?.ageRange) {
+        // won't be many age buckets, so fetch all of them.
+        const allBuckets = await AgeBucket.find({});
+        const caseStart = receivedCase.demographics?.ageRange.start;
+        const caseEnd = receivedCase.demographics?.ageRange.end;
+        validateCaseAges(caseStart, caseEnd);
+        const matchingBucketIDs = allBuckets
+            .filter((b) => {
+                const bucketContainsStart =
+                    b.start <= caseStart && b.end >= caseStart;
+                const bucketContainsEnd =
+                    b.start <= caseEnd && b.end >= caseEnd;
+                const bucketWithinCaseRange =
+                    b.start > caseStart && b.end < caseEnd;
+                return (
+                    bucketContainsStart ||
+                    bucketContainsEnd ||
+                    bucketWithinCaseRange
+                );
+            })
+            .map((b) => b._id);
+        aCase.demographics.ageBuckets = matchingBucketIDs;
+    }
 
-// const dtoFromCase = async (storedCase: LeanDocument<CaseDocument>) => {
-//     let dto = (storedCase as unknown) as CaseDTO;
-//     const ageRange = await caseAgeRange(storedCase);
-//     if (ageRange) {
-//         dto = {
-//             ...dto,
-//             demographics: {
-//                 ...dto.demographics!,
-//                 ageRange,
-//             },
-//         };
-//         // although the type system can't see it, there's an ageBuckets property on the demographics DTO now
-//         delete ((dto as unknown) as {
-//             demographics: { ageBuckets?: [ObjectId] };
-//         }).demographics.ageBuckets;
-//     }
-//     delete dto.restrictedNotes;
-//     delete dto.notes;
+    logger.info(`A case: ${JSON.stringify(aCase, null, 2)}`);
+    return aCase;
+};
 
-//     return dto;
-// };
+const dtoFromCase = async (storedCase: LeanDocument<CaseDocument>) => {
+    let dto = (storedCase as unknown) as CaseDTO;
+    const ageRange = await caseAgeRange(storedCase);
+    if (ageRange) {
+        dto = {
+            ...dto,
+            demographics: {
+                ...dto.demographics!,
+                ageRange,
+            },
+        };
+        // although the type system can't see it, there's an ageBuckets property on the demographics DTO now
+        delete ((dto as unknown) as {
+            demographics: { ageBuckets?: [ObjectId] };
+        }).demographics.ageBuckets;
+    }
+
+    return dto;
+};
 
 export class CasesController {
     private csvHeaders: string[];
@@ -83,11 +89,12 @@ export class CasesController {
     }
 
     init() {
-        this.csvHeaders = denormalizeEventsHeaders(caseFields);
+        this.csvHeaders = caseFields;
         this.csvHeaders = removeBlankHeader(this.csvHeaders);
         this.csvHeaders.sort((a, b) =>
             a.localeCompare(b, undefined, { sensitivity: 'base' }),
         );
+
         return this;
     }
 
@@ -109,7 +116,11 @@ export class CasesController {
             return;
         }
 
-        res.json(c);
+        c.forEach((aCase: LeanDocument<CaseDocument>) => {
+            delete aCase.caseReference.sourceEntryId;
+        });
+
+        res.json(await Promise.all(c.map((aCase) => dtoFromCase(aCase))));
     };
 
     /**
@@ -170,7 +181,7 @@ export class CasesController {
                     .cursor();
             } else if (queryLimit) {
                 logger.info('Request body with limit and no case IDs');
-                cursor = Day0Case.find({ list: true })
+                cursor = Day0Case.find()
                     .lean()
                     .limit(queryLimit)
                     .collation({
@@ -180,7 +191,7 @@ export class CasesController {
                     .cursor();
             } else {
                 logger.info('Request body with no query, limit, or case IDs');
-                cursor = Day0Case.find({ list: true })
+                cursor = Day0Case.find()
                     .lean()
                     .collation({
                         locale: 'en_US',
@@ -214,7 +225,9 @@ export class CasesController {
 
                 doc = await cursor.next();
                 while (doc != null) {
-                    const stringifiedCase = stringify([doc], {
+                    delete doc.caseReference.sourceEntryId;
+                    const caseDTO = await dtoFromCase(doc);
+                    const stringifiedCase = stringify([caseDTO], {
                         header: false,
                         columns: this.csvHeaders,
                         delimiter: delimiter,
@@ -232,7 +245,9 @@ export class CasesController {
                 res.write('[');
                 doc = await cursor.next();
                 while (doc != null) {
-                    res.write(JSON.stringify(doc));
+                    delete doc.caseReference.sourceEntryId;
+                    const normalizedDoc = await denormalizeFields(doc);
+                    res.write(JSON.stringify(normalizedDoc));
                     doc = await cursor.next();
                     if (doc != null) {
                         res.write(',');
@@ -308,14 +323,14 @@ export class CasesController {
 
             const sortByKeyword = sortBy as SortBy;
 
-            // const sortedQuery = casesQuery.sort({
-            //     [sortByKeyword]: sortByOrder === SortByOrder.Ascending ? 1 : -1,
-            // });
+            const sortedQuery = casesQuery.sort({
+                [sortByKeyword]: sortByOrder === SortByOrder.Ascending ? 1 : -1,
+            });
 
             // Do a fetch of documents and another fetch in parallel for total documents
             // count used in pagination.
             const [docs, total] = await Promise.all([
-                casesQuery
+                sortedQuery
                     .skip(limit * (page - 1))
                     .limit(limit)
                     .lean()
@@ -329,6 +344,7 @@ export class CasesController {
                 }),
             ]);
 
+            const dtos = await Promise.all(docs.map(dtoFromCase));
             logger.info('got results');
             // total is actually stored in a count index in mongo, so the query is fast.
             // however to maintain existing behaviour, only return the count limit
@@ -337,7 +353,7 @@ export class CasesController {
             // indicating that there is more to fetch on the next page.
             if (total > limit * page) {
                 res.json({
-                    cases: docs,
+                    dtos,
                     nextPage: page + 1,
                     total: reportedTotal,
                 });
@@ -346,7 +362,7 @@ export class CasesController {
             }
             // If we fetched all available data, just return it.
             logger.info('Got one page of results');
-            res.json({ cases: docs, total: reportedTotal });
+            res.json({ cases: dtos, total: reportedTotal });
         } catch (e) {
             if (e instanceof ParsingError) {
                 logger.error(`Parsing error ${e.message}`);
@@ -367,18 +383,29 @@ export class CasesController {
      * Handles HTTP POST /api/cases.
      */
     create = async (req: Request, res: Response): Promise<void> => {
+        const numCases = Number(req.query.num_cases) || 1;
+
         try {
             await this.geocode(req);
-            const receivedCase = req.body as CaseDocument;
-            const c = new Day0Case(receivedCase);
+            const receivedCase = req.body as CaseDTO;
+            const c = new Day0Case(await caseFromDTO(receivedCase));
 
             let result;
             if (req.query.validate_only) {
                 await c.validate();
                 result = c;
             } else {
-                result = await c.save();
+                if (numCases === 1) {
+                    result = await c.save();
+                } else {
+                    const cases = Array.from(
+                        { length: numCases },
+                        () => new Day0Case(req.body),
+                    );
+                    result = { cases: await Day0Case.insertMany(cases) };
+                }
             }
+
             res.status(201).json(result);
         } catch (e) {
             const err = e as Error;
@@ -417,9 +444,8 @@ export class CasesController {
         // sequentially, so if Mongo creates a batch validate method that should be used here.
         for (let index = 0; index < cases.length; index++) {
             const c = cases[index];
-            const ageArr = c.Age.split('-');
-            const ageStart = ageArr[0];
-            const ageEnd = ageArr.length === 2 ? ageArr[1] : ageArr[0];
+            const ageStart = c.demographics?.ageRange?.start;
+            const ageEnd = c.demographics?.ageRange?.end;
             try {
                 validateCaseAges(ageStart, ageEnd);
             } catch (e) {
@@ -433,12 +459,6 @@ export class CasesController {
         }
         return errors;
     };
-
-    /**
-     * Batch validate cases with day 0 schema
-     * This is a temp function, once the API will use Day 0 schema
-     * it should substitute the above function
-     */
 
     /**
      * Perform geocoding for each case (of multiple `cases` specified in the
@@ -523,12 +543,19 @@ export class CasesController {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const upsertLambda = async (c: any) => {
                 delete c.caseCount;
-                if (c.Source.sourceId && c.Source.sourceEntryId) {
+                c = await caseFromDTO(c as CaseDTO);
+
+                if (
+                    c.caseReference?.sourceId &&
+                    c.caseReference?.sourceEntryId
+                ) {
                     return {
                         updateOne: {
                             filter: {
-                                'Source.sourceId': c.Source.sourceId,
-                                'Source.sourceEntryId': c.Source.sourceEntryId,
+                                'caseReference.sourceId':
+                                    c.caseReference.sourceId,
+                                'caseReference.sourceEntryId':
+                                    c.caseReference.sourceEntryId,
                             },
                             update: c,
                             upsert: true,
@@ -579,6 +606,7 @@ export class CasesController {
      */
     update = async (req: Request, res: Response): Promise<void> => {
         try {
+            logger.info('PUT');
             const c = await Day0Case.findById(req.params.id);
             if (!c) {
                 res.status(404).send({
@@ -586,10 +614,13 @@ export class CasesController {
                 });
                 return;
             }
-            const caseDetails = req.body;
+            const caseDetails = await caseFromDTO(req.body);
+            logger.info('Case details');
             c.set(caseDetails);
+            logger.info('case set');
             await c.save();
-            res.json(c);
+            logger.info('Case save');
+            res.json(await dtoFromCase(c));
         } catch (err) {
             if (err.name === 'ValidationError') {
                 res.status(422).json(err);
@@ -618,7 +649,7 @@ export class CasesController {
             const cases: LeanDocument<CaseDocument>[] = [];
 
             for (const c in req.body.cases) {
-                const caseDoc = req.body.cases[c] as CaseDocument;
+                const caseDoc = await caseFromDTO(req.body.cases[c] as CaseDTO);
                 const aCase = await Day0Case.findOne({ _id: caseDoc._id });
                 if (aCase) {
                     cases.push(caseDoc);
@@ -664,22 +695,25 @@ export class CasesController {
     upsert = async (req: Request, res: Response): Promise<void> => {
         try {
             const c = await Day0Case.findOne({
-                'Source.sourceId': req.body.Source?.sourceId,
-                'Source.sourceEntryId': req.body.Source?.sourceEntryId,
+                'caseReference.sourceId': req.body.caseReference?.sourceId,
+                'caseReference.sourceEntryId':
+                    req.body.caseReference?.sourceEntryId,
             });
             if (
-                req.body.Source?.sourceId &&
-                req.body.Source?.sourceEntryId &&
+                req.body.caseReference?.sourceId &&
+                req.body.caseReference?.sourceEntryId &&
                 c
             ) {
-                c.set(req.body);
+                const update = await caseFromDTO(req.body as CaseDTO);
+                c.set(update);
                 const result = await c.save();
                 res.status(200).json(result);
                 return;
             } else {
                 // Geocode new cases.
                 await this.geocode(req);
-                const c = new Day0Case(req.body);
+                const update = await caseFromDTO(req.body as CaseDTO);
+                const c = new Day0Case(update);
                 const result = await c.save();
                 res.status(201).json(result);
                 return;
@@ -915,10 +949,6 @@ export class CasesController {
         location: any,
         canBeFuzzy: boolean,
     ): Promise<any> {
-        // Geocode using location.query if no lat lng were provided.
-        if (location?.geometry?.latitude && location.geometry?.longitude) {
-            return location;
-        }
         if (!location?.query) {
             if (canBeFuzzy) {
                 // no problem, just give back what we received
@@ -983,16 +1013,12 @@ export class CasesController {
     // batch geocoding API for such cases.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private async geocode(req: Request | any): Promise<void> {
-        req.body['location'] = await this.geocodeLocation(
+        const locationObject = await this.geocodeLocation(
             req.body['location'],
             false,
         );
-        for (const travel of req.body.travelHistory?.travel || []) {
-            travel['location'] = await this.geocodeLocation(
-                travel.location,
-                true,
-            );
-        }
+
+        req.body['location'] = { ...req.body['location'], ...locationObject };
     }
 }
 
@@ -1033,9 +1059,8 @@ export const casesMatchingSearchQuery = (opts: {
     const queryOpts = parsedSearch.fullTextSearch
         ? {
               $text: { $search: parsedSearch.fullTextSearch },
-              list: true,
           }
-        : { list: true };
+        : {};
 
     // Always search with case-insensitivity.
     const casesQuery: Query<CaseDocument[], CaseDocument> = Day0Case.find(
@@ -1064,7 +1089,10 @@ export const casesMatchingSearchQuery = (opts: {
                         [f.dateOperator]: f.values[0],
                     },
                 });
-            } else if (f.path === 'gender' && f.values[0] === 'notProvided') {
+            } else if (
+                f.path === 'demographics.gender' &&
+                f.values[0] === 'notProvided'
+            ) {
                 casesQuery.where(f.path).exists(false);
                 countQuery.where(f.path).exists(false);
             } else {

@@ -39,19 +39,11 @@ export interface CaseReference {
     }[];
 }
 
-export interface Sources {
-    source: string;
-    sourceII?: string;
-    sourceIII?: string;
-    sourceIV?: string;
-    sourceV?: string;
-    sourceVI?: string;
-    sourceVII?: string;
-    [key: string]: string | undefined;
-}
-
 export interface Demographics {
-    age?: string;
+    ageRange?: {
+        start: number;
+        end: number;
+    };
     gender?: Gender | '';
     occupation?: string;
     healthcareWorker?: YesNo | '';
@@ -76,6 +68,8 @@ export interface Location {
     countryISO3: string;
     location?: string;
     city?: string;
+    // this variable is needed in the API in order to geocode properly
+    query?: string;
 }
 
 export interface Events {
@@ -118,7 +112,7 @@ export interface Transmission {
 
 export interface TravelHistory {
     travelHistory?: YesNo | '';
-    travelHistoryEntry?: string;
+    travelHistoryEntry?: string | null;
     travelHistoryStart?: string;
     travelHistoryLocation?: string;
     travelHistoryCountry?: string;
@@ -149,9 +143,9 @@ export interface ISource {
 }
 
 export interface Day0Case {
+    _id?: string;
     caseStatus: CaseStatus | '';
     caseReference: CaseReference;
-    sources: Sources;
     demographics: Demographics;
     location: Location;
     events: Events;
@@ -167,7 +161,6 @@ export interface Day0Case {
     preexistingConditionsHelper?: string[];
     [key: string]:
         | CaseReference
-        | Sources
         | Demographics
         | Location
         | Events
@@ -214,11 +207,10 @@ export interface Day0CaseFormValues {
             sourceUrl: string;
         }[];
     };
-    sources: Sources;
     demographics: {
         minAge?: number;
         maxAge?: number;
-        age?: string;
+        age?: number;
         gender?: Gender | '';
         occupation?: string;
         healthcareWorker?: YesNo | '';
@@ -242,20 +234,5 @@ export interface Day0CaseFormValues {
     // helper value
     vaccineSideEffects?: string[];
     preexistingConditionsHelper?: string[];
-    [key: string]:
-        | CaseReference
-        | Sources
-        | Demographics
-        | Location
-        | Events
-        | Transmission
-        | TravelHistory
-        | GenomeSequences
-        | PreexistingConditionsFormValues
-        | VaccinationFormValues
-        | string
-        | string[]
-        | number
-        | undefined
-        | null;
+    [key: string]: any;
 }

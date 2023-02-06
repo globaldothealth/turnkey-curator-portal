@@ -1,8 +1,6 @@
-import { CaseStatus } from '../../api/models/Day0Case';
-
 export const labels = [
     'Case ID',
-    'Confirmation date',
+    'Entry date',
     'Case status',
     'Country',
     'City',
@@ -10,7 +8,7 @@ export const labels = [
     'Age',
     'Gender',
     'Outcome',
-    'Hospitalization date/period',
+    'Hospitalization date',
     'Symptoms onset date',
     'Source URL',
 ];
@@ -20,18 +18,18 @@ export const createData = (
     country: string,
     city?: string,
     location?: string,
-    dateConfirmation?: string,
+    dateEntry?: string,
     age?: string,
     gender?: string,
     outcome?: string,
     dateHospitalization?: string,
     dateOnset?: string,
     source?: string,
-    caseStatus?: CaseStatus | '',
+    caseStatus?: string,
 ) => {
     return {
         caseId: caseId || '',
-        dateConfirmation: dateConfirmation || '',
+        dateEntry: dateEntry || '',
         caseStatus: caseStatus || '',
         country: country || '',
         city: city || '',

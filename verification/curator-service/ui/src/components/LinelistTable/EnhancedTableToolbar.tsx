@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import {
-    setExcludeCasesDialogOpen,
     setDeleteCasesDialogOpen,
     setRowsAcrossPagesSelected,
     setCasesSelected,
@@ -22,8 +21,6 @@ import Button from '@mui/material/Button';
 import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import Stack from '@mui/material/Stack';
-
-import ExcludeIcon from '../assets/excluded_icon.svg';
 
 import Header from './Header';
 
@@ -105,20 +102,6 @@ const EnhancedTableToolbar = () => {
                         alignItems="center"
                         sx={{ marginLeft: '1rem' }}
                     >
-                        <Tooltip title="Exclude selected rows">
-                            <IconButton
-                                onClick={() =>
-                                    dispatch(setExcludeCasesDialogOpen(true))
-                                }
-                            >
-                                <img
-                                    src={ExcludeIcon}
-                                    alt="Exclude cases button"
-                                    data-testid="exclude-action"
-                                />
-                            </IconButton>
-                        </Tooltip>
-
                         <Tooltip
                             title="Download selected rows"
                             aria-label="download selected rows"

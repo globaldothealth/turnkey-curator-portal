@@ -21,6 +21,7 @@ import {
 } from '../../api/models/Day0Case';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
+import { TextField as MuiTextField } from '@mui/material';
 
 interface SourceProps {
     initialValue?: CaseReference;
@@ -64,40 +65,47 @@ const useSourceStyles = makeStyles(() => ({
     },
 }));
 
-const additionalSources = [
-    { name: 'sourceII', label: 'Source II url' },
-    { name: 'sourceIII', label: 'Source III url' },
-    { name: 'sourceIV', label: 'Source IV url' },
-    { name: 'sourceV', label: 'Source V url' },
-    { name: 'sourceVI', label: 'Source VI url' },
-    { name: 'sourceVII', label: 'Source VII url' },
-];
-
 export default function Source(props: SourceProps) {
     const classes = useSourceStyles();
-    const [additionalSourceNum, setAdditionalSourceNum] = useState(0);
+    const [additionalSourceNum, setAdditionalSourceNum] = useState(1);
+    const { setFieldValue, values, errors } = useFormikContext<
+        Day0CaseFormValues | BulkCaseFormValues
+    >();
 
     const freeSolo = props.freeSolo === undefined ? true : props.freeSolo;
 
     const handleadditionalSourceClick = () => {
-        if (additionalSourceNum >= additionalSources.length) return;
+        if (additionalSourceNum >= 7) return;
 
         setAdditionalSourceNum((state) => state + 1);
     };
 
     const renderedAdditionalSources = () => {
         const fields = [];
-        for (let i = 0; i < additionalSourceNum; i++) {
+        for (let i = 2; i <= additionalSourceNum; i++) {
+            const additionalSources = values.caseReference?.additionalSources;
+
             fields.push(
-                <FastField
-                    key={additionalSources[i].name}
-                    label={additionalSources[i].label}
-                    name={additionalSources[i].name}
+                <MuiTextField
+                    key={`source${i}`}
+                    label={`Source ${i}`}
                     type="text"
-                    data-testid={additionalSources[i].name}
-                    component={TextField}
+                    data-testid={`source${i}`}
                     margin="normal"
                     fullWidth
+                    value={
+                        additionalSources && additionalSources[i - 2]
+                            ? additionalSources[i - 2].sourceUrl
+                            : ''
+                    }
+                    onChange={(event) => {
+                        setFieldValue(
+                            `caseReference.additionalSources.${
+                                i - 2
+                            }.sourceUrl`,
+                            event.target.value,
+                        );
+                    }}
                 />,
             );
         }
@@ -121,18 +129,17 @@ export default function Source(props: SourceProps) {
                 </div>
             )}
 
-            {props.withAdditioanlSources &&
-                additionalSourceNum < additionalSources.length && (
-                    <Button
-                        variant="outlined"
-                        id="add-additional-sources"
-                        startIcon={<AddIcon />}
-                        onClick={handleadditionalSourceClick}
-                        sx={{ marginTop: '1rem' }}
-                    >
-                        Add additional source
-                    </Button>
-                )}
+            {props.withAdditioanlSources && additionalSourceNum < 7 && (
+                <Button
+                    variant="outlined"
+                    id="add-additional-sources"
+                    startIcon={<AddIcon />}
+                    onClick={handleadditionalSourceClick}
+                    sx={{ marginTop: '1rem' }}
+                >
+                    Add additional source
+                </Button>
+            )}
         </Scroll.Element>
     );
 }
@@ -342,16 +349,13 @@ export function SourcesAutocomplete(
                                 values.caseReference?.sourceProviderName ?? '',
                             sourceProviderUrl:
                                 values.caseReference?.sourceProviderUrl ?? '',
+                            additionalSources: [] as unknown as [
+                                { sourceUrl: string },
+                            ],
                         };
                     }
                     setValue(newValue);
                     setFieldValue(name, newValue);
-                    setFieldValue(
-                        'sources.source',
-                        typeof newValue === 'string'
-                            ? newValue
-                            : newValue?.sourceUrl,
-                    );
                 }}
                 filterOptions={(
                     options: CaseReferenceForm[],
@@ -381,6 +385,9 @@ export function SourcesAutocomplete(
                                 values.caseReference?.sourceProviderName ?? '',
                             sourceProviderUrl:
                                 values.caseReference?.sourceProviderUrl ?? '',
+                            additionalSources: [] as unknown as [
+                                { sourceUrl: string },
+                            ],
                         });
                     }
 

@@ -139,11 +139,7 @@ apiRouter.post(
     createBatchUpdateCaseRevisions,
     caseController.batchUpdate,
 );
-apiRouter.put(
-    '/cases/:id([a-z0-9]{24})',
-    createCaseRevision,
-    caseController.update,
-);
+apiRouter.put('/cases/:id([a-z0-9]{24})', caseController.update);
 apiRouter.delete(
     '/cases',
     batchDeleteCheckThreshold,

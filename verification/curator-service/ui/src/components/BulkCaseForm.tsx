@@ -1,23 +1,19 @@
 import * as Yup from 'yup';
 
+import { useState } from 'react';
 import { Button, CircularProgress, Typography } from '@mui/material';
-import withStyles from '@mui/styles/withStyles';
 import {
-    Case,
-    Event,
-    PreexistingConditions,
-    Symptoms,
-    VerificationStatus,
-} from '../api/models/Case';
-import { CaseReference } from '../api/models/Day0Case';
+    CaseReference,
+    CaseStatus,
+    Gender,
+    Outcome,
+    HospitalizationReason,
+    YesNo,
+    Day0Case,
+} from '../api/models/Day0Case';
 import { Form, Formik } from 'formik';
 import Papa, { ParseLocalConfig, ParseResult } from 'papaparse';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
 import Source, { submitSource } from './common-form-fields/Source';
-import { Theme } from '@mui/material/styles';
-
-import { WithStyles } from '@mui/styles';
-import createStyles from '@mui/styles/createStyles';
 
 import Alert from '@mui/material/Alert';
 import AppModal from './AppModal';
@@ -25,69 +21,65 @@ import BulkCaseFormValues from './bulk-case-form-fields/BulkCaseFormValues';
 import CaseValidationError from './bulk-case-form-fields/CaseValidationError';
 import FileUpload from './bulk-case-form-fields/FileUpload';
 import { Paper } from '@mui/material';
-import React from 'react';
 import ValidationErrorList from './bulk-case-form-fields/ValidationErrorList';
 import axios from 'axios';
-import { toUTCDate } from './util/date';
-import { codeForCountry } from './util/countryNames';
+import { useHistory } from 'react-router-dom';
+import makeStyles from '@mui/styles/makeStyles';
 
 // Return type isn't meaningful.
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-const styles = (theme: Theme) =>
-    createStyles({
-        headerBlurb: {
-            maxWidth: '70%',
-            paddingBottom: '3em',
-            paddingTop: '1em',
-        },
-        headerText: {
-            marginTop: '2em',
-        },
-        form: {
-            display: 'flex',
-            flexDirection: 'column',
-            height: '100%',
-            paddingLeft: '3em',
-            paddingRight: '4em',
-        },
-        formSection: {
-            paddingBottom: '2em',
-        },
-        allFormSections: {
-            marginBottom: '2em',
-            maxWidth: '60%',
-            paddingLeft: '1em',
-            paddingRight: '1em',
-            paddingTop: '0.5em',
-        },
-        statusMessage: {
-            marginTop: '2em',
-            maxWidth: '80%',
-        },
-        uploadFeedback: {
-            paddingBottom: '4em',
-        },
-        uploadBar: {
-            alignItems: 'center',
-            display: 'flex',
-            height: '4em',
-            marginTop: 'auto',
-        },
-        cancelButton: {
-            marginLeft: '1em',
-        },
-        progressIndicator: {
-            alignItems: 'center',
-            display: 'flex',
-        },
-        progressText: {
-            marginLeft: '1em',
-        },
-    });
+const useStyles = makeStyles((theme) => ({
+    headerBlurb: {
+        maxWidth: '70%',
+        paddingBottom: '3em',
+        paddingTop: '1em',
+    },
+    headerText: {
+        marginTop: '2em',
+    },
+    form: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        paddingLeft: '3em',
+        paddingRight: '4em',
+    },
+    formSection: {
+        paddingBottom: '2em',
+    },
+    allFormSections: {
+        marginBottom: '2em',
+        maxWidth: '60%',
+        paddingLeft: '1em',
+        paddingRight: '1em',
+        paddingTop: '0.5em',
+    },
+    statusMessage: {
+        marginTop: '2em',
+        maxWidth: '80%',
+    },
+    uploadFeedback: {
+        paddingBottom: '4em',
+    },
+    uploadBar: {
+        alignItems: 'center',
+        display: 'flex',
+        height: '4em',
+        marginTop: 'auto',
+    },
+    cancelButton: {
+        marginLeft: '1em',
+    },
+    progressIndicator: {
+        alignItems: 'center',
+        display: 'flex',
+    },
+    progressText: {
+        marginLeft: '1em',
+    },
+}));
 
-interface BulkCaseFormProps
-    extends RouteComponentProps,
-        WithStyles<typeof styles> {
+interface BulkCaseFormProps {
     onModalClose: () => void;
 }
 
@@ -113,50 +105,56 @@ interface RawParsedCase {
     // Interface index
     [key: string]: string | number | boolean | undefined;
 
+    caseStatus: CaseStatus;
+    pathogen: string;
+
     // CaseReference
     // sourceId and sourceUrl are provided elsewhere in the form
     sourceEntryId?: string;
 
     // Demographics
-    gender?: string;
+    gender?: Gender;
     // Convenience field to provide age range in $start-$end format.
     ageRange?: string;
     ageRangeStart?: number;
     ageRangeEnd?: number;
-    ethnicity?: string;
-    nationalities?: string; // semicolon delimited list
     occupation?: string;
+    healthcareWorker?: YesNo;
 
     // Events
-    dateConfirmed: string;
+    dateEntry: string;
+    dateOnset?: string;
+    dateConfirmation?: string;
     confirmationMethod?: string;
-    hospitalized?: boolean;
-    dateHospitalized?: string;
-    icuAdmission?: boolean;
-    dateIcuAdmission?: string;
-    outcome?: string;
-    dateOutcome?: string;
-    dateSymptomOnset?: string;
+    dateOfFirstConsult?: string;
+    hospitalized?: YesNo;
+    reasonForHospitalization?: HospitalizationReason;
+    dateHospitalization?: string;
+    dateDischargeHospital?: string;
+    intensiveCare?: YesNo;
+    dateAdmissionICU?: string;
+    dateDischargeICU?: string;
+    homeMonitoring?: YesNo;
+    isolated?: YesNo;
+    dateIsolation?: string;
+    outcome?: Outcome;
+    dateDeath?: string;
+    dateRecovered?: string;
 
     // Preexisting conditions
-    hasPreexistingConditions?: boolean;
-    preexistingConditions?: string; // semicolon delimited list
+    previousInfection?: YesNo;
+    coInfection?: string;
+    preexistingCondition?: string;
+    pregnancyStatus?: YesNo;
 
     // Symptoms
     symptoms?: string; // semicolon delimited list
-    symptomStatus?: string;
-
-    // variant of concern
-    variantOfConcern?: string;
 
     // Location
     country: string;
-    admin1?: string;
-    admin2?: string;
-    admin3?: string;
-    latitude?: number;
-    longitude?: number;
-    locationName?: string;
+    countryISO3: string;
+    location?: string;
+    city?: string;
 
     // Bulk upload specific data
     caseCount?: number;
@@ -206,7 +204,7 @@ type RecursivePartial<T> = {
 // populating and using the values in the object.
 //
 // TODO: Consider defining truly optional fields as optional in Case.tsx.
-type CompleteParsedCase = RecursivePartial<Case> & { caseCount?: number };
+type CompleteParsedCase = RecursivePartial<Day0Case> & { caseCount?: number };
 
 const BulkFormSchema = Yup.object().shape({
     caseReference: Yup.object().shape({
@@ -216,114 +214,22 @@ const BulkFormSchema = Yup.object().shape({
     file: Yup.mixed().required('Please upload a file'),
 });
 
-class BulkCaseForm extends React.Component<
-    BulkCaseFormProps,
-    BulkCaseFormState
-> {
-    constructor(props: BulkCaseFormProps) {
-        super(props);
-        this.state = {
-            errorMessage: '',
-            errors: [],
-        };
-    }
+const BulkCaseForm = (props: BulkCaseFormProps) => {
+    const { onModalClose } = props;
 
-    // TODO: Standardize event naming/constructions between case forms.
-    createEvents(c: RawParsedCase): Event[] {
-        const events = [];
-        // TODO: Add ParsedCase validation.
-        if (c.dateConfirmed) {
-            events.push({
-                name: 'confirmed',
-                dateRange: {
-                    start: toUTCDate(c.dateConfirmed),
-                    end: toUTCDate(c.dateConfirmed),
-                },
-                value: c.confirmationMethod,
-            });
-        }
-        if (c.hospitalized === true) {
-            events.push({
-                name: 'hospitalAdmission',
-                dateRange: c.dateHospitalized
-                    ? {
-                          start: toUTCDate(c.dateHospitalized),
-                          end: toUTCDate(c.dateHospitalized),
-                      }
-                    : undefined,
-                value: 'Yes',
-            });
-        }
-        if (c.icuAdmission === true) {
-            events.push({
-                name: 'icuAdmission',
-                dateRange: c.dateIcuAdmission
-                    ? {
-                          start: toUTCDate(c.dateIcuAdmission),
-                          end: toUTCDate(c.dateIcuAdmission),
-                      }
-                    : undefined,
-                value: 'Yes',
-            });
-        }
-        if (c.outcome) {
-            events.push({
-                name: 'outcome',
-                dateRange: c.dateOutcome
-                    ? {
-                          start: toUTCDate(c.dateOutcome),
-                          end: toUTCDate(c.dateOutcome),
-                      }
-                    : undefined,
-                value: c.outcome,
-            });
-        }
-        if (c.dateSymptomOnset) {
-            events.push({
-                name: 'onsetSymptoms',
-                dateRange: {
-                    start: toUTCDate(c.dateSymptomOnset),
-                    end: toUTCDate(c.dateSymptomOnset),
-                },
-            });
-        }
-        return events;
-    }
+    const history = useHistory();
+    const classes = useStyles();
 
-    /**
-     * Defines the acceptable geocoding result types.
-     *
-     * Currently operates under the assumption that the final geocode should be
-     * return only types specified in the uploaded data. Setting this prevents
-     * inadvertent increases in resolution: e.g., an non-geocodable county name
-     * being interpreted as a street name.
-     *
-     * TODO: Once county-level geocoding is fixed, consider removing the option
-     * to lose resolution, here. For now, we can't require the most precise
-     * resolution, because the erroneous county cases will 404.
-     */
-    createGeoResolutionLimit(c: RawParsedCase): string {
-        const types = [];
-        if (c.admin3) {
-            types.push('Admin3');
-        }
-        if (c.admin2) {
-            types.push('Admin2');
-        }
-        if (c.admin1) {
-            types.push('Admin1');
-        }
-        types.push('Country');
-        return types.join(',');
-    }
+    const [errorMessage, setErrorMessage] = useState('');
+    const [errors, setErrors] = useState<CaseValidationError[]>([]);
 
-    createLocationQuery(c: RawParsedCase): string {
-        return [c.admin3, c.admin2, c.admin1, c.country]
-            .filter((field) => field)
-            .join(', ');
-    }
+    const createLocationQuery = (c: RawParsedCase): string => {
+        return c.location
+            ? c.location
+            : [c.city, c.country].filter((field) => field).join(', ');
+    };
 
-    createAgeRange(c: RawParsedCase): AgeRange {
+    const createAgeRange = (c: RawParsedCase): AgeRange => {
         let ageRangeStart = c.ageRangeStart;
         let ageRangeEnd = c.ageRangeEnd;
         if (c.ageRange?.match(/^\d*-\d*$/)) {
@@ -332,29 +238,7 @@ class BulkCaseForm extends React.Component<
             ageRangeEnd = startEnd[1] ? Number(startEnd[1]) : undefined;
         }
         return { start: ageRangeStart, end: ageRangeEnd };
-    }
-
-    createSymptoms(c: RawParsedCase): Symptoms | undefined {
-        return c.symptomStatus
-            ? {
-                  status: c.symptomStatus,
-                  values: c.symptoms ? c.symptoms.split(';') : [],
-              }
-            : undefined;
-    }
-
-    createPreexistingConditions(
-        c: RawParsedCase,
-    ): PreexistingConditions | undefined {
-        return c.hasPreexistingConditions !== undefined
-            ? {
-                  hasPreexistingConditions: c.hasPreexistingConditions,
-                  values: c.preexistingConditions
-                      ? c.preexistingConditions.split(';')
-                      : [],
-              }
-            : undefined;
-    }
+    };
 
     /**
      * Create an API-ready case object from parsed case data.
@@ -363,62 +247,68 @@ class BulkCaseForm extends React.Component<
      * class, and unit test the API. Right now it's just verified via a single
      * Cypress case.
      */
-    createCaseObject(
+    const createCaseObject = (
         c: RawParsedCase,
-        events: Event[],
-        geoResolutionLimit: string,
-        locationQuery: string,
         ageRange: AgeRange,
         caseReference: CaseReference,
         uploadId: string,
-        symptoms?: Symptoms,
-        preexistingConditions?: PreexistingConditions,
-    ): CompleteParsedCase {
+    ): CompleteParsedCase => {
         return {
+            caseStatus: c.caseStatus,
+            pathogen: c.pathogen,
             caseReference: {
                 sourceId: caseReference.sourceId,
                 sourceEntryId: c.sourceEntryId?.toString(),
                 sourceUrl: caseReference.sourceUrl,
                 uploadIds: [uploadId],
-                verificationStatus: VerificationStatus.Verified,
             },
-            list: true,
             demographics: {
                 gender: c.gender,
                 ageRange: ageRange,
-                ethnicity: c.ethnicity,
-                nationalities: c.nationalities?.split(';'),
                 occupation: c.occupation,
+                healthcareWorker: c.healthcareWorker,
             },
             location: {
-                country: codeForCountry(c.country),
-                administrativeAreaLevel1: c.admin1,
-                administrativeAreaLevel2: c.admin2,
-                administrativeAreaLevel3: c.admin3,
-                query: locationQuery,
-                geometry:
-                    c.latitude && c.longitude
-                        ? {
-                              latitude: c.latitude,
-                              longitude: c.longitude,
-                          }
-                        : undefined,
-                name: c.locationName,
-                limitToResolution: geoResolutionLimit,
+                country: c.country,
+                countryISO3: c.countryISO3,
+                city: c.city,
+                location: c.location,
+                query: createLocationQuery(c),
             },
-            events: events,
-            preexistingConditions: preexistingConditions,
-            symptoms: symptoms,
+            events: {
+                dateEntry: c.dateEntry,
+                dateOnset: c.dateOnset,
+                dateConfirmation: c.dateConfirmation,
+                confirmationMethod: c.confirmationMethod,
+                dateOfFirstConsult: c.dateOfFirstConsult,
+                hospitalized: c.hospitalized,
+                reasonForHospitalization: c.reasonForHospitalization,
+                dateHospitalization: c.dateHospitalization,
+                dateDischargeHospital: c.dateDischargeHospital,
+                intensiveCare: c.intensiveCare,
+                dateAdmissionICU: c.dateAdmissionICU,
+                dateDischargeICU: c.dateDischargeICU,
+                homeMonitoring: c.homeMonitoring,
+                isolated: c.isolated,
+                dateIsolation: c.dateIsolation,
+                outcome: c.outcome,
+                dateDeath: c.dateDeath,
+                dateRecovered: c.dateRecovered,
+            },
+            symptoms: c.symptoms,
             caseCount: c.caseCount,
-            variant: {
-                name: c.variantOfConcern,
-            },
+            // TBD whether we need those added to the CSV
+            preexistingConditions: {},
+            transmission: {},
+            travelHistory: {},
+            vaccination: {},
+            genomeSequences: {},
         };
-    }
+    };
 
-    async batchUpsertCases(
+    const batchUpsertCases = async (
         cases: CompleteParsedCase[],
-    ): Promise<BatchUpsertResponse> {
+    ): Promise<BatchUpsertResponse> => {
         const casesToSend = cases.flatMap((c) =>
             Array.from({ length: c.caseCount || 1 }, () => c),
         );
@@ -431,9 +321,11 @@ class BulkCaseForm extends React.Component<
             { maxContentLength: Infinity },
         );
         return response.data;
-    }
+    };
 
-    async createUpload(caseReference: CaseReference): Promise<string> {
+    const createUpload = async (
+        caseReference: CaseReference,
+    ): Promise<string> => {
         const response = await axios.post<Upload>(
             `/api/sources/${caseReference.sourceId}/uploads`,
             {
@@ -442,26 +334,26 @@ class BulkCaseForm extends React.Component<
             },
         );
         return response.data._id;
-    }
+    };
 
-    async finalizeUpload(
+    const finalizeUpload = async (
         sourceId: string,
         uploadId: string,
         status: string,
         summary: UploadSummary,
-    ): Promise<void> {
+    ): Promise<void> => {
         await axios.put(`/api/sources/${sourceId}/uploads/${uploadId}`, {
             status: status,
             summary: summary,
         });
-    }
+    };
 
-    async uploadData(
+    const uploadData = async (
         results: ParseResult<RawParsedCase>,
         caseReference: CaseReference,
         filename: string,
-    ): Promise<void> {
-        const uploadId = await this.createUpload(caseReference);
+    ): Promise<void> => {
+        const uploadId = await createUpload(caseReference);
         const cases = results.data.map((c) => {
             // papaparse uses null to fill values that are empty in the CSV.
             // I'm not clear how it does so -- since our types aren't union
@@ -472,58 +364,32 @@ class BulkCaseForm extends React.Component<
                 (field) =>
                     (c[field] = c[field] === null ? undefined : c[field]),
             );
-            const geoResolutionLimit = this.createGeoResolutionLimit(c);
-            const locationQuery = this.createLocationQuery(c);
-            const events = this.createEvents(c);
-            const ageRange = this.createAgeRange(c);
-            const symptoms = this.createSymptoms(c);
-            const preexistingConditions = this.createPreexistingConditions(c);
-            return this.createCaseObject(
-                c,
-                events,
-                geoResolutionLimit,
-                locationQuery,
-                ageRange,
-                caseReference,
-                uploadId,
-                symptoms,
-                preexistingConditions,
-            );
+            const ageRange = createAgeRange(c);
+            return createCaseObject(c, ageRange, caseReference, uploadId);
         });
 
         let upsertResponse: BatchUpsertResponse;
         try {
-            upsertResponse = await this.batchUpsertCases(cases);
+            upsertResponse = await batchUpsertCases(cases);
         } catch (e) {
-            this.setState({
-                errorMessage: `System error during upload: ${e.message}`,
+            setErrorMessage(`System error during upload: ${e.message}`);
+            await finalizeUpload(caseReference.sourceId, uploadId, 'ERROR', {
+                error: 'DATA_UPLOAD_ERROR',
             });
-            await this.finalizeUpload(
-                caseReference.sourceId,
-                uploadId,
-                'ERROR',
-                { error: 'DATA_UPLOAD_ERROR' },
-            );
             return;
         }
         const validationErrors = upsertResponse.errors.map(
             (e) => new CaseValidationError(e.index + 1, e.message),
         );
-        this.setState({ errors: validationErrors });
+        setErrors(validationErrors);
         if (validationErrors.length > 0) {
-            this.setState({
-                errors: validationErrors,
-                errorMessage: '',
+            setErrorMessage('');
+            await finalizeUpload(caseReference.sourceId, uploadId, 'ERROR', {
+                error: 'VALIDATION_ERROR',
             });
-            await this.finalizeUpload(
-                caseReference.sourceId,
-                uploadId,
-                'ERROR',
-                { error: 'VALIDATION_ERROR' },
-            );
             return;
         }
-        await this.finalizeUpload(caseReference.sourceId, uploadId, 'SUCCESS', {
+        await finalizeUpload(caseReference.sourceId, uploadId, 'SUCCESS', {
             numCreated: upsertResponse.numCreated,
             numUpdated: upsertResponse.numUpdated,
         });
@@ -539,16 +405,19 @@ class BulkCaseForm extends React.Component<
                 : upsertResponse.numUpdated === 1
                 ? '1 case updated. '
                 : `${upsertResponse.numUpdated} cases updated. `;
-        this.props.history.push({
+
+        history.push({
             pathname: '/cases',
             state: {
                 bulkMessage: `${filename} uploaded. ${createdMessage} ${updatedMessage}`,
                 searchQuery: `uploadid:${uploadId}`,
             },
         });
-    }
+    };
 
-    async submitCases(values: BulkCaseFormValues): Promise<unknown> {
+    const submitCases = async (
+        values: BulkCaseFormValues,
+    ): Promise<unknown> => {
         if (values.caseReference && values.caseReference.sourceId === '') {
             try {
                 const newCaseReference = await submitSource({
@@ -561,9 +430,9 @@ class BulkCaseForm extends React.Component<
                 });
                 values.caseReference.sourceId = newCaseReference.sourceId;
             } catch (e) {
-                this.setState({
-                    errorMessage: `System error during source creation: ${e.message}`,
-                });
+                setErrorMessage(
+                    `System error during source creation: ${e.message}`,
+                );
                 return;
             }
         }
@@ -578,11 +447,7 @@ class BulkCaseForm extends React.Component<
                         File
                     > = {
                         complete: async (results) => {
-                            await this.uploadData(
-                                results,
-                                caseReference,
-                                file.name,
-                            );
+                            await uploadData(results, caseReference, file.name);
                             resolve(null);
                         },
                         dynamicTyping: true,
@@ -594,120 +459,110 @@ class BulkCaseForm extends React.Component<
             };
             return parsePromise(values.file, values.caseReference);
         }
-    }
+    };
 
-    render(): JSX.Element {
-        const { classes } = this.props;
-        return (
-            <AppModal
-                title="New bulk upload"
-                onModalClose={this.props.onModalClose}
+    return (
+        <AppModal title="New bulk upload" onModalClose={onModalClose}>
+            <Formik
+                validationSchema={BulkFormSchema}
+                validateOnChange={false}
+                initialValues={{ file: null, caseReference: undefined }}
+                onSubmit={async (values): Promise<void> => {
+                    await submitCases(values);
+                }}
             >
-                <Formik
-                    validationSchema={BulkFormSchema}
-                    validateOnChange={false}
-                    initialValues={{ file: null, caseReference: undefined }}
-                    onSubmit={async (values): Promise<void> => {
-                        await this.submitCases(values);
-                    }}
-                >
-                    {({ isSubmitting, submitForm }): JSX.Element => (
-                        <div className={classes.form}>
-                            <div className={classes.headerText}>
-                                <Typography
-                                    data-testid="header-title"
-                                    variant="h5"
-                                >
-                                    Upload bulk data
-                                </Typography>
-                                <Typography
-                                    className={classes.headerBlurb}
-                                    data-testid="header-blurb"
-                                    variant="body2"
-                                >
-                                    Add new cases or make changes to existing
-                                    ones by uploading a CSV file. The CSV needs
-                                    to follow the case template format for
-                                    successful entries.{' '}
-                                    {/* TODO: Host the final CSV template. */}
-                                    <a
-                                        href="https://docs.google.com/spreadsheets/d/1J-C7dq1rNNV8KdE1IZ-hUR6lsz7AdlvQhx6DWp36bjE/export?format=csv"
-                                        rel="noopener noreferrer"
-                                        target="_blank"
-                                    >
-                                        Download case template (.csv)
-                                    </a>
-                                </Typography>
-                            </div>
-                            <Form>
-                                <Paper className={classes.allFormSections}>
-                                    <div className={classes.formSection}>
-                                        <Source />
-                                    </div>
-                                    <div className={classes.formSection}>
-                                        <FileUpload></FileUpload>
-                                    </div>
-                                </Paper>
-                                {/* TODO: Host the final instructions doc. */}
+                {({ isSubmitting, submitForm }): JSX.Element => (
+                    <div className={classes.form}>
+                        <div className={classes.headerText}>
+                            <Typography data-testid="header-title" variant="h5">
+                                Upload bulk data
+                            </Typography>
+                            <Typography
+                                className={classes.headerBlurb}
+                                data-testid="header-blurb"
+                                variant="body2"
+                            >
+                                Add new cases or make changes to existing ones
+                                by uploading a CSV file. The CSV needs to follow
+                                the case template format for successful entries.{' '}
+                                {/* TODO: Host the final CSV template. */}
                                 <a
-                                    href="https://github.com/globaldothealth/list/tree/main/verification/curator-service/ui#bulk-upload-process"
+                                    href="https://docs.google.com/spreadsheets/d/1J-C7dq1rNNV8KdE1IZ-hUR6lsz7AdlvQhx6DWp36bjE/export?format=csv"
                                     rel="noopener noreferrer"
                                     target="_blank"
                                 >
-                                    Need help? Detailed instructions here
+                                    Download case template (.csv)
                                 </a>
-                                <div className={classes.uploadFeedback}>
-                                    {this.state.errors.length > 0 && (
-                                        <ValidationErrorList
-                                            errors={this.state.errors}
-                                            maxDisplayErrors={10}
-                                        />
-                                    )}
-                                    {this.state.errorMessage && (
-                                        <Alert
-                                            className={classes.statusMessage}
-                                            severity="error"
-                                        >
-                                            {this.state.errorMessage}
-                                        </Alert>
-                                    )}
+                            </Typography>
+                        </div>
+                        <Form>
+                            <Paper className={classes.allFormSections}>
+                                <div className={classes.formSection}>
+                                    <Source />
                                 </div>
-                            </Form>
-                            <div className={classes.uploadBar}>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    data-testid="submit"
-                                    disabled={isSubmitting}
-                                    onClick={submitForm}
-                                >
-                                    Upload Cases
-                                </Button>
-                                <Button
-                                    className={classes.cancelButton}
-                                    color="primary"
-                                    disabled={isSubmitting}
-                                    onClick={this.props.onModalClose}
-                                    variant="outlined"
-                                >
-                                    Cancel
-                                </Button>
-                                <span style={{ flexGrow: 1 }}></span>
-                                {isSubmitting && (
-                                    <div className={classes.progressIndicator}>
-                                        <CircularProgress data-testid="progress" />
-                                        <span className={classes.progressText}>
-                                            <strong>Uploading cases</strong>
-                                        </span>
-                                    </div>
+                                <div className={classes.formSection}>
+                                    <FileUpload></FileUpload>
+                                </div>
+                            </Paper>
+                            {/* TODO: Host the final instructions doc. */}
+                            <a
+                                href="https://github.com/globaldothealth/list/tree/main/verification/curator-service/ui#bulk-upload-process"
+                                rel="noopener noreferrer"
+                                target="_blank"
+                            >
+                                Need help? Detailed instructions here
+                            </a>
+                            <div className={classes.uploadFeedback}>
+                                {errors.length > 0 && (
+                                    <ValidationErrorList
+                                        errors={errors}
+                                        maxDisplayErrors={10}
+                                    />
+                                )}
+                                {errorMessage && (
+                                    <Alert
+                                        className={classes.statusMessage}
+                                        severity="error"
+                                    >
+                                        {errorMessage}
+                                    </Alert>
                                 )}
                             </div>
+                        </Form>
+                        <div className={classes.uploadBar}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                data-testid="submit"
+                                disabled={isSubmitting}
+                                onClick={submitForm}
+                            >
+                                Upload Cases
+                            </Button>
+                            <Button
+                                className={classes.cancelButton}
+                                color="primary"
+                                disabled={isSubmitting}
+                                onClick={onModalClose}
+                                variant="outlined"
+                            >
+                                Cancel
+                            </Button>
+                            <span style={{ flexGrow: 1 }}></span>
+                            {isSubmitting && (
+                                <div className={classes.progressIndicator}>
+                                    <CircularProgress data-testid="progress" />
+                                    <span className={classes.progressText}>
+                                        <strong>Uploading cases</strong>
+                                    </span>
+                                </div>
+                            )}
                         </div>
-                    )}
-                </Formik>
-            </AppModal>
-        );
-    }
-}
+                    </div>
+                )}
+            </Formik>
+        </AppModal>
+    );
+};
 
-export default withRouter(withStyles(styles)(BulkCaseForm));
+export default BulkCaseForm;

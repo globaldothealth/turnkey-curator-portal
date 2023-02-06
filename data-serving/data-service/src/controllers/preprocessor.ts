@@ -12,7 +12,7 @@ import _ from 'lodash';
 export const getCase = async (
     request: Request,
 ): Promise<CaseDocument | null> => {
-    const source = request.body?.Source;
+    const caseReference = request.body?.caseReference;
 
     if (
         (request.method == 'PUT' || request.method == 'DELETE') &&
@@ -22,16 +22,16 @@ export const getCase = async (
         return Day0Case.findById(request.params.id);
     } else if (
         request.method == 'PUT' &&
-        source &&
-        source.sourceId &&
-        source.sourceEntryId
+        caseReference &&
+        caseReference.sourceId &&
+        caseReference.sourceEntryId
     ) {
         // Upsert.
         // TODO: Upserts should only generate update metadata if there is a
         // diff with what's already in the database.
         return Day0Case.findOne({
-            'source.sourceId': source.sourceId,
-            'source.sourceEntryId': source.sourceEntryId,
+            'caseReference.sourceId': caseReference.sourceId,
+            'caseReference.sourceEntryId': caseReference.sourceEntryId,
         });
     }
 
@@ -46,15 +46,18 @@ export const batchUpsertDropUnchangedCases = async (
 ): Promise<void> => {
     const existingCasesByCaseRefCombo = new Map(
         (await findCasesWithCaseReferenceData(request))
-            .filter((c) => c && c.Source)
-            .map((c) => [c.Source.sourceId + ':' + c.Source.sourceEntryId, c]),
+            .filter((c) => c && c.caseReference)
+            .map((c) => [
+                c.caseReference.sourceId + ':' + c.caseReference.sourceEntryId,
+                c,
+            ]),
     );
 
     for (let i = 0; i < request.body.cases.length; i++) {
         const c = request.body.cases[i];
-        if (c.Source?.sourceId && c.Source?.sourceEntryId) {
+        if (c.caseReference?.sourceId && c.caseReference?.sourceEntryId) {
             const existingCase = existingCasesByCaseRefCombo.get(
-                c.Source.sourceId + ':' + c.Source.sourceEntryId,
+                c.caseReference.sourceId + ':' + c.caseReference.sourceEntryId,
             );
             if (existingCase !== undefined && existingCase.equalsJSON(c)) {
                 request.body.cases.splice(i, 1);
@@ -72,26 +75,31 @@ export const setBatchUpsertFields = async (
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const curatorEmail = request.body.curator.email;
-
     // Find and map existing cases by sourceId:sourceEntryId.
     const existingCasesByCaseRefCombo = new Map(
         (await findCasesWithCaseReferenceData(request))
-            .filter((c) => c && c.Source)
-            .map((c) => [c.Source.sourceId + ':' + c.Source.sourceEntryId, c]),
+            .filter((c) => c && c.caseReference)
+            .map((c) => [
+                c.caseReference.sourceId + ':' + c.caseReference.sourceEntryId,
+                c,
+            ]),
     );
 
     // TODO: Type request Cases.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     request.body.cases.forEach((c: any) => {
         // If case is present, add uploadIds to existing list of uploadIds
-        if (c.Source.uploadIds && c.Source.sourceId && c.Source.sourceEntryId) {
+        if (
+            c.caseReference.uploadIds &&
+            c.caseReference.sourceId &&
+            c.caseReference.sourceEntryId
+        ) {
             const existingCaseUploadIds = existingCasesByCaseRefCombo.get(
-                c.Source.sourceId + ':' + c.Source.sourceEntryId,
-            )?.Source?.uploadIds;
+                c.caseReference.sourceId + ':' + c.caseReference.sourceEntryId,
+            )?.caseReference?.uploadIds;
             if (existingCaseUploadIds) {
-                c.Source.uploadIds = _.union(
-                    c.Source.uploadIds,
+                c.caseReference.uploadIds = _.union(
+                    c.caseReference.uploadIds,
                     existingCaseUploadIds,
                 );
             }

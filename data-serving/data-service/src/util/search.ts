@@ -17,16 +17,16 @@ export class ParsingError extends Error {}
 // Map of keywords to their case data path.
 // IMPORTANT: If you change this mapping, reflect the new keys in the openapi.yaml file as well.
 const keywords = new Map<string, string>([
-    ['gender', 'Gender'],
-    ['occupation', 'Occupation'],
-    ['country', 'Country'],
-    ['city', 'City'],
-    ['location', 'Location'],
-    ['outcome', 'Outcome'],
+    ['gender', 'demographics.gender'],
+    ['occupation', 'demographics.occupation'],
+    ['country', 'location.countryISO3'],
+    ['city', 'location.city'],
+    ['location', 'location.location'],
+    ['outcome', 'events.outcome'],
     ['caseId', '_id'],
-    ['sourceUrl', 'Source'],
-    ['dateConfirmedFrom', 'Date_confirmation'],
-    ['dateConfirmedTo', 'Date_confirmation'],
+    ['sourceUrl', 'caseReference.sourceUrl'],
+    ['dateConfirmedFrom', 'events.dateConfirmation'],
+    ['dateConfirmedTo', 'events.dateConfirmation'],
 ]);
 
 export default function parseSearchQuery(q: string): ParsedSearch {

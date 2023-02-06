@@ -2,6 +2,13 @@ import { Range } from './range';
 import mongoose, { LeanDocument } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { AgeBucket } from './age-bucket';
+import { YesNo } from './day0-case';
+
+export enum Gender {
+    Male = 'male',
+    Female = 'female',
+    Other = 'other',
+}
 
 /*
  * There are separate types for demographics for data storage (the mongoose document) and
@@ -26,19 +33,23 @@ export const demographicsSchema = new mongoose.Schema(
         ageBuckets: [
             { type: mongoose.Schema.Types.ObjectId, ref: 'ageBuckets' },
         ],
-        gender: String,
+        gender: {
+            type: String,
+            enum: Gender,
+        },
         occupation: String,
-        nationalities: [String],
-        ethnicity: String,
+        healthcareWorker: {
+            type: String,
+            enum: YesNo,
+        },
     },
     { _id: false },
 );
 
 type DemographicsCommonFields = {
-    gender: string;
+    gender: Gender;
     occupation: string;
-    nationalities: [string];
-    ethnicity: string;
+    healthcareWorker: YesNo;
 };
 
 export type DemographicsDTO = DemographicsCommonFields & {

@@ -67,9 +67,6 @@ const linelistTableSlice = createSlice({
         setSearchQuery: (state, action: PayloadAction<string>) => {
             state.searchQuery = action.payload;
         },
-        setExcludeCasesDialogOpen: (state, action: PayloadAction<boolean>) => {
-            state.excludeCasesDialogOpen = action.payload;
-        },
         setCasesSelected: (state, action: PayloadAction<string[]>) => {
             state.casesSelected = action.payload;
         },
@@ -173,7 +170,6 @@ export const {
     setRowsPerPage,
     setSort,
     setSearchQuery,
-    setExcludeCasesDialogOpen,
     setCasesSelected,
     setDeleteCasesDialogOpen,
     setReincludeCasesDialogOpen,

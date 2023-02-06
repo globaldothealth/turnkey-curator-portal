@@ -1,23 +1,23 @@
 import mongoose from 'mongoose';
 import { symptomsSchema, SymptomsDocument } from './symptoms';
+import { YesNo } from './day0-case';
 
 export const vaccineSchema = new mongoose.Schema(
     {
-        name: String,
-        batch: String,
-        date: Date,
-        sideEffects: symptomsSchema,
-        previousInfection: String,
-        previousInfectionDetectionMethod: String,
+        vaccination: {
+            type: String,
+            enum: YesNo,
+        },
+        vaccineName: String,
+        vaccineDate: Date,
+        vaccineSideEffects: String,
     },
     { _id: false },
 );
 
 export type VaccineDocument = mongoose.Document & {
-    name: string;
-    batch: string;
-    date: Date;
-    sideEffects: SymptomsDocument & { status: 'Symptomatic' };
-    previousInfection: 'yes' | 'no' | 'NA';
-    previousInfectionDetectionMethod: string;
+    vaccination: YesNo;
+    vaccineName: string;
+    vaccineDate: Date;
+    vaccineSideEffects: string;
 };

@@ -1,16 +1,25 @@
-import { TravelDocument, travelSchema } from './travel';
+import { YesNo } from './day0-case';
 
 import mongoose from 'mongoose';
 
 export const travelHistorySchema = new mongoose.Schema(
     {
-        travel: [travelSchema],
-        traveledPrior30Days: Boolean,
+        travelHistory: {
+            type: String,
+            enum: YesNo,
+        },
+        travelHistoryEntry: Date,
+        travelHistoryStart: String,
+        travelHistoryLocation: String,
+        travelHistoryCountry: String,
     },
     { _id: false },
 );
 
 export type TravelHistoryDocument = mongoose.Document & {
-    travel: [TravelDocument];
-    traveledPrior30Days: boolean;
+    travelHistory: YesNo;
+    travelHistoryEntry: Date;
+    travelHistoryStart: string;
+    travelHistoryLocation: string;
+    travelHistoryCountry: string;
 };

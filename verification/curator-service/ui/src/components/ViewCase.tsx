@@ -18,6 +18,7 @@ import { selectFilterBreadcrumbs } from '../redux/app/selectors';
 import { selectSearchQuery } from '../redux/linelistTable/selectors';
 import Chip from '@mui/material/Chip';
 import { nameCountry } from './util/countryNames';
+import { parseAgeRange } from './util/helperFunctions';
 
 const styles = makeStyles(() => ({
     errorMessage: {
@@ -135,47 +136,6 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
     const searchedKeywords = useSelector(selectSearchQuery);
     const filtersBreadcrumb = useSelector(selectFilterBreadcrumbs);
 
-    const hasAdditionalSources =
-        props.c.sources.sourceII ||
-        props.c.sources.sourceIII ||
-        props.c.sources.sourceIV ||
-        props.c.sources.sourceV ||
-        props.c.sources.sourceVI ||
-        props.c.sources.sourceVII;
-
-    const additionalSources = () => {
-        if (!hasAdditionalSources) return <></>;
-
-        const sourceKeys = [
-            'sourceII',
-            'sourceIII',
-            'sourceIV',
-            'sourceV',
-            'sourceVI',
-            'sourceVII',
-        ];
-        const sources: string[] = [];
-
-        for (const source of sourceKeys) {
-            if (props.c.sources[source]) {
-                sources.push(props.c.sources[source] as string);
-            }
-        }
-
-        return (
-            <>
-                <RowHeader title="Additional sources" />
-                <MultilinkRowContent
-                    links={sources.map((source) => {
-                        return {
-                            link: source,
-                        };
-                    })}
-                />
-            </>
-        );
-    };
-
     return (
         <>
             {showNavMenu && (
@@ -268,10 +228,10 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                     </>
                 )}
                 <Typography className={classes.caseTitle} variant="h5">
-                    Case {props.c.caseReference.id}{' '}
+                    Case {props.c._id}{' '}
                     {props.enableEdit && (
                         <Link
-                            to={`/cases/edit/${props.c.caseReference.id}`}
+                            to={`/cases/edit/${props.c._id}`}
                             style={{ textDecoration: 'none' }}
                         >
                             <Button
@@ -300,20 +260,30 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                         <Grid container className={classes.grid}>
                             <RowHeader title="Data source URL" />
                             <RowContent
-                                content={props.c.sources.source || ''}
+                                content={props.c.caseReference.sourceUrl || ''}
                                 isLink
                             />
-
-                            {additionalSources()}
+                            {props.c.caseReference.additionalSources &&
+                                props.c.caseReference.additionalSources.length >
+                                    0 &&
+                                props.c.caseReference.additionalSources.map(
+                                    (source, idx) => (
+                                        <>
+                                            <RowHeader
+                                                title={`Source ${idx + 2}`}
+                                            />
+                                            <RowContent
+                                                content={source.sourceUrl || ''}
+                                                isLink
+                                            />
+                                        </>
+                                    ),
+                                )}
 
                             <RowHeader title="Date of creation" />
                             <RowContent
                                 content={renderDate(props.c.events.dateEntry)}
                             />
-
-                            {/* Consider surfacing this as a top-level icon on this page. */}
-                            {/* <RowHeader title="Verification status" />
-                            <RowContent content={isExcluded()} /> */}
 
                             <RowHeader title="Date of edit" />
                             <RowContent
@@ -339,7 +309,11 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                     </Typography>
                     <Grid container className={classes.grid}>
                         <RowHeader title="Age" />
-                        <RowContent content={props.c.demographics.age} />
+                        <RowContent
+                            content={parseAgeRange(
+                                props.c.demographics.ageRange,
+                            )}
+                        />
 
                         <RowHeader title="Gender" />
                         <RowContent content={props.c.demographics.gender} />

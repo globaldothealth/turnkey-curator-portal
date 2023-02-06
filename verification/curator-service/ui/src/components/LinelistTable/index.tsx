@@ -42,7 +42,7 @@ import renderDate from '../util/date';
 import { createData, labels } from './helperFunctions';
 import { LoaderContainer, StyledAlert } from './styled';
 import { URLToSearchQuery } from '../util/searchQuery';
-import { hasAnyRole } from '../util/helperFunctions';
+import { hasAnyRole, parseAgeRange } from '../util/helperFunctions';
 import { Helmet } from 'react-helmet';
 
 import Pagination from './Pagination';
@@ -108,18 +108,18 @@ const LinelistTable = () => {
         cases &&
         cases.map((data) => {
             return createData(
-                data.caseReference.id || '',
-                data.location.country,
-                data.location.city,
-                data.location.location,
-                renderDate(data.events.dateConfirmation || ''),
-                data.demographics.age,
-                data.demographics.gender,
-                data.events.outcome,
-                renderDate(data.events.dateHospitalization || ''),
-                renderDate(data.events.dateOnset || ''),
-                data.sources.source,
-                data.caseStatus,
+                data._id || '',
+                data.location.country || '-',
+                data.location.city || '-',
+                data.location.location || '-',
+                renderDate(data.events.dateEntry) || '-',
+                parseAgeRange(data.demographics.ageRange) || '-',
+                data.demographics.gender || '-',
+                data.events.outcome || '-',
+                renderDate(data.events.dateHospitalization) || '-',
+                renderDate(data.events.dateOnset) || '-',
+                data.caseReference.sourceUrl || '-',
+                data.caseStatus || '-',
             );
         });
 
@@ -373,7 +373,7 @@ const LinelistTable = () => {
                                             align="left"
                                             sx={{ minWidth: 100 }}
                                         >
-                                            {row.dateConfirmation}
+                                            {row.dateEntry}
                                         </TableCell>
                                         <TableCell component="th" scope="row">
                                             {row.caseStatus}
