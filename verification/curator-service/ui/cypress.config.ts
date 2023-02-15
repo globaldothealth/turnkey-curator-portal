@@ -16,6 +16,7 @@ export default defineConfig({
         setupNodeEvents(on, config) {
             return require('./cypress/plugins/index.ts')(on, config);
         },
+        experimentalRunAllSpecs: true,
         baseUrl: 'http://localhost:3002',
         specPattern: 'cypress/e2e/**/*.{js,jsx,ts,tsx}',
     },

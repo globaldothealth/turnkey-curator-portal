@@ -113,7 +113,7 @@ export default function Transmission(): JSX.Element {
             </div>
             <div className={globalClasses.fieldRow}>
                 <FormikAutocomplete
-                    name="transmission.transmission"
+                    name="transmissionHelper"
                     freeSolo
                     label="Transmission"
                     multiple={false}

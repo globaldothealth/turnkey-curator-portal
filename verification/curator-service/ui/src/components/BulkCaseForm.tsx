@@ -298,7 +298,12 @@ const BulkCaseForm = (props: BulkCaseFormProps) => {
             symptoms: c.symptoms,
             caseCount: c.caseCount,
             // TBD whether we need those added to the CSV
-            preexistingConditions: {},
+            preexistingConditions: {
+                previousInfection: c.previousInfection,
+                coInfection: c.coInfection,
+                preexistingCondition: c.preexistingCondition,
+                pregnancyStatus: c.pregnancyStatus,
+            },
             transmission: {},
             travelHistory: {},
             vaccination: {},
@@ -312,6 +317,7 @@ const BulkCaseForm = (props: BulkCaseFormProps) => {
         const casesToSend = cases.flatMap((c) =>
             Array.from({ length: c.caseCount || 1 }, () => c),
         );
+
         // TODO: Split and send smaller batches.
         const response = await axios.post<BatchUpsertResponse>(
             '/api/cases/batchUpsert',

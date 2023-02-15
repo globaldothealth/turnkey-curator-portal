@@ -67,7 +67,7 @@ function LocationForm(): JSX.Element {
         <Scroll.Element name="location">
             <FieldTitle title="Location" tooltip={<TooltipText />} />
             <PlacesAutocomplete
-                initialValue={initialValues.location.location}
+                initialValue={initialValues.location.geocodeLocation?.name}
                 name="location.geocodeLocation"
                 required
             />
@@ -173,6 +173,7 @@ export function PlacesAutocomplete(
             active = false;
         };
     }, [value, inputValue, fetch]);
+
     return (
         <Autocomplete
             itemType="GeocodeLocation"

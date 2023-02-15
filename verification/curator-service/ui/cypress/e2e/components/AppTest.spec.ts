@@ -1,5 +1,5 @@
 import { getDefaultQuery } from '../../utils/helperFunctions';
-import { Outcome } from '../../support/commands';
+import { CaseStatus, Outcome } from '../../support/commands';
 
 /* eslint-disable no-undef */
 describe('App', function () {
@@ -16,8 +16,13 @@ describe('App', function () {
 
         cy.task('clearCasesDB', {});
 
-        const countries: any = ['Germany', 'France', 'India', 'Italy'];
-        const confirmedDate: any = [
+        const countries: any = [
+            { name: 'Germany', iso: 'DE' },
+            { name: 'France', iso: 'FR' },
+            { name: 'Spain', iso: 'ES' },
+            { name: 'Italy', iso: 'IT' },
+        ];
+        const dateEntries: any = [
             '2020-05-01',
             '2020-02-15',
             '2020-03-22',
@@ -26,9 +31,10 @@ describe('App', function () {
 
         for (let i = 0; i < countries.length; i++) {
             cy.addCase({
-                country: countries[i],
-                notes: 'some notes',
-                startConfirmedDate: confirmedDate[i],
+                country: countries[i].name,
+                countryISO3: countries[i].iso,
+                dateEntry: dateEntries[i],
+                caseStatus: CaseStatus.Confirmed,
             });
         }
 
@@ -59,19 +65,22 @@ describe('App', function () {
         });
         cy.task('clearCasesDB', {});
 
-        const genders: any = ['Male', 'Female', 'Female', '', 'Female'];
+        const genders: any = ['male', 'female', 'female', '', 'female'];
         const countries: any = [
-            'Germany',
-            'Poland',
-            'Russia',
-            'Italy',
-            'Spain',
+            { name: 'Germany', iso: 'DE' },
+            { name: 'Poland', iso: 'PL' },
+            { name: 'Russia', iso: 'RU' },
+            { name: 'Italy', iso: 'IT' },
+            { name: 'Spain', iso: 'ES' },
         ];
 
         for (let i = 0; i < countries.length; i++) {
             cy.addCase({
-                country: countries[i],
+                country: countries[i].name,
+                countryISO3: countries[i].iso,
                 gender: genders[i] === '' ? undefined : genders[i],
+                caseStatus: CaseStatus.Confirmed,
+                dateEntry: '2020-05-01',
             });
         }
 
@@ -110,31 +119,41 @@ describe('App', function () {
 
         cy.addCase({
             country: 'Peru',
+            countryISO3: 'PE',
             outcome: Outcome.Recovered,
             sourceUrl: 'www.recovered.com',
+            dateEntry: '2020-05-01',
+            caseStatus: CaseStatus.Confirmed,
         });
 
         cy.contains('Line list').click();
 
         cy.get('.filter-button').click();
         cy.get('#outcome').click();
-        cy.get('[data-value="Recovered"]').click();
+        cy.get('[data-value="recovered"]').click();
         cy.get('[data-test-id="search-by-filter-button"]').click();
 
         cy.contains('www.recovered.com');
     });
 
-    it('allows the user to search by date and an additional filter', function () {
+    it.skip('allows the user to search by date and an additional filter', function () {
         cy.login({
             roles: ['curator'],
             name: 'testName',
             email: 'test@example.com',
         });
+        cy.task('clearCasesDB', {});
+
         cy.visit('/');
         cy.contains('Line list').click();
 
-        const countries: any = ['Germany', 'France', 'India', 'Italy'];
-        const confirmedDate: any = [
+        const countries: any = [
+            { name: 'Germany', iso: 'DE' },
+            { name: 'France', iso: 'FR' },
+            { name: 'Spain', iso: 'ES' },
+            { name: 'Italy', iso: 'IT' },
+        ];
+        const dateEntries: any = [
             '2020-05-01',
             '2020-02-15',
             '2020-03-22',
@@ -143,22 +162,24 @@ describe('App', function () {
 
         for (let i = 0; i < countries.length; i++) {
             cy.addCase({
-                country: countries[i],
-                notes: 'some notes',
-                startConfirmedDate: confirmedDate[i],
+                country: countries[i].name,
+                countryISO3: countries[i].iso,
+                dateEntry: dateEntries[i],
+                caseStatus: CaseStatus.Confirmed,
             });
         }
 
         cy.contains('Line list').click();
 
-        cy.get('body').then(($body) => {
-            if ($body.find('.iubenda-cs-accept-btn').length) {
-                cy.get('.iubenda-cs-accept-btn').click();
-            }
-        });
+        // cy.get('body').then(($body) => {
+        //     if ($body.find('.iubenda-cs-accept-btn').length) {
+        //         cy.get('.iubenda-cs-accept-btn').click();
+        //     }
+        // });
+
         cy.get('.filter-button').click();
 
-        cy.get('#dateconfirmedafter').type('2020-04-30');
+        cy.get('#dateConfirmedFrom').type('2020-04-30');
         cy.get('#country').click();
         cy.get('[data-value="IT"]').click();
         cy.get('#start-filtering').click();

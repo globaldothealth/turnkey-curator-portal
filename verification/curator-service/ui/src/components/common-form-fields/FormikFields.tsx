@@ -67,7 +67,7 @@ export function FormikAutocomplete(
             }
 
             if (active) {
-                setOptions(retrievedOptions as string[]);
+                setOptions([...new Set(retrievedOptions)] as string[]);
             }
         })();
 

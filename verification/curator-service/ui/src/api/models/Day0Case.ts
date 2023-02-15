@@ -70,6 +70,7 @@ export interface Location {
     city?: string;
     // this variable is needed in the API in order to geocode properly
     query?: string;
+    name?: string;
 }
 
 export interface Events {
@@ -221,6 +222,7 @@ export interface Day0CaseFormValues {
         location?: string;
         city?: string;
         geocodeLocation?: GeocodeLocation;
+        query?: string;
     };
     events: Events;
     symptoms?: string[];
@@ -234,5 +236,7 @@ export interface Day0CaseFormValues {
     // helper value
     vaccineSideEffects?: string[];
     preexistingConditionsHelper?: string[];
+    transmissionHelper?: string;
+    occupation?: string;
     [key: string]: any;
 }

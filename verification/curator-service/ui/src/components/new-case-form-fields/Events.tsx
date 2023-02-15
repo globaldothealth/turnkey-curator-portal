@@ -157,12 +157,12 @@ export default function Events(): JSX.Element {
                 />
             </div>
             <DateField
-                name="symptomsOnsetDate"
+                name="events.dateOnset"
                 label="Onset of symptoms date"
                 value={values.events.dateOnset}
                 onChange={(newValue) => {
                     setFieldValue(
-                        'values.dateOnset',
+                        'events.dateOnset',
                         toUTCDate(
                             newValue ? newValue.toDateString() : undefined,
                         ),
@@ -230,7 +230,7 @@ export default function Events(): JSX.Element {
                         }}
                     />
                     <DateField
-                        name="hospitalDischargeDate"
+                        name="events.dateDischargeHospital"
                         label="Hospital discharge date"
                         value={values.events.dateDischargeHospital}
                         onChange={(newValue) => {

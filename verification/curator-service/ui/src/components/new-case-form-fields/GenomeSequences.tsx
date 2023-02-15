@@ -47,7 +47,7 @@ export default function GenomeSequences(): JSX.Element {
                 ])}
             >
                 <FastField
-                    name="genomicsMetadata"
+                    name="genomeSequences.genomicsMetadata"
                     type="text"
                     label="Genomics metadata"
                     component={TextField}
@@ -61,7 +61,7 @@ export default function GenomeSequences(): JSX.Element {
                 ])}
             >
                 <FastField
-                    name="accessionNumber"
+                    name="genomeSequences.accessionNumber"
                     type="text"
                     label="Accession number"
                     component={TextField}

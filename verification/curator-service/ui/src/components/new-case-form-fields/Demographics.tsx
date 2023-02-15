@@ -146,7 +146,7 @@ export default function Demographics(): JSX.Element {
                                         label={occupation}
                                         onClick={(): void =>
                                             setFieldValue(
-                                                'demographics.occupation',
+                                                'occupation',
                                                 occupation,
                                             )
                                         }
@@ -158,7 +158,7 @@ export default function Demographics(): JSX.Element {
             )}
             <div className={globalClasses.fieldRow}>
                 <FormikAutocomplete
-                    name="demographics.occupation"
+                    name="occupation"
                     label="Occupation"
                     initialValue={initialValues.demographics.occupation}
                     multiple={false}

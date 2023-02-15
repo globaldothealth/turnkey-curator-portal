@@ -235,6 +235,7 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             style={{ textDecoration: 'none' }}
                         >
                             <Button
+                                data-testid="edit-button"
                                 variant="outlined"
                                 color="primary"
                                 className={classes.editBtn}
@@ -258,6 +259,9 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             Case data
                         </Typography>
                         <Grid container className={classes.grid}>
+                            <RowHeader title="Case status" />
+                            <RowContent content={props.c.caseStatus} />
+
                             <RowHeader title="Data source URL" />
                             <RowContent
                                 content={props.c.caseReference.sourceUrl || ''}
@@ -344,6 +348,7 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                                     props.c.location.countryISO3
                                         ? nameCountry(
                                               props.c.location.countryISO3,
+                                              props.c.location.country,
                                           )
                                         : ''
                                 }
@@ -423,6 +428,13 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                                     <RowContent
                                         content={renderDate(
                                             props.c.events.dateHospitalization,
+                                        )}
+                                    />
+                                    <RowHeader title="Hospital discharge date" />
+                                    <RowContent
+                                        content={renderDate(
+                                            props.c.events
+                                                .dateDischargeHospital,
                                         )}
                                     />
                                 </>

@@ -74,10 +74,10 @@ export default function PreexistingConditions(): JSX.Element {
                     name="preexistingConditionsHelper"
                     label="Pre-existing conditions"
                     initialValue={
-                        initialValues.preexistingConditions
-                            .preexistingCondition || undefined
+                        initialValues.preexistingConditions.preexistingCondition
                     }
                     multiple
+                    freeSolo
                     optionsLocation="https://raw.githubusercontent.com/globaldothealth/list/main/suggest/preexisting_conditions.txt"
                 />
             </div>

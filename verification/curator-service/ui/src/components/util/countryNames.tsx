@@ -4,8 +4,13 @@ import en from 'i18n-iso-countries/langs/en.json';
 // register en locale so we don't pack all the others
 countries.registerLocale(en);
 
-export function nameCountry(isoCode: string): string {
-    return countries.getName(isoCode, 'en', { select: 'official' });
+export function nameCountry(isoCode: string, country?: string): string {
+    let countryName = countries.getName(isoCode, 'en', { select: 'official' });
+    if (!countryName && country) {
+        countryName = countries.getName(country, 'en', { select: 'official' });
+    }
+
+    return countryName;
 }
 
 export function codeForCountry(name: string): string {

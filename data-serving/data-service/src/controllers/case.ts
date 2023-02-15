@@ -17,7 +17,7 @@ import { GeocodeOptions, Geocoder, Resolution } from '../geocoding/geocoder';
 import { NextFunction, Request, Response } from 'express';
 import parseSearchQuery, { ParsingError } from '../util/search';
 import { SortByOrder, SortBy, denormalizeFields } from '../util/case';
-import { denormalizeEventsHeaders, removeBlankHeader } from '../util/case';
+import { removeBlankHeader } from '../util/case';
 
 import { logger } from '../util/logger';
 import stringify from 'csv-stringify/lib/sync';
@@ -56,7 +56,6 @@ const caseFromDTO = async (receivedCase: CaseDTO) => {
         aCase.demographics.ageBuckets = matchingBucketIDs;
     }
 
-    logger.info(`A case: ${JSON.stringify(aCase, null, 2)}`);
     return aCase;
 };
 
@@ -104,7 +103,6 @@ export class CasesController {
      * Handles HTTP GET /api/cases/:id.
      */
     get = async (req: Request, res: Response): Promise<void> => {
-        // Don't look in the restricted collection
         const c = await Day0Case.find({
             _id: new ObjectId(req.params.id),
         }).lean();
@@ -353,7 +351,7 @@ export class CasesController {
             // indicating that there is more to fetch on the next page.
             if (total > limit * page) {
                 res.json({
-                    dtos,
+                    cases: dtos,
                     nextPage: page + 1,
                     total: reportedTotal,
                 });
@@ -388,6 +386,9 @@ export class CasesController {
         try {
             await this.geocode(req);
             const receivedCase = req.body as CaseDTO;
+
+            logger.info(JSON.stringify(receivedCase, null, 2));
+
             const c = new Day0Case(await caseFromDTO(receivedCase));
 
             let result;
@@ -526,6 +527,7 @@ export class CasesController {
             const cases = req.body.cases;
             const errors = await this.batchValidate(cases);
             logger.info('batchUpsert: validated cases');
+
             if (errors.length > 0) {
                 // drop any invalid cases but don't give up yet: upsert the remainder
                 const badCases = _.orderBy(errors, 'index', 'desc').map(
@@ -540,6 +542,7 @@ export class CasesController {
             }
             logger.info('batchUpsert: splitting cases by sourceID');
             logger.info('batchUpsert: preparing bulk write');
+
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const upsertLambda = async (c: any) => {
                 delete c.caseCount;
@@ -606,7 +609,6 @@ export class CasesController {
      */
     update = async (req: Request, res: Response): Promise<void> => {
         try {
-            logger.info('PUT');
             const c = await Day0Case.findById(req.params.id);
             if (!c) {
                 res.status(404).send({
@@ -1053,9 +1055,7 @@ export const casesMatchingSearchQuery = (opts: {
 }): any => {
     // set data limit to 10K by default
     const countLimit = opts.limit ? opts.limit : 10000;
-    logger.info(`Search query: ${opts.searchQuery}`);
     const parsedSearch = parseSearchQuery(opts.searchQuery);
-    logger.debug(`Parsed search (full text?): ${parsedSearch.fullTextSearch}`);
     const queryOpts = parsedSearch.fullTextSearch
         ? {
               $text: { $search: parsedSearch.fullTextSearch },

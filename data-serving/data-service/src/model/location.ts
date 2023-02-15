@@ -16,6 +16,7 @@ export const locationSchema = new mongoose.Schema(
         location: String,
         city: String,
         query: String,
+        name: String,
     },
     { _id: false },
 );
@@ -26,4 +27,5 @@ export type LocationDocument = mongoose.Document & {
     location?: string;
     city?: string;
     query?: string;
+    name?: string;
 };

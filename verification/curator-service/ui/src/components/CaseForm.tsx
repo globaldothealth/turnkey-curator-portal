@@ -160,6 +160,18 @@ const initialValuesFromCase = (
                     ? c.demographics?.ageRange?.start
                     : undefined,
         },
+        location: {
+            ...c.location,
+            geocodeLocation: {
+                country: c.location.countryISO3,
+                administrativeAreaLevel1: '',
+                administrativeAreaLevel2: '',
+                administrativeAreaLevel3: '',
+                name: c.location.name || '',
+                geoResolution: '',
+                place: c.location.location || '',
+            },
+        },
         pathogen,
         symptoms: c.symptoms ? c.symptoms.split(', ') : [],
         vaccination: {
@@ -190,6 +202,15 @@ const initialValuesFromCase = (
             dateDeath: c.events.dateDeath || null,
             dateRecovered: c.events.dateRecovered || null,
         },
+        preexistingConditionsHelper: c.preexistingConditions
+            .preexistingCondition
+            ? c.preexistingConditions.preexistingCondition.split(', ')
+            : [],
+        transmissionHelper: c.transmission.transmission,
+        vaccineSideEffects: c.vaccination.vaccineSideEffects
+            ? c.vaccination.vaccineSideEffects.split(', ')
+            : [],
+        occupation: c.demographics.occupation,
     };
 };
 
@@ -329,11 +350,20 @@ export default function CaseForm(props: Props): JSX.Element {
         const preexistingConditions = values.preexistingConditionsHelper || [];
         const vaccineSideEffects = values.vaccineSideEffects || [];
         const symptoms = values.symptoms || [];
+        const city = values.location.city;
+        const country = values.location.country;
+        let query = '';
+        if (values.location.geocodeLocation?.query) {
+            query = values.location.geocodeLocation.query;
+        } else {
+            query = city ? `${city}, ${country}` : country;
+        }
 
         const newCase: Day0Case = {
             ...values,
             demographics: {
                 ...values.demographics,
+                occupation: values.occupation,
                 ageRange:
                     values.demographics.age ||
                     (values.demographics.minAge && values.demographics.minAge)
@@ -384,6 +414,7 @@ export default function CaseForm(props: Props): JSX.Element {
             },
             transmission: {
                 ...values.transmission,
+                transmission: values.transmissionHelper,
                 contactWithCase:
                     values.transmission.contactWithCase || undefined,
             },
@@ -395,7 +426,7 @@ export default function CaseForm(props: Props): JSX.Element {
             },
             location: {
                 ...values.location,
-                query: values.location.geocodeLocation?.query || '',
+                query,
             },
             symptoms: symptoms.join(', '),
         };

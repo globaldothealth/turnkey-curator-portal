@@ -11,6 +11,7 @@ import time
 def convert_dict_to_float(aDict):
     return float(aDict['$numberDouble'])
 
+
 def convert_dict_to_date(aDict):
     date_to_use = None
     if isinstance(aDict, dict):
@@ -18,7 +19,8 @@ def convert_dict_to_date(aDict):
             maybe_date = date_value
             if isinstance(maybe_date, dict):
                 date_value = maybe_date.get('$numberLong')
-                date_to_use = datetime.utcfromtimestamp(int(date_value)/1000.0).strftime('%Y-%m-%dT%H:%M:%S.%f')
+                date_to_use = datetime.utcfromtimestamp(
+                    int(date_value)/1000.0).strftime('%Y-%m-%dT%H:%M:%S.%f')
             else:
                 date_to_use = maybe_date
     return date_to_use
@@ -28,32 +30,60 @@ def convert_case(case):
     """Some cases in the sample file are in some mongoexport format that defines types of numbers.
     Decomplect that information so they're compatible with the API's expectation."""
     converted = dict(case)
-    latitude = case["location"]["geometry"]["latitude"]
-    if isinstance(latitude, dict):
-        converted["location"]["geometry"]["latitude"] = convert_dict_to_float(latitude)
-    longitude = case["location"]["geometry"]["longitude"]
-    if isinstance(longitude, dict):
-        converted["location"]["geometry"]["longitude"] = convert_dict_to_float(longitude)
-    if travelHistory := case.get("travelHistory"):
-        for i in range(len(travelHistory["travel"])):
-            travel = travelHistory['travel'][i]
-            latitude = travel["location"]["geometry"]["latitude"]
-            if isinstance(latitude, dict):
-                converted["travelHistory"]["travel"][i]["location"]["geometry"]["latitude"] = convert_dict_to_float(latitude)
-            longitude = travel["location"]["geometry"]["longitude"]
-            if isinstance(longitude, dict):
-                converted["travelHistory"]["travel"][i]["location"]["geometry"]["longitude"] = convert_dict_to_float(longitude)
-            converted['travelHistory']['travel'][i]['dateRange']['start'] = convert_dict_to_date(travel['dateRange']['start'])
-            converted['travelHistory']['travel'][i]['dateRange']['end'] = convert_dict_to_date(travel['dateRange']['end'])
-    if genomeSequences := case.get('genomeSequences'):
-        for i in range(len(genomeSequences)):
-            date = genomeSequences[i]['sampleCollectionDate']
-            converted['genomeSequences'][i]['sampleCollectionDate'] = convert_dict_to_date(date)
-    events = case['events']
-    for i in range(len(events)):
-        converted['events'][i]['dateRange']['start'] = convert_dict_to_date(events[i]['dateRange']['start'])
-        converted['events'][i]['dateRange']['end'] = convert_dict_to_date(events[i]['dateRange']['end'])
-        
+    if vaccination := case.get('vaccination'):
+        date = vaccination['vaccineDate']
+        converted['vaccination']['vaccineDate'] = convert_dict_to_date(date)
+    if travelHistory := case.get('travelHistory'):
+        date = travelHistory['travelHistoryEntry']
+        converted['travelHistory']['travelHistoryEntry'] = convert_dict_to_date(
+            date)
+    events = case.get('events')
+    if events.get('dateEntry'):
+        dateEntry = events['dateEntry']
+        converted['events']['dateEntry'] = convert_dict_to_date(dateEntry)
+    if events.get('dateOnset'):
+        dateOnset = events['dateOnset']
+        converted['events']['dateOnset'] = convert_dict_to_date(dateOnset)
+    if events.get('dateLastModified'):
+        dateLastModified = events['dateLastModified']
+        converted['events']['dateLastModified'] = convert_dict_to_date(
+            dateLastModified)
+    if events.get('dateConfirmation'):
+        dateConfirmation = events['dateConfirmation']
+        converted['events']['dateConfirmation'] = convert_dict_to_date(
+            dateConfirmation)
+    if events.get('dateOfFirstConsult'):
+        dateOfFirstConsult = events['dateOfFirstConsult']
+        converted['events']['dateOfFirstConsult'] = convert_dict_to_date(
+            dateOfFirstConsult)
+    if events.get('dateHospitalization'):
+        dateHospitalization = events['dateHospitalization']
+        converted['events']['dateHospitalization'] = convert_dict_to_date(
+            dateHospitalization)
+    if events.get('dateDischargeHospital'):
+        dateDischargeHospital = events['dateDischargeHospital']
+        converted['events']['dateDischargeHospital'] = convert_dict_to_date(
+            dateDischargeHospital)
+    if events.get('dateAdmissionICU'):
+        dateAdmissionICU = events['dateAdmissionICU']
+        converted['events']['dateAdmissionICU'] = convert_dict_to_date(
+            dateAdmissionICU)
+    if events.get('dateDischargeICU'):
+        dateDischargeICU = events['dateDischargeICU']
+        converted['events']['dateDischargeICU'] = convert_dict_to_date(
+            dateDischargeICU)
+    if events.get('dateIsolation'):
+        dateIsolation = events['dateIsolation']
+        converted['events']['dateIsolation'] = convert_dict_to_date(
+            dateIsolation)
+    if events.get('dateDeath'):
+        dateDeath = events['dateDeath']
+        converted['events']['dateDeath'] = convert_dict_to_date(dateDeath)
+    if events.get('dateRecovered'):
+        dateRecovered = events['dateRecovered']
+        converted['events']['dateRecovered'] = convert_dict_to_date(
+            dateRecovered)
+
     return converted
 
 
@@ -73,8 +103,8 @@ def api_key_for_generated_curator(base_url: str) -> str:
             print(f'Failure registering test user: {response.text}')
             sys.exit(1)
     except (requests.ConnectionError, requests.ConnectTimeout, requests.HTTPError, requests.ReadTimeout, requests.Timeout) as e:
-            print(f'Error {e} registering a curator at {base_url}')
-            sys.exit(1)
+        print(f'Error {e} registering a curator at {base_url}')
+        sys.exit(1)
 
 
 def main():
@@ -83,7 +113,7 @@ def main():
     This is done through the curator-service rather than loading directly into the database
     via mongoimport because the links to other collections, particularly the age buckets, need
     setting up in the application.
-    
+
     You can set an API key using the environment variable $GH_API_KEY. If you do not, then
     this script will register a new curator user and use their API key; this only works in
     local testing."""
@@ -101,10 +131,12 @@ def main():
             'X-Api-Key': api_key
         }
         try:
-            response = requests.post(batch_upsert_endpoint, json=request_body, headers=request_headers)
+            response = requests.post(
+                batch_upsert_endpoint, json=request_body, headers=request_headers)
             if response.ok:
                 report = response.json()
-                print(f"Success response from API. {report['numCreated']} cases created, {report['numUpdated']} updated.")
+                print(
+                    f"Success response from API. {report['numCreated']} cases created, {report['numUpdated']} updated.")
                 if errors := report.get('errors'):
                     print(f"Errors: {errors}")
                 sys.exit(0)
@@ -115,6 +147,7 @@ def main():
         except (requests.ConnectionError, requests.ConnectTimeout, requests.HTTPError, requests.ReadTimeout, requests.Timeout) as e:
             print(f'Error {e} upserting sample cases to {base_url}')
             sys.exit(1)
+
 
 if __name__ == '__main__':
     main()

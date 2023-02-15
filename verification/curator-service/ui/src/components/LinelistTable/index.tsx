@@ -48,6 +48,7 @@ import { Helmet } from 'react-helmet';
 import Pagination from './Pagination';
 import EnhancedTableToolbar from './EnhancedTableToolbar';
 import { CaseDeleteDialog } from '../Dialogs/CaseDeleteDialog';
+import { nameCountry } from '../util/countryNames';
 
 const dataLimit = 10000;
 
@@ -109,7 +110,8 @@ const LinelistTable = () => {
         cases.map((data) => {
             return createData(
                 data._id || '',
-                data.location.country || '-',
+                nameCountry(data.location.countryISO3, data.location.country) ||
+                    '-',
                 data.location.city || '-',
                 data.location.location || '-',
                 renderDate(data.events.dateEntry) || '-',
