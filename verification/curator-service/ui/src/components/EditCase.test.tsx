@@ -18,7 +18,7 @@ const curator = {
 };
 
 describe('<EditCase />', () => {
-    it.skip('loads and displays case to edit', async () => {
+    it('loads and displays case to edit', async () => {
         const axiosCaseResponse = {
             data: [fullCase],
             status: 200,
@@ -84,7 +84,7 @@ describe('<EditCase />', () => {
         });
         expect(mockedAxios.get).toHaveBeenCalledWith('/api/sources', {
             params: {
-                url: fullCase.Source,
+                url: fullCase.caseReference.sourceUrl,
             },
         });
         expect(mockedAxios.get).toHaveBeenCalledWith(

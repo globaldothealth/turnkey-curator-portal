@@ -9,7 +9,7 @@ export default defineConfig({
     execTimeout: 70000,
     requestTimeout: 12000,
     responseTimeout: 12000,
-    projectId: 'hx4khd',
+    projectId: 'dpghvb',
     e2e: {
         // We've imported your old cypress plugins here.
         // You may want to clean this up later by importing these.
