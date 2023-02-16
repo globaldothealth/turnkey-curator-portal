@@ -40,6 +40,7 @@ it('loads and displays case', async () => {
     expect(mockedAxios.get).toHaveBeenCalledWith(
         '/api/cases/5ef8e943dfe6e00030892d58',
     );
+
     // Case data.
     expect(
         await screen.findByText(/Case 5ef8e943dfe6e00030892d58/),
@@ -49,10 +50,11 @@ it('loads and displays case', async () => {
             'https://www.colorado.gov/pacific/cdphe/news/10-new-presumptive-positive-cases-colorado-cdphe-confirms-limited-community-spread-covid-19',
         ),
     ).toBeInTheDocument();
+
     expect(screen.getAllByText('2020-01-02')).toHaveLength(2);
     // Demographics.
     expect(screen.getByText('male')).toBeInTheDocument();
-    expect(screen.getByText('50-59')).toBeInTheDocument();
+    expect(screen.getByText('20')).toBeInTheDocument();
     expect(screen.getByText('Horse breeder')).toBeInTheDocument();
     // Location.
     expect(screen.getByText('France')).toBeInTheDocument();

@@ -1,30 +1,51 @@
 {
-    "ID": "5ef8e943dfe6e00030892d58",
-    "Case_status": "confirmed",
-    "Date_entry": "2020-01-02",
-    "Date_last_modified": "2020-01-02",
-    "Source": "https://www.colorado.gov/pacific/cdphe/news/10-new-presumptive-positive-cases-colorado-cdphe-confirms-limited-community-spread-covid-19",
-    "Age": "50-59",
-    "Gender": "male",
-    "Occupation": "Horse breeder",
-    "Healthcare_worker": "N",
-    "Country": "France",
-    "Country_ISO3": "FRA",
-    "Location": "Île-de-F",
-    "City": "Paris",
-    "Date_onset": "2020-01-03",
-    "Date_confirmation": "2020-01-05",
-    "Confirmation_method": "PCR test",
-    "Hospitalized": "N",
-    "Outcome": "recovered",
-    "Date_recovered": "2020-02-01",
-    "Symptoms": "Severe pneumonia, Dyspnea, Weakness",
-    "Previous_infection": "N",
-    "Pregnancy_status": "NA",
-    "Contact_with_case": "N",
-    "Travel_history": "N",
-    "Pathogen": "COVID-19",
-    "Vaccination": "Y",
-    "Vaccine_name": "Moderna",
-    "Vaccine_date": "2020-01-01"
+    "_id": "5ef8e943dfe6e00030892d58",
+    "caseStatus": "confirmed",
+    "pathogen": "COVID-19",
+    "events": {
+        "dateEntry": "2020-01-02",
+        "dateLastModified": "2020-01-02",
+        "dateOnset": "2020-01-03",
+        "dateConfirmation": "2020-01-05",
+        "confirmationMethod": "PCR test",
+        "hospitalized": "N",
+        "outcome": "recovered",
+        "dateRecovered": "2020-02-01"
+    },
+    "caseReference": {
+        "sourceUrl": "https://www.colorado.gov/pacific/cdphe/news/10-new-presumptive-positive-cases-colorado-cdphe-confirms-limited-community-spread-covid-19",
+        "sourceId": "abc123"
+    },
+    "demographics": {
+        "ageRange": {
+            "start": 20,
+            "end": 20
+        },
+        "gender": "male",
+        "occupation": "Horse breeder",
+        "healthcareWorker": "N"
+    },
+    "location": {
+        "country": "France",
+        "countryISO3": "FR",
+        "location": "Île-de-F",
+        "city": "Paris"
+    },
+    "symptoms": "Severe pneumonia, Dyspnea, Weakness",
+    "preexistingConditions": {
+        "previousInfection": "N",
+        "pregnancyStatus": "NA"
+    },
+    "transmission": {
+        "contactWithCase": "N"
+    },
+    "travelHistory": {
+        "travelHistory": "N"
+    },
+    "vaccination": {
+        "vaccination": "Y",
+        "vaccineName": "Moderna",
+        "vaccineDate": "2020-01-01"
+    },
+    "genomeSequences": {}
 }

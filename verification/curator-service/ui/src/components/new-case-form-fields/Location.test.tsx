@@ -6,7 +6,13 @@ import { render, screen } from '../util/test-utils';
 it('shows location when passed location information', async () => {
     render(
         <Formik
-            initialValues={{ country: 'United States', city: 'Chicago' }}
+            initialValues={{
+                location: {
+                    country: 'United States',
+                    countryISO3: 'US',
+                    city: 'Chicago',
+                },
+            }}
             // onSubmit just here to appease tslint.
             onSubmit={async (values): Promise<void> => {
                 return;
