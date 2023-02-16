@@ -776,23 +776,3 @@ function RowContent(props: {
         </Grid>
     );
 }
-
-function MultilinkRowContent(props: {
-    links?: { link: string }[];
-}): JSX.Element {
-    return (
-        <Grid item xs={8} style={{ fontSize: 14 }}>
-            {props.links?.map((e) => (
-                <p key={e.link} style={{ margin: 0 }}>
-                    <a
-                        href={createHref(e.link)}
-                        rel="noopener noreferrer"
-                        target="_blank"
-                    >
-                        {e.link}
-                    </a>
-                </p>
-            ))}
-        </Grid>
-    );
-}

@@ -238,5 +238,6 @@ export interface Day0CaseFormValues {
     preexistingConditionsHelper?: string[];
     transmissionHelper?: string;
     occupation?: string;
+    // eslint-disable-next-line
     [key: string]: any;
 }

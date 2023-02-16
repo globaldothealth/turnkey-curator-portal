@@ -83,11 +83,6 @@ interface BulkCaseFormProps {
     onModalClose: () => void;
 }
 
-interface BulkCaseFormState {
-    errorMessage: string;
-    errors: CaseValidationError[];
-}
-
 interface AgeRange {
     start?: number;
     end?: number;

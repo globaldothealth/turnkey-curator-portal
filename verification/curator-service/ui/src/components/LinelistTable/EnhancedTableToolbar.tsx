@@ -49,9 +49,9 @@ const EnhancedTableToolbar = () => {
             setNumSelectedCases(0);
         } else {
             dispatch(setRowsAcrossPagesSelected(cases.length < totalCases));
-            // eslint-disable-next-line
             dispatch(
                 setCasesSelected(
+                    // eslint-disable-next-line
                     cases.map((caseObj) => caseObj.caseReference.id!),
                 ),
             );

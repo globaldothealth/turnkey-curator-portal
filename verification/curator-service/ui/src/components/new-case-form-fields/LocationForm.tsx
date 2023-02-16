@@ -16,7 +16,6 @@ import Scroll from 'react-scroll';
 import { TextField } from 'formik-mui';
 import { StyledTooltip } from './StyledTooltip';
 import axios from 'axios';
-import { hasKey } from '../Utils';
 import throttle from 'lodash/throttle';
 import { Day0CaseFormValues } from '../../api/models/Day0Case';
 
@@ -122,7 +121,7 @@ export function PlacesAutocomplete(
     const [value, setValue] = React.useState<GeocodeLocation | null>(null);
     const [inputValue, setInputValue] = React.useState('');
     const [options, setOptions] = React.useState<GeocodeLocation[]>([]);
-    const { setFieldValue, setTouched, errors } =
+    const { setFieldValue, setTouched } =
         useFormikContext<Day0CaseFormValues>();
 
     const fetch = React.useMemo(

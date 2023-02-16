@@ -68,7 +68,7 @@ const useSourceStyles = makeStyles(() => ({
 export default function Source(props: SourceProps) {
     const classes = useSourceStyles();
     const [additionalSourceNum, setAdditionalSourceNum] = useState(1);
-    const { setFieldValue, values, errors } = useFormikContext<
+    const { setFieldValue, values } = useFormikContext<
         Day0CaseFormValues | BulkCaseFormValues
     >();
 
@@ -224,7 +224,7 @@ export function SourcesAutocomplete(
 
     const [inputValue, setInputValue] = React.useState('');
     const [options, setOptions] = React.useState<CaseReferenceForm[]>([]);
-    const { setFieldValue, setTouched, values } = useFormikContext<
+    const { setFieldValue, values } = useFormikContext<
         Day0CaseFormValues | BulkCaseFormValues
     >();
 
