@@ -87,7 +87,7 @@ export function addCase(opts: AddCaseProps): void {
                 gender: opts.gender,
             },
             location: {
-                country: opts.countryISO3,
+                country: opts.country,
                 countryISO3: opts.countryISO3,
                 query: opts.country,
                 geoResolution: 'Country',
