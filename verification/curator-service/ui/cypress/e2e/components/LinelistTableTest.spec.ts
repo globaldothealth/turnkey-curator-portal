@@ -10,6 +10,36 @@ describe('Linelist table', function () {
             name: 'test',
             roles: ['admin', 'curator'],
         });
+        cy.seedLocation({
+            country: 'FR',
+            geometry: { latitude: 51.5072, longitude: -0.1275 },
+            name: 'France',
+            geoResolution: 'Country',
+        });
+        cy.seedLocation({
+            country: 'DE',
+            geometry: { latitude: 51.5072, longitude: -0.1275 },
+            name: 'Germany',
+            geoResolution: 'Country',
+        });
+        cy.seedLocation({
+            country: 'ES',
+            geometry: { latitude: 51.5072, longitude: -0.1275 },
+            name: 'Spain',
+            geoResolution: 'Country',
+        });
+        cy.seedLocation({
+            country: 'GB',
+            geometry: { latitude: 51.5072, longitude: -0.1275 },
+            name: 'United Kingdom',
+            geoResolution: 'Country',
+        });
+        cy.seedLocation({
+            country: 'AR',
+            geometry: { latitude: 51.5072, longitude: -0.1275 },
+            name: 'Argentina',
+            geoResolution: 'Country',
+        });
     });
 
     afterEach(() => {

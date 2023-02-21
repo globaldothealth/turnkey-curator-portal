@@ -6,6 +6,13 @@ describe('View case', function () {
     beforeEach(() => {
         cy.task('clearCasesDB', {});
         cy.login();
+
+        cy.seedLocation({
+            country: 'FR',
+            geometry: { latitude: 45.75889, longitude: 4.84139 },
+            name: 'France',
+            geoResolution: 'Country',
+        });
     });
 
     afterEach(() => {

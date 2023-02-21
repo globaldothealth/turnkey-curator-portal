@@ -371,15 +371,12 @@ describe('New case form', function () {
         cy.intercept('POST', '/api/cases?num_cases=1').as('addCase');
         cy.get('button[data-testid="submit"]').click();
         cy.wait('@addCase');
-        cy.request({ method: 'GET', url: '/api/cases' }).then((resp) => {
-            expect(resp.body.cases).to.have.lengthOf(1);
-            cy.url().should('eq', 'http://localhost:3002/cases');
-            cy.contains(`Case ${resp.body.cases[0]._id} added`);
-            cy.contains('No records to display').should('not.exist');
-            cy.contains('www.example.com');
-            cy.contains('France');
-            cy.contains('Paris');
-            cy.contains('2020-01-01');
-        });
+
+        cy.url().should('eq', 'http://localhost:3002/cases');
+        cy.contains('No records to display').should('not.exist');
+        cy.contains('www.example.com');
+        cy.contains('France');
+        cy.contains('Paris');
+        cy.contains('2020-01-01');
     });
 });

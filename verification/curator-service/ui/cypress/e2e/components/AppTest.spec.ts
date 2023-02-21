@@ -49,7 +49,7 @@ describe('App', function () {
         });
     });
 
-    it.only('allows the user to search by date', function () {
+    it('allows the user to search by date', function () {
         cy.login({
             roles: ['curator'],
             name: 'testName',
