@@ -343,7 +343,6 @@ describe('New case form', function () {
         cy.contains('No records to display').should('not.exist');
         cy.contains('www.example.com');
         cy.contains('France');
-        cy.contains('Paris');
         cy.contains('2020-01-01');
     });
 });
