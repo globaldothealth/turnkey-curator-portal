@@ -82,6 +82,7 @@ describe('Sources table', function () {
             ['US', 'CA', 'MX'],
         );
         cy.intercept('GET', '/api/sources/?limit=10&page=1').as('fetchSources');
+        cy.intercept('DELETE', '/api/sources').as('deleteSource');
 
         cy.visit('/');
         cy.contains('Sources').click();
@@ -91,6 +92,7 @@ describe('Sources table', function () {
         cy.contains('Example source');
 
         cy.get('button[aria-label="Delete"]').click();
+        cy.wait(500);
         cy.get('button[aria-label="Save"]').click();
 
         cy.contains('Example source').should('not.exist');

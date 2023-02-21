@@ -1,2 +1,2 @@
-pathogen,dateEntry,caseStatus,sourceEntryId,gender,ageRangeStart,ageRangeEnd,country,countryISO3,city,dateConfirmation,hospitalized,dateHospitalized,outcome,dateOutcome,caseCount
-COVID-19,05/23/2020,confirmed,def,male,142,42,Canada,CA,Banff,06/23/2020,,,,,,
+pathogen,dateEntry,caseStatus,sourceEntryId,gender,ageRangeStart,ageRangeEnd,country,countryISO3,dateConfirmation,hospitalized,dateHospitalized,outcome,dateOutcome,caseCount
+COVID-19,05/23/2020,confirmed,def,male,142,42,Canada,CA,06/23/2020,,,,,,

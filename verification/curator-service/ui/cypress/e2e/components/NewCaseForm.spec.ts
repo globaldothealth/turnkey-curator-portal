@@ -10,6 +10,12 @@ describe('New case form', function () {
         cy.intercept('GET', '/api/geocode/suggest?q=France', {
             fixture: 'geolocation_france_suggest.json',
         }).as('geolocationFranceSuggest');
+        cy.seedLocation({
+            country: 'FR',
+            geometry: { latitude: 45.75889, longitude: 4.84139 },
+            name: 'France',
+            geoResolution: 'Country',
+        });
     });
 
     afterEach(() => {

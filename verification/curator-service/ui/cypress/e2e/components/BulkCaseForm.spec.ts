@@ -5,21 +5,16 @@ describe('Bulk upload form', function () {
         cy.task('clearCasesDB', {});
         cy.login();
         cy.seedLocation({
-            country: 'UK',
-            administrativeAreaLevel1: 'England',
-            administrativeAreaLevel2: 'Greater London',
-            administrativeAreaLevel3: 'London',
+            country: 'FR',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
-            name: 'London, Greater London, England, United Kingdom',
-            geoResolution: 'Admin3',
+            name: 'France',
+            geoResolution: 'Country',
         });
         cy.seedLocation({
             country: 'CA',
-            administrativeAreaLevel1: 'Alberta',
-            administrativeAreaLevel3: 'Banff',
             geometry: { latitude: 51.1784, longitude: 115.5708 },
-            name: 'Banff, Alberta, Canada',
-            geoResolution: 'Admin3',
+            name: 'Canada',
+            geoResolution: 'Country',
         });
     });
 
@@ -65,9 +60,7 @@ describe('Bulk upload form', function () {
         cy.contains('Accountant');
 
         // Location
-        cy.contains('United Kingdom');
-        cy.contains('London');
-        cy.contains('Greater London');
+        cy.contains('France');
 
         // Events
         // Entry date
@@ -118,7 +111,7 @@ describe('Bulk upload form', function () {
         cy.contains('2020-05-23');
         cy.contains('confirmed');
         cy.contains('Canada');
-        cy.contains('Banff');
+
         cy.contains('male');
     });
 
@@ -148,7 +141,7 @@ describe('Bulk upload form', function () {
         cy.contains('www.new-source.com');
         cy.contains('2020-05-23');
         cy.contains('Canada');
-        cy.contains('Banff');
+
         cy.contains('male');
 
         cy.visit('/sources');
