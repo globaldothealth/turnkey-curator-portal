@@ -24,12 +24,6 @@ describe('New case form', function () {
 
     // Full case is covered in curator test.
     it('Can add minimal row to linelist with existing source', function () {
-        cy.seedLocation({
-            country: 'FR',
-            geometry: { latitude: 45.75889, longitude: 4.84139 },
-            name: 'France',
-            geoResolution: 'Country',
-        });
         cy.addSource('Test source', 'www.example.com');
 
         cy.visit('/');
@@ -62,13 +56,6 @@ describe('New case form', function () {
     });
 
     it('Can add minimal row to linelist with new source', function () {
-        cy.seedLocation({
-            country: 'FR',
-            geometry: { latitude: 45.75889, longitude: 4.84139 },
-            name: 'France',
-            geoResolution: 'Country',
-        });
-
         cy.visit('/');
         cy.wait('@getProfile');
 
@@ -104,12 +91,6 @@ describe('New case form', function () {
     });
 
     it('Can add multiple cases to linelist', function () {
-        cy.seedLocation({
-            country: 'FR',
-            geometry: { latitude: 45.75889, longitude: 4.84139 },
-            name: 'France',
-            geoResolution: 'Country',
-        });
         cy.addSource('Test source', 'www.example.com');
 
         cy.visit('/');
@@ -141,12 +122,6 @@ describe('New case form', function () {
         cy.visit('/');
         cy.visit('/cases');
         cy.contains('No records to display');
-        cy.seedLocation({
-            country: 'FR',
-            geometry: { latitude: 45.75889, longitude: 4.84139 },
-            name: 'France',
-            geoResolution: 'Country',
-        });
         cy.addSource('Test source', 'www.example.com');
 
         cy.visit('/');
@@ -190,12 +165,6 @@ describe('New case form', function () {
     });
 
     it.skip('Can add fields from chips', function () {
-        cy.seedLocation({
-            country: 'FR',
-            geometry: { latitude: 45.75889, longitude: 4.84139 },
-            name: 'France',
-            geoResolution: 'Country',
-        });
         cy.addSource('Test source', 'www.example.com');
         cy.addCase({
             country: 'France',
@@ -266,13 +235,6 @@ describe('New case form', function () {
     });
 
     it('Does not add row on submission error', function () {
-        // Avoid geolocation fail, the "Request failed" check below happens at the data service level.
-        cy.seedLocation({
-            name: 'France',
-            geometry: { latitude: 42, longitude: 12 },
-            country: 'FR',
-            geoResolution: 'Country',
-        });
         cy.addSource('Test source', 'www.example.com');
         cy.visit('/');
         cy.visit('/cases');
@@ -371,7 +333,6 @@ describe('New case form', function () {
         cy.get('button[id="add-location"]').click();
         cy.get('input[name="location.country"]').type('France');
         cy.get('input[name="location.countryISO3"]').type('FR');
-        cy.get('input[name="location.city"]').type('Paris');
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
 
         cy.intercept('POST', '/api/cases?num_cases=1').as('addCase');
