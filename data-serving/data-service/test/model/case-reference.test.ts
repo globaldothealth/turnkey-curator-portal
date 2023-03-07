@@ -42,11 +42,3 @@ describe('validate', () => {
         return new CaseReference(fullModel).validate();
     });
 });
-
-describe('default', () => {
-    it('verificationStatus is UNVERIFIED', () => {
-        expect(new CaseReference(minimalModel).verificationStatus).toBe(
-            'UNVERIFIED',
-        );
-    });
-});

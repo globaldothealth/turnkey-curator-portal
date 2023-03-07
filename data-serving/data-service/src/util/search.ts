@@ -25,8 +25,8 @@ const keywords = new Map<string, string>([
     ['outcome', 'events.outcome'],
     ['caseId', '_id'],
     ['sourceUrl', 'caseReference.sourceUrl'],
-    ['dateConfirmedFrom', 'events.dateConfirmation'],
-    ['dateConfirmedTo', 'events.dateConfirmation'],
+    ['dateConfirmedFrom', 'events.dateEntry'],
+    ['dateConfirmedTo', 'events.dateEntry'],
 ]);
 
 export default function parseSearchQuery(q: string): ParsedSearch {
@@ -59,7 +59,7 @@ export default function parseSearchQuery(q: string): ParsedSearch {
         keywords.forEach((path, keyword): void => {
             // Enable to filter by date
             keyword === 'dateConfirmedFrom'
-                ? (searchParsedResult.dateOperator = '$gt')
+                ? (searchParsedResult.dateOperator = '$gte')
                 : null;
             keyword === 'dateConfirmedTo'
                 ? (searchParsedResult.dateOperator = '$lt')

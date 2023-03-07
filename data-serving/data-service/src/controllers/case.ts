@@ -387,8 +387,6 @@ export class CasesController {
             await this.geocode(req);
             const receivedCase = req.body as CaseDTO;
 
-            logger.info(JSON.stringify(receivedCase, null, 2));
-
             const c = new Day0Case(await caseFromDTO(receivedCase));
 
             let result;
@@ -1183,7 +1181,7 @@ export const findCaseIdsWithCaseReferenceData = async (
  *
  * Handles HTTP GET /api/cases/symptoms.
  */
-// @TODO
+// @TODO - Store symptoms as array in MongoDB
 export const listSymptoms = async (
     req: Request,
     res: Response,

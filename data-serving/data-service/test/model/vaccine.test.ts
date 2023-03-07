@@ -1,6 +1,6 @@
 import { VaccineDocument, vaccineSchema } from '../../src/model/vaccine';
+import { YesNo } from '../../src/model/day0-case';
 
-import { Error } from 'mongoose';
 import mongoose from 'mongoose';
 
 const Vaccine = mongoose.model<VaccineDocument>('Vaccine', vaccineSchema);
@@ -8,10 +8,10 @@ const Vaccine = mongoose.model<VaccineDocument>('Vaccine', vaccineSchema);
 describe('validate', () => {
     it('vaccine model with various fields filled is valid', async () => {
         const aVaccine = new Vaccine({
-            name: 'Moderna',
-            date: new Date(),
-            batch: '1234-ABCD',
-            symptoms: ['anosmia'],
+            vaccination: YesNo.Y,
+            vaccineName: 'Moderna',
+            vaccineDate: '2022-02-01',
+            vaccineSideEffects: '',
         });
         return aVaccine.validate();
     });

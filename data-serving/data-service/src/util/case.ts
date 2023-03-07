@@ -58,22 +58,19 @@ export const getSortByKeyword = (sortBy: SortBy): string => {
 
     switch (sortBy) {
         case SortBy.ConfirmationDate:
-            keyword = 'Date_confirmation';
+            keyword = 'events.dateConfirmation';
             break;
         case SortBy.Country:
-            keyword = 'Country_ISO3';
+            keyword = 'location.countryISO3';
             break;
         case SortBy.City:
-            keyword = 'Country_ISO3';
+            keyword = 'location.city';
             break;
         case SortBy.Location:
-            keyword = 'Location';
-            break;
-        case SortBy.Age:
-            keyword = 'Age';
+            keyword = 'location.location';
             break;
         default:
-            keyword = 'Date_confirmation';
+            keyword = 'events.dateConfirmation';
             break;
     }
 

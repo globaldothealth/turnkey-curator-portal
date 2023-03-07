@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { symptomsSchema, SymptomsDocument } from './symptoms';
 import { YesNo } from './day0-case';
 
 export const vaccineSchema = new mongoose.Schema(

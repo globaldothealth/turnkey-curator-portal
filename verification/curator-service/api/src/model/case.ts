@@ -1,7 +1,7 @@
-import { Collection, ObjectId } from 'mongodb';
+import { Collection } from 'mongodb';
 import db from './database';
 
-enum CaseStatus {
+export enum CaseStatus {
     Confirmed = 'confirmed',
     Suspected = 'suspected',
     Discarded = 'discarded',
@@ -14,16 +14,20 @@ enum CaseStatus {
  */
 
 export type ICase = {
-    ID: ObjectId;
-    Pathogen: string;
-    Case_status: CaseStatus;
-    Country: string;
-    Country_ISO3: string;
-    Source: string;
-    Date_entry: Date;
-    Date_last_modified: Date;
+    pathogen: string;
+    caseStatus: CaseStatus;
+    location: {
+        country: string;
+        countryISO3: string;
+    };
+    caseReference: {
+        sourceId: string;
+        sourceUrl: string;
+    };
+    events: {
+        dateEntry: Date;
+    };
 };
 
 export const cases = () => db().collection('cases') as Collection<ICase>;
 export const restrictedCases = () => db().collection('restrictedcases');
-('');

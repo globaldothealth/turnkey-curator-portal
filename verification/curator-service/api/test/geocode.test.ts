@@ -79,6 +79,7 @@ describe('Geocode', () => {
             .collection('cases')
             .insertOne({
                 location: {
+                    countryISO3: 'EE',
                     country: 'EE',
                 },
             });

@@ -1,32 +1,35 @@
-import { Case, RestrictedCase } from '../../src/model/case';
+import { Day0Case } from '../../src/model/day0-case';
 import { Error } from 'mongoose';
 import fullModel from './data/case.full.json';
 import minimalEvent from './data/event.minimal.json';
 import minimalModel from './data/case.minimal.json';
+import _ from 'lodash';
 
 describe('validate', () => {
     it('model without caseReference is invalid', async () => {
         const noCaseReference: any = { ...minimalModel };
         delete noCaseReference.caseReference;
 
-        return new Case({ ...noCaseReference }).validate((e) => {
+        return new Day0Case({ ...noCaseReference }).validate((e) => {
             expect(e).not.toBeNull();
             if (e) expect(e.name).toBe(Error.ValidationError.name);
         });
     });
 
     it('model without events is invalid', async () => {
-        return new Case({ ...minimalModel, events: [] }).validate((e) => {
+        return new Day0Case({ ...minimalModel, events: [] }).validate((e) => {
             expect(e).not.toBeNull();
             if (e) expect(e.name).toBe(Error.ValidationError.name);
         });
     });
 
-    it('model without confirmed event is invalid', async () => {
-        const notConfirmedEvent = { ...minimalEvent, name: 'not-confirmed' };
-        return new Case({
+    it('model without date entry event is invalid', async () => {
+        const noDateEntry: any = { ...minimalEvent };
+        delete noDateEntry.dateEntry;
+
+        return new Day0Case({
             ...minimalModel,
-            events: [notConfirmedEvent],
+            events: noDateEntry,
         }).validate((e) => {
             expect(e).not.toBeNull();
             if (e) expect(e.name).toBe(Error.ValidationError.name);
@@ -34,53 +37,27 @@ describe('validate', () => {
     });
 
     it('minimal model is valid', async () => {
-        return new Case(minimalModel).validate();
-    });
-
-    it('denormalises the date of the confirmed event', async () => {
-        const c = new Case(minimalModel);
-        await c.validate();
-        expect(c.confirmationDate.toISOString()).toEqual(
-            minimalModel.events[0].dateRange.start,
-        );
+        return new Day0Case(minimalModel).validate();
     });
 
     it('fully-specified model is valid', async () => {
-        return new Case(fullModel).validate();
-    });
-});
-
-describe('restricted case collection', () => {
-    it('supports the same schema as the case collection', async () => {
-        return new RestrictedCase(minimalModel).validate();
+        return new Day0Case(fullModel).validate();
     });
 });
 
 describe('custom instance methods', () => {
     it('equalsJSON returns true for identical case', () => {
-        const c = new Case(fullModel);
+        const c = new Day0Case(fullModel);
         expect(c.equalsJSON(fullModel)).toBe(true);
     });
     it('equalsJSON returns true for case differing in caseReference', () => {
-        const c = new Case(fullModel);
+        const c = new Day0Case(fullModel);
         const comparison: any = fullModel;
         delete comparison.caseReference;
         expect(c.equalsJSON(comparison)).toBe(true);
     });
-    it('equalsJSON returns true for case differing in revisionMetadata', () => {
-        const c = new Case(fullModel);
-        const comparison: any = fullModel;
-        delete comparison.revisionMetadata;
-        expect(c.equalsJSON(comparison)).toBe(true);
-    });
-    it('equalsJSON returns true for case differing in importedCase', () => {
-        const c = new Case(fullModel);
-        const comparison: any = fullModel;
-        delete comparison.importedCase;
-        expect(c.equalsJSON(comparison)).toBe(true);
-    });
     it('equalsJSON returns false for semantically differing case', () => {
-        const c = new Case(fullModel);
+        const c = new Day0Case(fullModel);
         const comparison: any = fullModel;
         delete comparison.demographics.gender;
         expect(c.equalsJSON(comparison)).toBe(false);

@@ -1,10 +1,11 @@
 {
+    "caseStatus": "confirmed",
+    "pathogen": "COVID-19",
     "caseReference": {
         "sourceId": "5ea86423bae6982635d2e1f8",
         "sourceEntryId": "entryId",
         "sourceUrl": "cdc.gov",
         "uploadIds": ["012345678901234567890123", "012345678901234567890124"],
-        "verificationStatus": "VERIFIED",
         "additionalSources": [
             {
                 "sourceUrl": "twitter.com/a-tweet"
@@ -14,167 +15,71 @@
             }
         ]
     },
-    "list": true,
     "demographics": {
         "ageRange": {
             "start": 50.0,
             "end": 59.0
         },
-        "gender": "Female",
+        "gender": "female",
         "occupation": "Horse trainer",
-        "nationalities": [
-            "Swedish"
-        ],
-        "ethnicity": "Other"
+        "healthcareWorker": "N"
     },
-    "genomeSequences": [
-        {
-            "sampleCollectionDate": "2019-12-30",
-            "repositoryUrl": "https://www.ncbi.nlm.nih.gov/nuccore/NC_045512",
-            "sequenceId": "NC_045512.2",
-            "sequenceName": "Severe acute respiratory syndrome coronavirus 2 isolate Wuhan-Hu-1, complete genome",
-            "sequenceLength": 33000
-        }
-    ],
+    "genomeSequences": {
+        "genomicsMetadata": "NC_045512.2",
+        "accessionNumber": "33000"
+    },
     "location": {
-        "country": "FR",
-        "administrativeAreaLevel1": "Île-de-France",
-        "administrativeAreaLevel2": "Paris",
-        "name": "Wuhan",
-        "geoResolution": "Admin2",
-        "geometry": {
-            "latitude": 2.3522219,
-            "longitude": 48.85661400000001
-        }
+        "country": "France",
+        "countryISO3": "FR",
+        "query": "France",
+        "name": "France",
+        "geoResolution": "Country"
     },
-    "events": [
-        {
-            "name": "onsetSymptoms",
-            "dateRange": {
-                "start": 1578000000000,
-                "end": 1578027600000
-            }
-        },
-        {
-            "name": "confirmed",
-            "value": "PCR test",
-            "dateRange": {
-                "start": 1578891600000,
-                "end": 1578891600000
-            }
-        },
-        {
-            "name": "hospitalAdmission",
-            "dateRange": {
-                "start": 1579395600000,
-                "end": 1581469200000
-            }
-        },
-        {
-            "name": "outcome",
-            "value": "Recovered",
-            "dateRange": {
-                "start": "1581483600000",
-                "end": "1581483600000"
-            }
-        }
-    ],
-    "symptoms": {
-        "values": [
-            "Severe pneumonia",
-            "Dyspnea",
-            "Weakness"
-        ],
-        "status": "Symptomatic"
+    "events": {
+        "dateEntry": "2020-01-10",
+        "dateOnset": "2020-01-10",
+        "dateConfirmation": "2020-01-10",
+        "confirmationMethod": "PCR Test",
+        "dateOfFirstConsult": "2020-01-10",
+        "hospitalized": "Y",
+        "reasonForHospitalization": "monitoring",
+        "dateHospitalization": "2020-01-10",
+        "dateDischargeHospital": "2020-01-10",
+        "intensiveCare": "Y",
+        "dateAdmissionICU": "2020-01-10",
+        "dateDischargeICU": "2020-01-10",
+        "homeMonitoring": "Y",
+        "isolated": "Y",
+        "dateIsolation": "2020-01-10",
+        "outcome": "recovered",
+        "dateRecovered": "2020-01-10"
     },
+    "symptoms": "Severe pneumonia, Dyspnea, Weakness",
     "preexistingConditions": {
-        "values": [
-            "Hypertension",
-            "Type 2 diabetes",
-            "Coronary heart disease",
-            "Lung cancer"
-        ],
-        "hasPreexistingConditions": true
+        "previousInfection": "Y",
+        "coInfection": "Flu",
+        "preexistingCondition": "Hypertension, Type 2 diabetes",
+        "pregnancyStatus": "N"
     },
     "travelHistory": {
-        "travel": [
-            {
-                "dateRange": {
-                    "start": "2020-01-10",
-                    "end": "2020-01-17"
-                },
-                "location": {
-                    "country": "US",
-                    "administrativeAreaLevel1": "New York",
-                    "administrativeAreaLevel2": "Kings County",
-                    "administrativeAreaLevel3": "Brooklyn",
-                    "place": "Kings County Hospital Center",
-                    "name": "Kings County Hospital Center",
-                    "geoResolution": "Point",
-                    "geometry": {
-                        "latitude": 40.6809611,
-                        "longitude": -73.9740028
-                    }
-                },
-                "methods": [
-                    "Plane"
-                ],
-                "purpose": "Family"
-            }
-        ],
-        "traveledPrior30Days": true
-    },
-    "sources": [
-        {
-            "id": "def456",
-            "url": "https://www.colorado.gov/pacific/cdphe/news/10-new-presumptive-positive-cases-colorado-cdphe-confirms-limited-community-spread-covid-19"
-        }
-    ],
-    "pathogens": [
-        {
-            "name": "COVID-19",
-            "id": 304
-        },
-        {
-            "name": "Pneumonia",
-            "id": 104
-        }
-    ],
-    "revisionMetadata": {
-        "revisionNumber": 0,
-        "creationMetadata": {
-            "curator": "abc123",
-            "date": "2020-01-03",
-            "notes": "initial data entry"
-        },
-        "updateMetadata": {
-            "curator": "xyz789",
-            "date": "2020-01-13",
-            "notes": "fix source error"
-        }
+        "travelHistory": "Y",
+        "travelHistoryEntry": "2020-01-10",
+        "travelHistoryStart": "",
+        "travelHistoryLocation": "Banff",
+        "travelHistoryCountry": "Canada"
     },
     "transmission": {
-        "routes": [
-            "Vector borne"
-        ],
-        "places": [
-            "Gym"
-        ],
-        "linkedCaseIds": [
-            "abc",
-            "def"
-        ]
+        "contactWithCase": "Y",
+        "contactId": "abc123",
+        "contactSetting": "setting",
+        "contactAnimal": "animal",
+        "contactComment": "comment",
+        "transmission": "transmission"
     },
-    "importedCase": {
-        "ID": "xyz",
-        "additional_information": "Contact of a confirmed case at work.",
-        "notes_for_discussion": "Other stuff from notes",
-        "geo_resolution": "admin_2",
-        "symptoms": "severe pneumonia:dyspnea:weakness:some free-form symptoms:that don't match the symptom dictionary\"",
-        "chronic_disease_binary": "true",
-        "outcome": "discharge 2/12",
-        "admin_id": "291",
-        "lives_in_Wuhan": "false",
-        "reported_market_exposure": "true"
+    "vaccination": {
+        "vaccination": "Y",
+        "vaccineName": "Moderna",
+        "vaccineDate": "2020-01-10",
+        "vaccineSideEffects": "cough, sore muscles"
     }
 }

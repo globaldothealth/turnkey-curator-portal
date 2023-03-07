@@ -117,6 +117,7 @@ export const caseSchema = new mongoose.Schema(
 caseSchema.methods.equalsJSON = function (jsonCase: any): boolean {
     const thisJson = this.toJSON() as any;
     const other = new Day0Case(jsonCase).toJSON() as any;
+
     return (
         _.isEqual(thisJson.caseStatus, other.caseStatus) &&
         _.isEqual(thisJson.demographics, other.demographics) &&
@@ -131,7 +132,7 @@ caseSchema.methods.equalsJSON = function (jsonCase: any): boolean {
         _.isEqual(thisJson.symptoms, other.symptoms) &&
         _.isEqual(thisJson.transmission, other.transmission) &&
         _.isEqual(thisJson.travelHistory, other.travelHistory) &&
-        _.isEqual(thisJson.vacination, other.vaccination)
+        _.isEqual(thisJson.vaccination, other.vaccination)
     );
 };
 
