@@ -1,5 +1,5 @@
 import { VaccineDocument, vaccineSchema } from '../../src/model/vaccine';
-import { YesNo } from '../../src/model/day0-case';
+import { YesNo } from '../../src/types/enums';
 
 import mongoose from 'mongoose';
 

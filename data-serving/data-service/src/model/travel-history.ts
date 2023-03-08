@@ -1,4 +1,4 @@
-import { YesNo } from './day0-case';
+import { YesNo } from '../types/enums';
 
 import mongoose from 'mongoose';
 

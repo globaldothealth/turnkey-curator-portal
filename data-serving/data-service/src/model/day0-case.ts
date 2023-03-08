@@ -21,6 +21,7 @@ import {
     PreexistingConditionsDocument,
     preexistingConditionsSchema,
 } from './preexisting-conditions';
+import { CaseStatus } from '../types/enums';
 
 /*
  * There are separate types for case for data storage (the mongoose document) and
@@ -30,19 +31,6 @@ import {
  * mongoose document only has age buckets, and that the cases controller converts between the
  * two so that outside you only see a single age range.
  */
-
-export enum CaseStatus {
-    Confirmed = 'confirmed',
-    Suspected = 'suspected',
-    Discarded = 'discarded',
-    OmitError = 'omit_error',
-}
-
-export enum YesNo {
-    Y = 'Y',
-    N = 'N',
-    NA = 'NA',
-}
 
 // this is not an official day 0 case schema field but it has
 // to be declared for specific use cases

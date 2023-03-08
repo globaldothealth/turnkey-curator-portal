@@ -1,4 +1,4 @@
-import { CaseDocument, caseSchema } from './case';
+import { CaseDocument, caseSchema } from './day0-case';
 
 import { ObjectId } from 'mongodb';
 import mongoose from 'mongoose';

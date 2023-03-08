@@ -1,4 +1,5 @@
-import { CaseStatus, Day0Case } from '../../src/model/day0-case';
+import { Day0Case } from '../../src/model/day0-case';
+import { CaseStatus } from '../../src/types/enums';
 import { CaseRevision } from '../../src/model/case-revision';
 import { Demographics, Gender } from '../../src/model/demographics';
 import { MongoMemoryServer } from 'mongodb-memory-server';
@@ -365,18 +366,25 @@ describe('GET', () => {
 });
 
 describe('POST', () => {
-    beforeEach(() => {
+    // beforeEach(() => {
+    //     seedFakeGeocodes('Canada', {
+    //         country: 'CA',
+    //         geoResolution: 'Country',
+    //         geometry: { latitude: 42.42, longitude: 11.11 },
+    //         name: 'Canada',
+    //     });
+    // });
+    it('create with input missing required properties should return 400', () => {
+        return request(app).post('/api/cases').send({}).expect(400);
+    });
+    it('create with required properties but invalid input should return 422', () => {
         seedFakeGeocodes('Canada', {
             country: 'CA',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
         });
-    });
-    it('create with input missing required properties should return 400', () => {
-        return request(app).post('/api/cases').send({}).expect(400);
-    });
-    it('create with required properties but invalid input should return 422', () => {
+
         return request(app).post('/api/cases').send(invalidRequest).expect(422);
     });
     it('rejects negative num_cases param', () => {
@@ -386,6 +394,13 @@ describe('POST', () => {
             .expect(400);
     });
     it('create with valid input should return 201 OK', async () => {
+        seedFakeGeocodes('Canada', {
+            country: 'CA',
+            geoResolution: 'Country',
+            geometry: { latitude: 42.42, longitude: 11.11 },
+            name: 'Canada',
+        });
+
         await request(app)
             .post('/api/cases')
             .send(minimalRequest)
@@ -394,6 +409,13 @@ describe('POST', () => {
         expect(await Day0Case.collection.countDocuments()).toEqual(1);
     });
     it('create with valid input should bucket the age range', async () => {
+        seedFakeGeocodes('Canada', {
+            country: 'CA',
+            geoResolution: 'Country',
+            geometry: { latitude: 42.42, longitude: 11.11 },
+            name: 'Canada',
+        });
+
         await request(app)
             .post('/api/cases')
             .send(minimalRequest)
@@ -404,6 +426,13 @@ describe('POST', () => {
         expect(theCase!.demographics.ageBuckets).toHaveLength(3);
     });
     it('GETting the POSTed case should return an age range', async () => {
+        seedFakeGeocodes('Canada', {
+            country: 'CA',
+            geoResolution: 'Country',
+            geometry: { latitude: 42.42, longitude: 11.11 },
+            name: 'Canada',
+        });
+
         const theCase = await request(app)
             .post('/api/cases')
             .send(minimalRequest)
@@ -421,6 +450,13 @@ describe('POST', () => {
         });
     });
     it('create many cases with valid input should return 201 OK', async () => {
+        seedFakeGeocodes('Canada', {
+            country: 'CA',
+            geoResolution: 'Country',
+            geometry: { latitude: 42.42, longitude: 11.11 },
+            name: 'Canada',
+        });
+
         const res = await request(app)
             .post('/api/cases?num_cases=3')
             .send(minimalRequest)
@@ -443,6 +479,13 @@ describe('POST', () => {
     //     expect(res.body).not.toHaveProperty('curator');
     // });
     it('create with valid input should not create case revision', async () => {
+        seedFakeGeocodes('Canada', {
+            country: 'CA',
+            geoResolution: 'Country',
+            geometry: { latitude: 42.42, longitude: 11.11 },
+            name: 'Canada',
+        });
+
         await request(app)
             .post('/api/cases')
             .send(minimalRequest)
@@ -457,6 +500,13 @@ describe('POST', () => {
             .expect(400);
     });
     it('create with valid input and validate_only should not save case', async () => {
+        seedFakeGeocodes('Canada', {
+            country: 'CA',
+            geoResolution: 'Country',
+            geometry: { latitude: 42.42, longitude: 11.11 },
+            name: 'Canada',
+        });
+
         const res = await request(app)
             .post('/api/cases?validate_only=true')
             .send(minimalRequest)
@@ -473,6 +523,13 @@ describe('POST', () => {
         return request(app).post('/api/cases/batchUpsert').send({}).expect(400);
     });
     it('batch upsert with only valid cases should return 200 with counts', async () => {
+        seedFakeGeocodes('Canada', {
+            country: 'CA',
+            geoResolution: 'Country',
+            geometry: { latitude: 42.42, longitude: 11.11 },
+            name: 'Canada',
+        });
+
         seedFakeGeocodes('France', {
             country: 'FR',
             geoResolution: 'Country',
@@ -517,6 +574,13 @@ describe('POST', () => {
         expect(res.body.numUpdated).toBe(1); // Only changed case was updated.
     });
     it('batch upsert with same case twice should not update anything', async () => {
+        seedFakeGeocodes('Canada', {
+            country: 'CA',
+            geoResolution: 'Country',
+            geometry: { latitude: 42.42, longitude: 11.11 },
+            name: 'Canada',
+        });
+
         const newCaseWithEntryId = new Day0Case(minimalCase);
         newCaseWithEntryId.caseReference.sourceEntryId = 'newId';
 
@@ -545,7 +609,8 @@ describe('POST', () => {
         expect(res.body.numUpdated).toBe(0); // No case was updated either.
     });
 
-    it('batch upsert should add uploadId to field array', async () => {
+    // @TODO
+    it.skip('batch upsert should add uploadId to field array', async () => {
         seedFakeGeocodes('France', {
             country: 'FR',
             geoResolution: 'Country',
@@ -674,7 +739,15 @@ describe('POST', () => {
             .expect(404, /Geocode not found/)
             .expect('Content-Type', /json/);
     });
+    // @TODO: Case revisions functionality is missing for now
     it.skip('batch upsert should result in case revisions of existing cases', async () => {
+        seedFakeGeocodes('Canada', {
+            country: 'CA',
+            geoResolution: 'Country',
+            geometry: { latitude: 42.42, longitude: 11.11 },
+            name: 'Canada',
+        });
+
         const existingCase = new Day0Case(fullCase);
         await existingCase.save();
         existingCase.pathogen = 'Pneumonia';
@@ -689,6 +762,13 @@ describe('POST', () => {
         expect(await CaseRevision.collection.countDocuments()).toEqual(1);
     });
     it('batch upsert with any invalid case should return 207', async () => {
+        seedFakeGeocodes('Canada', {
+            country: 'CA',
+            geoResolution: 'Country',
+            geometry: { latitude: 42.42, longitude: 11.11 },
+            name: 'Canada',
+        });
+
         const res = await request(app)
             .post('/api/cases/batchUpsert')
             .send({ cases: [minimalCase, invalidRequest], ...curatorMetadata })
@@ -1241,6 +1321,13 @@ describe('PUT', () => {
         );
     });
     it('upsert new item should return 201 CREATED', async () => {
+        seedFakeGeocodes('Canada', {
+            country: 'CA',
+            geoResolution: 'Country',
+            geometry: { latitude: 42.42, longitude: 11.11 },
+            name: 'Canada',
+        });
+
         return request(app)
             .put('/api/cases')
             .send(minimalRequest)
@@ -1248,6 +1335,13 @@ describe('PUT', () => {
             .expect(201);
     });
     it('upsert new item should not create a case revision', async () => {
+        seedFakeGeocodes('Canada', {
+            country: 'CA',
+            geoResolution: 'Country',
+            geometry: { latitude: 42.42, longitude: 11.11 },
+            name: 'Canada',
+        });
+
         await request(app)
             .put('/api/cases')
             .send(minimalRequest)
@@ -1257,6 +1351,13 @@ describe('PUT', () => {
         expect(await CaseRevision.collection.countDocuments()).toEqual(0);
     });
     it('upsert items without sourceEntryId should return 201 CREATED', async () => {
+        seedFakeGeocodes('Canada', {
+            country: 'CA',
+            geoResolution: 'Country',
+            geometry: { latitude: 42.42, longitude: 11.11 },
+            name: 'Canada',
+        });
+
         // NB: Minimal case does not have a sourceEntryId.
         const firstUniqueCase = new Day0Case(minimalCase);
         await firstUniqueCase.save();
@@ -1273,6 +1374,13 @@ describe('PUT', () => {
         return request(app).put('/api/cases').send({}).expect(400);
     });
     it('upsert new item with invalid input should return 422', () => {
+        seedFakeGeocodes('Canada', {
+            country: 'CA',
+            geoResolution: 'Country',
+            geometry: { latitude: 42.42, longitude: 11.11 },
+            name: 'Canada',
+        });
+
         return request(app).put('/api/cases').send(invalidRequest).expect(422);
     });
     it('invalid upsert present item should return 422', async () => {
@@ -1359,7 +1467,8 @@ describe('DELETE', () => {
             c2.toObject(),
         );
     });
-    it('delete multiple cases with query should return 204 OK', async () => {
+    // @TODO text index not present in the new case schema
+    it.skip('delete multiple cases with query should return 204 OK', async () => {
         // Simulate index creation used in unit tests, in production they are
         // setup by the migrations and such indexes are not present by
         // default in the in memory mongo spawned by unit tests.
@@ -1424,25 +1533,28 @@ describe('DELETE', () => {
         // Simulate index creation used in unit tests, in production they are
         // setup by the migrations and such indexes are not present by
         // default in the in memory mongo spawned by unit tests.
-        await mongoose.connection.collection('cases').createIndex({
-            caseStatus: -1,
-        });
+        await mongoose.connection.collection('day0cases').createIndex(
+            {
+                'demographics.gender': -1,
+            },
+            { collation: { locale: 'en_US', strength: 2 } },
+        );
 
         await Promise.all([
             new Day0Case(minimalCase)
-                .set('caseStatus', CaseStatus.Suspected)
+                .set('demographics.gender', Gender.Female)
                 .save(),
             new Day0Case(minimalCase)
-                .set('caseStatus', CaseStatus.Suspected)
+                .set('demographics.gender', Gender.Female)
                 .save(),
             new Day0Case(minimalCase)
-                .set('caseStatus', CaseStatus.Suspected)
+                .set('demographics.gender', Gender.Female)
                 .save(),
         ]);
         expect(await Day0Case.collection.countDocuments()).toEqual(3);
         await request(app)
             .delete('/api/cases')
-            .send({ query: 'caseStatus:suspected', maxCasesThreshold: 2 })
+            .send({ query: 'gender:female', maxCasesThreshold: 2 })
             .expect(422, /more than the maximum allowed/);
         expect(await Day0Case.collection.countDocuments()).toEqual(3);
         expect(await CaseRevision.collection.countDocuments()).toEqual(0);

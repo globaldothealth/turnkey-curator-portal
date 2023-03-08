@@ -12,6 +12,7 @@ import { VaccineDocument } from '../model/vaccine';
 
 import _ from 'lodash';
 import { EventsDocument } from '../model/events';
+import { GenomeSequenceDocument } from '../model/genome-sequence';
 
 const validEvents = [
     'firstClinicalConsultation',
@@ -122,6 +123,9 @@ export const denormalizeFields = async (
         doc.travelHistory,
     );
     const vaccineHistory = denormalizeVaccineFields(doc.vaccination);
+    const genomeSequencesFields = denormalizeGenomeSequencesFields(
+        doc.genomeSequences,
+    );
 
     const nestedFields = [
         'caseReference',
@@ -134,6 +138,7 @@ export const denormalizeFields = async (
         'transmission',
         'travelHistory',
         'vaccination',
+        'genomeSequences',
     ];
 
     const undesiredFields = ['list', 'importedCase'];
@@ -149,6 +154,7 @@ export const denormalizeFields = async (
         transmissionFields,
         travelHistoryFields,
         vaccineHistory,
+        genomeSequencesFields,
     ];
 
     let denormalizedDocument = _.omit(doc, nestedFields);
@@ -193,6 +199,8 @@ async function denormalizeDemographicsFields(
     denormalizedData['demographics.ageRange.start'] = ageRange?.start || '';
     denormalizedData['demographics.gender'] = doc.gender || '';
     denormalizedData['demographics.occupation'] = doc.occupation || '';
+    denormalizedData['demographics.healthcareWorker'] =
+        doc.healthcareWorker || '';
     return denormalizedData;
 }
 
@@ -201,7 +209,9 @@ export const denormalizeEventsFields = (
 ): Record<string, string> => {
     const denormalizedData: Record<string, string> = {};
 
-    denormalizedData['events.dateEntry'] = doc.dateEntry.toDateString() || '';
+    denormalizedData['events.dateEntry'] = doc.dateEntry
+        ? doc.dateEntry.toDateString()
+        : undefined || '';
     denormalizedData['events.dateOnset'] = doc.dateOnset?.toDateString() || '';
     denormalizedData['events.dateConfirmation'] =
         doc.dateConfirmation?.toDateString() || '';
@@ -243,6 +253,18 @@ function denormalizeLocationFields(
     denormalizedData['location.location'] = doc.location || '';
     denormalizedData['location.city'] = doc.city || '';
     denormalizedData['location.query'] = doc.query || '';
+    return denormalizedData;
+}
+
+function denormalizeGenomeSequencesFields(
+    doc: GenomeSequenceDocument,
+): Record<string, string | number> {
+    const denormalizedData: Record<string, string | number> = {};
+
+    denormalizedData['genomeSequences.genomicsMetadata'] =
+        doc.genomicsMetadata || '';
+    denormalizedData['genomeSequences.accessionNumber'] =
+        doc.accessionNumber || '';
     return denormalizedData;
 }
 
@@ -298,9 +320,9 @@ function denormalizeTravelHistoryFields(
 ): Record<string, string | boolean> {
     const denormalizedData: Record<string, string | boolean> = {};
 
-    denormalizedData['travelHistory.travelhistory'] = doc?.travelHistory || '';
+    denormalizedData['travelHistory.travelHistory'] = doc?.travelHistory || '';
     denormalizedData['travelHistory.travelHistoryEntry'] =
-        doc?.travelHistoryEntry.toDateString() || '';
+        doc?.travelHistoryEntry?.toDateString() || '';
     denormalizedData['travelHistory.travelHistoryStart'] =
         doc?.travelHistoryStart || '';
     denormalizedData['travelHistory.travelHistoryLocation'] =
@@ -319,7 +341,7 @@ function denormalizeVaccineFields(
     denormalizedData['vaccination.vaccination'] = doc?.vaccination || '';
     denormalizedData['vaccination.vaccineName'] = doc?.vaccineName || '';
     denormalizedData['vaccination.vaccineDate'] =
-        doc?.vaccineDate.toDateString() || '';
+        doc?.vaccineDate?.toDateString() || '';
     denormalizedData['vaccination.vaccineSideEffects'] =
         doc?.vaccineSideEffects || '';
 

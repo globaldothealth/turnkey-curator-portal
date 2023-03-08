@@ -2,7 +2,7 @@ import { Range } from './range';
 import mongoose, { LeanDocument } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { AgeBucket } from './age-bucket';
-import { YesNo } from './day0-case';
+import { YesNo } from '../types/enums';
 
 export enum Gender {
     Male = 'male',

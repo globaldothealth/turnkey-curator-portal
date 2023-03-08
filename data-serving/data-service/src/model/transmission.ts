@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { YesNo } from './day0-case';
+import { YesNo } from '../types/enums';
 
 export const transmissionSchema = new mongoose.Schema(
     {
