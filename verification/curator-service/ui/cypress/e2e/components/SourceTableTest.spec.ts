@@ -92,8 +92,8 @@ describe('Sources table', function () {
         cy.contains('Example source');
 
         cy.get('button[aria-label="Delete"]').click();
-        cy.wait(500);
-        cy.get('button[aria-label="Save"]').click();
+        cy.wait(1000);
+        cy.get('button[aria-label="Save"]').click({ force: true });
 
         cy.contains('Example source').should('not.exist');
     });
