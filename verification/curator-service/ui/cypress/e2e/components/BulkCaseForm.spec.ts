@@ -191,6 +191,7 @@ describe('Bulk upload form', function () {
         // to see why this won't be a big deal in the long run.
         cy.contains('bulk_data.csv uploaded. 2 cases updated.');
         cy.contains('female');
+        cy.contains('suspected');
 
         // Check both upload ids are present
         cy.intercept('get', '/api/cases/*').as('viewCase');
