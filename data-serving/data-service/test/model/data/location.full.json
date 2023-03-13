@@ -1,6 +1,6 @@
 {
     "country": "United States",
-    "countryISO3": "US",
+    "countryISO2": "US",
     "city": "New York",
     "location": "Brooklyn",
     "geoResolution": "Point",

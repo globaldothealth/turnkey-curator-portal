@@ -78,7 +78,7 @@ const initialValuesFromCase = (
             },
             location: {
                 country: '',
-                countryISO3: '',
+                countryISO2: '',
                 location: '',
                 city: '',
             },
@@ -163,7 +163,7 @@ const initialValuesFromCase = (
         location: {
             ...c.location,
             geocodeLocation: {
-                country: c.location.countryISO3,
+                country: c.location.countryISO2,
                 administrativeAreaLevel1: '',
                 administrativeAreaLevel2: '',
                 administrativeAreaLevel3: '',
@@ -237,7 +237,7 @@ const NewCaseValidation = Yup.object().shape(
         pathogen: Yup.string().required('Required'),
         location: Yup.object().shape({
             country: Yup.string().required('Required'),
-            countryISO3: Yup.string().required('Required'),
+            countryISO2: Yup.string().required('Required'),
         }),
         events: Yup.object().shape({
             dateEntry: Yup.date().required('Required'),
@@ -637,7 +637,7 @@ export default function CaseForm(props: Props): JSX.Element {
                                         {tableOfContentsIcon({
                                             isChecked: isChecked({
                                                 requiredValues: [
-                                                    values.location.countryISO3,
+                                                    values.location.countryISO2,
                                                     values.location
                                                         .geocodeLocation,
                                                 ],
@@ -883,6 +883,7 @@ export default function CaseForm(props: Props): JSX.Element {
                                         <Source
                                             initialValue={values.caseReference}
                                             withAdditioanlSources
+                                            hasSourceEntryId
                                         />
                                     </FormSection>
                                     <FormSection>

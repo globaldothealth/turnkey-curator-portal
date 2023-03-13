@@ -6,7 +6,7 @@ export const locationSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        countryISO3: {
+        countryISO2: {
             type: String,
             required: true,
             minLength: 2,
@@ -23,7 +23,7 @@ export const locationSchema = new mongoose.Schema(
 
 export type LocationDocument = mongoose.Document & {
     country: string;
-    countryISO3: string;
+    countryISO2: string;
     location?: string;
     city?: string;
     query?: string;

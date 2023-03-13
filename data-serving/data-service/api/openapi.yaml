@@ -874,7 +874,7 @@ components:
             properties:
                 query:
                     type: string
-                countryISO3:
+                countryISO2:
                     type: string
                     minLength: 2
                     maxLength: 2

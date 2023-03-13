@@ -65,7 +65,7 @@ export interface GeocodeLocation {
 
 export interface Location {
     country: string;
-    countryISO3: string;
+    countryISO2: string;
     location?: string;
     city?: string;
     // this variable is needed in the API in order to geocode properly
@@ -218,7 +218,7 @@ export interface Day0CaseFormValues {
     };
     location: {
         country: string;
-        countryISO3: string;
+        countryISO2: string;
         location?: string;
         city?: string;
         geocodeLocation?: GeocodeLocation;

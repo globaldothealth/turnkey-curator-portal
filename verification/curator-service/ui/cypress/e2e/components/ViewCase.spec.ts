@@ -22,7 +22,7 @@ describe('View case', function () {
     it('highlights text search results', function () {
         cy.addCase({
             country: 'France',
-            countryISO3: 'FR',
+            countryISO2: 'FR',
             sourceUrl: 'www.example.com',
             confirmationMethod: 'PCR test',
             dateEntry: '2020-01-01',
@@ -50,7 +50,7 @@ describe('View case', function () {
     it('can view a case', function () {
         cy.addCase({
             country: 'France',
-            countryISO3: 'FR',
+            countryISO2: 'FR',
             sourceUrl: 'www.example.com',
             confirmationMethod: 'PCR test',
             dateEntry: '2020-01-01',

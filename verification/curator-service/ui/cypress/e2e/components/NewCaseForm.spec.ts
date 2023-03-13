@@ -168,7 +168,7 @@ describe('New case form', function () {
         cy.addSource('Test source', 'www.example.com');
         cy.addCase({
             country: 'France',
-            countryISO3: 'FR',
+            countryISO2: 'FR',
             dateEntry: '2020-01-01',
             caseStatus: CaseStatus.Confirmed,
             sourceUrl: 'www.example.com',
@@ -177,7 +177,7 @@ describe('New case form', function () {
         });
         cy.addCase({
             country: 'France',
-            countryISO3: 'FR',
+            countryISO2: 'FR',
             dateEntry: '2020-01-01',
             caseStatus: CaseStatus.Confirmed,
             sourceUrl: 'www.example.com',
@@ -332,7 +332,7 @@ describe('New case form', function () {
         cy.contains('www.example.com').click();
         cy.get('button[id="add-location"]').click();
         cy.get('input[name="location.country"]').type('France');
-        cy.get('input[name="location.countryISO3"]').type('FR');
+        cy.get('input[name="location.countryISO2"]').type('FR');
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
 
         cy.intercept('POST', '/api/cases?num_cases=1').as('addCase');

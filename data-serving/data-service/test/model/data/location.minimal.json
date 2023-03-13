@@ -1,6 +1,6 @@
 {
     "country": "Canada",
-    "countryISO3": "CA",
+    "countryISO2": "CA",
     "geoResolution": "Country",
     "name": "Canada",
     "geometry": {

@@ -38,7 +38,7 @@ export default function Location(): JSX.Element {
         );
 
         setFieldValue(
-            'location.countryISO3',
+            'location.countryISO2',
             values.location.geocodeLocation.country,
         );
         setFieldValue('location.country', countryName);
@@ -55,7 +55,7 @@ export default function Location(): JSX.Element {
                 variant="outlined"
                 className={classes.field}
                 label="Country code"
-                name="location.countryISO3"
+                name="location.countryISO2"
                 type="text"
                 required
                 component={TextField}

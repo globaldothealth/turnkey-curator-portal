@@ -1729,7 +1729,7 @@ components:
             properties:
                 query:
                     type: string
-                countryISO3:
+                countryISO2:
                     type: string
                     description: ISO-3166-2 code of a country
                     minLength: 2

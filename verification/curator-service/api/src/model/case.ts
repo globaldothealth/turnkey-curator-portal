@@ -18,7 +18,7 @@ export type ICase = {
     caseStatus: CaseStatus;
     location: {
         country: string;
-        countryISO3: string;
+        countryISO2: string;
     };
     caseReference: {
         sourceId: string;

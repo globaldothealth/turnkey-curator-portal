@@ -9,7 +9,7 @@ it('shows location when passed location information', async () => {
             initialValues={{
                 location: {
                     country: 'United States',
-                    countryISO3: 'US',
+                    countryISO2: 'US',
                     city: 'Chicago',
                 },
             }}

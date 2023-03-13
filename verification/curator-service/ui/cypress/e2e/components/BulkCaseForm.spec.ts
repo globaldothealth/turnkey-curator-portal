@@ -49,10 +49,10 @@ describe('Bulk upload form', function () {
 
         // Case data
         cy.contains('www.bulksource.com');
-        // cy.contains('Data upload IDs')
-        //     .parent()
-        //     .parent()
-        //     .contains(/[a-f\d]{24}/);
+        cy.contains('Data upload IDs')
+            .parent()
+            .parent()
+            .contains(/[a-f\d]{24}/);
         cy.contains('confirmed');
 
         // Demographics
@@ -198,10 +198,10 @@ describe('Bulk upload form', function () {
 
         cy.contains('td', 'female').click({ force: true });
         cy.wait('@viewCase');
-        // cy.contains('Data upload IDs')
-        //     .parent()
-        //     .parent()
-        //     .contains(/[a-f\d]{24}, [a-f\d]{24}/);
+        cy.contains('Data upload IDs')
+            .parent()
+            .parent()
+            .contains(/[a-f\d]{24}, [a-f\d]{24}/);
     });
 
     it('Upserts multiple cases if dictated by caseCount CSV field', function () {

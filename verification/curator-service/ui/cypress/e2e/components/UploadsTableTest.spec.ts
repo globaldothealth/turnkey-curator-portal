@@ -70,28 +70,28 @@ describe('Uploads table', function () {
         cy.addCase({
             uploadIds: ['5ef8e943dfe6e00030892d58'],
             country: 'France',
-            countryISO3: 'FR',
+            countryISO2: 'FR',
             caseStatus: CaseStatus.Confirmed,
             dateEntry: '2020-05-05',
         });
         cy.addCase({
             uploadIds: ['5ef8e943dfe6e00030892d58', '5ef8e943dfe6e00030892d59'],
             country: 'United States',
-            countryISO3: 'US',
+            countryISO2: 'US',
             caseStatus: CaseStatus.Confirmed,
             dateEntry: '2020-05-05',
         });
         cy.addCase({
             uploadIds: ['5ef8e943dfe6e00030892d59'],
             country: 'United Kingdom',
-            countryISO3: 'UK',
+            countryISO2: 'UK',
             caseStatus: CaseStatus.Confirmed,
             dateEntry: '2020-05-05',
         });
         cy.addCase({
             uploadIds: ['5ef8e943dfe6e00030892d60'],
             country: 'Germany',
-            countryISO3: 'DE',
+            countryISO2: 'DE',
             caseStatus: CaseStatus.Confirmed,
             dateEntry: '2020-05-05',
         });

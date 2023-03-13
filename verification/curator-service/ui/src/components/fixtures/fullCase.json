@@ -14,7 +14,8 @@
     },
     "caseReference": {
         "sourceUrl": "https://www.colorado.gov/pacific/cdphe/news/10-new-presumptive-positive-cases-colorado-cdphe-confirms-limited-community-spread-covid-19",
-        "sourceId": "abc123"
+        "sourceId": "abc123",
+        "sourceEntryId": "entryId"
     },
     "demographics": {
         "ageRange": {
@@ -27,7 +28,7 @@
     },
     "location": {
         "country": "France",
-        "countryISO3": "FR",
+        "countryISO2": "FR",
         "location": "Île-de-F",
         "city": "Paris"
     },

@@ -208,7 +208,7 @@ describe('GET', () => {
         describe('keywords', () => {
             beforeEach(async () => {
                 const c = new Day0Case(minimalCase);
-                c.location.countryISO3 = 'DE';
+                c.location.countryISO2 = 'DE';
                 c.set('demographics.occupation', 'engineer');
                 await c.save();
             });

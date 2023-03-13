@@ -62,7 +62,7 @@ export const getSortByKeyword = (sortBy: SortBy): string => {
             keyword = 'events.dateConfirmation';
             break;
         case SortBy.Country:
-            keyword = 'location.countryISO3';
+            keyword = 'location.countryISO2';
             break;
         case SortBy.City:
             keyword = 'location.city';
@@ -249,7 +249,7 @@ function denormalizeLocationFields(
     const denormalizedData: Record<string, string | number> = {};
 
     denormalizedData['location.country'] = doc.country || '';
-    denormalizedData['location.countryISO3'] = doc.countryISO3 || '';
+    denormalizedData['location.countryISO2'] = doc.countryISO2 || '';
     denormalizedData['location.location'] = doc.location || '';
     denormalizedData['location.city'] = doc.city || '';
     denormalizedData['location.query'] = doc.query || '';

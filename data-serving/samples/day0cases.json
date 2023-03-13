@@ -8,7 +8,7 @@
     },
     "location": {
       "country": "Poland",
-      "countryISO3": "PL",
+      "countryISO2": "PL",
       "query": "Szczecin, Poland"
     },
     "demographics": {
@@ -42,7 +42,7 @@
     },
     "location": {
       "country": "Poland",
-      "countryISO3": "PL",
+      "countryISO2": "PL",
       "query": "Szczecin, Poland"
     },
     "demographics": {

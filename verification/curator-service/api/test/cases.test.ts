@@ -20,7 +20,7 @@ const location = {
     limitToCountry: '',
     country: 'Candada',
     name: 'Candada',
-    countryISO3: 'CA',
+    countryISO2: 'CA',
 };
 
 const creatorMetadata = {
@@ -43,7 +43,7 @@ const minimalCreateRequest = {
     location: {
         query: 'Canada',
         country: 'Canada',
-        countryISO3: 'CA',
+        countryISO2: 'CA',
         name: 'Canada',
     },
 };

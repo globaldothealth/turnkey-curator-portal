@@ -348,7 +348,7 @@ describe('DELETE', () => {
             },
             location: {
                 country: 'France',
-                countryISO3: 'FR',
+                countryISO2: 'FR',
             },
         });
         await curatorRequest

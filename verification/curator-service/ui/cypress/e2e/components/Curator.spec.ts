@@ -63,9 +63,9 @@ describe('Curator', function () {
         cy.contains('www.example.com').click();
         cy.get('input[name="caseReference.sourceName"]').type('Example source');
         cy.get('input[name="caseReference.sourceLicense"]').type('MPL');
-        // cy.get('div[data-testid="sourceEntryId"]')
-        //     .click()
-        //     .type('testSourceEntryID123');
+        cy.get('div[data-testid="sourceEntryId"]')
+            .click()
+            .type('testSourceEntryID123');
 
         // DEMOGRAPHICS
         cy.get('div[data-testid="demographics.gender"]').click();
@@ -232,7 +232,7 @@ describe('Curator', function () {
             });
 
             // Location.
-            cy.get('input[name="location.countryISO3"]').should(
+            cy.get('input[name="location.countryISO2"]').should(
                 'have.value',
                 'DE',
             );

@@ -284,6 +284,15 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                                     ),
                                 )}
 
+                            <RowHeader title="Data upload IDs" />
+                            <RowContent
+                                content={
+                                    props.c.caseReference?.uploadIds?.join(
+                                        ', ',
+                                    ) || ''
+                                }
+                            />
+
                             <RowHeader title="Date of creation" />
                             <RowContent
                                 content={renderDate(props.c.events.dateEntry)}
@@ -345,9 +354,9 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             <RowHeader title="Country" />
                             <RowContent
                                 content={
-                                    props.c.location.countryISO3
+                                    props.c.location.countryISO2
                                         ? nameCountry(
-                                              props.c.location.countryISO3,
+                                              props.c.location.countryISO2,
                                               props.c.location.country,
                                           )
                                         : ''

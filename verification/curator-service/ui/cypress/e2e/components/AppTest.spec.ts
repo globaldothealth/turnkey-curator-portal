@@ -74,7 +74,7 @@ describe('App', function () {
         for (let i = 0; i < countries.length; i++) {
             cy.addCase({
                 country: countries[i].name,
-                countryISO3: countries[i].iso,
+                countryISO2: countries[i].iso,
                 dateEntry: dateEntries[i],
                 caseStatus: CaseStatus.Confirmed,
             });
@@ -119,7 +119,7 @@ describe('App', function () {
         for (let i = 0; i < countries.length; i++) {
             cy.addCase({
                 country: countries[i].name,
-                countryISO3: countries[i].iso,
+                countryISO2: countries[i].iso,
                 gender: genders[i] === '' ? undefined : genders[i],
                 caseStatus: CaseStatus.Confirmed,
                 dateEntry: '2020-05-01',
@@ -161,7 +161,7 @@ describe('App', function () {
 
         cy.addCase({
             country: 'Peru',
-            countryISO3: 'PE',
+            countryISO2: 'PE',
             outcome: Outcome.Recovered,
             sourceUrl: 'www.recovered.com',
             dateEntry: '2020-05-01',
@@ -205,19 +205,13 @@ describe('App', function () {
         for (let i = 0; i < countries.length; i++) {
             cy.addCase({
                 country: countries[i].name,
-                countryISO3: countries[i].iso,
+                countryISO2: countries[i].iso,
                 dateEntry: dateEntries[i],
                 caseStatus: CaseStatus.Confirmed,
             });
         }
 
         cy.contains('Line list').click();
-
-        // cy.get('body').then(($body) => {
-        //     if ($body.find('.iubenda-cs-accept-btn').length) {
-        //         cy.get('.iubenda-cs-accept-btn').click();
-        //     }
-        // });
 
         cy.get('.filter-button').click();
 

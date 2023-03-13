@@ -60,6 +60,10 @@ const useSourceStyles = makeStyles(() => ({
     additionalSources: {
         width: '50%',
     },
+    sourceEntryId: {
+        marginTop: '1em',
+        width: '50%',
+    },
     hidden: {
         display: 'none',
     },
@@ -123,6 +127,19 @@ export default function Source(props: SourceProps) {
                     props.sourcesWithStableIdentifiers
                 }
             />
+
+            {props.hasSourceEntryId && (
+                <FastField
+                    className={classes.sourceEntryId}
+                    label="Source entry ID"
+                    name="caseReference.sourceEntryId"
+                    type="text"
+                    data-testid="sourceEntryId"
+                    component={TextField}
+                    fullWidth
+                />
+            )}
+
             {props.withAdditioanlSources && (
                 <div className={classes.additionalSources}>
                     {renderedAdditionalSources()}

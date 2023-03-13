@@ -30,7 +30,7 @@
     },
     "location": {
         "country": "France",
-        "countryISO3": "FR",
+        "countryISO2": "FR",
         "query": "France",
         "name": "France",
         "geoResolution": "Country"
