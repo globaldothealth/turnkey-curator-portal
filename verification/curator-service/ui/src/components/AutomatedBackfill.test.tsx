@@ -9,6 +9,7 @@ import userEvent from '@testing-library/user-event';
 import AutomatedBackfill from './AutomatedBackfill';
 import axios from 'axios';
 import { format, getMonth, getYear } from 'date-fns';
+import { initialLoggedInState } from '../redux/store';
 
 jest.setTimeout(30000);
 jest.mock('axios');
@@ -115,6 +116,7 @@ it('displays spinner and status post backfill', async () => {
                 return;
             }}
         />,
+        { initialState: initialLoggedInState },
     );
     await waitFor(() => expect(mockedAxios.get).toHaveBeenCalledTimes(1));
 

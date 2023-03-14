@@ -82,6 +82,7 @@ describe('Sources table', function () {
             ['US', 'CA', 'MX'],
         );
         cy.intercept('GET', '/api/sources/?limit=10&page=1').as('fetchSources');
+        cy.intercept('DELETE', '/api/sources').as('deleteSource');
 
         cy.visit('/');
         cy.contains('Sources').click();

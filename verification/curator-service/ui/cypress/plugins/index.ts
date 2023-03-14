@@ -13,7 +13,7 @@ module.exports = (on: any, config: any) => {
                     async (error, db) => {
                         if (error) reject(error);
                         const covid19db = db.db('covid19');
-                        await covid19db.collection('cases').deleteMany({});
+                        await covid19db.collection('day0cases').deleteMany({});
                         db.close();
                         resolve(null);
                     },

@@ -1,14 +1,12 @@
 import React from 'react';
 import { Autocomplete } from '@mui/material';
-import { createFilterOptions } from '@mui/material/useAutocomplete';
+import { createFilterOptions } from '@mui/material/Autocomplete';
 import { FastField, Field, useFormikContext } from 'formik';
 
 import { AutomatedSourceFormValues } from '../AutomatedSourceForm';
 import BulkCaseFormValues from '../bulk-case-form-fields/BulkCaseFormValues';
-import CaseFormValues from '../new-case-form-fields/CaseFormValues';
 import FormControl from '@mui/material/FormControl';
 import { FormHelperText } from '@mui/material';
-import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -18,6 +16,7 @@ import { Select, TextField } from 'formik-mui';
 import axios from 'axios';
 import { hasKey } from '../Utils';
 import makeStyles from '@mui/styles/makeStyles';
+import { Day0CaseFormValues } from '../../api/models/Day0Case';
 
 const useStyles = makeStyles(() => ({
     fieldRow: {
@@ -51,7 +50,7 @@ export function FormikAutocomplete(
     const [options, setOptions] = React.useState<string[]>([]);
     const loading = open && options.length === 0;
     const { setFieldValue, setTouched, initialValues, values } =
-        useFormikContext<CaseFormValues>();
+        useFormikContext<Day0CaseFormValues>();
 
     React.useEffect(() => {
         let active = true;
@@ -68,7 +67,7 @@ export function FormikAutocomplete(
             }
 
             if (active) {
-                setOptions(retrievedOptions as string[]);
+                setOptions([...new Set(retrievedOptions)] as string[]);
             }
         })();
 
@@ -91,12 +90,15 @@ export function FormikAutocomplete(
         }
     }, [open]);
 
+    const fallbackValue = props.multiple ? [] : '';
+
     return (
         <Autocomplete
             multiple={props.multiple}
             filterSelectedOptions
             itemType="string"
             open={open}
+            sx={{ width: '50%' }}
             freeSolo={props.freeSolo}
             onOpen={(): void => {
                 setOpen(true);
@@ -104,7 +106,7 @@ export function FormikAutocomplete(
             onClose={(): void => {
                 setOpen(false);
             }}
-            value={hasKey(values, props.name) ? values[props.name] : undefined}
+            value={values[props.name] || fallbackValue}
             options={options}
             filterOptions={(options: string[], params): string[] => {
                 const filtered = filter(options, params) as string[];
@@ -132,7 +134,7 @@ export function FormikAutocomplete(
                     data-testid={props.name}
                     label={props.label}
                     component={TextField}
-                ></Field>
+                />
             )}
         />
     );
@@ -149,12 +151,8 @@ export function SelectField(props: SelectFieldProps): JSX.Element {
     const classes = useStyles();
     return (
         <FormControl className={classes.fieldRow} variant="standard">
-            <InputLabel htmlFor={props.name} shrink>
-                {props.label}
-                {props.required && ' *'}
-            </InputLabel>
             <FastField
-                variant="standard"
+                label={`${props.label}${props.required ? '*' : ''}`}
                 as="select"
                 name={props.name}
                 type="text"
@@ -178,10 +176,9 @@ export function SelectField(props: SelectFieldProps): JSX.Element {
 interface DateFieldProps {
     name: string;
     label: string;
-    value: Date | string | null;
-    onChange: (value: unknown) => void;
+    value: Date | string | undefined | null;
+    onChange: (value: Date | null) => void;
     required?: boolean;
-    initialFocusedDate?: string | null;
 }
 
 export function DateField(props: DateFieldProps): JSX.Element {
@@ -205,9 +202,7 @@ export function DateField(props: DateFieldProps): JSX.Element {
                     )}
                 />
             </LocalizationProvider>
-            {props.required && (
-                <RequiredHelperText name={props.name}></RequiredHelperText>
-            )}
+            {props.required && <RequiredHelperText name={props.name} />}
         </div>
     );
 }
@@ -222,7 +217,7 @@ export function RequiredHelperText(
     props: RequiredHelperTextProps,
 ): JSX.Element {
     const { values, touched } = useFormikContext<
-        CaseFormValues | BulkCaseFormValues | AutomatedSourceFormValues
+        Day0CaseFormValues | BulkCaseFormValues | AutomatedSourceFormValues
     >();
 
     let finalHelperText = 'Required';

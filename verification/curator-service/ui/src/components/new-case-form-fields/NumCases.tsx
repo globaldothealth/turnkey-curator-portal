@@ -1,9 +1,10 @@
 import { FastField } from 'formik';
 import FieldTitle from '../common-form-fields/FieldTitle';
 import { StyledTooltip } from './StyledTooltip';
-import React from 'react';
 import Scroll from 'react-scroll';
 import { TextField } from 'formik-mui';
+import { useStyles } from './styled';
+import clsx from 'clsx';
 
 const TooltipText = () => (
     <StyledTooltip>
@@ -27,12 +28,11 @@ const TooltipText = () => (
 );
 
 export default function NumCases(): JSX.Element {
+    const classes = useStyles();
+
     return (
         <Scroll.Element name="numCases">
-            <FieldTitle
-                title="Number of cases"
-                tooltip={<TooltipText />}
-            ></FieldTitle>
+            <FieldTitle title="Number of cases" tooltip={<TooltipText />} />
             <FastField
                 label="Number of cases"
                 name="numCases"
@@ -44,6 +44,7 @@ export default function NumCases(): JSX.Element {
                 }}
                 component={TextField}
                 fullWidth
+                className={clsx([classes.fieldRow, classes.halfWidth])}
             />
         </Scroll.Element>
     );

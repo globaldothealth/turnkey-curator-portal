@@ -1,8 +1,19 @@
 {
-    "name": "outcome",
-    "value": "Recovered",
-    "dateRange": {
-        "start": 1578000000000,
-        "end": 1578027600000
-    }
+    "dateEntry": 1578000000000,
+    "dateOnset": 1578000000000,
+    "dateConfirmation": 1578000000000,
+    "confirmationMethod": "PCR Test",
+    "dateOfFirstConsult": 1578000000000,
+    "hospitalized": "Y",
+    "reasonForHospitalization": "monitoring",
+    "dateHospitalization": 1578000000000,
+    "dateDischargeHospital": 1578000000000,
+    "intensiveCare": "Y",
+    "dateAdmissionICU": 1578000000000,
+    "dateDischargeICU": 1578000000000,
+    "homeMonitoring": "Y",
+    "isolated": "Y",
+    "dateIsolation": 1578000000000,
+    "outcome": "recovered",
+    "dateRecovered": 1578000000000
 }

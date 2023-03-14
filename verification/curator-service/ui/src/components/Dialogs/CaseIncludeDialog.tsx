@@ -33,13 +33,13 @@ export const CaseIncludeDialog = ({
 
         onClose();
 
-        dispatch(
-            changeCasesStatus({
-                status: verificationStatus,
-                caseIds,
-                query,
-            }),
-        );
+        // dispatch(
+        //     changeCasesStatus({
+        //         status: verificationStatus,
+        //         caseIds,
+        //         query,
+        //     }),
+        // );
     };
 
     return (

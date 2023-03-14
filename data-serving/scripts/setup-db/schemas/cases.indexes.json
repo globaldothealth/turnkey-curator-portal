@@ -2,19 +2,11 @@
     {
         "name": "textIdx",
         "key": {
-            "notes": "text",
-            "revisionMetadata.creationMetadata.curator": "text",
             "demographics.occupation": "text",
-            "demographics.ethnicity": "text",
             "location.country": "text",
-            "location.administrativeAreaLevel1": "text",
-            "location.administrativeAreaLevel2": "text",
-            "location.administrativeAreaLevel3": "text",
-            "location.place": "text",
-            "location.name": "text",
-            "pathogen.name": "text",
+            "location.city": "text",
             "caseReference.sourceUrl": "text",
-            "caseReference.verificationStatus": "text"
+            "caseStatus": "text"
         }
     },
     {
@@ -52,26 +44,6 @@
         }
     },
     {
-        "name": "eventNamesIdx",
-        "key": {
-            "events.name": -1
-        },
-        "collation": {
-            "locale": "en_US",
-            "strength": 2
-        }
-    },
-    {
-        "name": "travelHistoryCountriesIdx",
-        "key": {
-            "travelHistory.travel.location.country": -1
-        },
-        "collation": {
-            "locale": "en_US",
-            "strength": 2
-        }
-    },
-    {
         "name": "demographicsGenderIdx",
         "key": {
             "demographics.gender": -1
@@ -92,41 +64,6 @@
         }
     },
     {
-        "name": "demographicsNationalitiesIdx",
-        "key": {
-            "demographics.nationalities": -1
-        },
-        "partialFilterExpression": {
-            "demographics.nationalities.0": {
-                "$exists": true
-            }
-        },
-        "collation": {
-            "locale": "en_US",
-            "strength": 2
-        }
-    },
-    {
-        "name": "demographicsEthnicityIdx",
-        "key": {
-            "demographics.ethnicity": -1
-        },
-        "collation": {
-            "locale": "en_US",
-            "strength": 2
-        }
-    },
-    {
-        "name": "locationAdmin1Idx",
-        "key": {
-            "location.administrativeAreaLevel1": -1
-        },
-        "collation": {
-            "locale": "en_US",
-            "strength": 2
-        }
-    },
-    {
         "name": "locationQueryIdx",
         "key": {
             "location.query": -1
@@ -137,9 +74,9 @@
         }
     },
     {
-        "name": "locationAdmin2Idx",
+        "name": "locationCityIdx",
         "key": {
-            "location.administrativeAreaLevel2": -1
+            "location.city": -1
         },
         "collation": {
             "locale": "en_US",
@@ -147,9 +84,9 @@
         }
     },
     {
-        "name": "locationAdmin3Idx",
+        "name": "locationCountryIdx",
         "key": {
-            "location.administrativeAreaLevel3": -1
+            "location.country": -1
         },
         "collation": {
             "locale": "en_US",
@@ -157,29 +94,9 @@
         }
     },
     {
-        "name": "pathogenIdx",
+        "name": "locationCountryISO3Idx",
         "key": {
-            "pathogen.name": -1
-        },
-        "collation": {
-            "locale": "en_US",
-            "strength": 2
-        }
-    },
-    {
-        "name": "caseReferenceCreationMetadataCuratorIdx",
-        "key": {
-            "caseReference.creationMetadata.curator": -1
-        },
-        "collation": {
-            "locale": "en_US",
-            "strength": 2
-        }
-    },
-    {
-        "name": "caseReferenceUpdateMetadataCuratorIdx",
-        "key": {
-            "caseReference.updateMetadata.curator": -1
+            "location.countryISO2": -1
         },
         "collation": {
             "locale": "en_US",
@@ -197,19 +114,9 @@
         }
     },
     {
-        "name": "caseReferenceVerificationStatusIdx",
+        "name": "caseStatusIdx",
         "key": {
-            "caseReference.verificationStatus": -1
-        },
-        "collation": {
-            "locale": "en_US",
-            "strength": 2
-        }
-    },
-    {
-        "name": "revisionMetadataCreationMetadataDate",
-        "key": {
-            "revisionMetadata.creationMetadata.date": -1
+            "caseStatus": -1
         },
         "collation": {
             "locale": "en_US",
@@ -220,17 +127,7 @@
         "name": "countryAndDate",
         "key": {
             "location.country": -1,
-            "revisionMetadata.creationMetadata.date": -1
-        },
-        "collation": {
-            "locale": "en_US",
-            "strength": 2
-        }
-    },
-    {
-        "name": "eventCaseCreationDate",
-        "key": {
-            "events.dateRange.start": -1
+            "events.dateEntry": -1
         },
         "collation": {
             "locale": "en_US",

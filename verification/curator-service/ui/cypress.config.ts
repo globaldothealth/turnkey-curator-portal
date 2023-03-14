@@ -9,13 +9,14 @@ export default defineConfig({
     execTimeout: 70000,
     requestTimeout: 12000,
     responseTimeout: 12000,
-    projectId: 'hx4khd',
+    projectId: 'dpghvb',
     e2e: {
         // We've imported your old cypress plugins here.
         // You may want to clean this up later by importing these.
         setupNodeEvents(on, config) {
             return require('./cypress/plugins/index.ts')(on, config);
         },
+        experimentalRunAllSpecs: true,
         baseUrl: 'http://localhost:3002',
         specPattern: 'cypress/e2e/**/*.{js,jsx,ts,tsx}',
     },

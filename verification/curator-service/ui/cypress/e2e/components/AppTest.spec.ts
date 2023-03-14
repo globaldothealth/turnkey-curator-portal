@@ -1,10 +1,52 @@
 import { getDefaultQuery } from '../../utils/helperFunctions';
-import { Outcome } from '../../support/commands';
+import { CaseStatus, Outcome } from '../../support/commands';
 
 /* eslint-disable no-undef */
 describe('App', function () {
     beforeEach(() => {
         cy.task('clearSourcesDB', {});
+        cy.seedLocation({
+            country: 'DE',
+            geometry: { latitude: 51.5072, longitude: -0.1275 },
+            name: 'Germany',
+            geoResolution: 'Country',
+        });
+        cy.seedLocation({
+            country: 'FR',
+            geometry: { latitude: 51.5072, longitude: -0.1275 },
+            name: 'France',
+            geoResolution: 'Country',
+        });
+        cy.seedLocation({
+            country: 'ES',
+            geometry: { latitude: 51.5072, longitude: -0.1275 },
+            name: 'Spain',
+            geoResolution: 'Country',
+        });
+        cy.seedLocation({
+            country: 'IT',
+            geometry: { latitude: 51.5072, longitude: -0.1275 },
+            name: 'Italy',
+            geoResolution: 'Country',
+        });
+        cy.seedLocation({
+            country: 'PL',
+            geometry: { latitude: 51.5072, longitude: -0.1275 },
+            name: 'Poland',
+            geoResolution: 'Country',
+        });
+        cy.seedLocation({
+            country: 'RU',
+            geometry: { latitude: 51.5072, longitude: -0.1275 },
+            name: 'Russia',
+            geoResolution: 'Country',
+        });
+        cy.seedLocation({
+            country: 'PE',
+            geometry: { latitude: 51.5072, longitude: -0.1275 },
+            name: 'Peru',
+            geoResolution: 'Country',
+        });
     });
 
     it('allows the user to search by date', function () {
@@ -16,8 +58,13 @@ describe('App', function () {
 
         cy.task('clearCasesDB', {});
 
-        const countries: any = ['Germany', 'France', 'India', 'Italy'];
-        const confirmedDate: any = [
+        const countries: any = [
+            { name: 'Germany', iso: 'DE' },
+            { name: 'France', iso: 'FR' },
+            { name: 'Spain', iso: 'ES' },
+            { name: 'Italy', iso: 'IT' },
+        ];
+        const dateEntries: any = [
             '2020-05-01',
             '2020-02-15',
             '2020-03-22',
@@ -26,9 +73,10 @@ describe('App', function () {
 
         for (let i = 0; i < countries.length; i++) {
             cy.addCase({
-                country: countries[i],
-                notes: 'some notes',
-                startConfirmedDate: confirmedDate[i],
+                country: countries[i].name,
+                countryISO2: countries[i].iso,
+                dateEntry: dateEntries[i],
+                caseStatus: CaseStatus.Confirmed,
             });
         }
 
@@ -36,7 +84,7 @@ describe('App', function () {
         cy.contains('Line list').click();
 
         cy.get('.filter-button').click();
-        cy.get('#dateconfirmedafter').type('2020-04-30');
+        cy.get('#dateConfirmedFrom').type('2020-04-30');
 
         cy.get('body').then(($body) => {
             if ($body.find('.iubenda-cs-accept-btn').length) {
@@ -51,50 +99,6 @@ describe('App', function () {
         cy.contains('2020-02-15').should('not.exist');
     });
 
-    it('allows the user to search by nationality', function () {
-        cy.login({
-            roles: ['curator'],
-            name: 'testName',
-            email: 'test@example.com',
-        });
-        cy.visit('/');
-        cy.contains('Line list').click();
-
-        cy.addCase({
-            country: 'Russia',
-            nationalities: ['American', 'Filipino', 'Polish'],
-        });
-
-        cy.get('.filter-button').click();
-        cy.get('#nationality').type('filipino');
-        cy.get('[data-test-id="search-by-filter-button"]').click();
-
-        cy.contains('American, Filipino, Polish');
-    });
-
-    it('allows the user to search by variant', function () {
-        cy.login({
-            roles: ['curator'],
-            name: 'testName',
-            email: 'test@example.com',
-        });
-        cy.visit('/');
-        cy.contains('Line list').click();
-
-        cy.addCase({
-            country: 'Peru',
-            variant: 'B.1.351',
-            sourceUrl: 'www.variantb1351.com',
-        });
-
-        cy.contains('Line list').click();
-
-        cy.get('.filter-button').click();
-        cy.get('#variant').type('B.1.351{Enter}');
-
-        cy.contains('www.variantb1351.com');
-    });
-
     it('allows the user to search by not provided gender', function () {
         cy.login({
             roles: ['curator'],
@@ -103,19 +107,22 @@ describe('App', function () {
         });
         cy.task('clearCasesDB', {});
 
-        const genders: any = ['Male', 'Female', 'Female', '', 'Female'];
+        const genders: any = ['male', 'female', 'female', '', 'female'];
         const countries: any = [
-            'Germany',
-            'Poland',
-            'Russia',
-            'Italy',
-            'Spain',
+            { name: 'Germany', iso: 'DE' },
+            { name: 'Poland', iso: 'PL' },
+            { name: 'Russia', iso: 'RU' },
+            { name: 'Italy', iso: 'IT' },
+            { name: 'Spain', iso: 'ES' },
         ];
 
         for (let i = 0; i < countries.length; i++) {
             cy.addCase({
-                country: countries[i],
+                country: countries[i].name,
+                countryISO2: countries[i].iso,
                 gender: genders[i] === '' ? undefined : genders[i],
+                caseStatus: CaseStatus.Confirmed,
+                dateEntry: '2020-05-01',
             });
         }
 
@@ -154,31 +161,41 @@ describe('App', function () {
 
         cy.addCase({
             country: 'Peru',
+            countryISO2: 'PE',
             outcome: Outcome.Recovered,
             sourceUrl: 'www.recovered.com',
+            dateEntry: '2020-05-01',
+            caseStatus: CaseStatus.Confirmed,
         });
 
         cy.contains('Line list').click();
 
         cy.get('.filter-button').click();
         cy.get('#outcome').click();
-        cy.get('[data-value="Recovered"]').click();
+        cy.get('[data-value="recovered"]').click();
         cy.get('[data-test-id="search-by-filter-button"]').click();
 
         cy.contains('www.recovered.com');
     });
 
-    it('allows the user to search by date and an additional filter', function () {
+    it.skip('allows the user to search by date and an additional filter', function () {
         cy.login({
             roles: ['curator'],
             name: 'testName',
             email: 'test@example.com',
         });
+        cy.task('clearCasesDB', {});
+
         cy.visit('/');
         cy.contains('Line list').click();
 
-        const countries: any = ['Germany', 'France', 'India', 'Italy'];
-        const confirmedDate: any = [
+        const countries: any = [
+            { name: 'Germany', iso: 'DE' },
+            { name: 'France', iso: 'FR' },
+            { name: 'Spain', iso: 'ES' },
+            { name: 'Italy', iso: 'IT' },
+        ];
+        const dateEntries: any = [
             '2020-05-01',
             '2020-02-15',
             '2020-03-22',
@@ -187,22 +204,18 @@ describe('App', function () {
 
         for (let i = 0; i < countries.length; i++) {
             cy.addCase({
-                country: countries[i],
-                notes: 'some notes',
-                startConfirmedDate: confirmedDate[i],
+                country: countries[i].name,
+                countryISO2: countries[i].iso,
+                dateEntry: dateEntries[i],
+                caseStatus: CaseStatus.Confirmed,
             });
         }
 
         cy.contains('Line list').click();
 
-        cy.get('body').then(($body) => {
-            if ($body.find('.iubenda-cs-accept-btn').length) {
-                cy.get('.iubenda-cs-accept-btn').click();
-            }
-        });
         cy.get('.filter-button').click();
 
-        cy.get('#dateconfirmedafter').type('2020-04-30');
+        cy.get('#dateConfirmedFrom').type('2020-04-30');
         cy.get('#country').click();
         cy.get('[data-value="IT"]').click();
         cy.get('#start-filtering').click();

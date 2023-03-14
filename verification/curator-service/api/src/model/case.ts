@@ -1,5 +1,12 @@
-import { Collection, ObjectId } from 'mongodb';
+import { Collection } from 'mongodb';
 import db from './database';
+
+export enum CaseStatus {
+    Confirmed = 'confirmed',
+    Suspected = 'suspected',
+    Discarded = 'discarded',
+    OmitError = 'omit_error',
+}
 
 /*
  * This is a minimal case schema to support some source-related behaviour.
@@ -7,9 +14,18 @@ import db from './database';
  */
 
 export type ICase = {
-    _id: ObjectId;
+    pathogen: string;
+    caseStatus: CaseStatus;
+    location: {
+        country: string;
+        countryISO2: string;
+    };
     caseReference: {
         sourceId: string;
+        sourceUrl: string;
+    };
+    events: {
+        dateEntry: Date;
     };
 };
 

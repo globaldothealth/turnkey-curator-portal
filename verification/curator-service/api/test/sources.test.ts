@@ -6,29 +6,20 @@ const mockPutRule = jest
     .mockResolvedValue('arn:aws:events:fake:event:rule/name');
 const mockDoRetrieval = jest.fn().mockResolvedValue({ Payload: '' });
 const mockSend = jest.fn();
-const mockInitialize = jest.fn().mockReturnValue({ send: mockSend });
 
 import * as baseUser from './users/base.json';
 
 import { sessions, users } from '../src/model/user';
 
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { cases, restrictedCases } from '../src/model/case';
-import {
-    awsRuleDescriptionForSource,
-    awsRuleNameForSource,
-    awsRuleTargetIdForSource,
-    awsStatementIdForSource,
-    ISource,
-    sources,
-} from '../src/model/source';
+import { cases } from '../src/model/case';
+import { ISource, sources } from '../src/model/source';
 import makeApp from '../src/index';
-import axios from 'axios';
 import supertest from 'supertest';
 import { ObjectId } from 'mongodb';
+import { CaseStatus } from '../src/model/case';
 
 jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 jest.mock('../src/clients/aws-batch-client', () => {
     return jest.fn().mockImplementation(() => {
@@ -346,26 +337,18 @@ describe('DELETE', () => {
             format: 'JSON',
         } as unknown as ISource);
         const aCase = await cases().insertOne({
+            pathogen: 'COVID-19',
+            caseStatus: CaseStatus.Confirmed,
             caseReference: {
                 sourceId: id.toHexString(),
+                sourceUrl: 'http://foo.bar',
             },
-        });
-        await curatorRequest
-            .delete(`/api/sources/${id.toHexString()}`)
-            .expect(403);
-        expect(mockDeleteRule).not.toHaveBeenCalled();
-    });
-    it('should not delete a source where a restricted case exists', async () => {
-        const id = new ObjectId();
-        await sources().insertOne({
-            _id: id,
-            name: 'test-source',
-            origin: { url: 'http://foo.bar', license: 'MIT' },
-            format: 'JSON',
-        } as unknown as ISource);
-        const aCase = await restrictedCases().insertOne({
-            caseReference: {
-                sourceId: id.toHexString(),
+            events: {
+                dateEntry: new Date('2020-02-01'),
+            },
+            location: {
+                country: 'France',
+                countryISO2: 'FR',
             },
         });
         await curatorRequest

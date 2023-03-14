@@ -6,13 +6,21 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import makeApp from '../src/index';
 import axios from 'axios';
 import supertest from 'supertest';
+import { CaseStatus } from '../src/model/case';
 
 const caseReference = {
-    caseReference: {
-        sourceId: '5ea86423bae6982635d2e1f8',
-        sourceEntryId: 'abc',
-        sourceUrl: 'cdc.gov',
-    },
+    sourceId: '5ea86423bae6982635d2e1f8',
+    sourceEntryId: 'abc',
+    sourceUrl: 'cdc.gov',
+};
+
+const location = {
+    query: 'Canada',
+    limitToResolution: 'Country',
+    limitToCountry: '',
+    country: 'Candada',
+    name: 'Candada',
+    countryISO2: 'CA',
 };
 
 const creatorMetadata = {
@@ -21,28 +29,22 @@ const creatorMetadata = {
     },
 };
 
-const location = {
-    query: '',
-    limitToResolution: '',
-    limitToCountry: '',
+const events = {
+    dateEntry: '2019-12-03T14:07:03.382Z',
 };
 
-const events = [{ name: 'confirmed' }];
-
 const minimalCreateRequest = {
-    ...caseReference,
-    ...creatorMetadata,
-    events: [
-        {
-            name: 'confirmed',
-            dateRange: {
-                start: '2019-12-03T14:07:03.382Z',
-                end: '2019-12-03T14:07:03.382Z',
-            },
-        },
-    ],
+    pathogen: 'COVID-19',
+    caseStatus: CaseStatus.Confirmed,
+    caseReference,
+    events: {
+        dateEntry: '2019-12-03T14:07:03.382Z',
+    },
     location: {
         query: 'Canada',
+        country: 'Canada',
+        countryISO2: 'CA',
+        name: 'Canada',
     },
 };
 
@@ -318,7 +320,13 @@ describe('Cases', () => {
         });
         await curatorRequest
             .put('/api/cases')
-            .send({ age: '42', ...caseReference, location, events })
+            .send({
+                caseReference,
+                location,
+                events,
+                caseStatus: CaseStatus.Confirmed,
+                pathogen: 'COVID-19',
+            })
             .expect(201)
             .expect('Content-Type', /json/);
 
@@ -326,11 +334,12 @@ describe('Cases', () => {
         expect(mockedAxios.put).toHaveBeenCalledWith(
             'http://localhost:3000/api/cases',
             {
-                age: '42',
-                ...creatorMetadata,
-                ...caseReference,
+                caseReference,
                 location,
                 events,
+                ...creatorMetadata,
+                pathogen: 'COVID-19',
+                caseStatus: CaseStatus.Confirmed,
             },
         );
     });
@@ -343,7 +352,13 @@ describe('Cases', () => {
         });
         const res = await curatorRequest
             .put('/api/cases')
-            .send({ age: '42', ...caseReference, location, events })
+            .send({
+                caseReference,
+                location,
+                events,
+                caseStatus: CaseStatus.Confirmed,
+                pathogen: 'COVID-19',
+            })
             .expect(code);
         expect(res.text).toEqual(message);
     });
@@ -507,6 +522,7 @@ describe('Cases', () => {
             'http://localhost:3000/api/cases',
             {
                 ...minimalCreateRequest,
+                ...creatorMetadata,
             },
         );
     });
@@ -529,6 +545,7 @@ describe('Cases', () => {
             'http://localhost:3000/api/cases?num_cases=3',
             {
                 ...minimalCreateRequest,
+                ...creatorMetadata,
             },
         );
     });

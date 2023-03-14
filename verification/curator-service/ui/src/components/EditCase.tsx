@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
-
-import { Case } from '../api/models/Case';
+import { useEffect, useState } from 'react';
 import CaseForm from './CaseForm';
 import { LinearProgress } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import axios from 'axios';
+import { Day0Case } from '../api/models/Day0Case';
 
 interface Props {
     id: string;
@@ -13,14 +12,14 @@ interface Props {
 }
 
 export default function EditCase(props: Props): JSX.Element {
-    const [c, setCase] = useState<Case>();
+    const [c, setCase] = useState<Day0Case>();
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>();
 
     useEffect(() => {
         setLoading(true);
         axios
-            .get<Case[]>(`/api/cases/${props.id}`)
+            .get<Day0Case[]>(`/api/cases/${props.id}`)
             .then((resp) => {
                 setCase(resp.data[0]);
                 setErrorMessage(undefined);

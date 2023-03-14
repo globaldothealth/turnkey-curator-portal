@@ -1,525 +1,260 @@
 {
-  "$jsonSchema": {
-    "bsonType": "object",
-    "additionalProperties": false,
-    "properties": {
-      "_id": {
-        "bsonType": "objectId"
-      },
-      "__v": {
-        "bsonType": "int"
-      },
-      "list": {
-        "bsonType": "bool"
-      },
-      "caseReference": {
+    "$jsonSchema": {
         "bsonType": "object",
         "additionalProperties": false,
         "properties": {
-          "sourceId": {
-            "bsonType": "string"
-          },
-          "sourceEntryId": {
-            "bsonType": "string"
-          },
-          "sourceUrl": {
-            "bsonType": "string"
-          },
-          "uploadIds": {
-            "bsonType": "array",
-            "uniqueItems": true,
-            "items": {
-              "bsonType": "string"
-            }
-          },
-          "verificationStatus": {
-            "bsonType": "string"
-          },
-          "additionalSources": {
-            "bsonType": "array",
-            "uniqueItems": true,
-            "items": {
-              "bsonType": "object",
-              "additionalProperties": false,
-              "properties": {
-                "sourceUrl": {
-                  "bsonType": "string"
-                }
-              }
-            }
-          }
-        }
-      },
-      "exclusionData": {
-        "bsonType": "object",
-        "additionalProperties": false,
-        "properties": {
-          "date": {
-            "bsonType": "date"
-          },
-          "note": {
-            "bsonType": "string"
-          }
-        }
-      },
-      "demographics": {
-        "bsonType": "object",
-        "additionalProperties": false,
-        "properties": {
-          "ageRange": {
-            "bsonType": "object",
-            "additionalProperties": false,
-            "properties": {
-              "start": {
-                "bsonType": "number",
-                "minimum": 0,
-                "maximum": 120
-              },
-              "end": {
-                "bsonType": "number",
-                "minimum": 0,
-                "maximum": 120
-              }
-            }
-          },
-          "gender": {
-            "bsonType": "string"
-          },
-          "occupation": {
-            "bsonType": "string"
-          },
-          "nationalities": {
-            "bsonType": "array",
-            "uniqueItems": true,
-            "items": {
-              "bsonType": "string"
-            }
-          },
-          "ethnicity": {
-            "bsonType": "string"
-          }
-        }
-      },
-      "genomeSequences": {
-        "bsonType": "array",
-        "uniqueItems": true,
-        "items": {
-          "bsonType": "object",
-          "additionalProperties": false,
-          "properties": {
-            "sampleCollectionDate": {
-              "bsonType": ["date"]
+            "_id": {
+                "bsonType": "objectId"
             },
-            "repositoryUrl": {
-              "bsonType": "string"
+            "__v": {
+                "bsonType": "int"
             },
-            "sequenceId": {
-              "bsonType": "string"
+            "list": {
+                "bsonType": "bool"
             },
-            "sequenceName": {
-              "bsonType": "string"
-            },
-            "sequenceLength": {
-              "bsonType": "int"
-            }
-          }
-        }
-      },
-      "vaccines": {
-        "bsonType": "array",
-        "uniqueItems": true,
-        "items": {
-          "bsonType": "object",
-          "additionalProperties": false,
-          "properties": {
-            "name": {
-              "bsonType": "string"
-            },
-            "date": {
-              "bsonType": "date"
-            },
-            "batch": {
-              "bsonType": "string"
-            },
-            "sideEffects": {
-              "bsonType": "object",
-              "additionalProperties": false,
-              "properties": {
-                "values": {
-                  "bsonType": "array",
-                  "uniqueItems": true,
-                  "items": {
-                    "bsonType": "string"
-                  }
-                },
-                "status": {
-                  "bsonType": "string"
-                }
-              }
-            },
-            "previousInfection": {
-              "bsonType": "string"
-            },
-            "previousInfectionDetectionMethod": {
-              "bsonType": "string"
-            }
-          }
-        }
-      },
-      "variant": {
-        "bsonType": "object",
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "bsonType": "string"
-          }
-        }
-      },
-      "location": {
-        "bsonType": "object",
-        "additionalProperties": false,
-        "properties": {
-          "country": {
-            "bsonType": "string"
-          },
-          "administrativeAreaLevel1": {
-            "bsonType": "string"
-          },
-          "administrativeAreaLevel2": {
-            "bsonType": "string"
-          },
-          "administrativeAreaLevel3": {
-            "bsonType": "string"
-          },
-          "place": {
-            "bsonType": "string"
-          },
-          "name": {
-            "bsonType": "string"
-          },
-          "geoResolution": {
-            "bsonType": "string"
-          },
-          "query":  {
-            "bsonType": "string"
-          },
-          "geometry": {
-            "bsonType": "object",
-            "additionalProperties": false,
-            "required": [
-              "latitude",
-              "longitude"
-            ],
-            "properties": {
-              "latitude": {
-                "bsonType": "number",
-                "minimum": -90.0,
-                "maximum": 90.0
-              },
-              "longitude": {
-                "bsonType": "number",
-                "minimum": -180.0,
-                "maximum": 180.0
-              }
-            }
-          }
-        }
-      },
-      "events": {
-        "bsonType": "array",
-        "uniqueItems": true,
-        "items": {
-          "bsonType": "object",
-          "additionalProperties": false,
-          "properties": {
-            "name": {
-              "bsonType": "string"
-            },
-            "value": {
-              "bsonType": "string"
-            },
-            "dateRange": {
-              "bsonType": "object",
-              "additionalProperties": false,
-              "properties": {
-                "start": {
-                  "bsonType": ["date"]
-                },
-                "end": {
-                  "bsonType": ["date"]
-                }
-              }
-            }
-          }
-        }
-      },
-      "symptoms": {
-        "bsonType": "object",
-        "additionalProperties": false,
-        "properties": {
-          "values": {
-            "bsonType": "array",
-            "uniqueItems": true,
-            "items": {
-              "bsonType": "string"
-            }
-          },
-          "status": {
-            "bsonType": "string"
-          }
-        }
-      },
-      "preexistingConditions": {
-        "bsonType": "object",
-        "additionalProperties": false,
-        "properties": {
-          "values": {
-            "bsonType": "array",
-            "uniqueItems": true,
-            "items": {
-              "bsonType": "string"
-            }
-          },
-          "hasPreexistingConditions": {
-            "bsonType": "bool"
-          }
-        }
-      },
-      "travelHistory": {
-        "bsonType": "object",
-        "additionalProperties": false,
-        "properties": {
-          "travel": {
-            "bsonType": "array",
-            "uniqueItems": false,
-            "items": {
-              "bsonType": "object",
-              "additionalProperties": false,
-              "properties": {
-                "location": {
-                  "bsonType": "object",
-                  "additionalProperties": false,
-                  "properties": {
-                    "query": {
-                      "bsonType": "string"
+            "caseReference": {
+                "bsonType": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "sourceId": {
+                        "bsonType": "string"
                     },
-                    "country": {
-                      "bsonType": "string"
+                    "sourceEntryId": {
+                        "bsonType": "string"
                     },
-                    "administrativeAreaLevel1": {
-                      "bsonType": "string"
+                    "sourceUrl": {
+                        "bsonType": "string"
                     },
-                    "administrativeAreaLevel2": {
-                      "bsonType": "string"
-                    },
-                    "administrativeAreaLevel3": {
-                      "bsonType": "string"
-                    },
-                    "place": {
-                      "bsonType": "string"
-                    },
-                    "name": {
-                      "bsonType": "string"
-                    },
-                    "geoResolution": {
-                      "bsonType": "string"
-                    },
-                    "geometry": {
-                      "bsonType": "object",
-                      "additionalProperties": false,
-                      "properties": {
-                        "latitude": {
-                          "bsonType": "number",
-                          "minimum": -90.0,
-                          "maximum": 90.0
-                        },
-                        "longitude": {
-                          "bsonType": "number",
-                          "minimum": -180.0,
-                          "maximum": 180.0
+                    "uploadIds": {
+                        "bsonType": "array",
+                        "uniqueItems": true,
+                        "items": {
+                            "bsonType": "string"
                         }
-                      }
-                    }
-                  }
-                },
-                "dateRange": {
-                  "bsonType": "object",
-                  "additionalProperties": false,
-                  "properties": {
-                    "start": {
-                      "bsonType": ["date"]
                     },
-                    "end": {
-                      "bsonType": ["date"]
+                    "additionalSources": {
+                        "bsonType": "array",
+                        "uniqueItems": true,
+                        "items": {
+                            "bsonType": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "sourceUrl": {
+                                    "bsonType": "string"
+                                }
+                            }
+                        }
                     }
-                  }
-                },
-                "purpose": {
-                  "bsonType": "string"
-                },
-                "methods": {
-                  "bsonType": "array",
-                  "uniqueItems": true,
-                  "items": {
-                    "bsonType": "string"
-                  }
                 }
-              }
-            }
-          },
-          "traveledPrior30Days": {
-            "bsonType": "bool"
-          }
-        }
-      },
-      "pathogens": {
-        "bsonType": "array",
-        "uniqueItems": true,
-        "items": {
-          "bsonType": "object",
-          "additionalProperties": false,
-          "required": [
-            "name"
-          ],
-          "properties": {
-            "name": {
-              "bsonType": "string"
             },
-            "id": {
-              "bsonType": "int"
-            }
-          }
-        }
-      },
-      "transmission": {
-        "bsonType": "object",
-        "additionalProperties": false,
-        "properties": {
-          "routes": {
-            "bsonType": "array",
-            "uniqueItems": true,
-            "items": {
-              "bsonType": "string"
-            }
-          },
-          "places": {
-            "bsonType": "array",
-            "uniqueItems": true,
-            "items": {
-              "bsonType": "string"
-            }
-          },
-          "linkedCaseIds": {
-            "bsonType": "array",
-            "uniqueItems": true,
-            "items": {
-              "bsonType": "string"
-            }
-          }
-        }
-      },
-      "notes": {
-        "bsonType": "string"
-      },
-      "restrictedNotes": {
-        "bsonType": "string"
-      },
-      "revisionMetadata": {
-        "bsonType": "object",
-        "additionalProperties": false,
-        "required": [
-          "revisionNumber"
-        ],
-        "properties": {
-          "revisionNumber": {
-            "bsonType": "int"
-          },
-          "creationMetadata": {
-            "bsonType": "object",
-            "additionalProperties": false,
-            "properties": {
-              "curator": {
+            "demographics": {
+                "bsonType": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "ageRange": {
+                        "bsonType": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "start": {
+                                "bsonType": "number",
+                                "minimum": 0,
+                                "maximum": 120
+                            },
+                            "end": {
+                                "bsonType": "number",
+                                "minimum": 0,
+                                "maximum": 120
+                            }
+                        }
+                    },
+                    "gender": {
+                        "bsonType": "string"
+                    },
+                    "occupation": {
+                        "bsonType": "string"
+                    },
+                    "healthcareWorker": {
+                        "bsonType": "string"
+                    }
+                }
+            },
+            "genomeSequences": {
+                "bsonType": "object",
+                "properties": {
+                    "genomicsMetadata": {
+                        "bsonType": "string"
+                    },
+                    "accessionNumber": {
+                        "bsonType": "string"
+                    }
+                }
+            },
+            "vaccination": {
+                "bsonType": "object",
+                "properties": {
+                    "vaccination": {
+                        "bsonType": "string"
+                    },
+                    "vaccineName": {
+                        "bsonType": "string"
+                    },
+                    "vaccineDate": {
+                        "bsonType": ["date"]
+                    },
+                    "vaccineSideEffects": {
+                        "bsonType": "string"
+                    }
+                }
+            },
+            "location": {
+                "bsonType": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "country": {
+                        "bsonType": "string"
+                    },
+                    "countryISO2": {
+                        "bsonType": "string"
+                    },
+                    "location": {
+                        "bsonType": "string"
+                    },
+                    "city": {
+                        "bsonType": "string"
+                    },
+                    "query": {
+                        "bsonType": "string"
+                    }
+                }
+            },
+            "events": {
+                "bsonType": "object",
+                "properties": {
+                    "dateEntry": {
+                        "bsonType": ["date"]
+                    },
+                    "dateLastModified": {
+                        "bsonType": ["date"]
+                    },
+                    "dateOnset": {
+                        "bsonType": ["date"]
+                    },
+                    "dateConfirmation": {
+                        "bsonType": ["date"]
+                    },
+                    "dateOfFirstConsult": {
+                        "bsonType": ["date"]
+                    },
+                    "hospitalized": {
+                        "bsonType": "string"
+                    },
+                    "reasonForHospitalization": {
+                        "bsonType": "string"
+                    },
+                    "dateHospitalization": {
+                        "bsonType": ["date"]
+                    },
+                    "dateDischargeHospital": {
+                        "bsonType": ["date"]
+                    },
+                    "intensiveCare": {
+                        "bsonType": "string"
+                    },
+                    "dateAdmissionICU": {
+                        "bsonType": ["date"]
+                    },
+                    "dateDischargeICU": {
+                        "bsonType": ["date"]
+                    },
+                    "homeMonitoring": {
+                        "bsonType": "string"
+                    },
+                    "isolated": {
+                        "bsonType": "string"
+                    },
+                    "dateIsolation": {
+                        "bsonType": ["date"]
+                    },
+                    "outcome": {
+                        "bsonType": "string"
+                    },
+                    "dateDeath": {
+                        "bsonType": ["date"]
+                    },
+                    "dateRecovered": {
+                        "bsonType": ["date"]
+                    }
+                }
+            },
+            "symptoms": {
                 "bsonType": "string"
-              },
-              "date": {
-                "bsonType": ["date"]
-              },
-              "notes": {
+            },
+            "preexistingConditions": {
+                "bsonType": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "previousInfection": {
+                        "bsonType": "string"
+                    },
+                    "coInfection": {
+                        "bsonType": "string"
+                    },
+                    "preexistingCondition": {
+                        "bsonType": "string"
+                    },
+                    "pregnancyStatus": {
+                        "bsonType": "string"
+                    }
+                }
+            },
+            "travelHistory": {
+                "bsonType": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "travelHistory": {
+                        "bsonType": "string"
+                    },
+                    "travelHistoryEntry": {
+                        "bsonType": ["date"]
+                    },
+                    "travelHistoryStart": {
+                        "bsonType": "string"
+                    },
+                    "travelHistoryLocation": {
+                        "bsonType": "string"
+                    },
+                    "travelHistoryCountry": {
+                        "bsonType": "string"
+                    }
+                }
+            },
+            "pathogen": {
                 "bsonType": "string"
-              }
+            },
+            "transmission": {
+                "bsonType": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "contactWithCase": {
+                        "bsonType": "string"
+                    },
+                    "contactId": {
+                        "bsonType": "string"
+                    },
+                    "contactSetting": {
+                        "bsonType": "string"
+                    },
+                    "contactAnimal": {
+                        "bsonType": "string"
+                    },
+                    "contactComment": {
+                        "bsonType": "string"
+                    },
+                    "transmission": {
+                        "bsonType": "string"
+                    }
+                }
             }
-          },
-          "updateMetadata": {
-            "bsonType": "object",
-            "additionalProperties": false,
-            "properties": {
-              "curator": {
-                "bsonType": "string"
-              },
-              "date": {
-                "bsonType": ["date"]
-              },
-              "notes": {
-                "bsonType": "string"
-              }
-            }
-          }
         }
-      },
-      "importedCase": {
-        "bsonType": "object",
-        "additionalProperties": false,
-        "properties": {
-          "ID": {
-            "bsonType": "string"
-          },
-          "city": {
-            "bsonType": "string"
-          },
-          "province": {
-            "bsonType": "string"
-          },
-          "country": {
-            "bsonType": "string"
-          },
-          "date_onset_symptoms": {
-            "bsonType": "string"
-          },
-          "date_admission_hospital": {
-            "bsonType": "string"
-          },
-          "date_confirmation": {
-            "bsonType": "string"
-          },
-          "travel_history_dates": {
-            "bsonType": "string"
-          },
-          "travel_history_location": {
-            "bsonType": "string"
-          },
-          "reported_market_exposure": {
-            "bsonType": "string"
-          },
-          "chronic_disease_binary": {
-            "bsonType": "string"
-          },
-          "outcome": {
-            "bsonType": "string"
-          },
-          "location": {
-            "bsonType": "string"
-          },
-          "admin_id": {
-            "bsonType": "string"
-          },
-          "travel_history_binary": {
-            "bsonType": "string"
-          },
-          "lives_in_Wuhan": {
-            "bsonType": "string"
-          }
-        }
-      }
     }
-  }
 }

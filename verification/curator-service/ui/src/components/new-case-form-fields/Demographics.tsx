@@ -5,7 +5,6 @@ import {
     SelectField,
 } from '../common-form-fields/FormikFields';
 
-import CaseFormValues from './CaseFormValues';
 import { Chip } from '@mui/material';
 import FieldTitle from '../common-form-fields/FieldTitle';
 import Scroll from 'react-scroll';
@@ -13,11 +12,10 @@ import { TextField } from 'formik-mui';
 import { StyledTooltip } from './StyledTooltip';
 import axios from 'axios';
 import makeStyles from '@mui/styles/makeStyles';
+import { Gender, Day0CaseFormValues } from '../../api/models/Day0Case';
+import { useStyles } from './styled';
 
 const styles = makeStyles(() => ({
-    fieldRow: {
-        marginBottom: '2em',
-    },
     ageRow: {
         alignItems: 'baseline',
         display: 'flex',
@@ -38,15 +36,6 @@ const styles = makeStyles(() => ({
         marginBottom: '1em',
     },
 }));
-
-// If changing this list, also modify https://github.com/globaldothealth/list/blob/main/data-serving/data-service/api/openapi.yaml
-const genderValues = [
-    'Unknown',
-    'Male',
-    'Female',
-    'Non-binary/Third gender',
-    'Other',
-];
 
 const TooltipText = () => (
     <StyledTooltip>
@@ -79,16 +68,12 @@ const TooltipText = () => (
                 </ul>
             </li>
             <li>
-                <strong>Ethnicity / Race:</strong> Enter the Ethnicity of the
-                case provided. If no data is provided leave blank.
-            </li>
-            <li>
-                <strong>Nationality:</strong> Enter the Nationality of the case.
-                If no data is provided leave blank.
-            </li>
-            <li>
                 <strong>Occupation:</strong> Enter the Occupation of the case.
                 If no data is provided leave blank.
+            </li>
+            <li>
+                <strong>Healthcare worker:</strong> Choose whether the case is a
+                healthcare worker
             </li>
         </ul>
     </StyledTooltip>
@@ -96,7 +81,9 @@ const TooltipText = () => (
 
 export default function Demographics(): JSX.Element {
     const classes = styles();
-    const { initialValues, setFieldValue } = useFormikContext<CaseFormValues>();
+    const globalClasses = useStyles();
+    const { initialValues, setFieldValue } =
+        useFormikContext<Day0CaseFormValues>();
     const [commonOccupations, setCommonOccupations] = React.useState([]);
 
     React.useEffect(
@@ -113,57 +100,35 @@ export default function Demographics(): JSX.Element {
 
     return (
         <Scroll.Element name="demographics">
-            <FieldTitle
-                title="Demographics"
-                tooltip={<TooltipText />}
-            ></FieldTitle>
+            <FieldTitle title="Demographics" tooltip={<TooltipText />} />
             <SelectField
-                name="gender"
+                name="demographics.gender"
                 label="Gender"
-                values={genderValues}
-            ></SelectField>
-            <div className={`${classes.fieldRow} ${classes.ageRow}`}>
+                values={Object.values(Gender)}
+            />
+            <div className={`${globalClasses.fieldRow} ${classes.ageRow}`}>
                 <FastField
                     className={classes.ageField}
-                    name="minAge"
+                    name="demographics.minAge"
                     type="number"
                     label="Min age"
                     component={TextField}
-                ></FastField>
+                />
                 <span className={classes.ageSeparator}>to</span>
                 <FastField
                     className={classes.ageField}
-                    name="maxAge"
+                    name="demographics.maxAge"
                     type="number"
                     label="Max age"
                     component={TextField}
-                ></FastField>
+                />
                 <span className={classes.ageSeparator}>or</span>
                 <FastField
                     className={classes.ageField}
-                    name="age"
+                    name="demographics.age"
                     type="number"
                     label="Age"
                     component={TextField}
-                ></FastField>
-            </div>
-            <div className={classes.fieldRow}>
-                <FastField
-                    label="Race / Ethnicity"
-                    name="ethnicity"
-                    type="text"
-                    data-testid="ethnicity"
-                    component={TextField}
-                    fullWidth
-                />
-            </div>
-            <div className={classes.fieldRow}>
-                <FormikAutocomplete
-                    name="nationalities"
-                    label="Nationalities"
-                    initialValue={initialValues.nationalities}
-                    multiple={true}
-                    optionsLocation="https://raw.githubusercontent.com/globaldothealth/list/main/suggest/nationalities.txt"
                 />
             </div>
             {commonOccupations.length > 0 && (
@@ -185,19 +150,26 @@ export default function Demographics(): JSX.Element {
                                                 occupation,
                                             )
                                         }
-                                    ></Chip>
+                                    />
                                 ),
                         )}
                     </div>
                 </>
             )}
-            <FormikAutocomplete
-                name="occupation"
-                label="Occupation"
-                initialValue={initialValues.occupation}
-                multiple={false}
-                freeSolo
-                optionsLocation="https://raw.githubusercontent.com/globaldothealth/list/main/suggest/occupations.txt"
+            <div className={globalClasses.fieldRow}>
+                <FormikAutocomplete
+                    name="occupation"
+                    label="Occupation"
+                    initialValue={initialValues.demographics.occupation}
+                    multiple={false}
+                    freeSolo
+                    optionsLocation="https://raw.githubusercontent.com/globaldothealth/list/main/suggest/occupations.txt"
+                />
+            </div>
+            <SelectField
+                name="demographics.healthcareWorker"
+                label="Healthcare worker"
+                values={['Y', 'N', 'NA']}
             />
         </Scroll.Element>
     );

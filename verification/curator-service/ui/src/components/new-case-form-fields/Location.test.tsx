@@ -1,41 +1,28 @@
 import { Form, Formik } from 'formik';
 
-import { Location as Loc } from '../../api/models/Case';
 import Location from './Location';
-import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '../util/test-utils';
 
-test('shows location when passed location information', async () => {
-    const loc: Loc = {
-        geoResolution: 'Admin3',
-        country: 'United States',
-        administrativeAreaLevel1: 'Hillsborough County',
-        administrativeAreaLevel2: '',
-        administrativeAreaLevel3: 'Some city',
-        geometry: {
-            latitude: 80.45,
-            longitude: 27.9379,
-        },
-        name: 'some name',
-        place: '',
-    };
-    const { getByDisplayValue } = render(
+it('shows location when passed location information', async () => {
+    render(
         <Formik
-            initialValues={{ location: loc }}
+            initialValues={{
+                location: {
+                    country: 'United States',
+                    countryISO2: 'US',
+                    city: 'Chicago',
+                },
+            }}
             // onSubmit just here to appease tslint.
             onSubmit={async (values): Promise<void> => {
                 return;
             }}
         >
             <Form>
-                <Location locationPath="location" geometry={loc.geometry} />
+                <Location />
             </Form>
         </Formik>,
     );
-    expect(getByDisplayValue(/Admin3/i)).toBeInTheDocument();
-    expect(getByDisplayValue(/united States/i)).toBeInTheDocument();
-    expect(getByDisplayValue(/Hillsborough County/i)).toBeInTheDocument();
-    expect(getByDisplayValue(/Some city/i)).toBeInTheDocument();
-    expect(getByDisplayValue(/80.45/i)).toBeInTheDocument();
-    expect(getByDisplayValue(/27.9379/i)).toBeInTheDocument();
+    expect(screen.getByDisplayValue(/united States/i)).toBeInTheDocument();
+    expect(screen.getByDisplayValue(/Chicago/i)).toBeInTheDocument();
 });

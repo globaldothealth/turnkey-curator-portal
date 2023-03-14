@@ -4,10 +4,8 @@ import { fetchLinelistData } from '../../redux/linelistTable/thunk';
 import {
     setCurrentPage,
     setRowsPerPage,
-    setExcludeCasesDialogOpen,
     setCasesSelected,
     setDeleteCasesDialogOpen,
-    setReincludeCasesDialogOpen,
     setRowsAcrossPagesSelected,
 } from '../../redux/linelistTable/slice';
 import {
@@ -18,11 +16,9 @@ import {
     selectTotalCases,
     selectRowsPerPage,
     selectSort,
-    selectExcludeCasesDialogOpen,
     selectCasesSelected,
     selectDeleteCasesDialogOpen,
     selectRefetchData,
-    selectReincludeCasesDialogOpen,
     selectRowsAcrossPages,
 } from '../../redux/linelistTable/selectors';
 import { selectUser } from '../../redux/auth/selectors';
@@ -42,8 +38,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
 
-import { nameCountry } from '../util/countryNames';
-import renderDate, { renderDateRange } from '../util/date';
+import renderDate from '../util/date';
 import { createData, labels } from './helperFunctions';
 import { LoaderContainer, StyledAlert } from './styled';
 import { URLToSearchQuery } from '../util/searchQuery';
@@ -52,11 +47,8 @@ import { Helmet } from 'react-helmet';
 
 import Pagination from './Pagination';
 import EnhancedTableToolbar from './EnhancedTableToolbar';
-import { CaseExcludeDialog } from '../Dialogs/CaseExcludeDialog';
 import { CaseDeleteDialog } from '../Dialogs/CaseDeleteDialog';
-import { CaseIncludeDialog } from '../Dialogs/CaseIncludeDialog';
-import VerificationStatusIndicator from '../VerificationStatusIndicator';
-import { ActionMenu } from './ActionMenu';
+import { nameCountry } from '../util/countryNames';
 
 const dataLimit = 10000;
 
@@ -80,12 +72,8 @@ const LinelistTable = () => {
     const rowsPerPage = useAppSelector(selectRowsPerPage);
     const sort = useAppSelector(selectSort);
     const user = useAppSelector(selectUser);
-    const excludeCasesDialogOpen = useAppSelector(selectExcludeCasesDialogOpen);
     const casesSelected = useAppSelector(selectCasesSelected);
     const deleteCasesDialogOpen = useAppSelector(selectDeleteCasesDialogOpen);
-    const reincludeCasesDialogOpen = useAppSelector(
-        selectReincludeCasesDialogOpen,
-    );
     const refetchData = useAppSelector(selectRefetchData);
     const rowsAcrossPagesSelected = useAppSelector(selectRowsAcrossPages);
 
@@ -122,32 +110,18 @@ const LinelistTable = () => {
         cases.map((data) => {
             return createData(
                 data._id || '',
-                renderDate(data.confirmationDate) || '',
-                data.location?.administrativeAreaLevel3 || '',
-                data.location?.administrativeAreaLevel2 || '',
-                data.location?.administrativeAreaLevel1 || '',
-                nameCountry(data.location?.country) || '',
-                parseFloat(data.location?.geometry.latitude.toFixed(4)) || 0,
-                parseFloat(data.location?.geometry.longitude.toFixed(4)) || 0,
-                data.demographics?.nationalities || '',
-                parseAgeRange(data.demographics?.ageRange),
-                data.demographics?.gender || '',
-                data.importedCase?.outcome ||
-                    data.events?.find((event) => event.name === 'outcome')
-                        ?.value ||
-                    '',
-                renderDateRange(
-                    data.events?.find(
-                        (event) => event.name === 'hospitalAdmission',
-                    )?.dateRange,
-                ),
-                renderDateRange(
-                    data.events?.find((event) => event.name === 'onsetSymptoms')
-                        ?.dateRange,
-                ),
-                data.caseReference?.sourceUrl || '',
-                data.caseReference?.verificationStatus,
-                data.exclusionData,
+                nameCountry(data.location.countryISO2, data.location.country) ||
+                    '-',
+                data.location.city || '-',
+                data.location.location || '-',
+                renderDate(data.events.dateEntry) || '-',
+                parseAgeRange(data.demographics.ageRange) || '-',
+                data.demographics.gender || '-',
+                data.events.outcome || '-',
+                renderDate(data.events.dateHospitalization) || '-',
+                renderDate(data.events.dateOnset) || '-',
+                data.caseReference.sourceUrl || '-',
+                data.caseStatus || '-',
             );
         });
 
@@ -309,57 +283,37 @@ const LinelistTable = () => {
                         <TableHead>
                             <TableRow>
                                 {hasAnyRole(user, ['curator', 'admin']) && (
-                                    <>
-                                        <TableCell
-                                            padding="checkbox"
-                                            sx={{
-                                                backgroundColor: '#fff',
-                                            }}
-                                        >
-                                            <Checkbox
-                                                color="primary"
-                                                indeterminate={
-                                                    casesSelected.length > 0 &&
-                                                    casesSelected.length <
-                                                        rows.length
-                                                }
-                                                checked={
-                                                    rows.length > 0 &&
-                                                    casesSelected.length ===
-                                                        rows.length
-                                                }
-                                                onChange={handleSelectAllClick}
-                                                inputProps={{
-                                                    'aria-label':
-                                                        'select all cases',
-                                                }}
-                                            />
-                                        </TableCell>
-
-                                        {/* Empty table cell for actions menu */}
-                                        <TableCell
-                                            sx={{
-                                                backgroundColor: '#fff',
+                                    <TableCell
+                                        padding="checkbox"
+                                        sx={{
+                                            backgroundColor: '#fff',
+                                        }}
+                                    >
+                                        <Checkbox
+                                            color="primary"
+                                            indeterminate={
+                                                casesSelected.length > 0 &&
+                                                casesSelected.length <
+                                                    rows.length
+                                            }
+                                            checked={
+                                                rows.length > 0 &&
+                                                casesSelected.length ===
+                                                    rows.length
+                                            }
+                                            onChange={handleSelectAllClick}
+                                            inputProps={{
+                                                'aria-label':
+                                                    'select all cases',
                                             }}
                                         />
-
-                                        <TableCell
-                                            align="center"
-                                            sx={{
-                                                backgroundColor: '#fff',
-                                                fontWeight: 600,
-                                                whiteSpace: 'nowrap',
-                                            }}
-                                        >
-                                            Status
-                                        </TableCell>
-                                    </>
+                                    </TableCell>
                                 )}
 
                                 {labels.map((label) => (
                                     <TableCell
                                         key={label}
-                                        align="center"
+                                        align="left"
                                         sx={{
                                             backgroundColor: '#fff',
                                             fontWeight: 600,
@@ -412,68 +366,37 @@ const LinelistTable = () => {
                                                         }
                                                     />
                                                 </TableCell>
-
-                                                <TableCell
-                                                    component="th"
-                                                    scope="row"
-                                                >
-                                                    <ActionMenu
-                                                        caseId={row.caseId}
-                                                    />
-                                                </TableCell>
-
-                                                <TableCell
-                                                    component="th"
-                                                    scope="row"
-                                                >
-                                                    <VerificationStatusIndicator
-                                                        status={
-                                                            row.verificationStatus
-                                                        }
-                                                        exclusionData={
-                                                            row.exclusionData
-                                                        }
-                                                    />
-                                                </TableCell>
                                             </>
                                         )}
-                                        <TableCell component="th" scope="row">
+                                        <TableCell align="left">
                                             {row.caseId}
                                         </TableCell>
-                                        <TableCell align="left">
-                                            {row.confirmedDate}
+                                        <TableCell
+                                            align="left"
+                                            sx={{ minWidth: 100 }}
+                                        >
+                                            {row.dateEntry}
+                                        </TableCell>
+                                        <TableCell component="th" scope="row">
+                                            {row.caseStatus}
                                         </TableCell>
                                         <TableCell
                                             align="left"
                                             sx={{ minWidth: 100 }}
                                         >
-                                            {row.admin3}
-                                        </TableCell>
-                                        <TableCell
-                                            align="left"
-                                            sx={{ minWidth: 100 }}
-                                        >
-                                            {row.admin2}
-                                        </TableCell>
-                                        <TableCell
-                                            align="left"
-                                            sx={{ minWidth: 100 }}
-                                        >
-                                            {row.admin1}
-                                        </TableCell>
-                                        <TableCell align="left">
                                             {row.country}
                                         </TableCell>
-                                        <TableCell align="left">
-                                            {row.latitude}
+                                        <TableCell
+                                            align="left"
+                                            sx={{ minWidth: 100 }}
+                                        >
+                                            {row.city}
                                         </TableCell>
-                                        <TableCell align="left">
-                                            {row.longitude}
-                                        </TableCell>
-                                        <TableCell align="left">
-                                            {row.nationality
-                                                ? row.nationality.join(', ')
-                                                : ''}
+                                        <TableCell
+                                            align="left"
+                                            sx={{ minWidth: 100 }}
+                                        >
+                                            {row.location}
                                         </TableCell>
                                         <TableCell
                                             align="left"
@@ -488,13 +411,13 @@ const LinelistTable = () => {
                                             {row.outcome}
                                         </TableCell>
                                         <TableCell align="left">
-                                            {row.hospitalizationDate}
+                                            {row.dateHospitalization}
                                         </TableCell>
                                         <TableCell align="left">
-                                            {row.symptomsOnsetDate}
+                                            {row.dateOnset}
                                         </TableCell>
                                         <TableCell align="left">
-                                            {row.sourceUrl}
+                                            {row.source}
                                         </TableCell>
                                     </TableRow>
                                 ))
@@ -535,20 +458,6 @@ const LinelistTable = () => {
                     </TableFooter>
                 </Table>
             </Stack>
-
-            <CaseIncludeDialog
-                isOpen={reincludeCasesDialogOpen}
-                onClose={() => dispatch(setReincludeCasesDialogOpen(false))}
-                caseIds={rowsAcrossPagesSelected ? undefined : casesSelected}
-                query={rowsAcrossPagesSelected ? searchQuery : undefined}
-            />
-
-            <CaseExcludeDialog
-                isOpen={excludeCasesDialogOpen}
-                onClose={() => dispatch(setExcludeCasesDialogOpen(false))}
-                caseIds={rowsAcrossPagesSelected ? undefined : casesSelected}
-                query={rowsAcrossPagesSelected ? searchQuery : undefined}
-            />
 
             <CaseDeleteDialog
                 isOpen={deleteCasesDialogOpen}

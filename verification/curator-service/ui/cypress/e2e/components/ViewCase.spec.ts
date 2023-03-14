@@ -1,3 +1,4 @@
+import { CaseStatus } from '../../support/commands';
 import { getDefaultQuery } from '../../utils/helperFunctions';
 
 /* eslint-disable no-undef */
@@ -5,19 +6,27 @@ describe('View case', function () {
     beforeEach(() => {
         cy.task('clearCasesDB', {});
         cy.login();
+
+        cy.seedLocation({
+            country: 'FR',
+            geometry: { latitude: 45.75889, longitude: 4.84139 },
+            name: 'France',
+            geoResolution: 'Country',
+        });
     });
 
     afterEach(() => {
         cy.clearSeededLocations();
     });
 
-    it('shows highlighted the searched text', function () {
+    it('highlights text search results', function () {
         cy.addCase({
             country: 'France',
-            notes: 'some notes travelled from the United States',
+            countryISO2: 'FR',
             sourceUrl: 'www.example.com',
-            methodOfConfirmation: 'PCR test',
-            nationalities: ['Andorrean', 'French'],
+            confirmationMethod: 'PCR test',
+            dateEntry: '2020-01-01',
+            caseStatus: CaseStatus.Confirmed,
         });
 
         cy.intercept('GET', getDefaultQuery({ limit: 50 })).as('getCases');
@@ -41,10 +50,11 @@ describe('View case', function () {
     it('can view a case', function () {
         cy.addCase({
             country: 'France',
-            notes: 'some notes',
+            countryISO2: 'FR',
             sourceUrl: 'www.example.com',
-            methodOfConfirmation: 'PCR test',
-            nationalities: ['Andorrean', 'French'],
+            confirmationMethod: 'PCR test',
+            dateEntry: '2020-01-01',
+            caseStatus: CaseStatus.Confirmed,
         });
         cy.request({ method: 'GET', url: '/api/cases' }).then((resp) => {
             expect(resp.body.cases).to.have.lengthOf(1);
@@ -52,11 +62,9 @@ describe('View case', function () {
             cy.contains('France').click();
 
             cy.contains('France');
-            cy.should('not.contain', 'some notes');
             cy.contains('www.example.com');
             cy.contains('PCR test');
-            cy.contains('French');
-            cy.contains('Andorrean');
+            cy.contains('2020-01-01');
         });
     });
 });

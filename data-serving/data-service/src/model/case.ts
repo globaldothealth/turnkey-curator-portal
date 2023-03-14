@@ -1,5 +1,10 @@
 import { CaseReferenceDocument, caseReferenceSchema } from './case-reference';
-import { demographicsAgeRange, DemographicsDocument, DemographicsDTO, demographicsSchema } from './demographics';
+import {
+    demographicsAgeRange,
+    DemographicsDocument,
+    DemographicsDTO,
+    demographicsSchema,
+} from './demographics';
 import { EventDocument, eventSchema } from './event';
 import {
     GenomeSequenceDocument,
@@ -148,7 +153,7 @@ export type ICase = {
     restrictedNotes?: string;
     pathogens: [PathogenDocument];
     list: boolean;
-    SGTF: '0'|'1'|'NA';
+    SGTF: '0' | '1' | 'NA';
     preexistingConditions: PreexistingConditionsDocument;
     symptoms: SymptomsDocument;
     transmission: TransmissionDocument;
@@ -161,42 +166,55 @@ export type CaseDTO = ICase & {
     demographics?: DemographicsDTO;
 };
 
-export type CaseDocument = mongoose.Document & ICase & {
-    _id: ObjectId;
-    demographics: DemographicsDocument;
-    // TODO: Type request Cases.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    equalsJSON(jsonCase: any): boolean;
-};
+export type CaseDocument = mongoose.Document &
+    ICase & {
+        _id: ObjectId;
+        demographics: DemographicsDocument;
+        // TODO: Type request Cases.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        equalsJSON(jsonCase: any): boolean;
+    };
 
 /* Denormalise the confirmation date before saving or updating any case object */
 
-function denormaliseConfirmationDate(aCase: CaseDocument | LeanDocument<CaseDocument>) {
-    const confirmationEvents = _.filter(aCase.events, (e) => e.name === 'confirmed');
+function denormaliseConfirmationDate(
+    aCase: CaseDocument | LeanDocument<CaseDocument>,
+) {
+    const confirmationEvents = _.filter(
+        aCase.events,
+        (e) => e.name === 'confirmed',
+    );
     if (confirmationEvents.length) {
         aCase.confirmationDate = confirmationEvents[0].dateRange.start;
     }
 }
 
-export function caseWithDenormalisedConfirmationDate(aCase: CaseDocument | LeanDocument<CaseDocument>) {
+export function caseWithDenormalisedConfirmationDate(
+    aCase: CaseDocument | LeanDocument<CaseDocument>,
+) {
     denormaliseConfirmationDate(aCase);
     return aCase;
 }
 
-caseSchema.pre('save', async function(this: CaseDocument) {
+caseSchema.pre('save', async function (this: CaseDocument) {
     denormaliseConfirmationDate(this);
 });
 
-caseSchema.pre('validate', async function(this: CaseDocument) {
+caseSchema.pre('validate', async function (this: CaseDocument) {
     denormaliseConfirmationDate(this);
 });
 
-caseSchema.pre('insertMany', async function(next: (err?: mongoose.CallbackError | undefined) => void, docs: CaseDocument[]) {
+caseSchema.pre('insertMany', async function (
+    next: (err?: mongoose.CallbackError | undefined) => void,
+    docs: CaseDocument[],
+) {
     _.forEach(docs, denormaliseConfirmationDate);
     next();
 });
 
-caseSchema.pre('updateOne', { document: true, query: false }, async function(this: CaseDocument) {
+caseSchema.pre('updateOne', { document: true, query: false }, async function (
+    this: CaseDocument,
+) {
     denormaliseConfirmationDate(this);
 });
 
@@ -207,5 +225,5 @@ export const RestrictedCase = mongoose.model<CaseDocument>(
 );
 
 export const caseAgeRange = async (aCase: LeanDocument<CaseDocument>) => {
-   return await demographicsAgeRange(aCase.demographics);
+    return await demographicsAgeRange(aCase.demographics);
 };

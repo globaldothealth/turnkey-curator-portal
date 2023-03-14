@@ -1,25 +1,31 @@
-import CaseFormValues from './CaseFormValues';
 import FieldTitle from '../common-form-fields/FieldTitle';
 import { FormikAutocomplete } from '../common-form-fields/FormikFields';
 import { StyledTooltip } from './StyledTooltip';
-import React from 'react';
 import Scroll from 'react-scroll';
 import { SelectField } from '../common-form-fields/FormikFields';
-import { useFormikContext } from 'formik';
+import { FastField, useFormikContext } from 'formik';
+import { TextField } from 'formik-mui';
+import { Day0CaseFormValues } from '../../api/models/Day0Case';
+import { useStyles } from './styled';
+import clsx from 'clsx';
 
-const hasPreexistingConditionsValues = ['Unknown', 'Yes', 'No'];
+const hasPreexistingConditionsValues = ['Y', 'N', 'NA'];
 
 const TooltipText = () => (
     <StyledTooltip>
         <ul>
             <li>
-                <strong>Has pre-existing conditions:</strong> Enter if the case
-                has reported pre-existing conditions If none reported leave
-                blank.
+                <strong>Previous infection:</strong> Enter if the case was
+                tested positive for the infection prior to the most recent
+                diagnosis.
             </li>
             <li>
-                <strong>Pre-existing conditions:</strong> Select the pre
-                existing conditions reported for the case.
+                <strong>Co infection:</strong> Specify the pathogen that the
+                case tested positive for.
+            </li>
+            <li>
+                <strong>Pre-existing conditions:</strong> Enter any pre-existing
+                medical conditions.
             </li>
             <ul>
                 <li>
@@ -30,32 +36,56 @@ const TooltipText = () => (
                     You can select multiple pre-existing conditions per case.
                 </li>
             </ul>
+            <li>
+                <strong>Pregnancy status:</strong> Enter if the case is pregnant
+                or post-partum.
+            </li>
         </ul>
     </StyledTooltip>
 );
 
 export default function PreexistingConditions(): JSX.Element {
-    const { values, initialValues } = useFormikContext<CaseFormValues>();
+    const { initialValues } = useFormikContext<Day0CaseFormValues>();
+    const classes = useStyles();
+
     return (
         <Scroll.Element name="preexistingConditions">
             <FieldTitle
                 title="Pre-existing conditions"
                 tooltip={<TooltipText />}
-            ></FieldTitle>
+            />
             <SelectField
-                name="hasPreexistingConditions"
-                label="Has preexisting conditions"
+                name="preexistingConditions.previousInfection"
+                label="Previous infection"
                 values={hasPreexistingConditionsValues}
-            ></SelectField>
-            {values.hasPreexistingConditions === 'Yes' && (
+            />
+
+            <div className={clsx([classes.fieldRow, classes.halfWidth])}>
+                <FastField
+                    name="preexistingConditions.coInfection"
+                    type="text"
+                    label="Co infection"
+                    component={TextField}
+                    fullWidth
+                />
+            </div>
+            <div className={classes.fieldRow}>
                 <FormikAutocomplete
-                    name="preexistingConditions"
-                    label="Preexisting conditions"
-                    initialValue={initialValues.preexistingConditions}
+                    name="preexistingConditionsHelper"
+                    label="Pre-existing conditions"
+                    initialValue={
+                        initialValues.preexistingConditions.preexistingCondition
+                    }
                     multiple
+                    freeSolo
                     optionsLocation="https://raw.githubusercontent.com/globaldothealth/list/main/suggest/preexisting_conditions.txt"
                 />
-            )}
+            </div>
+            <SelectField
+                name="preexistingConditions.pregnancyStatus"
+                label="Pregnancy status"
+                values={hasPreexistingConditionsValues}
+            />
         </Scroll.Element>
     );
 }

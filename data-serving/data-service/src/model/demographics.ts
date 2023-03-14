@@ -2,6 +2,13 @@ import { Range } from './range';
 import mongoose, { LeanDocument } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { AgeBucket } from './age-bucket';
+import { YesNo } from '../types/enums';
+
+export enum Gender {
+    Male = 'male',
+    Female = 'female',
+    Other = 'other',
+}
 
 /*
  * There are separate types for demographics for data storage (the mongoose document) and
@@ -18,41 +25,50 @@ export const demographicsSchema = new mongoose.Schema(
          * The idea is that the age buckets are an enumeration supplied in the database,
          * so you can refer to them here in the ageBuckets collection but you shouldn't
          * make up your own age ranges.
-         * 
+         *
          * A case can belong to zero age buckets if it didn't specify an age, and more
          * than one age bucket if the age range specified in the case overlapped more
          * than one of the buckets we use.
          */
-        ageBuckets: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ageBuckets' }],
-        gender: String,
+        ageBuckets: [
+            { type: mongoose.Schema.Types.ObjectId, ref: 'ageBuckets' },
+        ],
+        gender: {
+            type: String,
+            enum: Gender,
+        },
         occupation: String,
-        nationalities: [String],
-        ethnicity: String,
+        healthcareWorker: {
+            type: String,
+            enum: YesNo,
+        },
     },
     { _id: false },
 );
 
 type DemographicsCommonFields = {
-    gender: string;
+    gender: Gender;
     occupation: string;
-    nationalities: [string];
-    ethnicity: string;
+    healthcareWorker: YesNo;
 };
 
 export type DemographicsDTO = DemographicsCommonFields & {
     ageRange?: Range<number>;
-}
-
-export type DemographicsDocument = mongoose.Document & DemographicsCommonFields & {
-    ageBuckets: ObjectId[];
 };
+
+export type DemographicsDocument = mongoose.Document &
+    DemographicsCommonFields & {
+        ageBuckets: ObjectId[];
+    };
 
 export const Demographics = mongoose.model<DemographicsDocument>(
     'Demographics',
     demographicsSchema,
 );
 
-export const demographicsAgeRange = async (demographics: LeanDocument<DemographicsDocument>) => {
+export const demographicsAgeRange = async (
+    demographics: LeanDocument<DemographicsDocument>,
+) => {
     if (
         demographics &&
         demographics.ageBuckets &&

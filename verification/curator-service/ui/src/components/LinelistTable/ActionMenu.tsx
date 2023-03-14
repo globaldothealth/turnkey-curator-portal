@@ -111,12 +111,12 @@ export const ActionMenu = ({ caseId }: ActionMenuProps) => {
                 </ActionMenuItem>
             </Menu>
 
-            <CaseExcludeDialog
+            {/* <CaseExcludeDialog
                 isOpen={excludeDialogOpen}
                 onClose={() => setExcludeDialogOpen(false)}
                 caseIds={[caseId]}
                 query={undefined}
-            />
+            /> */}
 
             <CaseDeleteDialog
                 isOpen={deleteDialogOpen}

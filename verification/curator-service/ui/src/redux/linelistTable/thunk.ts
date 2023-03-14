@@ -1,15 +1,15 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { Case, VerificationStatus } from '../../api/models/Case';
+import { Day0Case, CaseStatus } from '../../api/models/Day0Case';
 import axios from 'axios';
 
 interface ListResponse {
-    cases: Case[];
+    cases: Day0Case[];
     nextPage: number;
     total: number;
 }
 
 export const fetchLinelistData = createAsyncThunk<
-    ListResponse,
+    { cases: Day0Case[]; nextPage: number; total: number },
     string | undefined,
     { rejectValue: string }
 >('linelist/fetchLinelistData', async (query, { rejectWithValue }) => {
@@ -18,7 +18,13 @@ export const fetchLinelistData = createAsyncThunk<
             `/api/cases${query ? query : ''}`,
         );
 
-        return response.data;
+        const cases = response.data.cases as Day0Case[];
+
+        return {
+            cases,
+            nextPage: response.data.nextPage,
+            total: response.data.total,
+        };
     } catch (error) {
         if (!error.response) throw error;
         return rejectWithValue(
@@ -28,9 +34,9 @@ export const fetchLinelistData = createAsyncThunk<
 });
 
 export const changeCasesStatus = createAsyncThunk<
-    { newStatus: VerificationStatus; updatedIds?: string[] },
+    { newStatus: CaseStatus; updatedIds?: string[] },
     {
-        status: VerificationStatus;
+        status: CaseStatus;
         caseIds?: string[];
         note?: string;
         query?: string;

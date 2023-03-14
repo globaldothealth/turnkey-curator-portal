@@ -1,36 +1,15 @@
 const indexes = [
   {
-    name: 'sourceAndVerificationStatus',
+    name: 'byGenderAndCountry',
     key: {
-      'caseReference.sourceId': 1,
-      'caseReference.verificationStatus': 1,
+      'demographics.gender': -1,
+      'location.countryISO2': -1
     },
     collation: {
       locale: 'en_US',
       strength: 2,
     },
-  },
-  {
-    name: 'byDateIfListed',
-    key: {
-      'list': 1,
-      'revisionMetadata.creationMetadata.date': -1,
-    },
-  },
-  {
-    name: 'sourceAndUploadId',
-    key: {
-      'caseReference.sourceId': 1,
-      'caseReference.uploadIds': 1,
-    },
-  },
-  {
-    name: 'bySourceIfListed',
-    key: {
-      'caseReference.sourceId': 1,
-      'list': 1,
-    }
-  },
+  }  
 ];
 
 module.exports = {
@@ -44,7 +23,7 @@ module.exports = {
   async down(db, client) {
     await db.command({
       dropIndexes: 'cases',
-      index: ['sourceAndVerificationStatus', 'byDateIfListed', 'sourceAndUploadId', 'bySourceIfListed']
+      index: ['byGenderAndCountry']
     });
   }
 };

@@ -1,11 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { fetchLinelistData, changeCasesStatus, deleteCases } from './thunk';
-import { Case, VerificationStatus } from '../../api/models/Case';
+import { VerificationStatus } from '../../api/models/Case';
+import { Day0Case } from '../../api/models/Day0Case';
 import { SortBy, SortByOrder } from '../../constants/types';
 
 interface LinelistTableState {
     isLoading: boolean;
-    cases: Case[];
+    cases: Day0Case[];
     currentPage: number;
     nextPage: number;
     rowsPerPage: number;
@@ -66,9 +67,6 @@ const linelistTableSlice = createSlice({
         setSearchQuery: (state, action: PayloadAction<string>) => {
             state.searchQuery = action.payload;
         },
-        setExcludeCasesDialogOpen: (state, action: PayloadAction<boolean>) => {
-            state.excludeCasesDialogOpen = action.payload;
-        },
         setCasesSelected: (state, action: PayloadAction<string[]>) => {
             state.casesSelected = action.payload;
         },
@@ -123,13 +121,11 @@ const linelistTableSlice = createSlice({
             state.rowsAcrossPagesSelected = false;
             if (updatedIds) {
                 state.cases = state.cases.map((data) =>
-                    updatedIds.includes(data._id)
+                    // eslint-disable-next-line
+                    updatedIds.includes(data.caseReference.id!)
                         ? {
                               ...data,
-                              caseReference: {
-                                  ...data.caseReference,
-                                  verificationStatus: newStatus,
-                              },
+                              caseStatus: newStatus,
                           }
                         : data,
                 );
@@ -174,7 +170,6 @@ export const {
     setRowsPerPage,
     setSort,
     setSearchQuery,
-    setExcludeCasesDialogOpen,
     setCasesSelected,
     setDeleteCasesDialogOpen,
     setReincludeCasesDialogOpen,

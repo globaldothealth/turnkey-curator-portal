@@ -21,12 +21,10 @@ describe('validate', () => {
     });
 
     it('a date before the start of the outbreak is invalid', async () => {
-        return new FakeModel({ date: new Date('2019-10-31') }).validate(
-            (e) => {
-                expect(e).not.toBeNull();
-                if (e) expect(e.name).toBe(Error.ValidationError.name);
-            },
-        );
+        return new FakeModel({ date: new Date('2019-10-31') }).validate((e) => {
+            expect(e).not.toBeNull();
+            if (e) expect(e.name).toBe(Error.ValidationError.name);
+        });
     });
 
     it('a date too far in the future is invalid', async () => {

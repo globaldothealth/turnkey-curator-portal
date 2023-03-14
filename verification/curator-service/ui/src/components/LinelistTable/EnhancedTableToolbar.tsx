@@ -1,14 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import {
-    setExcludeCasesDialogOpen,
     setDeleteCasesDialogOpen,
-    setReincludeCasesDialogOpen,
-    setVerificationStatus,
     setRowsAcrossPagesSelected,
     setCasesSelected,
 } from '../../redux/linelistTable/slice';
-import { changeCasesStatus } from '../../redux/linelistTable/thunk';
 import {
     selectCasesSelected,
     selectCases,
@@ -16,7 +12,6 @@ import {
     selectTotalCases,
     selectRowsAcrossPages,
 } from '../../redux/linelistTable/selectors';
-import { VerificationStatus } from '../../api/models/Case';
 
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -27,16 +22,7 @@ import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import Stack from '@mui/material/Stack';
 
-import ExcludeIcon from '../assets/excluded_icon.svg';
-import UnverifiedIcon from '../assets/unverified_icon.svg';
-import VerifiedIcon from '../assets/verified_icon.svg';
-
 import Header from './Header';
-
-enum Actions {
-    Verify,
-    Unverify,
-}
 
 const EnhancedTableToolbar = () => {
     const dispatch = useAppDispatch();
@@ -56,49 +42,6 @@ const EnhancedTableToolbar = () => {
         setNumSelectedCases(selectedCases.length);
     }, [selectedCases]);
 
-    const handleActionClick = (action: Actions) => {
-        // Check if any of the selected cases is excluded
-        const excludedCases: string[] = [];
-        cases.forEach((caseObj) => {
-            if (
-                selectedCases.includes(caseObj._id) &&
-                caseObj.caseReference.verificationStatus ===
-                    VerificationStatus.Excluded
-            ) {
-                excludedCases.push(caseObj._id);
-            }
-        });
-
-        let verificationStatus: VerificationStatus;
-
-        switch (action) {
-            case Actions.Verify:
-                verificationStatus = VerificationStatus.Verified;
-                break;
-
-            case Actions.Unverify:
-                verificationStatus = VerificationStatus.Unverified;
-                break;
-        }
-
-        if (excludedCases.length !== 0) {
-            dispatch(setReincludeCasesDialogOpen(true));
-            dispatch(setVerificationStatus(verificationStatus));
-        } else {
-            dispatch(
-                changeCasesStatus({
-                    status: verificationStatus,
-                    caseIds: rowsAcrossPagesSelected
-                        ? undefined
-                        : selectedCases,
-                    query: rowsAcrossPagesSelected
-                        ? decodeURIComponent(searchQuery)
-                        : undefined,
-                }),
-            );
-        }
-    };
-
     const handleSelectAllRowsAcrossPagesClick = () => {
         if (rowsAcrossPagesSelected || numSelectedCases === totalCases) {
             dispatch(setRowsAcrossPagesSelected(false));
@@ -106,7 +49,12 @@ const EnhancedTableToolbar = () => {
             setNumSelectedCases(0);
         } else {
             dispatch(setRowsAcrossPagesSelected(cases.length < totalCases));
-            dispatch(setCasesSelected(cases.map((caseObj) => caseObj._id)));
+            dispatch(
+                setCasesSelected(
+                    // eslint-disable-next-line
+                    cases.map((caseObj) => caseObj.caseReference.id!),
+                ),
+            );
             setNumSelectedCases(totalCases);
         }
     };
@@ -154,48 +102,6 @@ const EnhancedTableToolbar = () => {
                         alignItems="center"
                         sx={{ marginLeft: '1rem' }}
                     >
-                        <Tooltip title="Verify selected rows">
-                            <IconButton
-                                onClick={() =>
-                                    handleActionClick(Actions.Verify)
-                                }
-                            >
-                                <img
-                                    src={VerifiedIcon}
-                                    alt="Verify cases button"
-                                    data-testid="verify-action"
-                                />
-                            </IconButton>
-                        </Tooltip>
-
-                        <Tooltip title="Unverify selected rows">
-                            <IconButton
-                                onClick={() =>
-                                    handleActionClick(Actions.Unverify)
-                                }
-                            >
-                                <img
-                                    src={UnverifiedIcon}
-                                    alt="Unverify cases button"
-                                    data-testid="unverify-action"
-                                />
-                            </IconButton>
-                        </Tooltip>
-
-                        <Tooltip title="Exclude selected rows">
-                            <IconButton
-                                onClick={() =>
-                                    dispatch(setExcludeCasesDialogOpen(true))
-                                }
-                            >
-                                <img
-                                    src={ExcludeIcon}
-                                    alt="Exclude cases button"
-                                    data-testid="exclude-action"
-                                />
-                            </IconButton>
-                        </Tooltip>
-
                         <Tooltip
                             title="Download selected rows"
                             aria-label="download selected rows"

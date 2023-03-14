@@ -1,9 +1,10 @@
 {
-    "country": "CA",
+    "country": "Canada",
+    "countryISO2": "CA",
     "geoResolution": "Country",
+    "name": "Canada",
     "geometry": {
         "latitude": 40.6809611,
         "longitude": -73.9740028
-    },
-    "name": "Canada"
+    }
 }

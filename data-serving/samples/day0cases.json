@@ -1,0 +1,70 @@
+[
+  {
+    "caseStatus": "confirmed",
+    "pathogen": "COVID-19",
+    "caseReference": {
+      "sourceId": "5ea86423bae6982635d2e1f8",
+      "sourceUrl": "https://test.com"
+    },
+    "location": {
+      "country": "Poland",
+      "countryISO2": "PL",
+      "query": "Szczecin, Poland"
+    },
+    "demographics": {
+      "gender": "female"
+    },
+    "events": {
+      "dateEntry": {
+        "$date": {
+          "$numberLong": "1578891600000"
+        }
+      },
+      "dateLastModified": {
+        "$date": {
+          "$numberLong": "1578891600000"
+        }
+      }
+    },
+    "symptoms": "",
+    "preexistingConditions": {},
+    "transmission": {},
+    "travelHistory": {},
+    "genomeSequences": {},
+    "vaccination": {}
+  },
+  {
+    "caseStatus": "suspected",
+    "pathogen": "COVID-19",
+    "caseReference": {
+      "sourceId": "5ea86423bae6982635d2e1f8",
+      "sourceUrl": "https://test.com"
+    },
+    "location": {
+      "country": "Poland",
+      "countryISO2": "PL",
+      "query": "Szczecin, Poland"
+    },
+    "demographics": {
+      "gender": "male"
+    },
+    "events": {
+      "dateEntry": {
+        "$date": {
+          "$numberLong": "1578891600000"
+        }
+      },
+      "dateLastModified": {
+        "$date": {
+          "$numberLong": "1578891600000"
+        }
+      }
+    },
+    "symptoms": "",
+    "preexistingConditions": {},
+    "transmission": {},
+    "travelHistory": {},
+    "genomeSequences": {},
+    "vaccination": {}
+  }
+]

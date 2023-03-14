@@ -641,6 +641,15 @@ components:
         Case:
             description: A single line-list case.
             properties:
+                caseStatus:
+                    description: >
+                        Status of the case
+                    type: string
+                    enum:
+                        - confirmed
+                        - suspected
+                        - discarded
+                        - omit_error
                 caseReference:
                     type: object
                     properties:
@@ -657,16 +666,6 @@ components:
                             items:
                                 type: string
                                 pattern: '^[a-f\d]{24}$'
-                        verificationStatus:
-                            description: >
-                                Whether the case document has been manually verified for
-                                correctness. For new cases, if this field isn't provided, a
-                                default value of UNVERIFIED will be used.
-                            type: string
-                            enum:
-                                - UNVERIFIED
-                                - VERIFIED
-                                - EXCLUDED
                         additionalSources:
                             type: array
                             items:
@@ -679,14 +678,7 @@ components:
                     properties:
                         gender:
                             type: string
-                            enum:
-                                [
-                                    null,
-                                    Male,
-                                    Female,
-                                    Non-binary/Third gender,
-                                    Other,
-                                ]
+                            enum: [null, male, female, other]
                         ageRange:
                             type: object
                             properties:
@@ -694,155 +686,126 @@ components:
                                     type: number
                                 end:
                                     type: number
-                        ethnicity:
-                            type: string
-                        nationalities:
-                            type: array
-                            items:
-                                type: string
                         occupation:
                             type: string
+                        healthcareWorker:
+                            type: string
+                            enum: ['Y', 'N', 'NA']
                 location:
                     $ref: '#/components/schemas/Location'
                 events:
                     description: >
-                        An event with name "confirmed" must be specified. Other event names
-                        include onsetSymptoms, firstClinicalConsultation, selfIsolation,
-                        hospitalAdmission, icuAdmission, and outcome.
-                    type: array
-                    items:
-                        type: object
-                        properties:
-                            name:
-                                type: string
-                            dateRange:
-                                $ref: '#/components/schemas/DateRange'
-                            value:
-                                type: string
-                symptoms:
+                        Events connected with the case
                     type: object
                     properties:
-                        status:
+                        dateEntry:
+                            $ref: '#/components/schemas/Date'
+                        dateOnset:
+                            $ref: '#/components/schemas/Date'
+                        dateConfirmation:
+                            $ref: '#/components/schemas/Date'
+                        confirmationMethod:
                             type: string
-                            enum:
-                                [
-                                    null,
-                                    Asymptomatic,
-                                    Symptomatic,
-                                    Presymptomatic,
-                                ]
-                        values:
-                            type: array
-                            items:
-                                type: string
+                        dateOfFirstConsult:
+                            $ref: '#/components/schemas/Date'
+                        hospitalized:
+                            type: string
+                            enum: ['Y', 'N', 'NA']
+                        reasonForHospitalization:
+                            type: string
+                            enum: [monitoring, treatment, unknown]
+                        dateHospitalization:
+                            $ref: '#/components/schemas/Date'
+                        dateDischargeHospital:
+                            $ref: '#/components/schemas/Date'
+                        intensiveCare:
+                            type: string
+                            enum: ['Y', 'N', 'NA']
+                        dateAdmissionICU:
+                            $ref: '#/components/schemas/Date'
+                        dateDischargeICU:
+                            $ref: '#/components/schemas/Date'
+                        homeMonitoring:
+                            type: string
+                            enum: ['Y', 'N', 'NA']
+                        isolated:
+                            type: string
+                            enum: ['Y', 'N', 'NA']
+                        dateIsolation:
+                            $ref: '#/components/schemas/Date'
+                        outcome:
+                            type: string
+                            enum: [recovered, death]
+                        dateDeath:
+                            $ref: '#/components/schemas/Date'
+                        dateRecovered:
+                            $ref: '#/components/schemas/Date'
+                symptoms:
+                    type: string
                 preexistingConditions:
                     type: object
                     properties:
-                        hasPreexistingConditions:
-                            type: boolean
-                        values:
-                            type: array
-                            items:
-                                type: string
+                        previousInfection:
+                            type: string
+                            enum: ['Y', 'N', 'NA']
+                        coInfection:
+                            type: string
+                        preexistingCondition:
+                            type: string
+                        pregnancyStatus:
+                            type: string
+                            enum: ['Y', 'N', 'NA']
                 transmission:
                     type: object
                     properties:
-                        routes:
-                            type: array
-                            items:
-                                type: string
-                        places:
-                            type: array
-                            items:
-                                type: string
-                        linkedCaseIds:
-                            type: array
-                            items:
-                                type: string
+                        contactWithCase:
+                            type: string
+                            enum: ['Y', 'N', 'NA']
+                        contactId:
+                            type: string
+                        contactSetting:
+                            type: string
+                        contactAnimal:
+                            type: string
+                        contactComment:
+                            type: string
+                        transmission:
+                            type: string
                 travelHistory:
                     type: object
                     properties:
-                        traveledPrior30Days:
-                            type: boolean
-                        travel:
-                            type: array
-                            items:
-                                type: object
-                                properties:
-                                    dateRange:
-                                        $ref: '#/components/schemas/DateRange'
-                                    location:
-                                        $ref: '#/components/schemas/FuzzyLocation'
-                                    purpose:
-                                        type: string
-                                        enum:
-                                            [
-                                                null,
-                                                Business,
-                                                Leisure,
-                                                Family,
-                                                Other,
-                                            ]
-                                    methods:
-                                        type: array
-                                        items:
-                                            type: string
-                variant:
-                    type: object
-                    properties:
-                        name:
+                        travelHistory:
                             type: string
-                vaccines:
-                    $ref: '#/components/schemas/VaccineArray'
+                            enum: ['Y', 'N', 'NA']
+                        travelHistoryEntry:
+                            $ref: '#/components/schemas/Date'
+                        travelHistoryStart:
+                            type: string
+                        travelHistoryLocation:
+                            type: string
+                        travelHistoryCountry:
+                            type: string
                 genomeSequences:
-                    type: array
-                    items:
-                        type: object
-                        properties:
-                            sampleCollectionDate:
-                                $ref: '#/components/schemas/Date'
-                            repositoryUrl:
-                                type: string
-                            sequenceId:
-                                type: string
-                            sequenceName:
-                                type: string
-                            sequenceLength:
-                                type: integer
-                                format: int64
-                                minimum: 0
-                pathogens:
-                    type: array
-                    items:
-                        type: object
-                        properties:
-                            name:
-                                type: string
-                            id:
-                                type: integer
-                                format: int32
-                                minimum: 0
-                revisionMetadata:
                     type: object
                     properties:
-                        revisionNumber:
-                            type: integer
-                            format: int32
-                            minimum: 0
-                        creationMetadata:
-                            $ref: '#/components/schemas/EditMetadata'
-                        editMetadata:
-                            $ref: '#/components/schemas/EditMetadata'
-                    required:
-                        - revisionNumber
-                SGTF:
+                        genomicsMetadata:
+                            type: string
+                        accessionNumber:
+                            type: string
+                vaccination:
+                    type: object
+                    properties:
+                        vaccination:
+                            type: string
+                            enum: ['Y', 'N', 'NA']
+                        vaccineName:
+                            type: string
+                        vaccineDate:
+                            $ref: '#/components/schemas/Date'
+                        vaccineSideEffects:
+                            type: string
+                pathogen:
                     type: string
-                    enum:
-                        [
-                            'NA',
-                            '0',
-                            '1',
-                        ]
         CaseArray:
             type: object
             properties:
@@ -911,38 +874,22 @@ components:
             properties:
                 query:
                     type: string
-                country:
+                countryISO2:
                     type: string
                     minLength: 2
                     maxLength: 2
                     description: ISO-3166-2 code for a country.
                     example: GB
-                administrativeAreaLevel1:
+                country:
                     type: string
-                administrativeAreaLevel2:
+                    description: name of a country
+                city:
                     type: string
-                administrativeAreaLevel3:
+                location:
                     type: string
-                place:
-                    type: string
-                name:
-                    type: string
+                    description: exact location
                 geoResolution:
                     type: string
-                geometry:
-                    type: object
-                    properties:
-                        latitude:
-                            type: number
-                            minimum: -90
-                            maximum: 90
-                        longitude:
-                            type: number
-                            minimum: -180
-                            maximum: 180
-                    required:
-                        - latitude
-                        - longitude
         FuzzyLocation:
             description: A geo location that can be unspecific. It may not be geocoded if it lacks information.
             type: object

@@ -14,11 +14,7 @@ export const caseReferenceSchema = new mongoose.Schema(
         },
         uploadIds: {
             ...uniqueStringsArrayFieldInfo,
-            required: true
-        },
-        verificationStatus: {
-            type: String,
-            default: 'UNVERIFIED',
+            required: true,
         },
         additionalSources: [
             {
@@ -35,7 +31,7 @@ export type CaseReferenceDocument = mongoose.Document & {
     sourceId: string;
 
     /** The original id of the case in the source.  */
-    sourceEntryId: string;
+    sourceEntryId?: string;
 
     /** The URL of the source of the case data at the time of ingestion. */
     sourceUrl: string;
@@ -47,9 +43,6 @@ export type CaseReferenceDocument = mongoose.Document & {
      * automated ingestion.
      */
     uploadIds: string[];
-
-    /** Whether the case document has been manually verified for correctness. */
-    verificationStatus: string;
 
     additionalSources: [
         {

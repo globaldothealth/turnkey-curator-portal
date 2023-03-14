@@ -7,9 +7,8 @@ import { makeStyles } from '@mui/styles';
 import AddIcon from '@mui/icons-material/Add';
 import Autocomplete from '@mui/material/Autocomplete';
 import Button from '@mui/material/Button';
-import CaseFormValues from './CaseFormValues';
 import FieldTitle from '../common-form-fields/FieldTitle';
-import { Location as Loc } from '../../api/models/Case';
+import { GeocodeLocation } from '../../api/models/Day0Case';
 import Location from './Location';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { RequiredHelperText } from '../common-form-fields/FormikFields';
@@ -17,8 +16,8 @@ import Scroll from 'react-scroll';
 import { TextField } from 'formik-mui';
 import { StyledTooltip } from './StyledTooltip';
 import axios from 'axios';
-import { hasKey } from '../Utils';
 import throttle from 'lodash/throttle';
+import { Day0CaseFormValues } from '../../api/models/Day0Case';
 
 const TooltipText = () => (
     <StyledTooltip>
@@ -61,31 +60,29 @@ const TooltipText = () => (
 
 function LocationForm(): JSX.Element {
     const { values, initialValues, setFieldValue } =
-        useFormikContext<CaseFormValues>();
+        useFormikContext<Day0CaseFormValues>();
+
     return (
         <Scroll.Element name="location">
-            <FieldTitle title="Location" tooltip={<TooltipText />}></FieldTitle>
+            <FieldTitle title="Location" tooltip={<TooltipText />} />
             <PlacesAutocomplete
-                initialValue={initialValues.location?.name}
-                name="location"
+                initialValue={initialValues.location.geocodeLocation?.name}
+                name="location.geocodeLocation"
                 required
             />
-            {!values.location && (
+            {!values.location.geocodeLocation && (
                 <Button
                     variant="outlined"
                     id="add-location"
                     startIcon={<AddIcon />}
-                    onClick={() => setFieldValue('location', {})}
+                    onClick={() =>
+                        setFieldValue('location.geocodeLocation', {})
+                    }
                 >
                     Specify geocode manually
                 </Button>
             )}
-            {values.location && (
-                <Location
-                    locationPath="location"
-                    geometry={values.location?.geometry}
-                />
-            )}
+            {values.location.geocodeLocation && <Location />}
         </Scroll.Element>
     );
 }
@@ -121,20 +118,20 @@ export function PlacesAutocomplete(
     props: PlacesAutocompleteProps,
 ): JSX.Element {
     const classes = useStyles();
-    const [value, setValue] = React.useState<Loc | null>(null);
+    const [value, setValue] = React.useState<GeocodeLocation | null>(null);
     const [inputValue, setInputValue] = React.useState('');
-    const [options, setOptions] = React.useState<Loc[]>([]);
-    const { setFieldValue, setTouched, touched } =
-        useFormikContext<CaseFormValues>();
+    const [options, setOptions] = React.useState<GeocodeLocation[]>([]);
+    const { setFieldValue, setTouched } =
+        useFormikContext<Day0CaseFormValues>();
 
     const fetch = React.useMemo(
         () =>
             throttle(
                 async (
                     request: { q: string },
-                    callback: (results?: Loc[]) => void,
+                    callback: (results?: GeocodeLocation[]) => void,
                 ) => {
-                    const resp = await axios.get<Loc[]>(
+                    const resp = await axios.get<GeocodeLocation[]>(
                         '/api/geocode/suggest',
                         {
                             params: request,
@@ -155,9 +152,9 @@ export function PlacesAutocomplete(
             return undefined;
         }
 
-        fetch({ q: inputValue }, (results?: Loc[]) => {
+        fetch({ q: inputValue }, (results?: GeocodeLocation[]) => {
             if (active) {
-                let newOptions = [] as Loc[];
+                let newOptions = [] as GeocodeLocation[];
 
                 if (results) {
                     newOptions = results.map((l) => {
@@ -175,20 +172,21 @@ export function PlacesAutocomplete(
             active = false;
         };
     }, [value, inputValue, fetch]);
+
     return (
         <Autocomplete
-            itemType="Loc"
-            getOptionLabel={(option: Loc): string => option.name}
+            itemType="GeocodeLocation"
+            getOptionLabel={(option: GeocodeLocation): string => option.name}
             options={options}
             value={value}
-            onChange={(event: unknown, newValue: Loc | null): void => {
-                console.log('change');
+            sx={{ width: '50%' }}
+            onChange={(_: unknown, newValue: GeocodeLocation | null): void => {
                 setOptions(newValue ? [newValue, ...options] : options);
                 setValue(newValue);
                 setFieldValue(props.name, newValue);
             }}
             onBlur={(): void => setTouched({ [props.name]: true })}
-            onInputChange={(event, newInputValue): void => {
+            onInputChange={(_, newInputValue): void => {
                 setInputValue(newInputValue);
             }}
             noOptionsText="No locations found, type to search"
@@ -204,24 +202,23 @@ export function PlacesAutocomplete(
                         data-testid={props.name}
                         // Use the initial valuelocation name as a hint when untouched
                         // otherwise just use the field name.
-                        label={
-                            hasKey(touched, props.name)
-                                ? 'Location'
-                                : props.initialValue || 'Location'
-                        }
+                        label={props.initialValue || 'Location'}
                         component={TextField}
                         fullWidth
-                        variant="standard"
-                    ></Field>
+                    />
                     {props.required && (
                         <RequiredHelperText
                             name={props.name}
                             locationRequiredText="A location must be provided"
-                        ></RequiredHelperText>
+                        />
                     )}
                 </>
             )}
-            renderOption={(props, option: Loc, state): React.ReactNode => {
+            renderOption={(
+                props,
+                option: GeocodeLocation,
+                state,
+            ): React.ReactNode => {
                 return (
                     <li {...props} className={classes.suggestion}>
                         <LocationOnIcon className={classes.icon} />

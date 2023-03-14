@@ -1,15 +1,25 @@
 import mongoose from 'mongoose';
-import { uniqueStringsArrayFieldInfo } from './unique-strings-array';
+import { YesNo } from '../types/enums';
 
 export const preexistingConditionsSchema = new mongoose.Schema(
     {
-        values: uniqueStringsArrayFieldInfo,
-        hasPreexistingConditions: Boolean,
+        previousInfection: {
+            type: String,
+            enum: YesNo,
+        },
+        coInfection: String,
+        preexistingCondition: String,
+        pregnancyStatus: {
+            type: String,
+            enum: YesNo,
+        },
     },
     { _id: false },
 );
 
 export type PreexistingConditionsDocument = mongoose.Document & {
-    values: [string];
-    hasPreexistingConditions: boolean;
+    previousInfection: YesNo;
+    coInfection: string;
+    preexistingCondition: string;
+    pregnancyStatus: YesNo;
 };

@@ -10,9 +10,7 @@ import {
     createBatchUpsertCaseRevisions,
     createCaseRevision,
     findCasesToUpdate,
-    setBatchUpdateRevisionMetadata,
     setBatchUpsertFields,
-    setRevisionMetadata,
 } from './controllers/preprocessor';
 
 import { Case } from './model/case';
@@ -119,7 +117,7 @@ apiRouter.get('/cases', caseController.list);
 apiRouter.get('/cases/symptoms', cases.listSymptoms);
 apiRouter.get('/cases/placesOfTransmission', cases.listPlacesOfTransmission);
 apiRouter.get('/cases/occupations', cases.listOccupations);
-apiRouter.post('/cases', setRevisionMetadata, caseController.create);
+apiRouter.post('/cases', caseController.create);
 apiRouter.post('/cases/download', caseController.download);
 apiRouter.post(
     '/cases/batchUpsert',
@@ -129,31 +127,19 @@ apiRouter.post(
     createBatchUpsertCaseRevisions,
     caseController.batchUpsert,
 );
-apiRouter.put(
-    '/cases',
-    setRevisionMetadata,
-    createCaseRevision,
-    caseController.upsert,
-);
+apiRouter.put('/cases', createCaseRevision, caseController.upsert);
 apiRouter.post(
     '/cases/batchUpdate',
-    setBatchUpdateRevisionMetadata,
     createBatchUpdateCaseRevisions,
     caseController.batchUpdate,
 );
 apiRouter.post(
     '/cases/batchUpdateQuery',
     findCasesToUpdate,
-    setBatchUpdateRevisionMetadata,
     createBatchUpdateCaseRevisions,
     caseController.batchUpdate,
 );
-apiRouter.put(
-    '/cases/:id([a-z0-9]{24})',
-    setRevisionMetadata,
-    createCaseRevision,
-    caseController.update,
-);
+apiRouter.put('/cases/:id([a-z0-9]{24})', caseController.update);
 apiRouter.delete(
     '/cases',
     batchDeleteCheckThreshold,
@@ -165,8 +151,6 @@ apiRouter.delete(
     createCaseRevision,
     caseController.del,
 );
-apiRouter.post('/cases/batchStatusChange', caseController.batchStatusChange);
-apiRouter.get('/excludedCaseIds', caseController.listExcludedCaseIds);
 
 app.use('/api', apiRouter);
 

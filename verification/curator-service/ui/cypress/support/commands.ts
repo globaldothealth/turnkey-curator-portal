@@ -5,8 +5,42 @@ import en from 'i18n-iso-countries/langs/en.json';
 countries.registerLocale(en);
 
 export enum Outcome {
-    Recovered = 'Recovered',
-    Death = 'Death',
+    Recovered = 'recovered',
+    Death = 'death',
+}
+
+export enum YesNo {
+    Y = 'Y',
+    N = 'N',
+    NA = 'NA',
+}
+
+export enum Gender {
+    Male = 'male',
+    Female = 'female',
+    Other = 'other',
+}
+
+export enum CaseStatus {
+    Confirmed = 'confirmed',
+    Suspected = 'suspected',
+    Discarded = 'discarded',
+    OmitError = 'omit_error',
+}
+
+interface AddCaseProps {
+    caseStatus: CaseStatus;
+    country: string;
+    countryISO2: string;
+    dateEntry: string;
+    dateConfirmation?: string;
+    confirmationMethod?: string;
+    occupation?: string;
+    symptoms?: string;
+    sourceUrl?: string;
+    gender?: Gender;
+    outcome?: Outcome;
+    uploadIds?: string[];
 }
 
 declare global {
@@ -14,23 +48,7 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            addCase: (opts: {
-                country: string;
-                methodOfConfirmation?: string;
-                nationalities?: string[];
-                notes?: string;
-                occupation?: string;
-                symptomStatus?: string;
-                symptoms?: string[];
-                transmissionPlaces?: string[];
-                uploadIds?: string[];
-                startConfirmedDate?: any;
-                variant?: any;
-                sourceUrl?: any;
-                gender?: string;
-                creationDate?: string;
-                outcome?: Outcome;
-            }) => void;
+            addCase: (opts: AddCaseProps) => void;
             login: (opts?: {
                 name: string;
                 email: string;
@@ -52,81 +70,41 @@ declare global {
     }
 }
 
-export function addCase(opts: {
-    country: string;
-    methodOfConfirmation?: string;
-    nationalities?: string[];
-    notes?: string;
-    occupation?: string;
-    symptomStatus?: string;
-    symptoms?: string[];
-    transmissionPlaces?: string[];
-    uploadIds?: string;
-    startConfirmedDate?: any;
-    variant?: string;
-    caseid?: string;
-    sourceUrl?: string;
-    gender?: string;
-    creationDate?: string;
-    outcome?: Outcome;
-}): void {
+export function addCase(opts: AddCaseProps): void {
     cy.request({
         method: 'POST',
         url: '/api/cases',
         body: {
+            caseStatus: opts.caseStatus,
+            pathogen: 'COVID-19',
             caseReference: {
                 sourceId: '5ef8e943dfe6e00030892d58',
                 sourceUrl: opts.sourceUrl || 'www.example.com',
                 uploadIds: opts.uploadIds,
             },
-            list: true,
             demographics: {
-                nationalities: opts.nationalities,
                 occupation: opts.occupation,
                 gender: opts.gender,
             },
             location: {
-                country: countries.getAlpha2Code(opts.country, 'en'),
+                country: opts.country,
+                countryISO2: opts.countryISO2,
+                query: opts.country,
                 geoResolution: 'Country',
-                geometry: {
-                    latitude: 42,
-                    longitude: 12,
-                },
                 name: opts.country,
             },
-            variant: {
-                name: opts.variant,
+            events: {
+                dateEntry: opts.dateEntry,
+                dateConfirmation: opts.dateConfirmation,
+                confirmationMethod: opts.confirmationMethod,
+                outcome: opts.outcome,
             },
-            events: [
-                {
-                    name: 'confirmed',
-                    dateRange: {
-                        start: opts.startConfirmedDate || new Date().toJSON(),
-                    },
-                    value: opts.methodOfConfirmation,
-                },
-                {
-                    name: 'outcome',
-                    value: opts.outcome,
-                },
-            ],
-            symptoms: {
-                status: opts.symptomStatus ?? undefined,
-                values: opts.symptoms ?? [],
-            },
-            transmission: {
-                places: opts.transmissionPlaces ?? [],
-            },
-            notes: opts.notes,
-            revisionMetadata: {
-                revisionNumber: 0,
-                creationMetadata: {
-                    curator:
-                        'ingestion@covid-19-map-277002.iam.gserviceaccount.com',
-                    date: opts.creationDate,
-                },
-            },
-            confirmationDate: opts.creationDate,
+            symptoms: opts.symptoms,
+            preexistingConditions: {},
+            transmission: {},
+            travelHistory: {},
+            genomeSequences: {},
+            vaccination: {},
         },
     });
 }

@@ -1,18 +1,26 @@
 import mongoose from 'mongoose';
+import { YesNo } from '../types/enums';
 
 export const transmissionSchema = new mongoose.Schema(
     {
-        // Ids of other cases of people with whom this person had contact.
-        linkedCaseIds: [String],
-        // Data dictionary.
-        places: [String],
-        routes: [String],
+        contactWithCase: {
+            type: String,
+            enum: YesNo,
+        },
+        contactId: String,
+        contactSetting: String,
+        contactAnimal: String,
+        contactComment: String,
+        transmission: String,
     },
     { _id: false },
 );
 
 export type TransmissionDocument = mongoose.Document & {
-    linkedCaseIds: [string];
-    places: [string];
-    routes: [string];
+    contactWithCase: YesNo;
+    contactId: string;
+    contactSetting: string;
+    contactAnimal: string;
+    contactComment: string;
+    transmission: string;
 };

@@ -1,13 +1,10 @@
-import { Divider, MenuItem } from '@mui/material';
-import { Select, TextField } from 'formik-mui';
+import { TextField } from 'formik-mui';
 
-import { FastField } from 'formik';
-import FormControl from '@mui/material/FormControl';
-import { Geometry } from '../../api/models/Case';
-import InputLabel from '@mui/material/InputLabel';
-import React from 'react';
-import StaticMap from '../StaticMap';
+import { FastField, useFormikContext } from 'formik';
 import makeStyles from '@mui/styles/makeStyles';
+import { Day0CaseFormValues } from '../../api/models/Day0Case';
+import { useEffect } from 'react';
+import { getName } from 'i18n-iso-countries';
 
 const styles = makeStyles(() => ({
     root: {
@@ -28,126 +25,70 @@ const styles = makeStyles(() => ({
     },
 }));
 
-export default function Location(props: {
-    locationPath: string;
-    geometry?: Geometry;
-}): JSX.Element {
+export default function Location(): JSX.Element {
     const classes = styles();
+    const { values, setFieldValue } = useFormikContext<Day0CaseFormValues>();
+
+    useEffect(() => {
+        if (!values.location.geocodeLocation) return;
+
+        const countryName = getName(
+            values.location.geocodeLocation.country,
+            'en',
+        );
+
+        setFieldValue(
+            'location.countryISO2',
+            values.location.geocodeLocation.country,
+        );
+        setFieldValue('location.country', countryName);
+        setFieldValue(
+            'location.location',
+            values.location.geocodeLocation.name || '',
+        );
+        // eslint-disable-next-line
+    }, [values.location.geocodeLocation]);
+
     return (
-        <>
-            <div className={classes.root}>
-                <FormControl className={classes.field}>
-                    <InputLabel
-                        htmlFor={`${props.locationPath}.geoResolution`}
-                        shrink
-                    >
-                        Geo resolution
-                    </InputLabel>
-                    <FastField
-                        variant="standard"
-                        as="select"
-                        id={`${props.locationPath}.geoResolution`}
-                        name={`${props.locationPath}.geoResolution`}
-                        type="text"
-                        component={Select}
-                    >
-                        {['Point', 'Admin3', 'Admin2', 'Admin1', 'Country'].map(
-                            (res) => (
-                                <MenuItem key={res} value={res}>
-                                    {res}
-                                </MenuItem>
-                            ),
-                        )}
-                    </FastField>
-                </FormControl>
-                <FastField
-                    variant="standard"
-                    className={classes.field}
-                    label="Name"
-                    name={`${props.locationPath}.name`}
-                    type="text"
-                    required
-                    component={TextField}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                />
-                <FastField
-                    variant="standard"
-                    className={classes.field}
-                    label="Country"
-                    name={`${props.locationPath}.country`}
-                    type="text"
-                    required
-                    component={TextField}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                />
-                <FastField
-                    variant="standard"
-                    className={classes.field}
-                    label="Admin area 1"
-                    name={`${props.locationPath}.administrativeAreaLevel1`}
-                    type="text"
-                    component={TextField}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                />
-                <FastField
-                    variant="standard"
-                    className={classes.field}
-                    label="Admin area 2"
-                    name={`${props.locationPath}.administrativeAreaLevel2`}
-                    type="text"
-                    component={TextField}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                />
-                <FastField
-                    variant="standard"
-                    className={classes.field}
-                    label="Admin area 3"
-                    name={`${props.locationPath}.administrativeAreaLevel3`}
-                    type="text"
-                    component={TextField}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                />
-                <FastField
-                    variant="standard"
-                    className={classes.field}
-                    label="Latitude"
-                    name={`${props.locationPath}.geometry.latitude`}
-                    type="number"
-                    required
-                    component={TextField}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                />
-                <FastField
-                    variant="standard"
-                    className={classes.field}
-                    label="Longitude"
-                    name={`${props.locationPath}.geometry.longitude`}
-                    type="number"
-                    required
-                    component={TextField}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                />
-            </div>
-            {props.geometry?.latitude && props.geometry?.longitude && (
-                <div className={classes.mapContainer}>
-                    <Divider className={classes.divider} variant="middle" />
-                    <StaticMap geometry={props.geometry}></StaticMap>
-                </div>
-            )}
-        </>
+        <div className={classes.root}>
+            <FastField
+                variant="outlined"
+                className={classes.field}
+                label="Country code"
+                name="location.countryISO2"
+                type="text"
+                required
+                component={TextField}
+                sx={{ minWidth: '13rem' }}
+            />
+            <FastField
+                variant="outlined"
+                className={classes.field}
+                label="Country"
+                name="location.country"
+                type="text"
+                required
+                component={TextField}
+                sx={{ minWidth: '13rem' }}
+            />
+            <FastField
+                variant="outlined"
+                className={classes.field}
+                label="City"
+                name="location.city"
+                type="text"
+                component={TextField}
+                sx={{ minWidth: '13rem' }}
+            />
+            <FastField
+                variant="outlined"
+                className={classes.field}
+                label="Location"
+                name="location.location"
+                type="text"
+                component={TextField}
+                sx={{ minWidth: '13rem' }}
+            />
+        </div>
     );
 }

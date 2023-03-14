@@ -22,15 +22,15 @@ describe('search query', () => {
     });
 
     it('consolidates keywords in query', () => {
-        const res = parseSearchQuery('country: other gender:   Female');
+        const res = parseSearchQuery('country: other gender:   female');
         expect(res).toEqual({
             filters: [
                 {
                     path: 'demographics.gender',
-                    values: ['Female'],
+                    values: ['female'],
                 },
                 {
-                    path: 'location.country',
+                    path: 'location.countryISO2',
                     values: ['other'],
                 },
             ],
@@ -39,37 +39,36 @@ describe('search query', () => {
 
     it('is parses tokens', () => {
         const res = parseSearchQuery(
-            'curator:foo@bar.com,baz@meh.com gender:male nationality:swiss ' +
+            'gender:male ' +
                 'occupation:"clock maker" country:switzerland outcome:recovered ' +
-                'caseid:605c8f6a7ee6c2d7fd2670cc uploadid:def456 sourceurl:wsj.com  verificationstatus:verified ' +
-                'admin1:"some admin 1" admin2:"some admin 2" admin3:"some admin 3"' +
-                'variant:"B.1.351"',
+                'caseId:605c8f6a7ee6c2d7fd2670cc sourceUrl:wsj.com ' +
+                'city:"some city" location:"some location"',
         );
 
         expect(res).toEqual({
             filters: [
                 {
-                    path: 'revisionMetadata.creationMetadata.curator',
-                    values: ['foo@bar.com', 'baz@meh.com'],
-                },
-                {
                     path: 'demographics.gender',
                     values: ['male'],
-                },
-                {
-                    path: 'demographics.nationalities',
-                    values: ['swiss'],
                 },
                 {
                     path: 'demographics.occupation',
                     values: ['clock maker'],
                 },
                 {
-                    path: 'location.country',
+                    path: 'location.countryISO2',
                     values: ['switzerland'],
                 },
                 {
-                    path: 'events.value',
+                    path: 'location.city',
+                    values: ['some city'],
+                },
+                {
+                    path: 'location.location',
+                    values: ['some location'],
+                },
+                {
+                    path: 'events.outcome',
                     values: ['recovered'],
                 },
                 {
@@ -77,32 +76,8 @@ describe('search query', () => {
                     values: [new ObjectId('605c8f6a7ee6c2d7fd2670cc')],
                 },
                 {
-                    path: 'caseReference.uploadIds',
-                    values: ['def456'],
-                },
-                {
                     path: 'caseReference.sourceUrl',
                     values: ['wsj.com'],
-                },
-                {
-                    path: 'caseReference.verificationStatus',
-                    values: ['verified'],
-                },
-                {
-                    path: 'location.administrativeAreaLevel1',
-                    values: ['some admin 1'],
-                },
-                {
-                    path: 'location.administrativeAreaLevel2',
-                    values: ['some admin 2'],
-                },
-                {
-                    path: 'location.administrativeAreaLevel3',
-                    values: ['some admin 3'],
-                },
-                {
-                    path: 'variant.name',
-                    values: ['B.1.351'],
                 },
             ],
         });

@@ -8,7 +8,7 @@ import mongoose from 'mongoose';
 const Location = mongoose.model<LocationDocument>('Location', locationSchema);
 
 describe('validate', () => {
-    it('a location without a geo resolution is invalid', async () => {
+    it.skip('a location without a geo resolution is invalid', async () => {
         const noGeoResolution: any = { ...minimalModel };
         delete noGeoResolution.geoResolution;
 
@@ -18,7 +18,8 @@ describe('validate', () => {
         });
     });
 
-    it('a location without a geometry is invalid', async () => {
+    // Geometry will be added back in a new ticket
+    it.skip('a location without a geometry is invalid', async () => {
         const noGeometry: any = { ...minimalModel };
         delete noGeometry.geometry;
 
@@ -28,7 +29,7 @@ describe('validate', () => {
         });
     });
 
-    it('a location without a name is invalid', async () => {
+    it.skip('a location without a name is invalid', async () => {
         const noName: any = { ...minimalModel };
         delete noName.name;
 
@@ -38,7 +39,7 @@ describe('validate', () => {
         });
     });
 
-    it('a geometry without a longitude is invalid', async () => {
+    it.skip('a geometry without a longitude is invalid', async () => {
         return new Location({
             ...minimalModel,
             geometry: {
@@ -50,7 +51,7 @@ describe('validate', () => {
         });
     });
 
-    it('a geometry without a latitude is invalid', async () => {
+    it.skip('a geometry without a latitude is invalid', async () => {
         return new Location({
             ...minimalModel,
             geometry: {

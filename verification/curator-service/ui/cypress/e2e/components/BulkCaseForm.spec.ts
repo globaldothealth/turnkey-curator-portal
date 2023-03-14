@@ -5,21 +5,16 @@ describe('Bulk upload form', function () {
         cy.task('clearCasesDB', {});
         cy.login();
         cy.seedLocation({
-            country: 'UK',
-            administrativeAreaLevel1: 'England',
-            administrativeAreaLevel2: 'Greater London',
-            administrativeAreaLevel3: 'London',
+            country: 'FR',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
-            name: 'London, Greater London, England, United Kingdom',
-            geoResolution: 'Admin3',
+            name: 'France',
+            geoResolution: 'Country',
         });
         cy.seedLocation({
             country: 'CA',
-            administrativeAreaLevel1: 'Alberta',
-            administrativeAreaLevel3: 'Banff',
             geometry: { latitude: 51.1784, longitude: 115.5708 },
-            name: 'Banff, Alberta, Canada',
-            geoResolution: 'Admin3',
+            name: 'Canada',
+            geoResolution: 'Country',
         });
     });
 
@@ -49,51 +44,46 @@ describe('Bulk upload form', function () {
 
         cy.intercept('GET', '/api/cases/*').as('viewCase');
 
-        cy.contains('td', 'Male').click({ force: true });
+        cy.contains('td', 'male').click({ force: true });
         cy.wait('@viewCase');
 
         // Case data
         cy.contains('www.bulksource.com');
-        cy.contains('superuser@test.com');
         cy.contains('Data upload IDs')
             .parent()
             .parent()
             .contains(/[a-f\d]{24}/);
-        cy.contains('VERIFIED');
+        cy.contains('confirmed');
 
         // Demographics
-        cy.contains('41 - 45');
-        cy.contains('Male');
+        cy.contains('male');
         cy.contains('Accountant');
-        cy.contains('Bangladeshi');
-        cy.contains('British, Indian');
 
         // Location
-        cy.contains('London, Greater London, England, United Kingdom');
-        cy.contains('Admin3');
+        cy.contains('France');
 
         // Events
+        // Entry date
+        cy.contains('2020-06-01');
         // Confirmation
-        cy.contains('2020-06-23');
+        cy.contains('2020-06-02');
         cy.contains('PCR test');
-        // Symptom onset
-        cy.contains('2020-06-19');
         // Hospital admission
-        cy.contains('Yes');
-        cy.contains('2020-06-21');
+        cy.contains('2020-06-03');
         // ICU admission
-        cy.contains('2020-06-22');
+        cy.contains('2020-06-04');
+        cy.contains('2020-06-05');
         // Outcome
-        cy.contains('Recovered');
-        cy.contains('2020-06-24');
+        cy.contains('recovered');
+        cy.contains('2020-06-06');
+        // Symptom onset
+        cy.contains('2020-06-07');
 
         // Symptoms
-        cy.contains('Symptomatic');
-        cy.contains('cough, fever');
+        cy.contains('cough;fever');
 
         // Preexisting conditions
-        cy.contains('Yes');
-        cy.contains('Lyme disease, COPD');
+        cy.contains('Lyme disease;COPD');
     });
 
     it('Can upload CSV with existing source', function () {
@@ -118,12 +108,11 @@ describe('Bulk upload form', function () {
         cy.contains('No records to display').should('not.exist');
         cy.contains('bulk_data.csv uploaded. 2 new cases added.');
         cy.contains('www.bulksource.com');
-        cy.contains('2020-06-23');
+        cy.contains('2020-05-23');
+        cy.contains('confirmed');
         cy.contains('Canada');
-        cy.contains('Alberta');
-        cy.contains('Banff');
-        cy.contains('Male');
-        cy.contains('41 - 45');
+
+        cy.contains('male');
     });
 
     it('Can upload CSV with new source', function () {
@@ -150,12 +139,10 @@ describe('Bulk upload form', function () {
         cy.contains('No records to display').should('not.exist');
         cy.contains('bulk_data.csv uploaded. 2 new cases added.');
         cy.contains('www.new-source.com');
-        cy.contains('2020-06-23');
+        cy.contains('2020-05-23');
         cy.contains('Canada');
-        cy.contains('Alberta');
-        cy.contains('Banff');
-        cy.contains('Male');
-        cy.contains('41 - 45');
+
+        cy.contains('male');
 
         cy.visit('/sources');
         cy.contains('www.new-source.com');
@@ -183,8 +170,8 @@ describe('Bulk upload form', function () {
         // Check data in linelist table.
         cy.contains('No records to display').should('not.exist');
         cy.contains('bulk_data.csv uploaded. 2 new cases added.');
-        cy.contains('Male');
-        cy.contains('Female').should('not.exist');
+        cy.contains('male');
+        cy.contains('female').should('not.exist');
 
         cy.get('button[data-testid="create-new-button"]').click();
         cy.contains('New bulk upload').click();
@@ -203,12 +190,13 @@ describe('Bulk upload form', function () {
         // However the data service thinks it updated both: see #NNNN
         // to see why this won't be a big deal in the long run.
         cy.contains('bulk_data.csv uploaded. 2 cases updated.');
-        cy.contains('Female');
+        cy.contains('female');
+        cy.contains('suspected');
 
         // Check both upload ids are present
         cy.intercept('get', '/api/cases/*').as('viewCase');
 
-        cy.contains('td', 'Female').click({ force: true });
+        cy.contains('td', 'female').click({ force: true });
         cy.wait('@viewCase');
         cy.contains('Data upload IDs')
             .parent()
@@ -237,7 +225,7 @@ describe('Bulk upload form', function () {
         cy.contains(
             'bulk_data_with_case_count.csv uploaded. 3 new cases added.',
         );
-        cy.get('tr').get('td:contains(Male)').should('have.length', 3);
+        cy.get('tr').get('td:contains(male)').should('have.length', 3);
     });
 
     it('Does not upload bad data and displays validation errors', function () {
