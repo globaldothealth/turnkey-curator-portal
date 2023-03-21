@@ -228,11 +228,6 @@ const NewCaseValidation = Yup.object().shape(
             .required(),
         caseReference: Yup.object().shape({
             sourceUrl: Yup.string().required('Required'),
-            sourceName: Yup.string().when('sourceId', {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                is: (sourceId: any) => !sourceId,
-                then: Yup.string().required('Required'),
-            }),
         }),
         pathogen: Yup.string().required('Required'),
         location: Yup.object().shape({
