@@ -64,8 +64,6 @@ describe('New case form', function () {
         cy.get('div[data-testid="caseStatus"]').click();
         cy.get('li[data-value="confirmed"]').click();
         cy.get('div[data-testid="caseReference"]').type('www.new-source.com');
-        cy.get('input[name="caseReference.sourceName"]').type('New source');
-        cy.get('input[name="caseReference.sourceLicense"]').type('WTFPL');
         cy.get('div[data-testid="location.geocodeLocation"]').type('France');
         cy.wait('@geolocationFranceSuggest');
         cy.contains('li', 'France').click();
@@ -86,7 +84,6 @@ describe('New case form', function () {
             cy.visit('/');
             cy.visit('/sources');
             cy.contains('www.new-source.com');
-            cy.contains('New source');
         });
     });
 
