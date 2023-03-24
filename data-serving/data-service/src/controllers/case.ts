@@ -23,6 +23,7 @@ import { logger } from '../util/logger';
 import stringify from 'csv-stringify/lib/sync';
 import _ from 'lodash';
 import { AgeBucket } from '../model/age-bucket';
+import { IdCounter, COUNTER_DOCUMENT_ID } from '../model/id-counter';
 
 class GeocodeNotFoundError extends Error {}
 
@@ -77,6 +78,30 @@ const dtoFromCase = async (storedCase: LeanDocument<CaseDocument>) => {
     }
 
     return dto;
+};
+
+/**
+ * This function allocates unique IDs for cases
+ * and returns array of cases prefilled with new IDs
+ *
+ * @param num number of unique IDs to generate
+ */
+const generateCaseIds = async (
+    cases: CaseDocument[],
+): Promise<CaseDocument[]> => {
+    if (!cases || cases.length === 0) throw new Error('No cases provided');
+
+    const numberOfIds = cases.length;
+    const idCounter = await IdCounter.findByIdAndUpdate(COUNTER_DOCUMENT_ID, {
+        $inc: { count: numberOfIds },
+    });
+    if (!idCounter) throw new Error('ID counter document not found');
+
+    for (let i = 0; i < numberOfIds; i++) {
+        cases[i]._id = idCounter.count + i;
+    }
+
+    return cases;
 };
 
 export class CasesController {
@@ -395,13 +420,15 @@ export class CasesController {
                 result = c;
             } else {
                 if (numCases === 1) {
-                    result = await c.save();
+                    const caseWithId = await generateCaseIds([c]);
+                    result = await caseWithId[0].save();
                 } else {
                     const cases = Array.from(
                         { length: numCases },
                         () => new Day0Case(req.body),
                     );
-                    result = { cases: await Day0Case.insertMany(cases) };
+                    const casesWithId = await generateCaseIds(cases);
+                    result = { cases: await Day0Case.insertMany(casesWithId) };
                 }
             }
 
@@ -787,156 +814,6 @@ export class CasesController {
     };
 
     /**
-     * Excludes multiple cases.
-     *
-     * Handles HTTP POST /api/batchStatusChange.
-     * Receives an array of MongoDB IDs, status to be set for them and optional note.
-     * Note is used only when excluding cases (status set to "Excluded").
-     */
-    // @TODO
-    // batchStatusChange = async (req: Request, res: Response): Promise<void> => {
-    //     const newStatus = req.body.status.toUpperCase();
-    //     const caseIds = req.body.caseIds;
-
-    //     if (newStatus === 'EXCLUDED' && !req.body.note) {
-    //         res.status(422)
-    //             .send({
-    //                 message: 'Note is required when excluding cases.',
-    //             })
-    //             .end();
-    //         return;
-    //     }
-
-    //     let updateQuery = {};
-
-    //     try {
-    //         if (!caseIds) {
-    //             updateQuery = casesMatchingSearchQuery({
-    //                 searchQuery: req.body.query,
-    //                 count: false,
-    //             }).collation({ locale: 'en_US', strength: 2 });
-    //         } else {
-    //             updateQuery = {
-    //                 _id: { $in: caseIds },
-    //             };
-    //             const validIdsCount = await Day0Case.countDocuments(updateQuery);
-    //             const validRestrictedIdsCount = await RestrictedCase.countDocuments(
-    //                 updateQuery,
-    //             );
-    //             if (validIdsCount + validRestrictedIdsCount != caseIds.length) {
-    //                 res.status(422)
-    //                     .send({
-    //                         message:
-    //                             'At least one of provided case IDs was not found. No records changed.',
-    //                     })
-    //                     .end();
-    //                 return;
-    //             }
-    //         }
-    //     } catch (err) {
-    //         if (err.name === 'CastError') {
-    //             res.status(422)
-    //                 .send({
-    //                     message: `Provided ID (${err.value}) is not valid. More IDs may be invalid. No records changed.`,
-    //                 })
-    //                 .end();
-    //             return;
-    //         }
-    //         logger.error(err);
-    //         res.status(500).json(err).end();
-    //         return;
-    //     }
-
-    //     try {
-    //         let updateDocument = {};
-    //         if (newStatus === 'EXCLUDED') {
-    //             updateDocument = {
-    //                 $set: {
-    //                     'caseReference.verificationStatus': newStatus,
-    //                     'exclusionData.date': Date.now(),
-    //                     'exclusionData.note': req.body.note,
-    //                 },
-    //             };
-    //         } else {
-    //             updateDocument = {
-    //                 $set: {
-    //                     'caseReference.verificationStatus': newStatus,
-    //                 },
-    //                 $unset: {
-    //                     exclusionData: '',
-    //                 },
-    //             };
-    //         }
-    //         await Day0Case.updateMany(updateQuery, updateDocument);
-    //         await RestrictedCase.updateMany(updateQuery, updateDocument);
-
-    //         res.status(200).end();
-    //     } catch (err) {
-    //         logger.error(err);
-    //         res.status(500).json(err).end();
-    //     }
-    //     return;
-    // };
-
-    /**
-     * Get a list of excluded cases IDs for a specific source ID.
-     *
-     * Handles HTTP GET /api/excludedCaseIds.
-     */
-
-    // @TODO
-    // listExcludedCaseIds = async (
-    //     req: Request,
-    //     res: Response,
-    // ): Promise<void> => {
-    //     /*
-    //         We need to be able to include date filtering or
-    //         not - requiring events to be an optional property.
-    //      */
-    //     const searchQuery: {
-    //         'caseReference.verificationStatus': string;
-    //         'caseReference.sourceId': string | undefined;
-    //         events?: QuerySelector<EventDocument | [EventDocument]>;
-    //     } = {
-    //         'caseReference.verificationStatus': 'EXCLUDED',
-    //         'caseReference.sourceId': req.query.sourceId?.toString(),
-    //     };
-
-    //     if (req.query.dateFrom || req.query.dateTo) {
-    //         let dateRangeFilter = {};
-
-    //         if (req.query.dateFrom) {
-    //             dateRangeFilter = {
-    //                 ...dateRangeFilter,
-    //                 $gte: new Date(req.query.dateFrom.toString()),
-    //             };
-    //         }
-
-    //         if (req.query.dateTo) {
-    //             dateRangeFilter = {
-    //                 ...dateRangeFilter,
-    //                 $lte: new Date(req.query.dateTo.toString()),
-    //             };
-    //         }
-
-    //         searchQuery['events'] = {
-    //             $elemMatch: {
-    //                 name: 'confirmed',
-    //                 'dateRange.start': dateRangeFilter,
-    //             },
-    //         };
-    //     }
-
-    //     const cases = await Day0Case.find(searchQuery).lean();
-
-    //     const caseIds = cases
-    //         .filter((c) => !!c.caseReference.sourceEntryId)
-    //         .map((c) => c.caseReference.sourceEntryId);
-
-    //     res.status(200).json({ cases: caseIds }).end();
-    // };
-
-    /**
      * Geocodes a single location.
      * @param canBeFuzzy The location is allowed to be "fuzzy", in which case it may not get geocoded.
      * @returns The geocoded location.
@@ -1021,25 +898,6 @@ export class CasesController {
         req.body['location'] = { ...req.body['location'], ...locationObject };
     }
 }
-
-/*
-"location": {
-    "country": "Costa Rica",
-    "administrativeAreaLevel1": "Any province in Costa Rica",
-    "administrativeAreaLevel2": "Any canton in Costa Rica",
-    "administrativeAreaLevel3": "Any district in Costa Rica",
-    "place": "Boston Children's Hospital",
-    "name": "Lyon, Auvergne-Rhône-Alpes, France",
-    "geoResolution": "Point",
-    "geometry": {
-      "latitude": 0,
-      "longitude": 0
-    },
-    "query": "string",
-    "limitToResolution": "string",
-    "limitToCountry": string[]
-  }
- */
 
 // Returns a mongoose query for all cases matching the given search query.
 // If count is true, it returns a query for the number of cases matching

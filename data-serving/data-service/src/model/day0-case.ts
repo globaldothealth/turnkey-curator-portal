@@ -50,6 +50,7 @@ export const sourceSchema = new mongoose.Schema({
 
 export const caseSchema = new mongoose.Schema(
     {
+        _id: Number,
         caseStatus: {
             type: CaseStatus,
             required: true,
