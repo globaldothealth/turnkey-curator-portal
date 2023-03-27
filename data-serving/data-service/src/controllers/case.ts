@@ -80,30 +80,6 @@ const dtoFromCase = async (storedCase: LeanDocument<CaseDocument>) => {
     return dto;
 };
 
-/**
- * This function allocates unique IDs for cases
- * and returns array of cases prefilled with new IDs
- *
- * @param num number of unique IDs to generate
- */
-const generateCaseIds = async (
-    cases: CaseDocument[],
-): Promise<CaseDocument[]> => {
-    if (!cases || cases.length === 0) throw new Error('No cases provided');
-
-    const numberOfIds = cases.length;
-    const idCounter = await IdCounter.findByIdAndUpdate(COUNTER_DOCUMENT_ID, {
-        $inc: { count: numberOfIds },
-    });
-    if (!idCounter) throw new Error('ID counter document not found');
-
-    for (let i = 0; i < numberOfIds; i++) {
-        cases[i]._id = idCounter.count + i;
-    }
-
-    return cases;
-};
-
 export class CasesController {
     private csvHeaders: string[];
     constructor(private readonly geocoders: Geocoder[]) {
@@ -420,15 +396,13 @@ export class CasesController {
                 result = c;
             } else {
                 if (numCases === 1) {
-                    const caseWithId = await generateCaseIds([c]);
-                    result = await caseWithId[0].save();
+                    result = await c.save();
                 } else {
                     const cases = Array.from(
                         { length: numCases },
                         () => new Day0Case(req.body),
                     );
-                    const casesWithId = await generateCaseIds(cases);
-                    result = { cases: await Day0Case.insertMany(casesWithId) };
+                    result = { cases: await Day0Case.insertMany(cases) };
                 }
             }
 

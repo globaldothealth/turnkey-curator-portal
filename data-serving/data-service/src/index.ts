@@ -185,7 +185,7 @@ app.use(
         if (!idCounter) {
             await IdCounter.create({
                 _id: COUNTER_DOCUMENT_ID,
-                count: 1,
+                count: 0,
                 notes:
                     'Increment count using findAndModify to ensure that the count field will be incremented atomically with the fetch of this document',
             });
