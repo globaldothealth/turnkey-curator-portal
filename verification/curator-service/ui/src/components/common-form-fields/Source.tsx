@@ -470,7 +470,6 @@ export function SourcesAutocomplete(
                             className={classes.sourceTextField}
                             label="Source name"
                             name={`${name}.sourceName`}
-                            helperText="Required"
                             type="text"
                             data-testid="sourceName"
                             component={TextField}
@@ -480,7 +479,6 @@ export function SourcesAutocomplete(
                             className={classes.sourceTextField}
                             label="Source license"
                             name={`${name}.sourceLicense`}
-                            helperText="Required"
                             type="text"
                             data-testid="sourceLicense"
                             component={TextField}
