@@ -193,8 +193,9 @@ paths:
                                     description: Cases corresponding to these ids will be deleted
                                     type: array
                                     items:
-                                        type: string
-                                        pattern: '^[a-f\d]{24}$'
+                                        type: integer
+                                        format: int32
+                                        minimum: 1
                                 query:
                                     description: >
                                         Cases matching this query will be deleted. Must contain
@@ -436,8 +437,9 @@ paths:
               description: The case ID
               required: true
               schema:
-                  type: string
-                  pattern: '^[a-f\d]{24}$'
+                  type: integer
+                  format: int32
+                  minimum: 1
         get:
             summary: Gets a specific case
             operationId: getCase

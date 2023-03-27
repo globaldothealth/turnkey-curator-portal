@@ -129,7 +129,7 @@ export class CasesController {
      */
     get = async (req: Request, res: Response): Promise<void> => {
         const c = await Day0Case.find({
-            _id: new ObjectId(req.params.id),
+            _id: req.params.id,
         }).lean();
 
         if (c.length === 0) {

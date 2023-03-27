@@ -272,7 +272,7 @@ async function makeApp() {
         casesController.listOccupations,
     );
     apiRouter.get(
-        '/cases/:id([a-z0-9]{24})',
+        '/cases/:id([1-9]\\d*)',
         authenticateByAPIKey,
         mustBeAuthenticated,
         casesController.get,
@@ -330,7 +330,7 @@ async function makeApp() {
         casesController.batchStatusChange,
     );
     apiRouter.put(
-        '/cases/:id([a-z0-9]{24})',
+        '/cases/:id([1-9]\\d*)',
         authenticateByAPIKey,
         mustHaveAnyRole(['curator']),
         casesController.update,
@@ -342,7 +342,7 @@ async function makeApp() {
         casesController.batchDel,
     );
     apiRouter.delete(
-        '/cases/:id([a-z0-9]{24})',
+        '/cases/:id([1-9]\\d*)',
         authenticateByAPIKey,
         mustHaveAnyRole(['curator']),
         casesController.del,
