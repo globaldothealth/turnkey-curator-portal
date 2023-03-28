@@ -4,8 +4,7 @@
         "additionalProperties": false,
         "properties": {
             "_id": {
-                "bsonType": "number",
-                "minimum": 1
+                "bsonType": "objectId"
             },
             "__v": {
                 "bsonType": "int"
