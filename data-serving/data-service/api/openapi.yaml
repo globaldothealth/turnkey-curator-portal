@@ -243,8 +243,9 @@ paths:
                                     description: Cases corresponding to these ids will be returned
                                     type: array
                                     items:
-                                        type: string
-                                        pattern: '^[a-f\d]{24}$'
+                                        type: integer
+                                        format: int32
+                                        minimum: 1
                                 query:
                                     description: >
                                         Cases matching this query will be returned. This is ignored

@@ -175,12 +175,12 @@ describe('Cases', () => {
             data: {},
         });
         await curatorRequest
-            .get('/api/cases/5e99f21a1c9d440000ceb088')
+            .get('/api/cases/123456789')
             .expect(200)
             .expect('Content-Type', /json/);
         expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith(
-            'http://localhost:3000/api/cases/5e99f21a1c9d440000ceb088',
+            'http://localhost:3000/api/cases/123456789',
         );
     });
 
@@ -191,7 +191,7 @@ describe('Cases', () => {
             response: { status: code, data: message },
         });
         const res = await curatorRequest
-            .get('/api/cases/5e99f21a1c9d440000ceb088')
+            .get('/api/cases/123456789')
             .expect(code);
         expect(res.text).toEqual(message);
     });
@@ -203,13 +203,13 @@ describe('Cases', () => {
             data: {},
         });
         await curatorRequest
-            .put('/api/cases/5e99f21a1c9d440000ceb088')
+            .put('/api/cases/123456789')
             .send({ age: '42' })
             .expect(200)
             .expect('Content-Type', /json/);
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.put).toHaveBeenCalledWith(
-            'http://localhost:3000/api/cases/5e99f21a1c9d440000ceb088',
+            'http://localhost:3000/api/cases/123456789',
             { age: '42', ...creatorMetadata },
         );
     });
@@ -221,7 +221,7 @@ describe('Cases', () => {
             response: { status: code, data: message },
         });
         const res = await curatorRequest
-            .put('/api/cases/5e99f21a1c9d440000ceb088')
+            .put('/api/cases/123456789')
             .send({ age: '42' })
             .expect(code);
         expect(res.text).toEqual(message);
@@ -233,11 +233,11 @@ describe('Cases', () => {
             statusText: 'Case deleted',
         });
         await curatorRequest
-            .delete('/api/cases/5e99f21a1c9d440000ceb088')
+            .delete('/api/cases/123456789')
             .expect(204);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
         expect(mockedAxios.delete).toHaveBeenCalledWith(
-            'http://localhost:3000/api/cases/5e99f21a1c9d440000ceb088',
+            'http://localhost:3000/api/cases/123456789',
         );
     });
 
@@ -248,7 +248,7 @@ describe('Cases', () => {
             response: { status: code, data: message },
         });
         const res = await curatorRequest
-            .delete('/api/cases/5e99f21a1c9d440000ceb088')
+            .delete('/api/cases/123456789')
             .expect(code);
         expect(res.text).toEqual(message);
     });
@@ -260,14 +260,14 @@ describe('Cases', () => {
         });
         await curatorRequest
             .delete('/api/cases')
-            .send({ caseIds: ['5e99f21a1c9d440000ceb088'] })
+            .send({ caseIds: ['123456789'] })
             .expect(204);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
         expect(mockedAxios.delete).toHaveBeenCalledWith(
             'http://localhost:3000/api/cases',
             {
                 data: {
-                    caseIds: ['5e99f21a1c9d440000ceb088'],
+                    caseIds: ['123456789'],
                     maxCasesThreshold: 10000,
                 },
             },
@@ -286,14 +286,14 @@ describe('Cases', () => {
             .expect(200);
         await adminRequest
             .delete('/api/cases')
-            .send({ caseIds: ['5e99f21a1c9d440000ceb088'] })
+            .send({ caseIds: ['123456789'] })
             .expect(204);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
         expect(mockedAxios.delete).toHaveBeenCalledWith(
             'http://localhost:3000/api/cases',
             {
                 data: {
-                    caseIds: ['5e99f21a1c9d440000ceb088'],
+                    caseIds: ['123456789'],
                 },
             },
         );
@@ -307,7 +307,7 @@ describe('Cases', () => {
         });
         const res = await curatorRequest
             .delete('/api/cases')
-            .send({ caseIds: ['5e99f21a1c9d440000ceb088'] })
+            .send({ caseIds: ['123456789'] })
             .expect(code);
         expect(res.text).toEqual(message);
     });
