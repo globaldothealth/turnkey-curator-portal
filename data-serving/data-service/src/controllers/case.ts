@@ -542,10 +542,22 @@ export class CasesController {
             logger.info('batchUpsert: splitting cases by sourceID');
             logger.info('batchUpsert: preparing bulk write');
 
+            const setId = async (c: any) => {
+                const idCounter = await IdCounter.findByIdAndUpdate(
+                    COUNTER_DOCUMENT_ID,
+                    { $inc: { count: 1 } },
+                );
+                if (!idCounter)
+                    throw new Error('ID counter document not found');
+                c._id = idCounter.count;
+            };
+
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const upsertLambda = async (c: any) => {
                 delete c.caseCount;
                 c = await caseFromDTO(c as CaseDTO);
+
+                if (c._id == undefined) await setId(c);
 
                 if (
                     c.caseReference?.sourceId &&
