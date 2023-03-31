@@ -557,31 +557,36 @@ export class CasesController {
                 delete c.caseCount;
                 c = await caseFromDTO(c as CaseDTO);
 
-                if (c._id == undefined) await setId(c);
-
                 if (
                     c.caseReference?.sourceId &&
                     c.caseReference?.sourceEntryId
                 ) {
-                    return {
-                        updateOne: {
-                            filter: {
-                                'caseReference.sourceId':
-                                    c.caseReference.sourceId,
-                                'caseReference.sourceEntryId':
-                                    c.caseReference.sourceEntryId,
+                    const day0case = await Day0Case.findOne({
+                        'caseReference.sourceId': c.caseReference.sourceId,
+                        'caseReference.sourceEntryId':
+                            c.caseReference.sourceEntryId,
+                    });
+                    if (day0case) {
+                        return {
+                            updateOne: {
+                                filter: {
+                                    'caseReference.sourceId':
+                                        c.caseReference.sourceId,
+                                    'caseReference.sourceEntryId':
+                                        c.caseReference.sourceEntryId,
+                                },
+                                update: c,
                             },
-                            update: c,
-                            upsert: true,
-                        },
-                    };
-                } else {
-                    return {
-                        insertOne: {
-                            document: c,
-                        },
-                    };
+                        };
+                    }
                 }
+
+                await setId(c);
+                return {
+                    insertOne: {
+                        document: c,
+                    },
+                };
             };
 
             const unrestrictedBulkWriteResult = await Day0Case.bulkWrite(

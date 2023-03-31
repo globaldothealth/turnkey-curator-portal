@@ -530,7 +530,9 @@ paths:
                                     description: Cases corresponding to these ids will be deleted
                                     type: array
                                     items:
-                                        type: string
+                                        type: integer
+                                        format: int32
+                                        minimum: 1
                                 query:
                                     description: >
                                         Cases matching this query will be deleted. Must contain
