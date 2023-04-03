@@ -232,9 +232,7 @@ describe('Cases', () => {
             status: 204,
             statusText: 'Case deleted',
         });
-        await curatorRequest
-            .delete('/api/cases/123456789')
-            .expect(204);
+        await curatorRequest.delete('/api/cases/123456789').expect(204);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
         expect(mockedAxios.delete).toHaveBeenCalledWith(
             'http://localhost:3000/api/cases/123456789',
@@ -260,14 +258,14 @@ describe('Cases', () => {
         });
         await curatorRequest
             .delete('/api/cases')
-            .send({ caseIds: ['123456789'] })
+            .send({ caseIds: [123456789] })
             .expect(204);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
         expect(mockedAxios.delete).toHaveBeenCalledWith(
             'http://localhost:3000/api/cases',
             {
                 data: {
-                    caseIds: ['123456789'],
+                    caseIds: [123456789],
                     maxCasesThreshold: 10000,
                 },
             },
@@ -286,14 +284,14 @@ describe('Cases', () => {
             .expect(200);
         await adminRequest
             .delete('/api/cases')
-            .send({ caseIds: ['123456789'] })
+            .send({ caseIds: [123456789] })
             .expect(204);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
         expect(mockedAxios.delete).toHaveBeenCalledWith(
             'http://localhost:3000/api/cases',
             {
                 data: {
-                    caseIds: ['123456789'],
+                    caseIds: [123456789],
                 },
             },
         );
@@ -307,7 +305,7 @@ describe('Cases', () => {
         });
         const res = await curatorRequest
             .delete('/api/cases')
-            .send({ caseIds: ['123456789'] })
+            .send({ caseIds: [123456789] })
             .expect(code);
         expect(res.text).toEqual(message);
     });
