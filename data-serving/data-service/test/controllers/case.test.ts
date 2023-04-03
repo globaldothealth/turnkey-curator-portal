@@ -689,12 +689,7 @@ describe('POST', () => {
         const res = await request(app)
             .post('/api/cases/batchUpsert')
             .send({
-                cases: [
-                    {
-                        _id: 1,
-                        ...fullCase,
-                    },
-                ],
+                cases: [fullCase],
                 ...curatorMetadata,
             })
             .expect(200);
@@ -702,8 +697,8 @@ describe('POST', () => {
         expect(res.body.numCreated).toBe(1); // A new case was created.
         expect(res.body.numUpdated).toBe(0); // No case was updated.
 
-        const updatedCaseInDb = await Day0Case.findById(1);
-        expect(updatedCaseInDb?.demographics.ageBuckets).toHaveLength(3);
+        const updatedCaseInDb = await Day0Case.find().sort({ _id: -1 }).limit(1); // latest case
+        expect(updatedCaseInDb[0]?.demographics.ageBuckets).toHaveLength(3);
     });
     it('geocodes everything that is necessary', async () => {
         seedFakeGeocodes('Canada', {
