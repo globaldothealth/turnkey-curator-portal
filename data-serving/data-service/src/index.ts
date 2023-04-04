@@ -117,7 +117,7 @@ apiRouter.get('/cases', caseController.list);
 apiRouter.get('/cases/symptoms', cases.listSymptoms);
 apiRouter.get('/cases/placesOfTransmission', cases.listPlacesOfTransmission);
 apiRouter.get('/cases/occupations', cases.listOccupations);
-apiRouter.get('/cases/:id', caseController.get);
+apiRouter.get('/cases/:id(\\d+$)', caseController.get);
 apiRouter.post('/cases', caseController.create);
 apiRouter.post('/cases/download', caseController.download);
 apiRouter.post(
@@ -147,7 +147,7 @@ apiRouter.delete(
     createBatchDeleteCaseRevisions,
     caseController.batchDel,
 );
-apiRouter.delete('/cases/:id', createCaseRevision, caseController.del);
+apiRouter.delete('/cases/:id(\\d+$)', createCaseRevision, caseController.del);
 
 app.use('/api', apiRouter);
 
