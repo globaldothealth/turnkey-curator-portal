@@ -89,6 +89,24 @@ export default function Location(): JSX.Element {
                 component={TextField}
                 sx={{ minWidth: '13rem' }}
             />
+            <FastField
+                variant="outlined"
+                className={classes.field}
+                label="Latitude"
+                name={`location.geometry.latitude`}
+                type="number"
+                component={TextField}
+                sx={{ minWidth: '13rem' }}
+            />
+            <FastField
+                variant="outlined"
+                className={classes.field}
+                label="Longitude"
+                name={`location.geometry.longitude`}
+                type="number"
+                component={TextField}
+                sx={{ minWidth: '13rem' }}
+            />
         </div>
     );
 }

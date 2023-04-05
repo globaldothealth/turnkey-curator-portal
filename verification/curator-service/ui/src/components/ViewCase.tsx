@@ -368,6 +368,19 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
 
                             <RowHeader title="Location" />
                             <RowContent content={props.c.location.location} />
+
+                            <RowHeader title="Latitude" />
+                            <RowContent
+                                content={`${props.c.location.geometry?.latitude?.toFixed(
+                                    4,
+                                )}`}
+                            />
+                            <RowHeader title="Longitude" />
+                            <RowContent
+                                content={`${props.c.location.geometry?.longitude?.toFixed(
+                                    4,
+                                )}`}
+                            />
                         </Grid>
                     </Scroll.Element>
                 </Paper>

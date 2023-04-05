@@ -81,6 +81,10 @@ const initialValuesFromCase = (
                 countryISO2: '',
                 location: '',
                 city: '',
+                geometry: {
+                    latitude: undefined,
+                    longitude: undefined,
+                },
             },
             events: {
                 dateEntry: null,
