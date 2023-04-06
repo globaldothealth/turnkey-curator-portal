@@ -13,7 +13,7 @@ import {
     setBatchUpsertFields,
 } from './controllers/preprocessor';
 
-import { Case } from './model/case';
+import { Day0Case } from './model/day0-case';
 import { Geocoder } from './geocoding/geocoder';
 import RemoteGeocoder from './geocoding/remoteGeocoder';
 import { middleware as OpenApiValidatorMiddleware } from 'express-openapi-validator';
@@ -27,6 +27,7 @@ import winston from 'winston';
 import expressWinston from 'express-winston';
 import validateEnv from './util/validate-env';
 import { logger } from './util/logger';
+import { IdCounter, COUNTER_DOCUMENT_ID } from './model/id-counter';
 
 const app = express();
 
@@ -112,11 +113,11 @@ if (remoteGeocodingLocation) {
 
 const caseController = new cases.CasesController(geocoders);
 
-apiRouter.get('/cases/:id([a-z0-9]{24})', caseController.get);
 apiRouter.get('/cases', caseController.list);
 apiRouter.get('/cases/symptoms', cases.listSymptoms);
 apiRouter.get('/cases/placesOfTransmission', cases.listPlacesOfTransmission);
 apiRouter.get('/cases/occupations', cases.listOccupations);
+apiRouter.get('/cases/:id(\\d+$)', caseController.get);
 apiRouter.post('/cases', caseController.create);
 apiRouter.post('/cases/download', caseController.download);
 apiRouter.post(
@@ -139,18 +140,14 @@ apiRouter.post(
     createBatchUpdateCaseRevisions,
     caseController.batchUpdate,
 );
-apiRouter.put('/cases/:id([a-z0-9]{24})', caseController.update);
+apiRouter.put('/cases/:id', caseController.update);
 apiRouter.delete(
     '/cases',
     batchDeleteCheckThreshold,
     createBatchDeleteCaseRevisions,
     caseController.batchDel,
 );
-apiRouter.delete(
-    '/cases/:id([a-z0-9]{24})',
-    createCaseRevision,
-    caseController.del,
-);
+apiRouter.delete('/cases/:id(\\d+$)', createCaseRevision, caseController.del);
 
 app.use('/api', apiRouter);
 
@@ -180,7 +177,19 @@ app.use(
             useUnifiedTopology: true,
             useFindAndModify: false,
         });
-        await Case.ensureIndexes();
+        await Day0Case.ensureIndexes();
+
+        // check if there is a document holding unique ID counter
+        // used to generate case IDs. If not, create one
+        const idCounter = await IdCounter.findById(COUNTER_DOCUMENT_ID);
+        if (!idCounter) {
+            await IdCounter.create({
+                _id: COUNTER_DOCUMENT_ID,
+                count: 1,
+                notes:
+                    'Increment count using findAndModify to ensure that the count field will be incremented atomically with the fetch of this document',
+            });
+        }
     } catch (e) {
         logger.error('Failed to connect to the database. :(', e);
         process.exit(1);
