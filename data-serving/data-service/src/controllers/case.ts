@@ -949,6 +949,9 @@ export class CasesController {
         location: any,
         canBeFuzzy: boolean,
     ): Promise<any> {
+        if (location?.geometry?.latitude && location.geometry?.longitude) {
+            return location;
+        }
         if (!location?.query) {
             if (canBeFuzzy) {
                 // no problem, just give back what we received
