@@ -63,6 +63,11 @@ export interface GeocodeLocation {
     limitToResolution?: string;
 }
 
+export interface Geometry {
+    longitude?: number;
+    latitude?: number;
+}
+
 export interface Location {
     country: string;
     countryISO2: string;
@@ -71,7 +76,7 @@ export interface Location {
     // this variable is needed in the API in order to geocode properly
     query?: string;
     name?: string;
-    geometry?: { longitude?: number; latitude?: number };
+    geometry?: Geometry;
 }
 
 export interface Events {
@@ -224,10 +229,7 @@ export interface Day0CaseFormValues {
         city?: string;
         geocodeLocation?: GeocodeLocation;
         query?: string;
-        geometry?: {
-            longitude?: number;
-            latitude?: number;
-        };
+        geometry?: Geometry;
     };
     events: Events;
     symptoms?: string[];

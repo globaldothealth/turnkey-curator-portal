@@ -17,6 +17,10 @@ export const locationSchema = new mongoose.Schema(
         city: String,
         query: String,
         name: String,
+        geometry: {
+            latitude: Number,
+            longitude: Number,
+        },
     },
     { _id: false },
 );
@@ -28,4 +32,8 @@ export type LocationDocument = mongoose.Document & {
     city?: string;
     query?: string;
     name?: string;
+    geometry?: {
+        latitude?: number;
+        longitude?: number;
+    };
 };
