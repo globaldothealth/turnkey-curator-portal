@@ -87,18 +87,15 @@ describe('GET', () => {
     it('one present item should return 200 OK', async () => {
         const c = new Day0Case(minimalCase);
         await c.save();
-
         const res = await request(app)
             .get(`/api/cases/${c._id}`)
             .expect('Content-Type', /json/)
             .expect(200);
 
-        expect(res.body[0]._id).toEqual(c._id.toString());
+        expect(res.body[0]._id).toEqual(c._id);
     });
     it('one absent item should return 404 NOT FOUND', () => {
-        return request(app)
-            .get('/api/cases/53cb6b9b4f4ddef1ad47f943')
-            .expect(404);
+        return request(app).get('/api/cases/123456789').expect(404);
     });
     it('should not show the sourceEntryId for a case', async () => {
         const c = new Day0Case(minimalCase);
@@ -514,7 +511,7 @@ describe('POST', () => {
             .expect(201);
 
         expect(await Day0Case.collection.countDocuments()).toEqual(0);
-        expect(res.body._id).not.toHaveLength(0);
+        expect(res.body._id).toBe(undefined);
     });
     it('batch upsert with no body should return 415', () => {
         return request(app).post('/api/cases/batchUpsert').expect(415);
@@ -689,17 +686,10 @@ describe('POST', () => {
             name: 'France',
         });
 
-        const caseID = new ObjectId();
-
         const res = await request(app)
             .post('/api/cases/batchUpsert')
             .send({
-                cases: [
-                    {
-                        _id: caseID,
-                        ...fullCase,
-                    },
-                ],
+                cases: [fullCase],
                 ...curatorMetadata,
             })
             .expect(200);
@@ -707,8 +697,8 @@ describe('POST', () => {
         expect(res.body.numCreated).toBe(1); // A new case was created.
         expect(res.body.numUpdated).toBe(0); // No case was updated.
 
-        const updatedCaseInDb = await Day0Case.findById(caseID);
-        expect(updatedCaseInDb?.demographics.ageBuckets).toHaveLength(3);
+        const updatedCaseInDb = await Day0Case.find().sort({ _id: -1 }).limit(1); // latest case
+        expect(updatedCaseInDb[0]?.demographics.ageBuckets).toHaveLength(3);
     });
     it('geocodes everything that is necessary', async () => {
         seedFakeGeocodes('Canada', {
@@ -1076,7 +1066,7 @@ describe('PUT', () => {
     });
     it('update absent item should return 404 NOT FOUND', () => {
         return request(app)
-            .put('/api/cases/53cb6b9b4f4ddef1ad47f943')
+            .put('/api/cases/123456789')
             .send(curatorMetadata)
             .expect(404);
     });
@@ -1419,9 +1409,7 @@ describe('DELETE', () => {
         );
     });
     it('delete absent item should return 404 NOT FOUND', () => {
-        return request(app)
-            .delete('/api/cases/53cb6b9b4f4ddef1ad47f943')
-            .expect(404);
+        return request(app).delete('/api/cases/123456789').expect(404);
     });
     it('delete multiple cases cannot specify caseIds and query', async () => {
         const c = await new Day0Case(minimalCase).save();

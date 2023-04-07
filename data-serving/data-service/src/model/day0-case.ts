@@ -22,6 +22,7 @@ import {
     preexistingConditionsSchema,
 } from './preexisting-conditions';
 import { CaseStatus } from '../types/enums';
+import { IdCounter, COUNTER_DOCUMENT_ID } from '../model/id-counter';
 
 /*
  * There are separate types for case for data storage (the mongoose document) and
@@ -50,6 +51,7 @@ export const sourceSchema = new mongoose.Schema({
 
 export const caseSchema = new mongoose.Schema(
     {
+        _id: Number,
         caseStatus: {
             type: CaseStatus,
             required: true,
@@ -87,6 +89,18 @@ export const caseSchema = new mongoose.Schema(
         },
     },
 );
+
+caseSchema.pre('save', async function (next) {
+    if (this._id == undefined) {
+        const idCounter = await IdCounter.findByIdAndUpdate(
+            COUNTER_DOCUMENT_ID,
+            { $inc: { count: 1 } },
+        );
+        if (!idCounter) throw new Error('ID counter document not found');
+        this._id = idCounter.count;
+    }
+    next();
+});
 
 /**
  * Determines if a provided JSON-representation case is equivalent to the

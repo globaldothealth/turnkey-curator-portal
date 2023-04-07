@@ -530,7 +530,9 @@ paths:
                                     description: Cases corresponding to these ids will be deleted
                                     type: array
                                     items:
-                                        type: string
+                                        type: integer
+                                        format: int32
+                                        minimum: 1
                                 query:
                                     description: >
                                         Cases matching this query will be deleted. Must contain
@@ -571,8 +573,9 @@ paths:
                                     description: Cases corresponding to these ids will be returned
                                     type: array
                                     items:
-                                        type: string
-                                        pattern: '^[a-f\d]{24}$'
+                                        type: integer
+                                        format: int32
+                                        minimum: 1
                                 query:
                                     description: >
                                         Cases matching this query will be returned. This is ignored
@@ -835,8 +838,9 @@ paths:
               description: The case ID
               required: true
               schema:
-                  type: string
-                  pattern: '^[a-f\d]{24}$'
+                  type: integer
+                  format: int32
+                  minimum: 1
         get:
             tags: [Case]
             summary: Gets a specific case
