@@ -1,6 +1,9 @@
-import { TextField } from 'formik-mui';
+import { Select, TextField } from 'formik-mui';
 
+import { MenuItem } from '@mui/material';
 import { FastField, useFormikContext } from 'formik';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
 import makeStyles from '@mui/styles/makeStyles';
 import { Day0CaseFormValues } from '../../api/models/Day0Case';
 import { useEffect } from 'react';
@@ -10,10 +13,10 @@ const styles = makeStyles(() => ({
     root: {
         display: 'flex',
         flexWrap: 'wrap',
-        marginTop: '2rem',
     },
     field: {
         marginRight: '1em',
+        marginTop: '1em',
         width: '8em',
     },
     mapContainer: {
@@ -51,6 +54,25 @@ export default function Location(): JSX.Element {
 
     return (
         <div className={classes.root}>
+            <FastField
+                variant="outlined"
+                className={classes.field}
+                // as="select"
+                id={`location.geoResolution`}
+                name={`location.geoResolution`}
+                type="text"
+                label={<p>Geo resolution</p>}
+                component={Select}
+                sx={{ minWidth: '13rem' }}
+            >
+                {['Point', 'Admin3', 'Admin2', 'Admin1', 'Country'].map(
+                    (res) => (
+                        <MenuItem key={res} value={res}>
+                            {res}
+                        </MenuItem>
+                    ),
+                )}
+            </FastField>
             <FastField
                 variant="outlined"
                 className={classes.field}

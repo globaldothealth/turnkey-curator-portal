@@ -28,6 +28,7 @@ export const locationSchema = new mongoose.Schema(
 export type LocationDocument = mongoose.Document & {
     country: string;
     countryISO2: string;
+    geoResolution: string;
     location?: string;
     city?: string;
     query?: string;
