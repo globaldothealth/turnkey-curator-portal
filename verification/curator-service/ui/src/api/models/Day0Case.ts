@@ -69,7 +69,7 @@ export interface Geometry {
 }
 
 export interface Location {
-    geoResolution: string;
+    geoResolution?: string;
     country: string;
     countryISO2: string;
     location?: string;
@@ -224,7 +224,7 @@ export interface Day0CaseFormValues {
         healthcareWorker?: YesNo | '';
     };
     location: {
-        geoResolution: string;
+        geoResolution?: string;
         country: string;
         countryISO2: string;
         location?: string;

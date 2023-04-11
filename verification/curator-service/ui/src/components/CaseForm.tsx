@@ -77,7 +77,7 @@ const initialValuesFromCase = (
                 healthcareWorker: '',
             },
             location: {
-                geoResolution: '',
+                geoResolution: undefined,
                 country: '',
                 countryISO2: '',
                 location: '',

@@ -8,7 +8,7 @@ it('shows location when passed location information', async () => {
         <Formik
             initialValues={{
                 location: {
-                    geoResolution: 'point',
+                    geoResolution: 'Point',
                     country: 'United States',
                     countryISO2: 'US',
                     city: 'Chicago',

@@ -56,10 +56,9 @@ export default function Location(): JSX.Element {
         <div className={classes.root}>
             <FastField
                 variant="outlined"
+                data-testid="location.geoResolution"
                 className={classes.field}
-                // as="select"
-                id={`location.geoResolution`}
-                name={`location.geoResolution`}
+                name="location.geoResolution"
                 type="text"
                 label={<p>Geo resolution</p>}
                 component={Select}
