@@ -252,7 +252,13 @@ function denormalizeLocationFields(
     denormalizedData['location.countryISO2'] = doc.countryISO2 || '';
     denormalizedData['location.location'] = doc.location || '';
     denormalizedData['location.city'] = doc.city || '';
+    denormalizedData['location.geoResolution'] = doc.geoResolution || '';
+    denormalizedData['location.geometry.latitude'] =
+        doc.geometry?.latitude || '';
+    denormalizedData['location.geometry.longitude'] =
+        doc.geometry?.longitude || '';
     denormalizedData['location.query'] = doc.query || '';
+
     return denormalizedData;
 }
 

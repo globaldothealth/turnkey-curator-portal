@@ -5,5 +5,9 @@
     "location": "Brooklyn",
     "geoResolution": "Point",
     "name": "Kings County Hospital Center",
-    "query": "Brooklyn, New York"
+    "query": "Brooklyn, New York",
+    "geometry": {
+        "latitude": 40.6809611,
+        "longitude": -73.9740028
+    }
 }

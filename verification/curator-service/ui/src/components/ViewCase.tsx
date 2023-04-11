@@ -351,6 +351,10 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             Location
                         </Typography>
                         <Grid container className={classes.grid}>
+                            <RowHeader title="Geo resolution" />
+                            <RowContent
+                                content={`${props.c.location.geoResolution}`}
+                            />
                             <RowHeader title="Country" />
                             <RowContent
                                 content={

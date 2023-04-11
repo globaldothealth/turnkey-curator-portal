@@ -12,6 +12,7 @@ export const locationSchema = new mongoose.Schema(
             minLength: 2,
             maxLength: 2,
         },
+        geoResolution: String,
         // Location represents a precise location, such as an establishment or POI.
         location: String,
         city: String,
