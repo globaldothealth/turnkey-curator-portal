@@ -2,8 +2,6 @@ import { Select, TextField } from 'formik-mui';
 
 import { MenuItem } from '@mui/material';
 import { FastField, useFormikContext } from 'formik';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
 import makeStyles from '@mui/styles/makeStyles';
 import { Day0CaseFormValues } from '../../api/models/Day0Case';
 import { useEffect } from 'react';
