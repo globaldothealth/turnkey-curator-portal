@@ -405,6 +405,183 @@ describe('POST', () => {
             .expect(201);
         expect(await Day0Case.collection.countDocuments()).toEqual(1);
     });
+    it('create with only required location fields should complete with data from geocoding', async () => {
+        seedFakeGeocodes('Canada', {
+            country: 'CA',
+            geoResolution: 'Country',
+            geometry: { latitude: 42.42, longitude: 11.11 },
+            name: 'Canada',
+        });
+
+        const minimalLocationRequest = {
+            ...minimalRequest,
+            location: { countryISO2: 'CA', country: 'Canada', query: 'Canada' },
+        };
+
+        const expectedLocation = {
+            country: 'CA',
+            countryISO2: 'CA',
+            geoResolution: 'Country',
+            geometry: { latitude: 42.42, longitude: 11.11 },
+            name: 'Canada',
+            query: 'Canada',
+        };
+
+        const res = await request(app)
+            .post('/api/cases')
+            .send(minimalLocationRequest)
+            .expect('Content-Type', /json/)
+            .expect(201);
+
+        expect(res.body.location).toEqual(expectedLocation);
+    });
+    it('create with overrided geoResolution', async () => {
+        seedFakeGeocodes('Canada', {
+            country: 'CA',
+            geoResolution: 'Country',
+            geometry: { latitude: 42.42, longitude: 11.11 },
+            name: 'Canada',
+        });
+
+        const minimalLocationRequest = {
+            ...minimalRequest,
+            location: {
+                countryISO2: 'CA',
+                country: 'Canada',
+                query: 'Canada',
+                geoResolution: 'Admin3',
+            },
+        };
+
+        const expectedLocation = {
+            country: 'CA',
+            countryISO2: 'CA',
+            geoResolution: 'Admin3',
+            geometry: { latitude: 42.42, longitude: 11.11 },
+            name: 'Canada',
+            query: 'Canada',
+        };
+
+        const res = await request(app)
+            .post('/api/cases')
+            .send(minimalLocationRequest)
+            .expect('Content-Type', /json/)
+            .expect(201);
+
+        expect(res.body.location).toEqual(expectedLocation);
+    });
+    it('create with minimal + city should complete rest with geocoding', async () => {
+        seedFakeGeocodes('Montreal, Canada', {
+            country: 'CA',
+            geoResolution: 'Admin3',
+            geometry: { latitude: 45.5019, longitude: 73.5674 },
+            name: 'Montreal, Canada',
+        });
+
+        const minimalLocationRequest = {
+            ...minimalRequest,
+            location: {
+                countryISO2: 'CA',
+                country: 'Canada',
+                query: 'Montreal, Canada',
+                city: 'Montreal',
+            },
+        };
+
+        const expectedLocation = {
+            country: 'CA',
+            city: 'Montreal',
+            countryISO2: 'CA',
+            geoResolution: 'Admin3',
+            geometry: { latitude: 45.5019, longitude: 73.5674 },
+            name: 'Montreal, Canada',
+            query: 'Montreal, Canada',
+        };
+
+        const res = await request(app)
+            .post('/api/cases')
+            .send(minimalLocationRequest)
+            .expect('Content-Type', /json/)
+            .expect(201);
+
+        expect(res.body.location).toEqual(expectedLocation);
+    });
+    it('create with minimal + city + location should complete rest with geocoding', async () => {
+        seedFakeGeocodes('Jacques Cartier Bridge, Montreal, Canada', {
+            country: 'CA',
+            geoResolution: 'Admin3',
+            geometry: { latitude: 45.5218, longitude: 73.5418 },
+            name: 'Jacques Cartier Bridge, Montreal, Canada',
+        });
+
+        const minimalLocationRequest = {
+            ...minimalRequest,
+            location: {
+                countryISO2: 'CA',
+                country: 'Canada',
+                query: 'Jacques Cartier Bridge, Montreal, Canada',
+                city: 'Montreal',
+                location: 'Jacques Cartier Bridge',
+            },
+        };
+
+        const expectedLocation = {
+            country: 'CA',
+            city: 'Montreal',
+            location: 'Jacques Cartier Bridge',
+            countryISO2: 'CA',
+            geoResolution: 'Admin3',
+            geometry: { latitude: 45.5218, longitude: 73.5418 },
+            name: 'Jacques Cartier Bridge, Montreal, Canada',
+            query: 'Jacques Cartier Bridge, Montreal, Canada',
+        };
+
+        const res = await request(app)
+            .post('/api/cases')
+            .send(minimalLocationRequest)
+            .expect('Content-Type', /json/)
+            .expect(201);
+
+        expect(res.body.location).toEqual(expectedLocation);
+    });
+
+    it('create with minimal + city + latitude + longitude should automatically set geoResolution to Point', async () => {
+        seedFakeGeocodes('Jacques Cartier Bridge, Montreal, Canada', {
+            country: 'CA',
+            geoResolution: 'Admin3',
+            geometry: { latitude: 45.5019, longitude: 73.5674 },
+            name: 'Jacques Cartier Bridge, Montreal, Canada',
+        });
+
+        const minimalLocationRequest = {
+            ...minimalRequest,
+            location: {
+                countryISO2: 'CA',
+                country: 'Canada',
+                query: 'Jacques Cartier Bridge, Montreal, Canada',
+                city: 'Montreal',
+                geometry: { latitude: 45.5018, longitude: 73.5673 },
+            },
+        };
+
+        const expectedLocation = {
+            country: 'CA',
+            city: 'Montreal',
+            countryISO2: 'CA',
+            geoResolution: 'Point',
+            geometry: { latitude: 45.5018, longitude: 73.5673 },
+            name: 'Jacques Cartier Bridge, Montreal, Canada',
+            query: 'Jacques Cartier Bridge, Montreal, Canada',
+        };
+
+        const res = await request(app)
+            .post('/api/cases')
+            .send(minimalLocationRequest)
+            .expect('Content-Type', /json/)
+            .expect(201);
+
+        expect(res.body.location).toEqual(expectedLocation);
+    });
     it('create with valid input should bucket the age range', async () => {
         seedFakeGeocodes('Canada', {
             country: 'CA',

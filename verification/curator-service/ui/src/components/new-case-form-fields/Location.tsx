@@ -62,8 +62,12 @@ export default function Location(): JSX.Element {
                 type="text"
                 label={<p>Geo resolution</p>}
                 component={Select}
+                isClearable="true"
                 sx={{ minWidth: '13rem' }}
             >
+                <MenuItem value={''}>
+                    <em>None</em>
+                </MenuItem>
                 {['Point', 'Admin3', 'Admin2', 'Admin1', 'Country'].map(
                     (res) => (
                         <MenuItem key={res} value={res}>
