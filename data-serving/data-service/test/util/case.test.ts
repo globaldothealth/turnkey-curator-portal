@@ -268,6 +268,9 @@ describe('Case', () => {
         expect(denormalizedCase['location.countryISO2']).toEqual('');
         expect(denormalizedCase['location.location']).toEqual('');
         expect(denormalizedCase['location.city']).toEqual('');
+        expect(denormalizedCase['location.geoResolution']).toEqual('');
+        expect(denormalizedCase['location.geometry.latitude']).toEqual('');
+        expect(denormalizedCase['location.geometry.longitude']).toEqual('');
 
         expect(denormalizedCase['pathogen']).toEqual('');
         expect(denormalizedCase['caseStatus']).toEqual('');
@@ -457,6 +460,10 @@ describe('Case', () => {
             name: 'Tbilisi',
             city: 'Tibilisi',
             geoResolution: 'Point',
+            geometry: {
+                latitude: 41.7151,
+                longitude: 44.8271,
+            },
         } as LocationDocument;
 
         const caseDoc = {
@@ -483,6 +490,15 @@ describe('Case', () => {
         );
         expect(denormalizedCase['location.countryISO2']).toEqual('GE');
         expect(denormalizedCase['location.city']).toEqual(locationDoc.city);
+        expect(denormalizedCase['location.geoResolution']).toEqual(
+            locationDoc.geoResolution,
+        );
+        expect(denormalizedCase['location.geometry.latitude']).toEqual(
+            locationDoc.geometry.latitude,
+        );
+        expect(denormalizedCase['location.geometry.longitude']).toEqual(
+            locationDoc.geometry.longitude,
+        );
     });
     it('denormalizes preexisting conditions fields', async () => {
         const conditionsDoc = {

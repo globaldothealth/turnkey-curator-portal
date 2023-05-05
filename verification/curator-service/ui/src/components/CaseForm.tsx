@@ -77,10 +77,15 @@ const initialValuesFromCase = (
                 healthcareWorker: '',
             },
             location: {
+                geoResolution: undefined,
                 country: '',
                 countryISO2: '',
                 location: '',
                 city: '',
+                geometry: {
+                    latitude: undefined,
+                    longitude: undefined,
+                },
             },
             events: {
                 dateEntry: null,
@@ -314,6 +319,9 @@ export default function CaseForm(props: Props): JSX.Element {
     const diseaseName = useAppSelector(selectDiseaseName);
 
     const submitCase = async (values: Day0CaseFormValues): Promise<void> => {
+        if (values.location.geoResolution === '') {
+            values.location.geoResolution = undefined;
+        }
         if (values.caseReference && values.caseReference.sourceId === '') {
             try {
                 const newCaseReference = await submitSource({

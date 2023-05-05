@@ -858,9 +858,28 @@ export class CasesController {
             }
             // Currently a 1:1 match between the GeocodeResult and the data service API.
             // We also store the original query to match it later on and help debugging.
+            let found_location = features[0];
+
+            // If latitude and longitude was specified by used we want to use it
+            // and set geoResolution to Point
+            if (location?.geometry?.latitude && location.geometry?.longitude) {
+                found_location = {
+                    ...found_location,
+                    geometry: location.geometry,
+                    geoResolution: Resolution.Point,
+                };
+            }
+
+            // If geoResolution was provided by curator we want to use it
+            if (location?.geoResolution) {
+                found_location = {
+                    ...found_location,
+                    geoResolution: location.geoResolution,
+                };
+            }
             return {
                 query: location?.query,
-                ...features[0],
+                ...found_location,
             };
         }
         throw new GeocodeNotFoundError(

@@ -87,6 +87,8 @@ describe('Curator', function () {
             .clear()
             .type('Germany');
         cy.contains('Germany').click();
+        cy.get('div[data-testid="location.geoResolution"]').click()
+        cy.get('li[data-value="Country"').click();
 
         // EVENTS
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');

@@ -1,5 +1,6 @@
-import { TextField } from 'formik-mui';
+import { Select, TextField } from 'formik-mui';
 
+import { MenuItem } from '@mui/material';
 import { FastField, useFormikContext } from 'formik';
 import makeStyles from '@mui/styles/makeStyles';
 import { Day0CaseFormValues } from '../../api/models/Day0Case';
@@ -10,10 +11,10 @@ const styles = makeStyles(() => ({
     root: {
         display: 'flex',
         flexWrap: 'wrap',
-        marginTop: '2rem',
     },
     field: {
         marginRight: '1em',
+        marginTop: '1em',
         width: '8em',
     },
     mapContainer: {
@@ -53,6 +54,28 @@ export default function Location(): JSX.Element {
         <div className={classes.root}>
             <FastField
                 variant="outlined"
+                data-testid="location.geoResolution"
+                className={classes.field}
+                name="location.geoResolution"
+                type="text"
+                label={<p>Geo resolution</p>}
+                component={Select}
+                isClearable="true"
+                sx={{ minWidth: '13rem' }}
+            >
+                <MenuItem value={''}>
+                    <em>None</em>
+                </MenuItem>
+                {['Point', 'Admin3', 'Admin2', 'Admin1', 'Country'].map(
+                    (res) => (
+                        <MenuItem key={res} value={res}>
+                            {res}
+                        </MenuItem>
+                    ),
+                )}
+            </FastField>
+            <FastField
+                variant="outlined"
                 className={classes.field}
                 label="Country code"
                 name="location.countryISO2"
@@ -86,6 +109,24 @@ export default function Location(): JSX.Element {
                 label="Location"
                 name="location.location"
                 type="text"
+                component={TextField}
+                sx={{ minWidth: '13rem' }}
+            />
+            <FastField
+                variant="outlined"
+                className={classes.field}
+                label="Latitude"
+                name={`location.geometry.latitude`}
+                type="number"
+                component={TextField}
+                sx={{ minWidth: '13rem' }}
+            />
+            <FastField
+                variant="outlined"
+                className={classes.field}
+                label="Longitude"
+                name={`location.geometry.longitude`}
+                type="number"
                 component={TextField}
                 sx={{ minWidth: '13rem' }}
             />
