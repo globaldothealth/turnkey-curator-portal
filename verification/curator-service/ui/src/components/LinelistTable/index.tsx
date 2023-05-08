@@ -110,7 +110,7 @@ const LinelistTable = () => {
         cases.map((data) => {
             return createData(
                 data._id || '',
-                nameCountry(data.location.countryISO2, data.location.country) ||
+                nameCountry(data.location.countryISO3, data.location.country) ||
                     '-',
                 data.location.city || '-',
                 data.location.location || '-',

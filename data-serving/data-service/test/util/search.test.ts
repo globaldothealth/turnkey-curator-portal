@@ -30,7 +30,7 @@ describe('search query', () => {
                     values: ['female'],
                 },
                 {
-                    path: 'location.countryISO2',
+                    path: 'location.countryISO3',
                     values: ['other'],
                 },
             ],
@@ -56,7 +56,7 @@ describe('search query', () => {
                     values: ['clock maker'],
                 },
                 {
-                    path: 'location.countryISO2',
+                    path: 'location.countryISO3',
                     values: ['switzerland'],
                 },
                 {

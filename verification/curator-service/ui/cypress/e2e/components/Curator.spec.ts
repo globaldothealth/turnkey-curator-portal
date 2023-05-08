@@ -234,7 +234,7 @@ describe('Curator', function () {
             });
 
             // Location.
-            cy.get('input[name="location.countryISO2"]').should(
+            cy.get('input[name="location.countryISO3"]').should(
                 'have.value',
                 'DE',
             );

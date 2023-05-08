@@ -96,7 +96,7 @@
     {
         "name": "locationCountryISO3Idx",
         "key": {
-            "location.countryISO2": -1
+            "location.countryISO3": -1
         },
         "collation": {
             "locale": "en_US",

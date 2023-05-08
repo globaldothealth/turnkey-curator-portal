@@ -49,7 +49,7 @@ describe('Linelist table', function () {
     it('Display case properly', function () {
         cy.addCase({
             country: 'France',
-            countryISO2: 'FR',
+            countryISO3: 'FRA',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
@@ -70,7 +70,7 @@ describe('Linelist table', function () {
         });
         cy.addCase({
             country: 'France',
-            countryISO2: 'FR',
+            countryISO3: 'FRA',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
@@ -95,7 +95,7 @@ describe('Linelist table', function () {
     it('Can open and close the details modal', function () {
         cy.addCase({
             country: 'France',
-            countryISO2: 'FR',
+            countryISO3: 'FRA',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
@@ -113,7 +113,7 @@ describe('Linelist table', function () {
     it('Can delete a case', function () {
         cy.addCase({
             country: 'France',
-            countryISO2: 'FR',
+            countryISO3: 'FRA',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
@@ -133,21 +133,21 @@ describe('Linelist table', function () {
     it('Can delete multiple cases', function () {
         cy.addCase({
             country: 'France',
-            countryISO2: 'FR',
+            countryISO3: 'FRA',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
         cy.addCase({
             country: 'Germany',
-            countryISO2: 'DE',
+            countryISO3: 'DEU',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
         cy.addCase({
             country: 'Spain',
-            countryISO2: 'ES',
+            countryISO3: 'ESP',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
@@ -177,7 +177,7 @@ describe('Linelist table', function () {
     it('displays search errors', function () {
         cy.addCase({
             country: 'France',
-            countryISO2: 'FR',
+            countryISO3: 'FRA',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
@@ -192,14 +192,14 @@ describe('Linelist table', function () {
     it('Can search', function () {
         cy.addCase({
             country: 'France',
-            countryISO2: 'FR',
+            countryISO3: 'FRA',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
         cy.addCase({
             country: 'Germany',
-            countryISO2: 'DE',
+            countryISO3: 'DEU',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
@@ -235,14 +235,14 @@ describe('Linelist table', function () {
     it('Search query is saved in browser history', function () {
         cy.addCase({
             country: 'France',
-            countryISO2: 'FR',
+            countryISO3: 'FRA',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
         cy.addCase({
             country: 'United Kingdom',
-            countryISO2: 'GB',
+            countryISO3: 'GBR',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
@@ -276,7 +276,7 @@ describe('Linelist table', function () {
         for (let i = 0; i < 7; i++) {
             cy.addCase({
                 country: 'France',
-                countryISO2: 'FR',
+                countryISO3: 'FRA',
                 dateEntry: '2020-05-01',
                 sourceUrl: 'www.example.com',
                 caseStatus: CaseStatus.Confirmed,
@@ -319,7 +319,7 @@ describe('Linelist table', function () {
         for (let i = 0; i < 7; i++) {
             cy.addCase({
                 country: 'France',
-                countryISO2: 'FR',
+                countryISO3: 'FRA',
                 dateEntry: '2020-05-01',
                 sourceUrl: 'www.example.com',
                 caseStatus: CaseStatus.Confirmed,
@@ -327,14 +327,14 @@ describe('Linelist table', function () {
         }
         cy.addCase({
             country: 'Germany',
-            countryISO2: 'DE',
+            countryISO3: 'DEU',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
         cy.addCase({
             country: 'United Kingdom',
-            countryISO2: 'GB',
+            countryISO3: 'GBR',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
@@ -373,7 +373,7 @@ describe('Linelist table', function () {
         for (let i = 0; i < 7; i++) {
             cy.addCase({
                 country: 'France',
-                countryISO2: 'FR',
+                countryISO3: 'FRA',
                 dateEntry: '2020-05-01',
                 sourceUrl: 'www.example.com',
                 caseStatus: CaseStatus.Confirmed,
@@ -400,7 +400,7 @@ describe('Linelist table', function () {
         for (let i = 0; i < 7; i++) {
             cy.addCase({
                 country: 'France',
-                countryISO2: 'FR',
+                countryISO3: 'FRA',
                 dateEntry: '2020-05-01',
                 sourceUrl: 'www.example.com',
                 caseStatus: CaseStatus.Confirmed,
@@ -428,7 +428,7 @@ describe('Linelist table', function () {
     it.skip('Can sort the data', () => {
         cy.addCase({
             country: 'France',
-            countryISO2: 'FR',
+            countryISO3: 'FRA',
             dateEntry: '2022-05-10T13:35:33.6 31Z',
             dateConfirmation: '2022-05-10T13:35:33.631Z',
             sourceUrl: 'www.example.com',
@@ -436,7 +436,7 @@ describe('Linelist table', function () {
         });
         cy.addCase({
             country: 'Germany',
-            countryISO2: 'DE',
+            countryISO3: 'DEU',
             dateEntry: '2022-02-19T13:35:33.631Z',
             dateConfirmation: '2022-02-19T13:35:33.631Z',
             sourceUrl: 'www.example.com',
@@ -444,7 +444,7 @@ describe('Linelist table', function () {
         });
         cy.addCase({
             country: 'Argentina',
-            countryISO2: 'AR',
+            countryISO3: 'ARG',
             dateEntry: '2021-07-15T13:35:33.631Z',
             dateConfirmation: '2021-07-15T13:35:33.631Z',
             sourceUrl: 'www.example.com',

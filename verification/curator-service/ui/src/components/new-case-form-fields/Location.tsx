@@ -5,7 +5,7 @@ import { FastField, useFormikContext } from 'formik';
 import makeStyles from '@mui/styles/makeStyles';
 import { Day0CaseFormValues } from '../../api/models/Day0Case';
 import { useEffect } from 'react';
-import { getName } from 'i18n-iso-countries';
+import countries, { getName } from 'i18n-iso-countries';
 
 const styles = makeStyles(() => ({
     root: {
@@ -39,7 +39,7 @@ export default function Location(): JSX.Element {
         );
 
         setFieldValue(
-            'location.countryISO2',
+            'location.countryISO3',
             values.location.geocodeLocation.country,
         );
         setFieldValue('location.country', countryName);
@@ -49,6 +49,8 @@ export default function Location(): JSX.Element {
         );
         // eslint-disable-next-line
     }, [values.location.geocodeLocation]);
+
+    console.log(Object.keys(countries.getAlpha3Codes()));
 
     return (
         <div className={classes.root}>
@@ -78,7 +80,7 @@ export default function Location(): JSX.Element {
                 variant="outlined"
                 className={classes.field}
                 label="Country code"
-                name="location.countryISO2"
+                name="location.countryISO3"
                 type="text"
                 required
                 component={TextField}

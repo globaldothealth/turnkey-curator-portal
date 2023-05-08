@@ -6,11 +6,11 @@ export const locationSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        countryISO2: {
+        countryISO3: {
             type: String,
             required: true,
-            minLength: 2,
-            maxLength: 2,
+            minLength: 3,
+            maxLength: 3,
         },
         geoResolution: String,
         // Location represents a precise location, such as an establishment or POI.
@@ -28,7 +28,7 @@ export const locationSchema = new mongoose.Schema(
 
 export type LocationDocument = mongoose.Document & {
     country: string;
-    countryISO2: string;
+    countryISO3: string;
     geoResolution: string;
     location?: string;
     city?: string;

@@ -114,7 +114,7 @@
                     "country": {
                         "bsonType": "string"
                     },
-                    "countryISO2": {
+                    "countryISO3": {
                         "bsonType": "string"
                     },
                     "location": {

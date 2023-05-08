@@ -31,7 +31,7 @@ export enum CaseStatus {
 interface AddCaseProps {
     caseStatus: CaseStatus;
     country: string;
-    countryISO2: string;
+    countryISO3: string;
     dateEntry: string;
     dateConfirmation?: string;
     confirmationMethod?: string;
@@ -88,7 +88,7 @@ export function addCase(opts: AddCaseProps): void {
             },
             location: {
                 country: opts.country,
-                countryISO2: opts.countryISO2,
+                countryISO3: opts.countryISO3,
                 query: opts.country,
                 geoResolution: 'Country',
                 name: opts.country,

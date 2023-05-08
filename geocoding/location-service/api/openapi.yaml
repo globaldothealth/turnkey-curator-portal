@@ -131,10 +131,10 @@ components:
                     type: string
                 country:
                     type: string
-                    description: ISO-3166-2 code of a country
-                    minLength: 2
-                    maxLength: 2
-                    example: CR
+                    description: ISO 3166-1 alpha-3 code of a country
+                    minLength: 3
+                    maxLength: 3
+                    example: CRI
                 administrativeAreaLevel1:
                     type: string
                 administrativeAreaLevel2:
