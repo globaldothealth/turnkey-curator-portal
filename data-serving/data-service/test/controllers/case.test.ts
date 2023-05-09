@@ -211,7 +211,7 @@ describe('GET', () => {
             });
             it('returns no case if no match', async () => {
                 const res = await request(app)
-                    .get('/api/cases?page=1&limit=1&q=country%3ACH')
+                    .get('/api/cases?page=1&limit=1&q=country%3ACHX')
                     .expect(200)
                     .expect('Content-Type', /json/);
                 expect(res.body.cases).toHaveLength(0);
@@ -219,7 +219,7 @@ describe('GET', () => {
             });
             it('returns the case if matches', async () => {
                 await request(app)
-                    .get('/api/cases?page=1&limit=1&q=country%3ADE')
+                    .get('/api/cases?page=1&limit=1&q=country%3ADEU')
                     .expect(200, /DE/)
                     .expect('Content-Type', /json/);
             });
@@ -232,7 +232,7 @@ describe('GET', () => {
             });
             it('returns the case if non case sensitive matches', async () => {
                 await request(app)
-                    .get('/api/cases?page=1&limit=1&q=country%3Ade')
+                    .get('/api/cases?page=1&limit=1&q=country%3Adeu')
                     .expect(200, /DE/)
                     .expect('Content-Type', /json/);
             });
@@ -249,7 +249,7 @@ describe('GET', () => {
             it('Search for matching country and something else that also matches', async () => {
                 await request(app)
                     .get(
-                        '/api/cases?page=1&limit=1&q=country%3ADE%20occupation%3Aengineer',
+                        '/api/cases?page=1&limit=1&q=country%3ADEU%20occupation%3Aengineer',
                     )
                     .expect(200, /engineer/)
                     .expect('Content-Type', /json/);
@@ -257,7 +257,7 @@ describe('GET', () => {
             it('Search for multiple occurrences of the same keyword', async () => {
                 await request(app)
                     .get(
-                        '/api/cases?page=1&limit=1&q=country%3ADE%20country%3APE',
+                        '/api/cases?page=1&limit=1&q=country%3ADEU%20country%3APE',
                     )
                     .expect(200, /DE/)
                     .expect('Content-Type', /json/);

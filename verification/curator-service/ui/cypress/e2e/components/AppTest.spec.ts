@@ -59,10 +59,10 @@ describe('App', function () {
         cy.task('clearCasesDB', {});
 
         const countries: any = [
-            { name: 'Germany', iso: 'DE' },
-            { name: 'France', iso: 'FR' },
-            { name: 'Spain', iso: 'ES' },
-            { name: 'Italy', iso: 'IT' },
+            { name: 'Germany', iso: 'DEU' },
+            { name: 'France', iso: 'FRA' },
+            { name: 'Spain', iso: 'ESP' },
+            { name: 'Italy', iso: 'ITA' },
         ];
         const dateEntries: any = [
             '2020-05-01',
@@ -109,11 +109,11 @@ describe('App', function () {
 
         const genders: any = ['male', 'female', 'female', '', 'female'];
         const countries: any = [
-            { name: 'Germany', iso: 'DE' },
-            { name: 'Poland', iso: 'PL' },
-            { name: 'Russia', iso: 'RU' },
-            { name: 'Italy', iso: 'IT' },
-            { name: 'Spain', iso: 'ES' },
+            { name: 'Germany', iso: 'DEU' },
+            { name: 'Poland', iso: 'POL' },
+            { name: 'Russia', iso: 'RUS' },
+            { name: 'Italy', iso: 'ITA' },
+            { name: 'Spain', iso: 'ESP' },
         ];
 
         for (let i = 0; i < countries.length; i++) {
@@ -190,10 +190,10 @@ describe('App', function () {
         cy.contains('Line list').click();
 
         const countries: any = [
-            { name: 'Germany', iso: 'DE' },
-            { name: 'France', iso: 'FR' },
-            { name: 'Spain', iso: 'ES' },
-            { name: 'Italy', iso: 'IT' },
+            { name: 'Germany', iso: 'DEU' },
+            { name: 'France', iso: 'FRA' },
+            { name: 'Spain', iso: 'ESP' },
+            { name: 'Italy', iso: 'ITA' },
         ];
         const dateEntries: any = [
             '2020-05-01',

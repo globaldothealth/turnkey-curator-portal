@@ -89,6 +89,8 @@ describe('Curator', function () {
         cy.contains('Germany').click();
         cy.get('div[data-testid="location.geoResolution"]').click()
         cy.get('li[data-value="Country"').click();
+        cy.get('div[data-testid="location.countryISO3"]').click()
+        cy.get('li[data-value="DEU"').click();
 
         // EVENTS
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
@@ -236,7 +238,7 @@ describe('Curator', function () {
             // Location.
             cy.get('input[name="location.countryISO3"]').should(
                 'have.value',
-                'DE',
+                'DEU',
             );
             cy.get('input[name="location.country"]').should(
                 'have.value',

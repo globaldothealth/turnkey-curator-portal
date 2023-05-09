@@ -108,7 +108,7 @@ export default function AutomatedSourceForm(props: Props): JSX.Element {
 
     const user = useAppSelector(selectUser);
 
-    const countryCodesList = Object.keys(countries.getAlpha2Codes());
+    const countryCodesList = Object.keys(countries.getAlpha3Codes());
 
     const createSource = async (
         values: AutomatedSourceFormValues,

@@ -42,7 +42,7 @@ function countryNameToCode(country) {
     if (country in namesToFix) {
         country = namesToFix[country];
     }
-    const code = countries.getAlpha2Code(country, 'en');
+    const code = countries.getAlpha3Code(country, 'en');
     if (!code) {
         print(`${country} was not recognised, skipping!`);
     }

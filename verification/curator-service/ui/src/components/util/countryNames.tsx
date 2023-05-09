@@ -14,7 +14,7 @@ export function nameCountry(isoCode: string, country?: string): string {
 }
 
 export function codeForCountry(name: string): string {
-    return countries.getAlpha2Code(name, 'en');
+    return countries.getAlpha3Code(name, 'en');
 }
 
 export function allCountryNames(): LocalizedCountryNames<{

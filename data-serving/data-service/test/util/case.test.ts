@@ -488,7 +488,7 @@ describe('Case', () => {
         expect(denormalizedCase['location.country']).toEqual(
             locationDoc.country,
         );
-        expect(denormalizedCase['location.countryISO3']).toEqual('GE');
+        expect(denormalizedCase['location.countryISO3']).toEqual('GEO');
         expect(denormalizedCase['location.city']).toEqual(locationDoc.city);
         expect(denormalizedCase['location.geoResolution']).toEqual(
             locationDoc.geoResolution,

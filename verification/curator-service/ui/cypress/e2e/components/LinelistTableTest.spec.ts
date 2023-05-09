@@ -11,31 +11,31 @@ describe('Linelist table', function () {
             roles: ['admin', 'curator'],
         });
         cy.seedLocation({
-            country: 'FR',
+            country: 'FRA',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'France',
             geoResolution: 'Country',
         });
         cy.seedLocation({
-            country: 'DE',
+            country: 'DEU',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'Germany',
             geoResolution: 'Country',
         });
         cy.seedLocation({
-            country: 'ES',
+            country: 'ESP',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'Spain',
             geoResolution: 'Country',
         });
         cy.seedLocation({
-            country: 'GB',
+            country: 'GBR',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'United Kingdom',
             geoResolution: 'Country',
         });
         cy.seedLocation({
-            country: 'AR',
+            country: 'ARG',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'Argentina',
             geoResolution: 'Country',
@@ -212,7 +212,7 @@ describe('Linelist table', function () {
         cy.contains('Filter').click();
         cy.get('#country').click();
 
-        cy.get('[data-value="UA"]').click();
+        cy.get('[data-value="UKR"]').click();
         cy.get('button[data-test-id="search-by-filter-button"]').click();
         cy.contains('France').should('not.exist');
         cy.contains('Germany').should('not.exist');
@@ -220,7 +220,7 @@ describe('Linelist table', function () {
         cy.contains('Filter').click();
         cy.get('#country').click();
 
-        cy.get('[data-value="FR"]').click();
+        cy.get('[data-value="FRA"]').click();
         cy.get('button[data-test-id="search-by-filter-button"]').click();
         cy.contains('France');
         cy.contains('Germany').should('not.exist');
@@ -254,7 +254,7 @@ describe('Linelist table', function () {
 
         cy.contains('Filter').click();
         cy.get('div[data-testid="country-select"]').click();
-        cy.get('li[data-value="FR"]').scrollIntoView().click();
+        cy.get('li[data-value="FRA"]').scrollIntoView().click();
         cy.get('button[data-test-id="search-by-filter-button"]').click();
         cy.contains('United Kingdom').should('not.exist');
 
@@ -304,7 +304,7 @@ describe('Linelist table', function () {
 
         cy.contains('Filter').click();
         cy.get('#country').click();
-        cy.get('[data-value="FR"]').click();
+        cy.get('[data-value="FRA"]').click();
         cy.get('button[data-test-id="search-by-filter-button"]').click();
 
         // Select all option available after search
@@ -349,7 +349,7 @@ describe('Linelist table', function () {
         cy.get('select[aria-label="rows per page"]').select('5');
         cy.contains('Filter').click();
         cy.get('#country').click();
-        cy.get('[data-value="FR"]').click();
+        cy.get('[data-value="FRA"]').click();
         cy.get('button[data-test-id="search-by-filter-button"]').click();
         cy.get('input[type="checkbox"]').eq(0).click();
         cy.contains('Select all 7 rows').click();
