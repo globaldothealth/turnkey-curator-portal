@@ -573,9 +573,7 @@ paths:
                                     description: Cases corresponding to these ids will be returned
                                     type: array
                                     items:
-                                        type: integer
-                                        format: int32
-                                        minimum: 1
+                                        type: string
                                 query:
                                     description: >
                                         Cases matching this query will be returned. This is ignored
