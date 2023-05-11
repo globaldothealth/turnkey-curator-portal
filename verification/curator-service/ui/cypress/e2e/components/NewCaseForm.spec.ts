@@ -11,7 +11,7 @@ describe('New case form', function () {
             fixture: 'geolocation_france_suggest.json',
         }).as('geolocationFranceSuggest');
         cy.seedLocation({
-            country: 'FR',
+            country: 'FRA',
             geometry: { latitude: 45.75889, longitude: 4.84139 },
             name: 'France',
             geoResolution: 'Country',
@@ -39,6 +39,8 @@ describe('New case form', function () {
         cy.get('div[data-testid="location.geocodeLocation"]').type('France');
         cy.wait('@geolocationFranceSuggest');
         cy.contains('li', 'France').click();
+        cy.get('div[data-testid="location.countryISO3"]').click()
+        cy.get('li[data-value="FRA"').click();
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
 
         cy.intercept('POST', '/api/cases?num_cases=1').as('addCase');
@@ -67,6 +69,8 @@ describe('New case form', function () {
         cy.get('div[data-testid="location.geocodeLocation"]').type('France');
         cy.wait('@geolocationFranceSuggest');
         cy.contains('li', 'France').click();
+        cy.get('div[data-testid="location.countryISO3"]').click()
+        cy.get('li[data-value="FRA"').click();
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
 
         cy.intercept('POST', '/api/cases?num_cases=1').as('addCase');
@@ -102,6 +106,8 @@ describe('New case form', function () {
         cy.get('div[data-testid="location.geocodeLocation"]').type('France');
         cy.wait('@geolocationFranceSuggest');
         cy.contains('li', 'France').click();
+        cy.get('div[data-testid="location.countryISO3"]').click()
+        cy.get('li[data-value="FRA"').click();
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
         cy.get('input[name="numCases"]').clear().type('3');
 
@@ -132,6 +138,8 @@ describe('New case form', function () {
         cy.get('div[data-testid="location.geocodeLocation"]').type('France');
         cy.wait('@geolocationFranceSuggest');
         cy.contains('li', 'France').click();
+        cy.get('div[data-testid="location.countryISO3"]').click()
+        cy.get('li[data-value="FRA"').click();
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
         // Outcome without a date.
         cy.get('div[data-testid="events.outcome"]').click();
@@ -165,7 +173,7 @@ describe('New case form', function () {
         cy.addSource('Test source', 'www.example.com');
         cy.addCase({
             country: 'France',
-            countryISO2: 'FR',
+            countryISO3: 'FRA',
             dateEntry: '2020-01-01',
             caseStatus: CaseStatus.Confirmed,
             sourceUrl: 'www.example.com',
@@ -174,7 +182,7 @@ describe('New case form', function () {
         });
         cy.addCase({
             country: 'France',
-            countryISO2: 'FR',
+            countryISO3: 'FRA',
             dateEntry: '2020-01-01',
             caseStatus: CaseStatus.Confirmed,
             sourceUrl: 'www.example.com',
@@ -195,6 +203,8 @@ describe('New case form', function () {
         cy.get('div[data-testid="location"]').type('France');
         cy.wait('@geolocationFranceSuggest');
         cy.contains('li', 'France').click();
+        cy.get('div[data-testid="location.countryISO3"]').click()
+        cy.get('li[data-value="FRA"').click();
         cy.get('input[name="confirmedDate"]').type('2020-01-01');
         cy.get('div[data-testid="symptomsStatus"]').click();
         cy.get('li[data-value="Symptomatic"').click();
@@ -248,6 +258,8 @@ describe('New case form', function () {
         cy.get('div[data-testid="location.geocodeLocation"]').type('France');
         cy.wait('@geolocationFranceSuggest');
         cy.contains('li', 'France').click();
+        cy.get('div[data-testid="location.countryISO3"]').click()
+        cy.get('li[data-value="FRA"').click();
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
 
         // Force server to return error
@@ -329,7 +341,8 @@ describe('New case form', function () {
         cy.contains('www.example.com').click();
         cy.get('button[id="add-location"]').click();
         cy.get('input[name="location.country"]').type('France');
-        cy.get('input[name="location.countryISO2"]').type('FR');
+        cy.get('div[data-testid="location.countryISO3"]').click()
+        cy.get('li[data-value="FRA"').click();
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
 
         cy.intercept('POST', '/api/cases?num_cases=1').as('addCase');

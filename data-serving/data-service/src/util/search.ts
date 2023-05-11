@@ -19,7 +19,7 @@ export class ParsingError extends Error {}
 const keywords = new Map<string, string>([
     ['gender', 'demographics.gender'],
     ['occupation', 'demographics.occupation'],
-    ['country', 'location.countryISO2'],
+    ['country', 'location.countryISO3'],
     ['city', 'location.city'],
     ['location', 'location.location'],
     ['outcome', 'events.outcome'],

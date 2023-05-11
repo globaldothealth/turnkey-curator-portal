@@ -877,12 +877,12 @@ components:
             properties:
                 query:
                     type: string
-                countryISO2:
+                countryISO3:
                     type: string
-                    minLength: 2
-                    maxLength: 2
-                    description: ISO-3166-2 code for a country.
-                    example: GB
+                    minLength: 3
+                    maxLength: 3
+                    description: ISO 3166-1 alpha-3 code for a country.
+                    example: GBR
                 country:
                     type: string
                     description: name of a country
@@ -899,10 +899,10 @@ components:
             properties:
                 country:
                     type: string
-                    description: ISO-3166-2 code for a country.
-                    minLength: 2
-                    maxLength: 2
-                    example: CR
+                    description: ISO 3166-1 alpha-3 code for a country.
+                    minLength: 3
+                    maxLength: 3
+                    example: CRI
                 administrativeAreaLevel1:
                     type: string
                     description: First administrative subdivision of a country

@@ -11,31 +11,31 @@ describe('Linelist table', function () {
             roles: ['admin', 'curator'],
         });
         cy.seedLocation({
-            country: 'FR',
+            country: 'FRA',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'France',
             geoResolution: 'Country',
         });
         cy.seedLocation({
-            country: 'DE',
+            country: 'DEU',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'Germany',
             geoResolution: 'Country',
         });
         cy.seedLocation({
-            country: 'ES',
+            country: 'ESP',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'Spain',
             geoResolution: 'Country',
         });
         cy.seedLocation({
-            country: 'GB',
+            country: 'GBR',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'United Kingdom',
             geoResolution: 'Country',
         });
         cy.seedLocation({
-            country: 'AR',
+            country: 'ARG',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'Argentina',
             geoResolution: 'Country',
@@ -49,7 +49,7 @@ describe('Linelist table', function () {
     it('Display case properly', function () {
         cy.addCase({
             country: 'France',
-            countryISO2: 'FR',
+            countryISO3: 'FRA',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
@@ -70,7 +70,7 @@ describe('Linelist table', function () {
         });
         cy.addCase({
             country: 'France',
-            countryISO2: 'FR',
+            countryISO3: 'FRA',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
@@ -95,7 +95,7 @@ describe('Linelist table', function () {
     it('Can open and close the details modal', function () {
         cy.addCase({
             country: 'France',
-            countryISO2: 'FR',
+            countryISO3: 'FRA',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
@@ -113,7 +113,7 @@ describe('Linelist table', function () {
     it('Can delete a case', function () {
         cy.addCase({
             country: 'France',
-            countryISO2: 'FR',
+            countryISO3: 'FRA',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
@@ -133,21 +133,21 @@ describe('Linelist table', function () {
     it('Can delete multiple cases', function () {
         cy.addCase({
             country: 'France',
-            countryISO2: 'FR',
+            countryISO3: 'FRA',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
         cy.addCase({
             country: 'Germany',
-            countryISO2: 'DE',
+            countryISO3: 'DEU',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
         cy.addCase({
             country: 'Spain',
-            countryISO2: 'ES',
+            countryISO3: 'ESP',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
@@ -177,7 +177,7 @@ describe('Linelist table', function () {
     it('displays search errors', function () {
         cy.addCase({
             country: 'France',
-            countryISO2: 'FR',
+            countryISO3: 'FRA',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
@@ -192,14 +192,14 @@ describe('Linelist table', function () {
     it('Can search', function () {
         cy.addCase({
             country: 'France',
-            countryISO2: 'FR',
+            countryISO3: 'FRA',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
         cy.addCase({
             country: 'Germany',
-            countryISO2: 'DE',
+            countryISO3: 'DEU',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
@@ -212,7 +212,7 @@ describe('Linelist table', function () {
         cy.contains('Filter').click();
         cy.get('#country').click();
 
-        cy.get('[data-value="UA"]').click();
+        cy.get('[data-value="UKR"]').click();
         cy.get('button[data-test-id="search-by-filter-button"]').click();
         cy.contains('France').should('not.exist');
         cy.contains('Germany').should('not.exist');
@@ -220,7 +220,7 @@ describe('Linelist table', function () {
         cy.contains('Filter').click();
         cy.get('#country').click();
 
-        cy.get('[data-value="FR"]').click();
+        cy.get('[data-value="FRA"]').click();
         cy.get('button[data-test-id="search-by-filter-button"]').click();
         cy.contains('France');
         cy.contains('Germany').should('not.exist');
@@ -235,14 +235,14 @@ describe('Linelist table', function () {
     it('Search query is saved in browser history', function () {
         cy.addCase({
             country: 'France',
-            countryISO2: 'FR',
+            countryISO3: 'FRA',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
         cy.addCase({
             country: 'United Kingdom',
-            countryISO2: 'GB',
+            countryISO3: 'GBR',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
@@ -254,7 +254,7 @@ describe('Linelist table', function () {
 
         cy.contains('Filter').click();
         cy.get('div[data-testid="country-select"]').click();
-        cy.get('li[data-value="FR"]').scrollIntoView().click();
+        cy.get('li[data-value="FRA"]').scrollIntoView().click();
         cy.get('button[data-test-id="search-by-filter-button"]').click();
         cy.contains('United Kingdom').should('not.exist');
 
@@ -276,7 +276,7 @@ describe('Linelist table', function () {
         for (let i = 0; i < 7; i++) {
             cy.addCase({
                 country: 'France',
-                countryISO2: 'FR',
+                countryISO3: 'FRA',
                 dateEntry: '2020-05-01',
                 sourceUrl: 'www.example.com',
                 caseStatus: CaseStatus.Confirmed,
@@ -304,7 +304,7 @@ describe('Linelist table', function () {
 
         cy.contains('Filter').click();
         cy.get('#country').click();
-        cy.get('[data-value="FR"]').click();
+        cy.get('[data-value="FRA"]').click();
         cy.get('button[data-test-id="search-by-filter-button"]').click();
 
         // Select all option available after search
@@ -319,7 +319,7 @@ describe('Linelist table', function () {
         for (let i = 0; i < 7; i++) {
             cy.addCase({
                 country: 'France',
-                countryISO2: 'FR',
+                countryISO3: 'FRA',
                 dateEntry: '2020-05-01',
                 sourceUrl: 'www.example.com',
                 caseStatus: CaseStatus.Confirmed,
@@ -327,14 +327,14 @@ describe('Linelist table', function () {
         }
         cy.addCase({
             country: 'Germany',
-            countryISO2: 'DE',
+            countryISO3: 'DEU',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
         cy.addCase({
             country: 'United Kingdom',
-            countryISO2: 'GB',
+            countryISO3: 'GBR',
             dateEntry: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
@@ -349,7 +349,7 @@ describe('Linelist table', function () {
         cy.get('select[aria-label="rows per page"]').select('5');
         cy.contains('Filter').click();
         cy.get('#country').click();
-        cy.get('[data-value="FR"]').click();
+        cy.get('[data-value="FRA"]').click();
         cy.get('button[data-test-id="search-by-filter-button"]').click();
         cy.get('input[type="checkbox"]').eq(0).click();
         cy.contains('Select all 7 rows').click();
@@ -373,7 +373,7 @@ describe('Linelist table', function () {
         for (let i = 0; i < 7; i++) {
             cy.addCase({
                 country: 'France',
-                countryISO2: 'FR',
+                countryISO3: 'FRA',
                 dateEntry: '2020-05-01',
                 sourceUrl: 'www.example.com',
                 caseStatus: CaseStatus.Confirmed,
@@ -400,7 +400,7 @@ describe('Linelist table', function () {
         for (let i = 0; i < 7; i++) {
             cy.addCase({
                 country: 'France',
-                countryISO2: 'FR',
+                countryISO3: 'FRA',
                 dateEntry: '2020-05-01',
                 sourceUrl: 'www.example.com',
                 caseStatus: CaseStatus.Confirmed,
@@ -428,7 +428,7 @@ describe('Linelist table', function () {
     it.skip('Can sort the data', () => {
         cy.addCase({
             country: 'France',
-            countryISO2: 'FR',
+            countryISO3: 'FRA',
             dateEntry: '2022-05-10T13:35:33.6 31Z',
             dateConfirmation: '2022-05-10T13:35:33.631Z',
             sourceUrl: 'www.example.com',
@@ -436,7 +436,7 @@ describe('Linelist table', function () {
         });
         cy.addCase({
             country: 'Germany',
-            countryISO2: 'DE',
+            countryISO3: 'DEU',
             dateEntry: '2022-02-19T13:35:33.631Z',
             dateConfirmation: '2022-02-19T13:35:33.631Z',
             sourceUrl: 'www.example.com',
@@ -444,7 +444,7 @@ describe('Linelist table', function () {
         });
         cy.addCase({
             country: 'Argentina',
-            countryISO2: 'AR',
+            countryISO3: 'ARG',
             dateEntry: '2021-07-15T13:35:33.631Z',
             dateConfirmation: '2021-07-15T13:35:33.631Z',
             sourceUrl: 'www.example.com',

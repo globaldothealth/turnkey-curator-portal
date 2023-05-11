@@ -265,7 +265,7 @@ describe('Case', () => {
         expect(denormalizedCase['events.dateRecovered']).toEqual('');
 
         expect(denormalizedCase['location.country']).toEqual('');
-        expect(denormalizedCase['location.countryISO2']).toEqual('');
+        expect(denormalizedCase['location.countryISO3']).toEqual('');
         expect(denormalizedCase['location.location']).toEqual('');
         expect(denormalizedCase['location.city']).toEqual('');
         expect(denormalizedCase['location.geoResolution']).toEqual('');
@@ -456,7 +456,7 @@ describe('Case', () => {
     it('denormalizes location fields', async () => {
         const locationDoc = {
             country: 'Georgia',
-            countryISO2: 'GE',
+            countryISO3: 'GEO',
             name: 'Tbilisi',
             city: 'Tibilisi',
             geoResolution: 'Point',
@@ -488,7 +488,7 @@ describe('Case', () => {
         expect(denormalizedCase['location.country']).toEqual(
             locationDoc.country,
         );
-        expect(denormalizedCase['location.countryISO2']).toEqual('GE');
+        expect(denormalizedCase['location.countryISO3']).toEqual('GEO');
         expect(denormalizedCase['location.city']).toEqual(locationDoc.city);
         expect(denormalizedCase['location.geoResolution']).toEqual(
             locationDoc.geoResolution,

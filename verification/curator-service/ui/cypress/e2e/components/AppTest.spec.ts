@@ -59,10 +59,10 @@ describe('App', function () {
         cy.task('clearCasesDB', {});
 
         const countries: any = [
-            { name: 'Germany', iso: 'DE' },
-            { name: 'France', iso: 'FR' },
-            { name: 'Spain', iso: 'ES' },
-            { name: 'Italy', iso: 'IT' },
+            { name: 'Germany', iso: 'DEU' },
+            { name: 'France', iso: 'FRA' },
+            { name: 'Spain', iso: 'ESP' },
+            { name: 'Italy', iso: 'ITA' },
         ];
         const dateEntries: any = [
             '2020-05-01',
@@ -74,7 +74,7 @@ describe('App', function () {
         for (let i = 0; i < countries.length; i++) {
             cy.addCase({
                 country: countries[i].name,
-                countryISO2: countries[i].iso,
+                countryISO3: countries[i].iso,
                 dateEntry: dateEntries[i],
                 caseStatus: CaseStatus.Confirmed,
             });
@@ -109,17 +109,17 @@ describe('App', function () {
 
         const genders: any = ['male', 'female', 'female', '', 'female'];
         const countries: any = [
-            { name: 'Germany', iso: 'DE' },
-            { name: 'Poland', iso: 'PL' },
-            { name: 'Russia', iso: 'RU' },
-            { name: 'Italy', iso: 'IT' },
-            { name: 'Spain', iso: 'ES' },
+            { name: 'Germany', iso: 'DEU' },
+            { name: 'Poland', iso: 'POL' },
+            { name: 'Russia', iso: 'RUS' },
+            { name: 'Italy', iso: 'ITA' },
+            { name: 'Spain', iso: 'ESP' },
         ];
 
         for (let i = 0; i < countries.length; i++) {
             cy.addCase({
                 country: countries[i].name,
-                countryISO2: countries[i].iso,
+                countryISO3: countries[i].iso,
                 gender: genders[i] === '' ? undefined : genders[i],
                 caseStatus: CaseStatus.Confirmed,
                 dateEntry: '2020-05-01',
@@ -161,7 +161,7 @@ describe('App', function () {
 
         cy.addCase({
             country: 'Peru',
-            countryISO2: 'PE',
+            countryISO3: 'PER',
             outcome: Outcome.Recovered,
             sourceUrl: 'www.recovered.com',
             dateEntry: '2020-05-01',
@@ -190,10 +190,10 @@ describe('App', function () {
         cy.contains('Line list').click();
 
         const countries: any = [
-            { name: 'Germany', iso: 'DE' },
-            { name: 'France', iso: 'FR' },
-            { name: 'Spain', iso: 'ES' },
-            { name: 'Italy', iso: 'IT' },
+            { name: 'Germany', iso: 'DEU' },
+            { name: 'France', iso: 'FRA' },
+            { name: 'Spain', iso: 'ESP' },
+            { name: 'Italy', iso: 'ITA' },
         ];
         const dateEntries: any = [
             '2020-05-01',
@@ -205,7 +205,7 @@ describe('App', function () {
         for (let i = 0; i < countries.length; i++) {
             cy.addCase({
                 country: countries[i].name,
-                countryISO2: countries[i].iso,
+                countryISO3: countries[i].iso,
                 dateEntry: dateEntries[i],
                 caseStatus: CaseStatus.Confirmed,
             });

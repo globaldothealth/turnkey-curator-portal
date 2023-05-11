@@ -358,9 +358,9 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             <RowHeader title="Country" />
                             <RowContent
                                 content={
-                                    props.c.location.countryISO2
+                                    props.c.location.countryISO3
                                         ? nameCountry(
-                                              props.c.location.countryISO2,
+                                              props.c.location.countryISO3,
                                               props.c.location.country,
                                           )
                                         : ''

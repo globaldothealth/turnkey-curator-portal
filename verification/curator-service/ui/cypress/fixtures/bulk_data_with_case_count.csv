@@ -1,2 +1,2 @@
-pathogen,dateEntry,caseStatus,sourceEntryId,gender,ageRangeStart,ageRangeEnd,country,countryISO2,dateConfirmation,hospitalized,dateHospitalized,outcome,dateOutcome,caseCount
-COVID-19,05/23/2020,confirmed,,male,42,42,Canada,CA,06/23/2020,,,,,3
+pathogen,dateEntry,caseStatus,sourceEntryId,gender,ageRangeStart,ageRangeEnd,country,countryISO3,dateConfirmation,hospitalized,dateHospitalized,outcome,dateOutcome,caseCount
+COVID-19,05/23/2020,confirmed,,male,42,42,Canada,CAN,06/23/2020,,,,,3

@@ -147,7 +147,7 @@ interface RawParsedCase {
 
     // Location
     country: string;
-    countryISO2: string;
+    countryISO3: string;
     location?: string;
     city?: string;
 
@@ -265,7 +265,7 @@ const BulkCaseForm = (props: BulkCaseFormProps) => {
             },
             location: {
                 country: c.country,
-                countryISO2: c.countryISO2,
+                countryISO3: c.countryISO3,
                 city: c.city,
                 location: c.location,
                 query: createLocationQuery(c),

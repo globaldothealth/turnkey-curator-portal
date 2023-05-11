@@ -205,13 +205,13 @@ describe('GET', () => {
         describe('keywords', () => {
             beforeEach(async () => {
                 const c = new Day0Case(minimalCase);
-                c.location.countryISO2 = 'DE';
+                c.location.countryISO3 = 'DEU';
                 c.set('demographics.occupation', 'engineer');
                 await c.save();
             });
             it('returns no case if no match', async () => {
                 const res = await request(app)
-                    .get('/api/cases?page=1&limit=1&q=country%3ACH')
+                    .get('/api/cases?page=1&limit=1&q=country%3ACHX')
                     .expect(200)
                     .expect('Content-Type', /json/);
                 expect(res.body.cases).toHaveLength(0);
@@ -219,7 +219,7 @@ describe('GET', () => {
             });
             it('returns the case if matches', async () => {
                 await request(app)
-                    .get('/api/cases?page=1&limit=1&q=country%3ADE')
+                    .get('/api/cases?page=1&limit=1&q=country%3ADEU')
                     .expect(200, /DE/)
                     .expect('Content-Type', /json/);
             });
@@ -232,7 +232,7 @@ describe('GET', () => {
             });
             it('returns the case if non case sensitive matches', async () => {
                 await request(app)
-                    .get('/api/cases?page=1&limit=1&q=country%3Ade')
+                    .get('/api/cases?page=1&limit=1&q=country%3Adeu')
                     .expect(200, /DE/)
                     .expect('Content-Type', /json/);
             });
@@ -249,7 +249,7 @@ describe('GET', () => {
             it('Search for matching country and something else that also matches', async () => {
                 await request(app)
                     .get(
-                        '/api/cases?page=1&limit=1&q=country%3ADE%20occupation%3Aengineer',
+                        '/api/cases?page=1&limit=1&q=country%3ADEU%20occupation%3Aengineer',
                     )
                     .expect(200, /engineer/)
                     .expect('Content-Type', /json/);
@@ -257,7 +257,7 @@ describe('GET', () => {
             it('Search for multiple occurrences of the same keyword', async () => {
                 await request(app)
                     .get(
-                        '/api/cases?page=1&limit=1&q=country%3ADE%20country%3APE',
+                        '/api/cases?page=1&limit=1&q=country%3ADEU%20country%3APE',
                     )
                     .expect(200, /DE/)
                     .expect('Content-Type', /json/);
@@ -365,7 +365,7 @@ describe('GET', () => {
 describe('POST', () => {
     // beforeEach(() => {
     //     seedFakeGeocodes('Canada', {
-    //         country: 'CA',
+    //         country: 'CAN',
     //         geoResolution: 'Country',
     //         geometry: { latitude: 42.42, longitude: 11.11 },
     //         name: 'Canada',
@@ -376,7 +376,7 @@ describe('POST', () => {
     });
     it('create with required properties but invalid input should return 422', () => {
         seedFakeGeocodes('Canada', {
-            country: 'CA',
+            country: 'CAN',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -392,7 +392,7 @@ describe('POST', () => {
     });
     it('create with valid input should return 201 OK', async () => {
         seedFakeGeocodes('Canada', {
-            country: 'CA',
+            country: 'CAN',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -407,7 +407,7 @@ describe('POST', () => {
     });
     it('create with only required location fields should complete with data from geocoding', async () => {
         seedFakeGeocodes('Canada', {
-            country: 'CA',
+            country: 'CAN',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -415,12 +415,12 @@ describe('POST', () => {
 
         const minimalLocationRequest = {
             ...minimalRequest,
-            location: { countryISO2: 'CA', country: 'Canada', query: 'Canada' },
+            location: { countryISO3: 'CAN', country: 'Canada', query: 'Canada' },
         };
 
         const expectedLocation = {
-            country: 'CA',
-            countryISO2: 'CA',
+            country: 'CAN',
+            countryISO3: 'CAN',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -437,7 +437,7 @@ describe('POST', () => {
     });
     it('create with overrided geoResolution', async () => {
         seedFakeGeocodes('Canada', {
-            country: 'CA',
+            country: 'CAN',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -446,7 +446,7 @@ describe('POST', () => {
         const minimalLocationRequest = {
             ...minimalRequest,
             location: {
-                countryISO2: 'CA',
+                countryISO3: 'CAN',
                 country: 'Canada',
                 query: 'Canada',
                 geoResolution: 'Admin3',
@@ -454,8 +454,8 @@ describe('POST', () => {
         };
 
         const expectedLocation = {
-            country: 'CA',
-            countryISO2: 'CA',
+            country: 'CAN',
+            countryISO3: 'CAN',
             geoResolution: 'Admin3',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -472,7 +472,7 @@ describe('POST', () => {
     });
     it('create with minimal + city should complete rest with geocoding', async () => {
         seedFakeGeocodes('Montreal, Canada', {
-            country: 'CA',
+            country: 'CAN',
             geoResolution: 'Admin3',
             geometry: { latitude: 45.5019, longitude: 73.5674 },
             name: 'Montreal, Canada',
@@ -481,7 +481,7 @@ describe('POST', () => {
         const minimalLocationRequest = {
             ...minimalRequest,
             location: {
-                countryISO2: 'CA',
+                countryISO3: 'CAN',
                 country: 'Canada',
                 query: 'Montreal, Canada',
                 city: 'Montreal',
@@ -489,9 +489,9 @@ describe('POST', () => {
         };
 
         const expectedLocation = {
-            country: 'CA',
+            country: 'CAN',
             city: 'Montreal',
-            countryISO2: 'CA',
+            countryISO3: 'CAN',
             geoResolution: 'Admin3',
             geometry: { latitude: 45.5019, longitude: 73.5674 },
             name: 'Montreal, Canada',
@@ -508,7 +508,7 @@ describe('POST', () => {
     });
     it('create with minimal + city + location should complete rest with geocoding', async () => {
         seedFakeGeocodes('Jacques Cartier Bridge, Montreal, Canada', {
-            country: 'CA',
+            country: 'CAN',
             geoResolution: 'Admin3',
             geometry: { latitude: 45.5218, longitude: 73.5418 },
             name: 'Jacques Cartier Bridge, Montreal, Canada',
@@ -517,7 +517,7 @@ describe('POST', () => {
         const minimalLocationRequest = {
             ...minimalRequest,
             location: {
-                countryISO2: 'CA',
+                countryISO3: 'CAN',
                 country: 'Canada',
                 query: 'Jacques Cartier Bridge, Montreal, Canada',
                 city: 'Montreal',
@@ -526,10 +526,10 @@ describe('POST', () => {
         };
 
         const expectedLocation = {
-            country: 'CA',
+            country: 'CAN',
             city: 'Montreal',
             location: 'Jacques Cartier Bridge',
-            countryISO2: 'CA',
+            countryISO3: 'CAN',
             geoResolution: 'Admin3',
             geometry: { latitude: 45.5218, longitude: 73.5418 },
             name: 'Jacques Cartier Bridge, Montreal, Canada',
@@ -547,7 +547,7 @@ describe('POST', () => {
 
     it('create with minimal + city + latitude + longitude should automatically set geoResolution to Point', async () => {
         seedFakeGeocodes('Jacques Cartier Bridge, Montreal, Canada', {
-            country: 'CA',
+            country: 'CAN',
             geoResolution: 'Admin3',
             geometry: { latitude: 45.5019, longitude: 73.5674 },
             name: 'Jacques Cartier Bridge, Montreal, Canada',
@@ -556,7 +556,7 @@ describe('POST', () => {
         const minimalLocationRequest = {
             ...minimalRequest,
             location: {
-                countryISO2: 'CA',
+                countryISO3: 'CAN',
                 country: 'Canada',
                 query: 'Jacques Cartier Bridge, Montreal, Canada',
                 city: 'Montreal',
@@ -565,9 +565,9 @@ describe('POST', () => {
         };
 
         const expectedLocation = {
-            country: 'CA',
+            country: 'CAN',
             city: 'Montreal',
-            countryISO2: 'CA',
+            countryISO3: 'CAN',
             geoResolution: 'Point',
             geometry: { latitude: 45.5018, longitude: 73.5673 },
             name: 'Jacques Cartier Bridge, Montreal, Canada',
@@ -584,7 +584,7 @@ describe('POST', () => {
     });
     it('create with valid input should bucket the age range', async () => {
         seedFakeGeocodes('Canada', {
-            country: 'CA',
+            country: 'CAN',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -601,7 +601,7 @@ describe('POST', () => {
     });
     it('GETting the POSTed case should return an age range', async () => {
         seedFakeGeocodes('Canada', {
-            country: 'CA',
+            country: 'CAN',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -625,7 +625,7 @@ describe('POST', () => {
     });
     it('create many cases with valid input should return 201 OK', async () => {
         seedFakeGeocodes('Canada', {
-            country: 'CA',
+            country: 'CAN',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -654,7 +654,7 @@ describe('POST', () => {
     // });
     it('create with valid input should not create case revision', async () => {
         seedFakeGeocodes('Canada', {
-            country: 'CA',
+            country: 'CAN',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -675,7 +675,7 @@ describe('POST', () => {
     });
     it('create with valid input and validate_only should not save case', async () => {
         seedFakeGeocodes('Canada', {
-            country: 'CA',
+            country: 'CAN',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -698,7 +698,7 @@ describe('POST', () => {
     });
     it('batch upsert with only valid cases should return 200 with counts', async () => {
         seedFakeGeocodes('Canada', {
-            country: 'CA',
+            country: 'CAN',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -749,7 +749,7 @@ describe('POST', () => {
     });
     it('batch upsert with same case twice should not update anything', async () => {
         seedFakeGeocodes('Canada', {
-            country: 'CA',
+            country: 'CAN',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -879,7 +879,7 @@ describe('POST', () => {
     });
     it('geocodes everything that is necessary', async () => {
         seedFakeGeocodes('Canada', {
-            country: 'CA',
+            country: 'CAN',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -909,7 +909,7 @@ describe('POST', () => {
     // @TODO: Case revisions functionality is missing for now
     it.skip('batch upsert should result in case revisions of existing cases', async () => {
         seedFakeGeocodes('Canada', {
-            country: 'CA',
+            country: 'CAN',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -930,7 +930,7 @@ describe('POST', () => {
     });
     it('batch upsert with any invalid case should return 207', async () => {
         seedFakeGeocodes('Canada', {
-            country: 'CA',
+            country: 'CAN',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -1489,7 +1489,7 @@ describe('PUT', () => {
     });
     it('upsert new item should return 201 CREATED', async () => {
         seedFakeGeocodes('Canada', {
-            country: 'CA',
+            country: 'CAN',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -1503,7 +1503,7 @@ describe('PUT', () => {
     });
     it('upsert new item should not create a case revision', async () => {
         seedFakeGeocodes('Canada', {
-            country: 'CA',
+            country: 'CAN',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -1519,7 +1519,7 @@ describe('PUT', () => {
     });
     it('upsert items without sourceEntryId should return 201 CREATED', async () => {
         seedFakeGeocodes('Canada', {
-            country: 'CA',
+            country: 'CAN',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -1542,7 +1542,7 @@ describe('PUT', () => {
     });
     it('upsert new item with invalid input should return 422', () => {
         seedFakeGeocodes('Canada', {
-            country: 'CA',
+            country: 'CAN',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
