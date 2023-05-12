@@ -226,6 +226,8 @@ export default class CasesController {
                     $push: {
                         downloads: {
                             timestamp: new Date(),
+                            format: 'csv',
+                            query: '*',
                         },
                     },
                 },
