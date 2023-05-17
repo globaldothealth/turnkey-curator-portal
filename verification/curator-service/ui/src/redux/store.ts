@@ -26,7 +26,7 @@ export const initialLoggedInState: RootState = {
         filterBreadcrumbs: [],
         version: '1.0',
         env: 'local',
-        diseaseName: 'COVID-19',
+        diseaseName: process.env.REACT_APP_DISEASE_NAME || 'Template disease',
     },
     filters: {
         modalOpen: false,

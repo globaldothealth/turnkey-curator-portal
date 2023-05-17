@@ -4,7 +4,7 @@
 # Typically run this script after running boundaries.sh to generate the file to import.
 
 readonly USAGE="Usage: $0 [-m <mongodb_connection_string>] [-f <boundaries.json file to import>]"
-mongodb_connection_string='mongodb://127.0.0.1:27017/covid19'
+mongodb_connection_string="mongodb://127.0.0.1:27017/$MONGO_INITDB_DATABASE"
 file='boundaries.json'
 
 while getopts :m:f flag

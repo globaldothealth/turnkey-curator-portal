@@ -66,7 +66,7 @@ export default function validateEnv(): Readonly<{
         }),
         DB_CONNECTION_STRING: str({
             desc: 'MongoDB URI provided to MongoClient.',
-            devDefault: 'mongodb://localhost:27017/covid19',
+            devDefault: `mongodb://localhost:27017/${process.env.MONGO_INITDB_DATABASE}`,
         }),
         EMAIL_USER_ADDRESS: str({
             desc: 'Address from which to send notification emails.',
