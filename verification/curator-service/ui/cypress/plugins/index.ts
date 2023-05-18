@@ -3,11 +3,12 @@
 const MongoClient = require('mongodb').MongoClient;
 
 const url = 'mongodb://localhost:27017/';
-const databse = 'e2eDatabase'
+const databse = 'marburg'
 
 module.exports = (on: any, config: any) => {
+    console.log(process.env.MONGO_DB_NAME)
     // We need to set env for cypress here
-    config.env['E2E_MONGO_DB_NAME'] = databse;
+    config.env['E2E_MONGO_DB_NAME'] = process.env.MONGO_DB_NAME || databse;
 
     on('task', {
         clearCasesDB() {
