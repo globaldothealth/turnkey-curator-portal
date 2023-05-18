@@ -5,8 +5,8 @@ import './commands';
 before(() => {
     cy.exec('npm run init-db', {
         env: {
-            CONN: `mongodb://localhost/${Cypress.env('MONGO_INITDB_DATABASE')}`,
-            DB: Cypress.env('MONGO_INITDB_DATABASE')
+            CONN: `mongodb://localhost/${Cypress.env('E2E_MONGO_DB_NAME')}`,
+            DB: Cypress.env('E2E_MONGO_DB_NAME')
         }
     });
     Cypress.Cookies.debug(true, {verbose: false});
