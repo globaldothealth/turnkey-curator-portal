@@ -42,7 +42,7 @@ jobs:
         env:
           CI: true
           CYPRESS_RECORD_KEY: 1447b996-f025-495f-82d8-ca0b421ffd02
-          MONGO_DB_NAME: "marburg"
+          MONGO_DB_NAME: "covid19"
       # Screenshots are only available on failures.
       - uses: actions/upload-artifact@v3
         if: failure()

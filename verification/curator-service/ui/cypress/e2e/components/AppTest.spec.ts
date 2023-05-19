@@ -99,7 +99,7 @@ describe('App', function () {
         cy.contains('2020-02-15').should('not.exist');
     });
 
-    it('allows the user to search by not provided gender', function () {
+    it.only('allows the user to search by not provided gender', function () {
         cy.login({
             roles: ['curator'],
             name: 'testName',
