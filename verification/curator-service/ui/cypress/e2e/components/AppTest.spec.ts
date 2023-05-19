@@ -100,6 +100,8 @@ describe('App', function () {
     });
 
     it.only('allows the user to search by not provided gender', function () {
+        cy.log('=====', Cypress.env('MONGO_DB_NAME'));
+        cy.log('+++++', Cypress.env('E2E_MONGO_DB_NAME'));
         cy.login({
             roles: ['curator'],
             name: 'testName',
