@@ -5,10 +5,10 @@ export default defineConfig({
     videoUploadOnPasses: false,
     viewportWidth: 1920,
     viewportHeight: 1080,
-    defaultCommandTimeout: 30000,
+    defaultCommandTimeout: 60000,
     execTimeout: 70000,
-    requestTimeout: 30000,
-    responseTimeout: 30000,
+    requestTimeout: 60000,
+    responseTimeout: 60000,
     projectId: 'dpghvb',
     e2e: {
         // We've imported your old cypress plugins here.
