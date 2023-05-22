@@ -87,8 +87,8 @@ export default class CasesController {
                     $push: {
                         downloads: {
                             timestamp: new Date(),
-                            format: req.body.format,
-                            query: req.body.query,
+                            format: req.body.format || 'csv',
+                            query: req.body.query || `id:${req.body.caseIds}`,
                         },
                     },
                 },
@@ -155,8 +155,8 @@ export default class CasesController {
                     $push: {
                         downloads: {
                             timestamp: new Date(),
-                            format: req.body.format,
-                            query: req.body.query,
+                            format: req.body.format || 'csv',
+                            query: req.body.query || `id:${req.body.caseIds}`,
                         },
                     },
                 },
@@ -226,6 +226,8 @@ export default class CasesController {
                     $push: {
                         downloads: {
                             timestamp: new Date(),
+                            format: 'csv',
+                            query: '*',
                         },
                     },
                 },
