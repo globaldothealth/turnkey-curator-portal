@@ -10,7 +10,7 @@ module.exports = (on: any, config: any) => {
     if (process.env.MONGO_DB_NAME) {
         // For github actions E2E_MONGO_DB_NAME is in envs
         config.env['E2E_MONGO_DB_NAME'] = process.env.MONGO_DB_NAME;
-        config.env['DISEASE_NAME'] = process.env.REACT_APP_DISEASE_NAME;
+        config.env['DISEASE_NAME'] = process.env.DISEASE_NAME;
     }
     else {
         // Read E2E_MONGO_DB_NAME from .env file
