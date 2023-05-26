@@ -99,9 +99,7 @@ describe('App', function () {
         cy.contains('2020-02-15').should('not.exist');
     });
 
-    it.only('allows the user to search by not provided gender', function () {
-        cy.log('=====', Cypress.env('MONGO_DB_NAME'));
-        cy.log('+++++', Cypress.env('E2E_MONGO_DB_NAME'));
+    it('allows the user to search by not provided gender', function () {
         cy.login({
             roles: ['curator'],
             name: 'testName',
@@ -262,7 +260,7 @@ describe('App', function () {
 
         cy.contains('Create new').should('not.exist');
         cy.contains('Charts').should('not.exist');
-        cy.contains('COVID-19 Linelist');
+        cy.contains(`${Cypress.env('DISEASE_NAME')} Linelist`);
         cy.contains('Sources').should('not.exist');
         cy.contains('Uploads').should('not.exist');
         cy.contains('Manage users').should('not.exist');
@@ -277,10 +275,10 @@ describe('App', function () {
         });
         cy.visit('/');
 
-        cy.contains('Create new COVID-19 line list case').should('not.exist');
+        cy.contains(`Create new ${Cypress.env('DISEASE_NAME')} line list case`).should('not.exist');
         cy.get('button[data-testid="create-new-button"]').click();
         cy.contains('li', 'New line list case').click();
-        cy.contains('Create new COVID-19 line list case');
+        cy.contains(`Create new ${Cypress.env('DISEASE_NAME')} line list case`);
         cy.url().should('eq', 'http://localhost:3002/cases/new');
         cy.get('button[aria-label="close overlay"').click();
         cy.url().should('eq', 'http://localhost:3002/cases');

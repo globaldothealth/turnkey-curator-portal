@@ -6,6 +6,9 @@ import filtersReducer from './filters/slice';
 import acknowledgmentDataReducer from './acknowledgmentData/slice';
 import linelistTableReducer from './linelistTable/slice';
 import { SortBy, SortByOrder } from '../constants/types';
+import validateEnv from '../util/validate-env';
+
+const env = validateEnv();
 
 export const rootReducer = combineReducers({
     app: appReducer,
@@ -26,7 +29,7 @@ export const initialLoggedInState: RootState = {
         filterBreadcrumbs: [],
         version: '1.0',
         env: 'local',
-        diseaseName: process.env.REACT_APP_DISEASE_NAME || 'COVID-19',
+        diseaseName: env.REACT_APP_DISEASE_NAME,
     },
     filters: {
         modalOpen: false,

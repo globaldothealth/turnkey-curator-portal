@@ -8,7 +8,7 @@ pushd `pwd`
 cd `dirname "$0"`
 
 # Tell us what database to use — default is covid19 but you can override it for other instances
-DB="${GDH_DATABASE:-covid19}"
+DB="${GDH_DATABASE:-$MONGO_DB_NAME}"
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml exec mongo mongo "${DB}" --eval "var email='$1'; var roles=['admin', 'curator'];" /verification/scripts/roles.js
 # Restore directory.
 popd

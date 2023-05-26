@@ -6,9 +6,11 @@ import axios from 'axios';
 import { createMemoryHistory } from 'history';
 import { render, fireEvent, screen } from './util/test-utils';
 import { initialLoggedInState } from '../redux/store';
+import validateEnv from '../util/validate-env';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
+const env = validateEnv();
 
 afterEach(() => {
     jest.clearAllMocks();
@@ -73,7 +75,7 @@ it('loads and displays case', async () => {
     expect(screen.getByText(/Weakness/)).toBeInTheDocument();
     // Travel history.
     // Pathogens and genome.
-    expect(screen.getByText(/COVID-19/)).toBeInTheDocument();
+    expect(screen.getByText(env.REACT_APP_DISEASE_NAME)).toBeInTheDocument();
 });
 
 it('can go to the edit page', async () => {

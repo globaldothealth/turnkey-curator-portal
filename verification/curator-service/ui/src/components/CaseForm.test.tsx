@@ -5,9 +5,11 @@ import { ThemeProvider } from '@mui/material/styles';
 import { theme } from '../theme/theme';
 import { initialLoggedInState } from '../redux/store';
 import mediaQuery from 'css-mediaquery';
+import validateEnv from '../util/validate-env';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
+const env = validateEnv();
 
 const createMatchMedia = (width: string) => {
     Object.defineProperty(window, 'matchMedia', {
@@ -63,7 +65,7 @@ describe('<CaseForm />', () => {
                 onModalClose={(): void => {
                     return;
                 }}
-                diseaseName="COVID-19"
+                diseaseName={env.REACT_APP_DISEASE_NAME}
             />,
             {
                 initialState: initialLoggedInState,
@@ -92,7 +94,7 @@ describe('<CaseForm />', () => {
                     onModalClose={(): void => {
                         return;
                     }}
-                    diseaseName="COVID-19"
+                    diseaseName={env.REACT_APP_DISEASE_NAME}
                 />
             </ThemeProvider>,
             { initialState: initialLoggedInState, initialRoute: '/cases/new' },

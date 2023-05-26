@@ -4,16 +4,19 @@ const MongoClient = require('mongodb').MongoClient;
 
 const url = 'mongodb://localhost:27017/';
 
+
 module.exports = (on: any, config: any) => {
     // We need to set env for cypress here
     if (process.env.MONGO_DB_NAME) {
         // For github actions E2E_MONGO_DB_NAME is in envs
         config.env['E2E_MONGO_DB_NAME'] = process.env.MONGO_DB_NAME;
+        config.env['DISEASE_NAME'] = process.env.REACT_APP_DISEASE_NAME;
     }
     else {
         // Read E2E_MONGO_DB_NAME from .env file
         const envs = require('dotenv').config({ path: `${__dirname}/../../../../../dev/.env` })
         config.env['E2E_MONGO_DB_NAME'] = envs.parsed.MONGO_DB_NAME;
+        config.env['DISEASE_NAME'] = envs.parsed.DISEASE_NAME;
     }
 
     on('task', {

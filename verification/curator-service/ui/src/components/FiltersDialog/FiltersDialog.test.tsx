@@ -4,9 +4,11 @@ import App from '../App';
 import { format } from 'date-fns';
 import { initialLoggedInState } from '../../redux/store';
 import axios from 'axios';
+import validateEnv from '../../util/validate-env';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
+const env = validateEnv();
 
 beforeEach(() => {
     jest.clearAllMocks();
@@ -15,7 +17,10 @@ beforeEach(() => {
         if (url === '/version') {
             return Promise.resolve({ status: 200, data: '1.10.1' });
         } else if (url === '/diseaseName') {
-            return Promise.resolve({ status: 200, data: 'COVID-19' });
+            return Promise.resolve({
+                status: 200,
+                data: env.REACT_APP_DISEASE_NAME,
+            });
         } else if (url.includes('/api/cases')) {
             return Promise.resolve({
                 status: 200,

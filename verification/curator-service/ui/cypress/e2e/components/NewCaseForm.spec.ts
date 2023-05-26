@@ -31,7 +31,7 @@ describe('New case form', function () {
         cy.wait('@getProfile');
 
         cy.visit('/cases/new');
-        cy.contains('Create new COVID-19 line list case');
+        cy.contains(`Create new ${Cypress.env('DISEASE_NAME')} line list case`);
         cy.get('div[data-testid="caseStatus"]').click();
         cy.get('li[data-value="confirmed"]').click();
         cy.get('div[data-testid="caseReference"]').type('www.example.com');
@@ -62,7 +62,7 @@ describe('New case form', function () {
         cy.wait('@getProfile');
 
         cy.visit('/cases/new');
-        cy.contains('Create new COVID-19 line list case');
+        cy.contains(`Create new ${Cypress.env('DISEASE_NAME')} line list case`);
         cy.get('div[data-testid="caseStatus"]').click();
         cy.get('li[data-value="confirmed"]').click();
         cy.get('div[data-testid="caseReference"]').type('www.new-source.com');
@@ -98,7 +98,7 @@ describe('New case form', function () {
         cy.wait('@getProfile');
 
         cy.visit('/cases/new');
-        cy.contains('Create new COVID-19 line list case');
+        cy.contains(`Create new ${Cypress.env('DISEASE_NAME')} line list case`);
         cy.get('div[data-testid="caseStatus"]').click();
         cy.get('li[data-value="confirmed"]').click();
         cy.get('div[data-testid="caseReference"]').type('www.example.com');
@@ -194,7 +194,7 @@ describe('New case form', function () {
         cy.wait('@getProfile');
 
         cy.visit('/cases/new');
-        cy.contains('Create new COVID-19 line list case');
+        cy.contains(`Create new ${Cypress.env('DISEASE_NAME')} line list case`);
         cy.get('div[data-testid="caseReference"]').type('www.example.com');
         cy.contains('www.example.com').click();
         cy.contains('Actor');
@@ -334,7 +334,7 @@ describe('New case form', function () {
         cy.wait('@getProfile');
 
         cy.visit('/cases/new');
-        cy.contains('Create new COVID-19 line list case');
+        cy.contains(`Create new ${Cypress.env('DISEASE_NAME')} line list case`);
         cy.get('div[data-testid="caseStatus"]').click();
         cy.get('li[data-value="confirmed"]').click();
         cy.get('div[data-testid="caseReference"]').type('www.example.com');

@@ -21,7 +21,7 @@ services:
       SESSION_COOKIE_KEY: "fake"
       STATIC_DIR: ""
       ENABLE_LOCAL_AUTH: "true"
-      DISEASE_NAME: "${REACT_APP_DISEASE_NAME}"
+      DISEASE_NAME: "${DISEASE_NAME}"
   data:
     command: "npm run dev"
     volumes:
@@ -45,7 +45,7 @@ services:
       REACT_APP_COOKIE_CONSENT_PUBLIC_ID: "${REACT_APP_COOKIE_CONSENT_PUBLIC_ID}"
       REACT_APP_RECAPTCHA_SITE_KEY: "${REACT_APP_RECAPTCHA_SITE_KEY}"
       ENABLE_LOCAL_AUTH: "true"
-      DISEASE_NAME: "${REACT_APP_DISEASE_NAME}"
+      DISEASE_NAME: "${DISEASE_NAME}"
   localstack:
     image: localstack/localstack-full
     ports:
