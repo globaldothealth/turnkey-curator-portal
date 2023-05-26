@@ -28,6 +28,7 @@ jobs:
     name: Cypress tests on ${{ matrix.browser }}
     env:
       MONGO_DB_NAME: 'marburg'
+      DISEASE_NAME: 'Marburg'
     steps:
       - uses: actions/checkout@v3
       - name: Build stack

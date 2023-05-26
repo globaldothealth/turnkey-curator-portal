@@ -1,4 +1,4 @@
-import { bool, cleanEnv, port, str, url } from 'envalid';
+import { cleanEnv, str } from 'envalid';
 
 export default function validateEnv(): Readonly<{
     REACT_APP_DISEASE_NAME: string;

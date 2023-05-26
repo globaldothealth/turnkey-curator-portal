@@ -76,7 +76,7 @@ export function addCase(opts: AddCaseProps): void {
         url: '/api/cases',
         body: {
             caseStatus: opts.caseStatus,
-            pathogen: 'COVID-19',
+            pathogen: Cypress.env('DISEASE_NAME'),
             caseReference: {
                 sourceId: '5ef8e943dfe6e00030892d58',
                 sourceUrl: opts.sourceUrl || 'www.example.com',

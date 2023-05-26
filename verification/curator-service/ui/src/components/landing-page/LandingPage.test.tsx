@@ -6,8 +6,11 @@ import userEvent from '@testing-library/user-event';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { Route } from 'react-router-dom';
+import { MapLink } from '../../constants/types';
+import validateEnv from '../../util/validate-env';
 
 const server = setupServer();
+const env = validateEnv();
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
@@ -58,7 +61,7 @@ describe('<LandingPage />', () => {
         );
         expect(screen.getByText('Global.health map')).toHaveAttribute(
             'href',
-            'https://map.covid-19.global.health/',
+            MapLink[env.REACT_APP_DISEASE_NAME][env.SERVICE_ENV],
         );
         expect(screen.getByText('Data dictionary')).toHaveAttribute(
             'href',
