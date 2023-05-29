@@ -9,7 +9,7 @@ services:
       - "3003:8080"
     environment:
       DB: "$MONGO_DB_NAME"
-      DB_CONNECTION_STRING: "mongodb://mongo:27017/$MONGO_DB_NAME"
+      DB_CONNECTION_STRING: "mongodb://mongo:27017/${MONGO_DB_NAME}"
       MAPBOX_TOKEN: "${MAPBOX_TOKEN}"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://geocoding:8080/health"]
@@ -41,7 +41,7 @@ services:
       AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
       AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
       CURATOR_VERSION: "${CURATOR_VERSION}"
-      DB_CONNECTION_STRING: "mongodb://mongo:27017/$MONGO_DB_NAME"
+      DB_CONNECTION_STRING: "mongodb://mongo:27017/${MONGO_DB_NAME}"
       DATASERVER_URL: "http://data:3000"
       EMAIL_USER_ADDRESS: "${EMAIL_USER_ADDRESS}"
       EMAIL_USER_PASSWORD: "${EMAIL_USER_PASSWORD}"
@@ -68,7 +68,7 @@ services:
       - mongo
       - geocoding
     environment:
-      DB_CONNECTION_STRING: "mongodb://mongo:27017/$MONGO_DB_NAME"
+      DB_CONNECTION_STRING: "mongodb://mongo:27017/${MONGO_DB_NAME}"
       LOCATION_SERVICE_URL: "http://geocoding:8080"
       MAPBOX_TOKEN: "${MAPBOX_TOKEN}"
       OUTBREAK_DATE: "2019-11-01"
