@@ -32,9 +32,9 @@ interface IMapLink {
  * supply that value for the map link here.
  */
 export const MapLink: IMapLink = {
-    local: env.MAP_LINK_LOCAL,
-    locale2e: env.MAP_LINK_LOCAL_E2E,
-    dev: env.MAP_LINK_DEV,
-    qa: env.MAP_LINK_QA,
-    prod: env.MAP_LINK_PROD,
+    local: env.REACT_APP_MAP_LINK_LOCAL,
+    locale2e: env.REACT_APP_MAP_LINK_LOCAL_E2E,
+    dev: env.REACT_APP_MAP_LINK_DEV,
+    qa: env.REACT_APP_MAP_LINK_QA,
+    prod: env.REACT_APP_MAP_LINK_PROD,
 };

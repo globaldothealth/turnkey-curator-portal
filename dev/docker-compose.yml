@@ -94,3 +94,8 @@ services:
       # UI and API run on different ports in dev, make the custom proxy work.
       REACT_APP_PROXY_URL: "http://curator:3001"
       REACT_APP_DISEASE_NAME: "${DISEASE_NAME}"
+      REACT_APP_MAP_LINK_LOCAL: "${MAP_LINK_LOCAL}"
+      REACT_APP_MAP_LINK_LOCAL_E2E: "${MAP_LINK_LOCAL_E2E}"
+      REACT_APP_MAP_LINK_DEV: "${MAP_LINK_DEV}"
+      REACT_APP_MAP_LINK_QA: "${MAP_LINK_QA}"
+      REACT_APP_MAP_LINK_PROD: "${MAP_LINK_PROD}"
