@@ -8,8 +8,8 @@ services:
     ports:
       - "3003:8080"
     environment:
-      DB: "covid19"
-      DB_CONNECTION_STRING: "mongodb://mongo:27017/covid19"
+      DB: "$MONGO_DB_NAME"
+      DB_CONNECTION_STRING: "mongodb://mongo:27017/${MONGO_DB_NAME}"
       MAPBOX_TOKEN: "${MAPBOX_TOKEN}"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://geocoding:8080/health"]
@@ -24,7 +24,7 @@ services:
     ports:
       - "27017:27017"
     environment:
-      MONGO_INITDB_DATABASE: "covid19"
+      MONGO_DB_NAME: "${MONGO_DB_NAME}"
   curator:
     build:
       context: ../.
@@ -41,7 +41,7 @@ services:
       AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
       AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
       CURATOR_VERSION: "${CURATOR_VERSION}"
-      DB_CONNECTION_STRING: "mongodb://mongo:27017/covid19"
+      DB_CONNECTION_STRING: "mongodb://mongo:27017/${MONGO_DB_NAME}"
       DATASERVER_URL: "http://data:3000"
       EMAIL_USER_ADDRESS: "${EMAIL_USER_ADDRESS}"
       EMAIL_USER_PASSWORD: "${EMAIL_USER_PASSWORD}"
@@ -49,6 +49,7 @@ services:
       GOOGLE_OAUTH_CLIENT_SECRET: "${GOOGLE_OAUTH_CLIENT_SECRET}"
       LOCATION_SERVICE_URL: "http://geocoding:8080"
       RECAPTCHA_SECRET_KEY: "${RECAPTCHA_SECRET_KEY}"
+      DISEASE_NAME: "${DISEASE_NAME}"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://curator:3001"]
       interval: 30s
@@ -67,7 +68,7 @@ services:
       - mongo
       - geocoding
     environment:
-      DB_CONNECTION_STRING: "mongodb://mongo:27017/covid19"
+      DB_CONNECTION_STRING: "mongodb://mongo:27017/${MONGO_DB_NAME}"
       LOCATION_SERVICE_URL: "http://geocoding:8080"
       MAPBOX_TOKEN: "${MAPBOX_TOKEN}"
       OUTBREAK_DATE: "2019-11-01"
@@ -92,3 +93,9 @@ services:
       PORT: "3002"
       # UI and API run on different ports in dev, make the custom proxy work.
       REACT_APP_PROXY_URL: "http://curator:3001"
+      REACT_APP_DISEASE_NAME: "${DISEASE_NAME}"
+      REACT_APP_MAP_LINK_LOCAL: "${MAP_LINK_LOCAL}"
+      REACT_APP_MAP_LINK_LOCAL_E2E: "${MAP_LINK_LOCAL_E2E}"
+      REACT_APP_MAP_LINK_DEV: "${MAP_LINK_DEV}"
+      REACT_APP_MAP_LINK_QA: "${MAP_LINK_QA}"
+      REACT_APP_MAP_LINK_PROD: "${MAP_LINK_PROD}"

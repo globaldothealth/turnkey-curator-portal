@@ -6,43 +6,43 @@ describe('App', function () {
     beforeEach(() => {
         cy.task('clearSourcesDB', {});
         cy.seedLocation({
-            country: 'DE',
+            country: 'DEU',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'Germany',
             geoResolution: 'Country',
         });
         cy.seedLocation({
-            country: 'FR',
+            country: 'FRA',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'France',
             geoResolution: 'Country',
         });
         cy.seedLocation({
-            country: 'ES',
+            country: 'ESP',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'Spain',
             geoResolution: 'Country',
         });
         cy.seedLocation({
-            country: 'IT',
+            country: 'ITA',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'Italy',
             geoResolution: 'Country',
         });
         cy.seedLocation({
-            country: 'PL',
+            country: 'POL',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'Poland',
             geoResolution: 'Country',
         });
         cy.seedLocation({
-            country: 'RU',
+            country: 'RUS',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'Russia',
             geoResolution: 'Country',
         });
         cy.seedLocation({
-            country: 'PE',
+            country: 'PER',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'Peru',
             geoResolution: 'Country',
@@ -260,7 +260,7 @@ describe('App', function () {
 
         cy.contains('Create new').should('not.exist');
         cy.contains('Charts').should('not.exist');
-        cy.contains('COVID-19 Linelist');
+        cy.contains(`${Cypress.env('DISEASE_NAME')} Linelist`);
         cy.contains('Sources').should('not.exist');
         cy.contains('Uploads').should('not.exist');
         cy.contains('Manage users').should('not.exist');
@@ -275,10 +275,10 @@ describe('App', function () {
         });
         cy.visit('/');
 
-        cy.contains('Create new COVID-19 line list case').should('not.exist');
+        cy.contains(`Create new ${Cypress.env('DISEASE_NAME')} line list case`).should('not.exist');
         cy.get('button[data-testid="create-new-button"]').click();
         cy.contains('li', 'New line list case').click();
-        cy.contains('Create new COVID-19 line list case');
+        cy.contains(`Create new ${Cypress.env('DISEASE_NAME')} line list case`);
         cy.url().should('eq', 'http://localhost:3002/cases/new');
         cy.get('button[aria-label="close overlay"').click();
         cy.url().should('eq', 'http://localhost:3002/cases');

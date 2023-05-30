@@ -3,9 +3,12 @@ import axios from 'axios';
 import userEvent from '@testing-library/user-event';
 import { render, fireEvent, screen, waitFor, within } from '../util/test-utils';
 import { initialLoggedInState } from '../../redux/store';
+import { MapLink } from '../../constants/types';
+import validateEnv from '../../util/validate-env';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
+const env = validateEnv();
 
 beforeEach(() => {
     jest.clearAllMocks();
@@ -30,7 +33,10 @@ describe('<App />', () => {
             if (url === '/version') {
                 return Promise.resolve({ status: 200, data: '1.10.1' });
             } else if (url === '/diseaseName') {
-                return Promise.resolve({ status: 200, data: 'COVID-19' });
+                return Promise.resolve({
+                    status: 200,
+                    data: env.REACT_APP_DISEASE_NAME,
+                });
             } else if (url.includes('/api/cases')) {
                 return Promise.resolve({
                     status: 200,
@@ -61,7 +67,10 @@ describe('<App />', () => {
             if (url === '/version') {
                 return Promise.resolve({ status: 200, data: '1.10.1' });
             } else if (url === '/diseaseName') {
-                return Promise.resolve({ status: 200, data: 'COVID-19' });
+                return Promise.resolve({
+                    status: 200,
+                    data: env.REACT_APP_DISEASE_NAME,
+                });
             } else {
                 return Promise.resolve(axiosResponse);
             }
@@ -95,7 +104,10 @@ describe('<App />', () => {
             } else if (url === '/version') {
                 return Promise.resolve({ status: 200, data: '1.10.1' });
             } else if (url === '/diseaseName') {
-                return Promise.resolve({ status: 200, data: 'COVID-19' });
+                return Promise.resolve({
+                    status: 200,
+                    data: env.REACT_APP_DISEASE_NAME,
+                });
             } else if (url.includes('/api/cases')) {
                 return Promise.resolve({
                     status: 200,
@@ -112,7 +124,7 @@ describe('<App />', () => {
 
         expect(await screen.findByTestId('mapLink')).toHaveAttribute(
             'href',
-            'http://dev-map.covid-19.global.health/',
+            MapLink[env.SERVICE_ENV],
         );
         expect(await screen.findByTestId('dictionaryButton')).toHaveAttribute(
             'href',
@@ -145,7 +157,10 @@ describe('<App />', () => {
             if (url === '/version') {
                 return Promise.resolve({ status: 200, data: '1.10.1' });
             } else if (url === '/diseaseName') {
-                return Promise.resolve({ status: 200, data: 'COVID-19' });
+                return Promise.resolve({
+                    status: 200,
+                    data: env.REACT_APP_DISEASE_NAME,
+                });
             } else if (url.includes('/api/cases')) {
                 return Promise.resolve({
                     status: 200,
@@ -202,7 +217,10 @@ describe('<App />', () => {
             if (url === '/version') {
                 return Promise.resolve({ status: 200, data: '1.10.1' });
             } else if (url === '/diseaseName') {
-                return Promise.resolve({ status: 200, data: 'COVID-19' });
+                return Promise.resolve({
+                    status: 200,
+                    data: env.REACT_APP_DISEASE_NAME,
+                });
             } else if (url.includes('/api/cases')) {
                 return Promise.resolve({
                     status: 200,
@@ -244,7 +262,10 @@ describe('Download dataset', () => {
             if (url === '/version') {
                 return Promise.resolve({ status: 200, data: '1.10.1' });
             } else if (url === '/diseaseName') {
-                return Promise.resolve({ status: 200, data: 'COVID-19' });
+                return Promise.resolve({
+                    status: 200,
+                    data: env.REACT_APP_DISEASE_NAME,
+                });
             } else if (url.includes('/api/cases')) {
                 return Promise.resolve({
                     status: 200,

@@ -150,7 +150,7 @@ describe('LandingPage', function () {
 
         cy.contains('Create new').should('not.exist');
         cy.contains('Charts').should('not.exist');
-        cy.contains('COVID-19 Linelist').should('not.exist');
+        cy.contains(`${Cypress.env('DISEASE_NAME')} Linelist`).should('not.exist');
         cy.contains('Sources').should('not.exist');
         cy.contains('Uploads').should('not.exist');
         cy.contains('Manage users').should('not.exist');
@@ -168,7 +168,7 @@ describe('LandingPage', function () {
 
         cy.contains('Create new').should('not.exist');
         cy.contains('Charts').should('not.exist');
-        cy.contains('COVID-19 Linelist');
+        cy.contains(`${Cypress.env('DISEASE_NAME')} Linelist`);
         cy.contains('Sources').should('not.exist');
         cy.contains('Uploads').should('not.exist');
         cy.contains('Manage users').should('not.exist');
@@ -184,7 +184,7 @@ describe('LandingPage', function () {
         cy.visit('/');
 
         cy.contains('Create new').should('not.exist');
-        cy.contains('COVID-19 Linelist');
+        cy.contains(`${Cypress.env('DISEASE_NAME')} Linelist`);
         cy.contains('Sources').should('not.exist');
         cy.contains('Uploads').should('not.exist');
         cy.contains('Manage users');

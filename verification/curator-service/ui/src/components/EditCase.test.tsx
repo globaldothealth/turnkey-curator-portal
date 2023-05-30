@@ -3,9 +3,11 @@ import { screen, render, waitFor } from './util/test-utils';
 import EditCase from './EditCase';
 import axios from 'axios';
 import { initialLoggedInState } from '../redux/store';
+import validateEnv from '../util/validate-env';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
+const env = validateEnv();
 
 afterEach(() => {
     jest.clearAllMocks();
@@ -62,7 +64,7 @@ describe('<EditCase />', () => {
                 onModalClose={(): void => {
                     return;
                 }}
-                diseaseName="COVID-19"
+                diseaseName={env.REACT_APP_DISEASE_NAME}
             />,
             {
                 initialState: initialLoggedInState,
@@ -116,7 +118,7 @@ describe('<EditCase />', () => {
                 onModalClose={(): void => {
                     return;
                 }}
-                diseaseName="COVID-19"
+                diseaseName={env.REACT_APP_DISEASE_NAME}
             />,
         );
 

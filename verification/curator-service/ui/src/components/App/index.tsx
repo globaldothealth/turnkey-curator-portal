@@ -411,7 +411,7 @@ export default function App(): JSX.Element {
                         <a
                             className={classes.mapLink}
                             data-testid="mapLink"
-                            href={MapLink[diseaseName][env]}
+                            href={MapLink[env]}
                             rel="noopener noreferrer"
                             target="_blank"
                         >

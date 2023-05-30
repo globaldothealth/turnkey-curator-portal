@@ -18,7 +18,7 @@ services:
       SESSION_COOKIE_KEY: "fake"
       STATIC_DIR: ""
       ENABLE_LOCAL_AUTH: "true"
-      DISEASE_NAME: "COVID-19"
+      DISEASE_NAME: "${DISEASE_NAME}"
   data:
     command: "npm run dev"
     volumes:

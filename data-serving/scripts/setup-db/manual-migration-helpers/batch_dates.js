@@ -6,7 +6,7 @@
  * Run it on a collection with existing data after migrating up the above migration.
  */
 
-var sourceCollection = db.getSiblingDB("covid19").getCollection("cases");
+var sourceCollection = db.getSiblingDB(process.env.MONGO_DB_NAME).getCollection("cases");
 var flush = 10000; // force bulk execution after this many documents have queued for update
 var filter = { confirmationDate: { $exists: false } };
 var batch = sourceCollection.initializeUnorderedBulkOp();

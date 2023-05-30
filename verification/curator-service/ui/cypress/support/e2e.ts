@@ -3,8 +3,13 @@ import './commands';
 // Before all tests have run, initialize the database. This removes all data,
 // applies the schema and adds any indexes.
 before(() => {
-    cy.exec('npm run init-db');
-    Cypress.Cookies.debug(true, { verbose: false });
+    cy.exec('npm run init-db', {
+        env: {
+            CONN: `mongodb://localhost/${Cypress.env('E2E_MONGO_DB_NAME')}`,
+            DB: Cypress.env('E2E_MONGO_DB_NAME')
+        }
+    });
+    Cypress.Cookies.debug(true, {verbose: false});
 });
 
 Cypress.on('uncaught:exception', (err, runnable, promise) => {
