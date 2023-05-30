@@ -27,7 +27,7 @@ jobs:
         browser: ["chrome"]
     name: Cypress tests on ${{ matrix.browser }}
     env:
-      MONGO_DB_NAME: 'covid-19'
+      MONGO_DB_NAME: 'covid19'
       DISEASE_NAME: 'COVID-19'
     steps:
       - uses: actions/checkout@v3
