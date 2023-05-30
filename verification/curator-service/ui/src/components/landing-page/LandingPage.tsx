@@ -156,7 +156,7 @@ const MoreInformationLinks = ({
                 </div>
                 <div className={classes.link}>
                     <a
-                        href={MapLink[diseaseName][env]}
+                        href={MapLink[env]}
                         rel="noopener noreferrer"
                         target="_blank"
                     >

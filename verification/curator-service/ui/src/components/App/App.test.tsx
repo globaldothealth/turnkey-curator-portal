@@ -124,7 +124,7 @@ describe('<App />', () => {
 
         expect(await screen.findByTestId('mapLink')).toHaveAttribute(
             'href',
-            MapLink[env.REACT_APP_DISEASE_NAME][env.SERVICE_ENV],
+            MapLink[env.SERVICE_ENV],
         );
         expect(await screen.findByTestId('dictionaryButton')).toHaveAttribute(
             'href',

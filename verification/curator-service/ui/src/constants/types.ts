@@ -1,3 +1,7 @@
+import validateEnv from '../util/validate-env';
+
+const env = validateEnv();
+
 export enum SortBy {
     Default = 'default',
     ConfirmationDate = 'confirmationDate',
@@ -18,10 +22,6 @@ interface IMapLink {
     [id: string]: string;
 }
 
-interface IOutbreakEnvironments {
-    [id: string]: IMapLink;
-}
-
 // Link to the map application based on current env
 /*
  * Note that the initial state of the app is disease name = '',
@@ -31,36 +31,10 @@ interface IOutbreakEnvironments {
  * to show the correct URL, but to avoid a crash we will
  * supply that value for the map link here.
  */
-export const MapLink: IOutbreakEnvironments = {
-    'COVID-19': {
-        local: 'http://dev-map.covid-19.global.health/',
-        locale2e: 'http://dev-map.covid-19.global.health/',
-        dev: 'http://dev-map.covid-19.global.health/',
-        qa: 'http://dev-map.covid-19.global.health',
-        prod: 'https://map.covid-19.global.health/',
-    },
-    Marburg: {
-        local: 'https://dev-map.marburg.global.health/',
-        locale2e: 'http://dev-map.marburg.global.health/',
-        dev: 'http://dev-map.marburg.global.health/',
-        qa: 'http://dev-map.marburg.global.health',
-        prod: 'https://map.marburg.global.health/',
-    },
-    Ebola: {
-        local: 'https://dev-map.ebola.global.health/',
-        locale2e: 'http://dev-map.ebola.global.health/',
-        dev: 'http://dev-map.ebola.global.health/',
-        qa: 'http://dev-map.ebola.global.health',
-        prod: 'https://map.ebola.global.health/country',
-    },
-    Mpox: {
-        local: 'https://dev-map.monkeypox.global.health/',
-        locale2e: 'http://dev-map.monkeypox.global.health/',
-        dev: 'http://dev-map.monkeypox.global.health/',
-        qa: 'http://dev-map.monkeypox.global.health',
-        prod: 'https://map.monkeypox.global.health/',
-    },
-    '': {
-        prod: 'https://map.covid-19.global.health/',
-    },
+export const MapLink: IMapLink = {
+    local: env.MAP_LINK_LOCAL,
+    locale2e: env.MAP_LINK_LOCAL_E2E,
+    dev: env.MAP_LINK_DEV,
+    qa: env.MAP_LINK_QA,
+    prod: env.MAP_LINK_PROD,
 };
