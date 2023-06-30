@@ -596,7 +596,7 @@ export default function CaseForm(props: Props): JSX.Element {
                                             isChecked: isChecked({
                                                 requiredValues: [
                                                     values.caseReference
-                                                        .sourceUrl,
+                                                        ?.sourceUrl,
                                                 ],
                                             }),
                                             hasError: hasErrors(

@@ -398,11 +398,14 @@ export class CasesController {
                 if (numCases === 1) {
                     result = await c.save();
                 } else {
-                    const cases = Array.from(
-                        { length: numCases },
-                        () => new Day0Case(req.body),
-                    );
-                    result = { cases: await Day0Case.insertMany(cases) };
+                    const newCases: CaseDocument[] = [];
+                    for (let i = 0; i < numCases; i++) {
+                        const multiCaseInstance = new Day0Case(
+                            await caseFromDTO(receivedCase),
+                        );
+                        newCases.push(await multiCaseInstance.save());
+                    }
+                    result = { cases: newCases };
                 }
             }
 
