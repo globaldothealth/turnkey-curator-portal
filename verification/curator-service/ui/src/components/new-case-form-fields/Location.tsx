@@ -5,7 +5,7 @@ import { FastField, useFormikContext } from 'formik';
 import makeStyles from '@mui/styles/makeStyles';
 import { Day0CaseFormValues } from '../../api/models/Day0Case';
 import { useEffect } from 'react';
-import { getAlpha3Codes, getName } from 'i18n-iso-countries';
+import { getAlpha3Codes, getName, alpha2ToAlpha3 } from 'i18n-iso-countries';
 
 const styles = makeStyles(() => ({
     root: {
@@ -40,7 +40,7 @@ export default function Location(): JSX.Element {
 
         setFieldValue(
             'location.countryISO3',
-            values.location.geocodeLocation.country,
+            alpha2ToAlpha3(values.location.geocodeLocation.country),
         );
         setFieldValue('location.country', countryName);
         setFieldValue(
