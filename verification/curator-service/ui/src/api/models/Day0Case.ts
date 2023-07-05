@@ -51,6 +51,7 @@ export interface Demographics {
 
 export interface GeocodeLocation {
     country: string;
+    countryISO3: string;
     administrativeAreaLevel1: string;
     administrativeAreaLevel2: string;
     administrativeAreaLevel3: string;
