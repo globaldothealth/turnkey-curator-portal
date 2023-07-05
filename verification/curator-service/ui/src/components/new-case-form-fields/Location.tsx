@@ -40,7 +40,8 @@ export default function Location(): JSX.Element {
 
         setFieldValue(
             'location.countryISO3',
-            alpha2ToAlpha3(values.location.geocodeLocation.country),
+            values.location.geocodeLocation.countryISO3 ||
+                alpha2ToAlpha3(values.location.geocodeLocation.country),
         );
         setFieldValue('location.country', countryName);
         setFieldValue(

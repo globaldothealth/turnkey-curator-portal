@@ -169,6 +169,7 @@ const initialValuesFromCase = (
             ...c.location,
             geocodeLocation: {
                 country: c.location.countryISO3,
+                countryISO3: c.location.countryISO3,
                 administrativeAreaLevel1: '',
                 administrativeAreaLevel2: '',
                 administrativeAreaLevel3: '',
