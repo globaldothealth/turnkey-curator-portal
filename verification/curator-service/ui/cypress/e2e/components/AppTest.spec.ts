@@ -6,43 +6,43 @@ describe('App', function () {
     beforeEach(() => {
         cy.task('clearSourcesDB', {});
         cy.seedLocation({
-            country: 'DEU',
+            country: 'DE',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'Germany',
             geoResolution: 'Country',
         });
         cy.seedLocation({
-            country: 'FRA',
+            country: 'FR',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'France',
             geoResolution: 'Country',
         });
         cy.seedLocation({
-            country: 'ESP',
+            country: 'ES',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'Spain',
             geoResolution: 'Country',
         });
         cy.seedLocation({
-            country: 'ITA',
+            country: 'IT',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'Italy',
             geoResolution: 'Country',
         });
         cy.seedLocation({
-            country: 'POL',
+            country: 'PL',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'Poland',
             geoResolution: 'Country',
         });
         cy.seedLocation({
-            country: 'RUS',
+            country: 'RU',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'Russia',
             geoResolution: 'Country',
         });
         cy.seedLocation({
-            country: 'PER',
+            country: 'PE',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'Peru',
             geoResolution: 'Country',
