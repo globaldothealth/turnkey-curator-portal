@@ -77,7 +77,7 @@ describe('Curator', function () {
         cy.get('li[data-value="N"]').click();
 
         // LOCATION
-        cy.get('div[data-testid="location.geocodeLocation"]').type('France');
+        cy.get('div[data-testid="location.geocodeLocation"]').type('France', { delay: 0});
         cy.wait('@geolocationFranceSuggest');
         cy.contains('France').click();
         /* Change France to something else to check we can edit geocode results.

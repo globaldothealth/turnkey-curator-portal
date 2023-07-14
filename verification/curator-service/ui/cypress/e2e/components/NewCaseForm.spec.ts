@@ -11,7 +11,7 @@ describe('New case form', function () {
             fixture: 'geolocation_france_suggest.json',
         }).as('geolocationFranceSuggest');
         cy.seedLocation({
-            country: 'FRA',
+            country: 'FR',
             geometry: { latitude: 45.75889, longitude: 4.84139 },
             name: 'France',
             geoResolution: 'Country',

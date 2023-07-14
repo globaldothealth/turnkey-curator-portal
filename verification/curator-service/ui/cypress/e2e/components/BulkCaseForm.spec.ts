@@ -5,13 +5,13 @@ describe('Bulk upload form', function () {
         cy.task('clearCasesDB', {});
         cy.login();
         cy.seedLocation({
-            country: 'FRA',
+            country: 'FR',
             geometry: { latitude: 51.5072, longitude: -0.1275 },
             name: 'France',
             geoResolution: 'Country',
         });
         cy.seedLocation({
-            country: 'CAN',
+            country: 'CA',
             geometry: { latitude: 51.1784, longitude: 115.5708 },
             name: 'Canada',
             geoResolution: 'Country',
