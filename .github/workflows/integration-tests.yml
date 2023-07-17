@@ -22,7 +22,7 @@ jobs:
   integration-tests:
     runs-on: ubuntu-20.04
     container:
-      image: cypress/browsers:node16.16.0-chrome107-ff107
+      image: cypress/browsers:node14.17.6-chrome100-ff98
     strategy:
       matrix:
 #        fail-fast: false
