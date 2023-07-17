@@ -25,7 +25,7 @@ jobs:
     strategy:
       matrix:
 #        fail-fast: false
-        containers: [1, 2, 3, 4, 5]
+        containers: [1, 2, 3, 4]
         browser: ["chrome"]
     name: Cypress tests on ${{ matrix.browser }}
     env:
@@ -53,9 +53,9 @@ jobs:
         with:
           name: cypress-screenshots
           path: verification/curator-service/ui/cypress/screenshots
-#      # Videos are always available.
-#      - uses: actions/upload-artifact@v3
-#        if: always()
-#        with:
-#          name: cypress-videos
-#          path: verification/curator-service/ui/cypress/videos/components
+      # Videos are always available.
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: cypress-videos
+          path: verification/curator-service/ui/cypress/videos/components
