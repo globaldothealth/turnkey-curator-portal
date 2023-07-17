@@ -19,10 +19,19 @@ on:
   workflow_dispatch:
 
 jobs:
+  install:
+    runs-on: ubuntu-20.04
+    name: Cypress tests on ${{ matrix.browser }}
+    env:
+      MONGO_DB_NAME: 'covid19'
+      DISEASE_NAME: 'COVID-19'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build stack
+        run: docker-compose -f dev/docker-compose.yml -f dev/docker-compose.ci.yml up --build -d -V
+
   integration-tests:
     runs-on: ubuntu-20.04
-    container:
-      image: cypress/browsers:node14.17.6-chrome100-ff98
     strategy:
       matrix:
 #        fail-fast: false
@@ -33,9 +42,6 @@ jobs:
       MONGO_DB_NAME: 'covid19'
       DISEASE_NAME: 'COVID-19'
     steps:
-      - uses: actions/checkout@v3
-      - name: Build stack
-        run: docker-compose -f dev/docker-compose.yml -f dev/docker-compose.ci.yml up --build -d -V
       - uses: cypress-io/github-action@v4
         with:
           working-directory: verification/curator-service/ui
