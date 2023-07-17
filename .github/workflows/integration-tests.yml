@@ -24,8 +24,8 @@ jobs:
 
     strategy:
       matrix:
-        fail-fast: false
-        containers: [1, 2, 3, 4]
+#        fail-fast: false
+        containers: [1, 2, 3, 4, 5]
         browser: ["chrome"]
     name: Cypress tests on ${{ matrix.browser }}
     env:
