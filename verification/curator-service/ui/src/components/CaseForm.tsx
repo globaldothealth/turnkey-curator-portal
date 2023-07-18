@@ -33,7 +33,7 @@ import axios from 'axios';
 import Source, { submitSource } from './common-form-fields/Source';
 import General from './new-case-form-fields/General';
 import NumCases from './new-case-form-fields/NumCases';
-import { toUTCDate } from './util/date';
+import { toLocalDate, toUTCDate } from './util/date';
 
 const TableOfContents = styled('nav')(() => ({
     position: 'fixed',
@@ -184,7 +184,7 @@ const initialValuesFromCase = (
         vaccination: {
             ...c.vaccination,
             vaccineSideEffects: c.vaccination.vaccineSideEffects?.split(', '),
-            vaccineDate: c.vaccination.vaccineDate || null,
+            vaccineDate: toLocalDate(c.vaccination.vaccineDate),
         },
         preexistingConditions: {
             ...c.preexistingConditions,
@@ -194,20 +194,20 @@ const initialValuesFromCase = (
         },
         travelHistory: {
             ...c.travelHistory,
-            travelHistoryEntry: c.travelHistory.travelHistoryEntry || null,
+            travelHistoryEntry: toLocalDate(c.travelHistory.travelHistoryEntry),
         },
         events: {
             ...c.events,
-            dateOnset: c.events.dateOnset || null,
-            dateConfirmation: c.events.dateConfirmation || null,
-            dateOfFirstConsult: c.events.dateOfFirstConsult || null,
-            dateHospitalization: c.events.dateHospitalization || null,
-            dateDischargeHospital: c.events.dateDischargeHospital || null,
-            dateAdmissionICU: c.events.dateAdmissionICU || null,
-            dateDischargeICU: c.events.dateDischargeICU || null,
-            dateIsolation: c.events.dateIsolation || null,
-            dateDeath: c.events.dateDeath || null,
-            dateRecovered: c.events.dateRecovered || null,
+            dateOnset: toLocalDate(c.events.dateOnset),
+            dateConfirmation: toLocalDate(c.events.dateConfirmation),
+            dateOfFirstConsult: toLocalDate(c.events.dateOfFirstConsult),
+            dateHospitalization: toLocalDate(c.events.dateHospitalization),
+            dateDischargeHospital: toLocalDate(c.events.dateDischargeHospital),
+            dateAdmissionICU: toLocalDate(c.events.dateAdmissionICU),
+            dateDischargeICU: toLocalDate(c.events.dateDischargeICU),
+            dateIsolation: toLocalDate(c.events.dateIsolation),
+            dateDeath: toLocalDate(c.events.dateDeath),
+            dateRecovered: toLocalDate(c.events.dateRecovered),
         },
         preexistingConditionsHelper: c.preexistingConditions
             .preexistingCondition
@@ -380,6 +380,8 @@ export default function CaseForm(props: Props): JSX.Element {
             },
             events: {
                 ...values.events,
+                dateEntry:
+                    toUTCDate(values.events.dateEntry || undefined) || null,
                 dateOnset: toUTCDate(values.events.dateOnset || undefined),
                 dateConfirmation: toUTCDate(
                     values.events.dateConfirmation || undefined,

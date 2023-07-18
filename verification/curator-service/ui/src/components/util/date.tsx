@@ -1,3 +1,5 @@
+import { parse } from 'date-fns';
+
 export default function renderDate(
     date: string | Date | undefined | null,
 ): string {
@@ -24,6 +26,17 @@ export function toUTCDate(dateString: string | undefined): string | undefined {
         Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
     );
     return utcDate.toString();
+}
+
+export function toLocalDate(
+    dateString: string | null | undefined,
+): string | undefined {
+    if (!dateString) return undefined;
+
+    // Parse date as local timezone to properly display it
+    const date = parse(dateString.slice(0, 10), 'yyyy-MM-dd', new Date());
+
+    return date.toString();
 }
 
 export function renderDateRange(range?: {
