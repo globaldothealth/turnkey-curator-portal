@@ -33,6 +33,7 @@ import axios from 'axios';
 import Source, { submitSource } from './common-form-fields/Source';
 import General from './new-case-form-fields/General';
 import NumCases from './new-case-form-fields/NumCases';
+import { toUTCDate } from './util/date';
 
 const TableOfContents = styled('nav')(() => ({
     position: 'fixed',
@@ -379,28 +380,41 @@ export default function CaseForm(props: Props): JSX.Element {
             },
             events: {
                 ...values.events,
-                dateOnset: values.events.dateOnset || undefined,
-                dateConfirmation: values.events.dateConfirmation || undefined,
+                dateOnset: toUTCDate(values.events.dateOnset || undefined),
+                dateConfirmation: toUTCDate(
+                    values.events.dateConfirmation || undefined,
+                ),
                 confirmationMethod:
                     values.events.confirmationMethod || undefined,
-                dateOfFirstConsult:
+                dateOfFirstConsult: toUTCDate(
                     values.events.dateOfFirstConsult || undefined,
+                ),
                 hospitalized: values.events.hospitalized || undefined,
                 reasonForHospitalization:
                     values.events.reasonForHospitalization || undefined,
-                dateHospitalization:
+                dateHospitalization: toUTCDate(
                     values.events.dateHospitalization || undefined,
-                dateDischargeHospital:
+                ),
+                dateDischargeHospital: toUTCDate(
                     values.events.dateDischargeHospital || undefined,
+                ),
                 intensiveCare: values.events.intensiveCare || undefined,
-                dateAdmissionICU: values.events.dateAdmissionICU || undefined,
-                dateDischargeICU: values.events.dateDischargeICU || undefined,
+                dateAdmissionICU: toUTCDate(
+                    values.events.dateAdmissionICU || undefined,
+                ),
+                dateDischargeICU: toUTCDate(
+                    values.events.dateDischargeICU || undefined,
+                ),
                 homeMonitoring: values.events.homeMonitoring || undefined,
                 isolated: values.events.isolated || undefined,
-                dateIsolation: values.events.dateIsolation || undefined,
+                dateIsolation: toUTCDate(
+                    values.events.dateIsolation || undefined,
+                ),
                 outcome: values.events.outcome || undefined,
-                dateDeath: values.events.dateDeath || undefined,
-                dateRecovered: values.events.dateRecovered || undefined,
+                dateDeath: toUTCDate(values.events.dateDeath || undefined),
+                dateRecovered: toUTCDate(
+                    values.events.dateRecovered || undefined,
+                ),
             },
             preexistingConditions: {
                 ...values.preexistingConditions,
@@ -414,7 +428,9 @@ export default function CaseForm(props: Props): JSX.Element {
                 ...values.vaccination,
                 vaccineSideEffects: vaccineSideEffects.join(', '),
                 vaccination: values.vaccination.vaccination || undefined,
-                vaccineDate: values.vaccination.vaccineDate || undefined,
+                vaccineDate: toUTCDate(
+                    values.vaccination.vaccineDate || undefined,
+                ),
             },
             transmission: {
                 ...values.transmission,
@@ -425,8 +441,9 @@ export default function CaseForm(props: Props): JSX.Element {
             travelHistory: {
                 ...values.travelHistory,
                 travelHistory: values.travelHistory.travelHistory || undefined,
-                travelHistoryEntry:
+                travelHistoryEntry: toUTCDate(
                     values.travelHistory.travelHistoryEntry || undefined,
+                ),
             },
             location: {
                 ...values.location,
