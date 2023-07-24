@@ -33,6 +33,7 @@ import axios from 'axios';
 import Source, { submitSource } from './common-form-fields/Source';
 import General from './new-case-form-fields/General';
 import NumCases from './new-case-form-fields/NumCases';
+import { toLocalDate, toUTCDate } from './util/date';
 
 const TableOfContents = styled('nav')(() => ({
     position: 'fixed',
@@ -183,7 +184,7 @@ const initialValuesFromCase = (
         vaccination: {
             ...c.vaccination,
             vaccineSideEffects: c.vaccination.vaccineSideEffects?.split(', '),
-            vaccineDate: c.vaccination.vaccineDate || null,
+            vaccineDate: toLocalDate(c.vaccination.vaccineDate),
         },
         preexistingConditions: {
             ...c.preexistingConditions,
@@ -193,20 +194,20 @@ const initialValuesFromCase = (
         },
         travelHistory: {
             ...c.travelHistory,
-            travelHistoryEntry: c.travelHistory.travelHistoryEntry || null,
+            travelHistoryEntry: toLocalDate(c.travelHistory.travelHistoryEntry),
         },
         events: {
             ...c.events,
-            dateOnset: c.events.dateOnset || null,
-            dateConfirmation: c.events.dateConfirmation || null,
-            dateOfFirstConsult: c.events.dateOfFirstConsult || null,
-            dateHospitalization: c.events.dateHospitalization || null,
-            dateDischargeHospital: c.events.dateDischargeHospital || null,
-            dateAdmissionICU: c.events.dateAdmissionICU || null,
-            dateDischargeICU: c.events.dateDischargeICU || null,
-            dateIsolation: c.events.dateIsolation || null,
-            dateDeath: c.events.dateDeath || null,
-            dateRecovered: c.events.dateRecovered || null,
+            dateOnset: toLocalDate(c.events.dateOnset),
+            dateConfirmation: toLocalDate(c.events.dateConfirmation),
+            dateOfFirstConsult: toLocalDate(c.events.dateOfFirstConsult),
+            dateHospitalization: toLocalDate(c.events.dateHospitalization),
+            dateDischargeHospital: toLocalDate(c.events.dateDischargeHospital),
+            dateAdmissionICU: toLocalDate(c.events.dateAdmissionICU),
+            dateDischargeICU: toLocalDate(c.events.dateDischargeICU),
+            dateIsolation: toLocalDate(c.events.dateIsolation),
+            dateDeath: toLocalDate(c.events.dateDeath),
+            dateRecovered: toLocalDate(c.events.dateRecovered),
         },
         preexistingConditionsHelper: c.preexistingConditions
             .preexistingCondition
@@ -379,28 +380,43 @@ export default function CaseForm(props: Props): JSX.Element {
             },
             events: {
                 ...values.events,
-                dateOnset: values.events.dateOnset || undefined,
-                dateConfirmation: values.events.dateConfirmation || undefined,
+                dateEntry:
+                    toUTCDate(values.events.dateEntry || undefined) || null,
+                dateOnset: toUTCDate(values.events.dateOnset || undefined),
+                dateConfirmation: toUTCDate(
+                    values.events.dateConfirmation || undefined,
+                ),
                 confirmationMethod:
                     values.events.confirmationMethod || undefined,
-                dateOfFirstConsult:
+                dateOfFirstConsult: toUTCDate(
                     values.events.dateOfFirstConsult || undefined,
+                ),
                 hospitalized: values.events.hospitalized || undefined,
                 reasonForHospitalization:
                     values.events.reasonForHospitalization || undefined,
-                dateHospitalization:
+                dateHospitalization: toUTCDate(
                     values.events.dateHospitalization || undefined,
-                dateDischargeHospital:
+                ),
+                dateDischargeHospital: toUTCDate(
                     values.events.dateDischargeHospital || undefined,
+                ),
                 intensiveCare: values.events.intensiveCare || undefined,
-                dateAdmissionICU: values.events.dateAdmissionICU || undefined,
-                dateDischargeICU: values.events.dateDischargeICU || undefined,
+                dateAdmissionICU: toUTCDate(
+                    values.events.dateAdmissionICU || undefined,
+                ),
+                dateDischargeICU: toUTCDate(
+                    values.events.dateDischargeICU || undefined,
+                ),
                 homeMonitoring: values.events.homeMonitoring || undefined,
                 isolated: values.events.isolated || undefined,
-                dateIsolation: values.events.dateIsolation || undefined,
+                dateIsolation: toUTCDate(
+                    values.events.dateIsolation || undefined,
+                ),
                 outcome: values.events.outcome || undefined,
-                dateDeath: values.events.dateDeath || undefined,
-                dateRecovered: values.events.dateRecovered || undefined,
+                dateDeath: toUTCDate(values.events.dateDeath || undefined),
+                dateRecovered: toUTCDate(
+                    values.events.dateRecovered || undefined,
+                ),
             },
             preexistingConditions: {
                 ...values.preexistingConditions,
@@ -414,7 +430,9 @@ export default function CaseForm(props: Props): JSX.Element {
                 ...values.vaccination,
                 vaccineSideEffects: vaccineSideEffects.join(', '),
                 vaccination: values.vaccination.vaccination || undefined,
-                vaccineDate: values.vaccination.vaccineDate || undefined,
+                vaccineDate: toUTCDate(
+                    values.vaccination.vaccineDate || undefined,
+                ),
             },
             transmission: {
                 ...values.transmission,
@@ -425,8 +443,9 @@ export default function CaseForm(props: Props): JSX.Element {
             travelHistory: {
                 ...values.travelHistory,
                 travelHistory: values.travelHistory.travelHistory || undefined,
-                travelHistoryEntry:
+                travelHistoryEntry: toUTCDate(
                     values.travelHistory.travelHistoryEntry || undefined,
+                ),
             },
             location: {
                 ...values.location,

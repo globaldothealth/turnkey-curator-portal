@@ -8,7 +8,6 @@ import { TextField } from 'formik-mui';
 import { Outcome, Day0CaseFormValues } from '../../api/models/Day0Case';
 import { useStyles } from './styled';
 import clsx from 'clsx';
-import { toUTCDate } from '../util/date';
 
 const yesNoUndefined = ['Y', 'N', 'NA'];
 
@@ -125,12 +124,9 @@ export default function Events(): JSX.Element {
                 label="Entry date"
                 value={values.events.dateEntry}
                 onChange={(newValue) => {
-                    setFieldValue(
-                        'events.dateEntry',
-                        toUTCDate(
-                            newValue ? newValue.toDateString() : undefined,
-                        ),
-                    );
+                    if (newValue) {
+                        setFieldValue('events.dateEntry', newValue);
+                    }
                 }}
                 required
             />
@@ -139,12 +135,9 @@ export default function Events(): JSX.Element {
                 label="Confirmed case date"
                 value={values.events.dateConfirmation}
                 onChange={(newValue) => {
-                    setFieldValue(
-                        'events.dateConfirmation',
-                        toUTCDate(
-                            newValue ? newValue.toDateString() : undefined,
-                        ),
-                    );
+                    if (newValue) {
+                        setFieldValue('events.dateConfirmation', newValue);
+                    }
                 }}
             />
             <div className={clsx([classes.fieldRow, classes.halfWidth])}>
@@ -161,12 +154,9 @@ export default function Events(): JSX.Element {
                 label="Onset of symptoms date"
                 value={values.events.dateOnset}
                 onChange={(newValue) => {
-                    setFieldValue(
-                        'events.dateOnset',
-                        toUTCDate(
-                            newValue ? newValue.toDateString() : undefined,
-                        ),
-                    );
+                    if (newValue) {
+                        setFieldValue('events.dateOnset', newValue);
+                    }
                 }}
             />
             <DateField
@@ -174,12 +164,9 @@ export default function Events(): JSX.Element {
                 label="First clinical consultation date"
                 value={values.events.dateOfFirstConsult}
                 onChange={(newValue) => {
-                    setFieldValue(
-                        'events.dateOfFirstConsult',
-                        toUTCDate(
-                            newValue ? newValue.toDateString() : undefined,
-                        ),
-                    );
+                    if (newValue) {
+                        setFieldValue('events.dateOfFirstConsult', newValue);
+                    }
                 }}
             />
             <SelectField
@@ -198,12 +185,9 @@ export default function Events(): JSX.Element {
                     label="Date of isolation"
                     value={values.events.dateIsolation}
                     onChange={(newValue) => {
-                        setFieldValue(
-                            'events.dateIsolation',
-                            toUTCDate(
-                                newValue ? newValue.toDateString() : undefined,
-                            ),
-                        );
+                        if (newValue) {
+                            setFieldValue('events.dateIsolation', newValue);
+                        }
                     }}
                 />
             )}
@@ -219,14 +203,12 @@ export default function Events(): JSX.Element {
                         label="Hospital admission date"
                         value={values.events.dateHospitalization}
                         onChange={(newValue) => {
-                            setFieldValue(
-                                'events.dateHospitalization',
-                                toUTCDate(
-                                    newValue
-                                        ? newValue.toDateString()
-                                        : undefined,
-                                ),
-                            );
+                            if (newValue) {
+                                setFieldValue(
+                                    'events.dateHospitalization',
+                                    newValue,
+                                );
+                            }
                         }}
                     />
                     <DateField
@@ -234,14 +216,12 @@ export default function Events(): JSX.Element {
                         label="Hospital discharge date"
                         value={values.events.dateDischargeHospital}
                         onChange={(newValue) => {
-                            setFieldValue(
-                                'events.dateDischargeHospital',
-                                toUTCDate(
-                                    newValue
-                                        ? newValue.toDateString()
-                                        : undefined,
-                                ),
-                            );
+                            if (newValue) {
+                                setFieldValue(
+                                    'events.dateDischargeHospital',
+                                    newValue,
+                                );
+                            }
                         }}
                     />
                 </>
@@ -258,14 +238,12 @@ export default function Events(): JSX.Element {
                         label="ICU admission date"
                         value={values.events.dateAdmissionICU}
                         onChange={(newValue) => {
-                            setFieldValue(
-                                'events.dateAdmissionICU',
-                                toUTCDate(
-                                    newValue
-                                        ? newValue.toDateString()
-                                        : undefined,
-                                ),
-                            );
+                            if (newValue) {
+                                setFieldValue(
+                                    'events.dateAdmissionICU',
+                                    newValue,
+                                );
+                            }
                         }}
                     />
                     <DateField
@@ -273,14 +251,12 @@ export default function Events(): JSX.Element {
                         label="ICU discharge date"
                         value={values.events.dateDischargeICU}
                         onChange={(newValue) => {
-                            setFieldValue(
-                                'events.dateDischargeICU',
-                                toUTCDate(
-                                    newValue
-                                        ? newValue.toDateString()
-                                        : undefined,
-                                ),
-                            );
+                            if (newValue) {
+                                setFieldValue(
+                                    'events.dateDischargeICU',
+                                    newValue,
+                                );
+                            }
                         }}
                     />
                 </>
@@ -296,12 +272,9 @@ export default function Events(): JSX.Element {
                     label="Date of recovery"
                     value={values.events.dateRecovered}
                     onChange={(newValue) => {
-                        setFieldValue(
-                            'events.dateRecovered',
-                            toUTCDate(
-                                newValue ? newValue.toDateString() : undefined,
-                            ),
-                        );
+                        if (newValue) {
+                            setFieldValue('events.dateRecovered', newValue);
+                        }
                     }}
                 />
             )}
@@ -311,12 +284,9 @@ export default function Events(): JSX.Element {
                     label="Date of death"
                     value={values.events.dateDeath}
                     onChange={(newValue) => {
-                        setFieldValue(
-                            'events.dateDeath',
-                            toUTCDate(
-                                newValue ? newValue.toDateString() : undefined,
-                            ),
-                        );
+                        if (newValue) {
+                            setFieldValue('events.dateDeath', newValue);
+                        }
                     }}
                 />
             )}

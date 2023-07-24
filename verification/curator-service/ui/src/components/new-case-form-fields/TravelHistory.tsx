@@ -8,7 +8,6 @@ import { Day0CaseFormValues } from '../../api/models/Day0Case';
 import { TextField } from 'formik-mui';
 import { useStyles } from './styled';
 import clsx from 'clsx';
-import { toUTCDate } from '../util/date';
 
 const hasTravelledValues = ['Y', 'N', 'NA'];
 
@@ -73,11 +72,8 @@ export default function TravelHistory(): JSX.Element {
                                 ...values,
                                 travelHistory: {
                                     ...values.travelHistory,
-                                    travelHistoryEntry: toUTCDate(
-                                        newValue
-                                            ? newValue.toDateString()
-                                            : undefined,
-                                    ),
+                                    travelHistoryEntry:
+                                        newValue?.toDateString() || undefined,
                                 },
                             });
                         }}
