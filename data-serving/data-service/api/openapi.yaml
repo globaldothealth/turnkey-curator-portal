@@ -243,7 +243,9 @@ paths:
                                     description: Cases corresponding to these ids will be returned
                                     type: array
                                     items:
-                                        type: string
+                                        type: integer
+                                        format: int32
+                                        minimum: 1
                                 query:
                                     description: >
                                         Cases matching this query will be returned. This is ignored
@@ -501,6 +503,31 @@ paths:
                     $ref: '#/components/responses/404'
                 '500':
                     $ref: '#/components/responses/500'
+    /cases/verify/{id}:
+        post:
+            summary: Verify case
+#            tags: [ Case ]
+#            operationId: verifyCase
+#            requestBody:
+#                description: Case with verifier
+#                required: true
+#                content:
+#                    application/json:
+#                        schema:
+#                            $ref: '#/components/schemas/Verifier'
+            responses:
+                '200':
+                    $ref: '#/components/responses/200Case'
+                '400':
+                    $ref: '#/components/responses/400'
+                '403':
+                    $ref: '#/components/responses/403'
+                '404':
+                    $ref: '#/components/responses/404'
+                '422':
+                    $ref: '#/components/responses/422'
+                '500':
+                    $ref: '#/components/responses/500'
     /cases/batchStatusChange:
         post:
             summary: Changes status for a list of cases
@@ -639,6 +666,12 @@ components:
                 - numCreated
                 - numUpdated
                 - errors
+        Verifier:
+            description: Verifier data.
+            properties:
+                email:
+                    description: email address of verifier
+                    type: string
         Case:
             description: A single line-list case.
             properties:

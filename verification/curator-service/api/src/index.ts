@@ -1,38 +1,38 @@
-import * as usersController from './controllers/users';
+import S3 from 'aws-sdk/clients/s3';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import express from 'express';
+import session, { SessionOptions } from 'express-session';
+import expressWinston from 'express-winston';
+import MongoStore from 'connect-mongo';
+import passport from 'passport';
+import path from 'path';
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
+import { NextFunction, Request, Response } from 'express';
+import { middleware as OpenApiValidatorMiddleware } from 'express-openapi-validator';
+import { ValidationError } from 'express-openapi-validator/dist/framework/types';
+import winston from 'winston';
 
+import AwsBatchClient from './clients/aws-batch-client';
+import AwsLambdaClient from './clients/aws-lambda-client';
+import EmailClient from './clients/email-client';
+import CasesController from './controllers/cases';
+import GeocodeProxy from './controllers/geocode';
+import SourcesController from './controllers/sources';
+import UploadsController from './controllers/uploads';
+import * as usersController from './controllers/users';
+import db, { connectToDatabase } from './model/database';
+import validateEnv from './util/validate-env';
 import {
     AuthController,
     authenticateByAPIKey,
     mustBeAuthenticated,
     mustHaveAnyRole,
 } from './controllers/auth';
-import { NextFunction, Request, Response } from 'express';
-import session, { SessionOptions } from 'express-session';
-
-import AwsBatchClient from './clients/aws-batch-client';
-import AwsLambdaClient from './clients/aws-lambda-client';
-import CasesController from './controllers/cases';
-import EmailClient from './clients/email-client';
-import GeocodeProxy from './controllers/geocode';
-import { middleware as OpenApiValidatorMiddleware } from 'express-openapi-validator';
-import SourcesController from './controllers/sources';
-import UploadsController from './controllers/uploads';
-import { ValidationError } from 'express-openapi-validator/dist/framework/types';
-import YAML from 'yamljs';
-import cookieParser from 'cookie-parser';
-import dotenv from 'dotenv';
-import express from 'express';
-import MongoStore from 'connect-mongo';
-import passport from 'passport';
-import path from 'path';
-import swaggerUi from 'swagger-ui-express';
-import validateEnv from './util/validate-env';
+import { Role } from './model/user';
 import { logger } from './util/logger';
-import S3 from 'aws-sdk/clients/s3';
-import cors from 'cors';
-import db, { connectToDatabase } from './model/database';
-import winston from 'winston';
-import expressWinston from 'express-winston';
 
 async function makeApp() {
     const app = express();
@@ -175,7 +175,7 @@ async function makeApp() {
     apiRouter.get(
         '/sources',
         authenticateByAPIKey,
-        mustHaveAnyRole(['curator']),
+        mustHaveAnyRole(['curator', Role.JuniorCurator]),
         sourcesController.list,
     );
     apiRouter.get(
@@ -185,37 +185,37 @@ async function makeApp() {
     apiRouter.get(
         '/sources/:id([a-z0-9]{24})',
         authenticateByAPIKey,
-        mustHaveAnyRole(['curator']),
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
         sourcesController.get,
     );
     apiRouter.post(
         '/sources',
         authenticateByAPIKey,
-        mustHaveAnyRole(['curator']),
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
         sourcesController.create,
     );
     apiRouter.put(
         '/sources/:id([a-z0-9]{24})',
         authenticateByAPIKey,
-        mustHaveAnyRole(['curator']),
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
         sourcesController.update,
     );
     apiRouter.delete(
         '/sources/:id([a-z0-9]{24})',
         authenticateByAPIKey,
-        mustHaveAnyRole(['curator']),
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
         sourcesController.del,
     );
     apiRouter.post(
         '/sources/:id([a-z0-9]{24})/retrieve',
         authenticateByAPIKey,
-        mustHaveAnyRole(['curator']),
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
         sourcesController.retrieve,
     );
     apiRouter.get(
         '/sources/parsers',
         authenticateByAPIKey,
-        mustHaveAnyRole(['curator']),
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
         sourcesController.listParsers,
     );
 
@@ -224,19 +224,19 @@ async function makeApp() {
     apiRouter.get(
         '/sources/uploads',
         authenticateByAPIKey,
-        mustHaveAnyRole(['curator']),
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
         uploadsController.list,
     );
     apiRouter.post(
         '/sources/:sourceId([a-z0-9]{24})/uploads',
         authenticateByAPIKey,
-        mustHaveAnyRole(['curator']),
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
         uploadsController.create,
     );
     apiRouter.put(
         '/sources/:sourceId([a-z0-9]{24})/uploads/:id([a-z0-9]{24})',
         authenticateByAPIKey,
-        mustHaveAnyRole(['curator']),
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
         uploadsController.update,
     );
 
@@ -256,19 +256,19 @@ async function makeApp() {
     apiRouter.get(
         '/cases/symptoms',
         authenticateByAPIKey,
-        mustHaveAnyRole(['curator']),
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
         casesController.listSymptoms,
     );
     apiRouter.get(
         '/cases/placesOfTransmission',
         authenticateByAPIKey,
-        mustHaveAnyRole(['curator']),
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
         casesController.listPlacesOfTransmission,
     );
     apiRouter.get(
         '/cases/occupations',
         authenticateByAPIKey,
-        mustHaveAnyRole(['curator']),
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
         casesController.listOccupations,
     );
     apiRouter.get(
@@ -285,8 +285,13 @@ async function makeApp() {
     );
     apiRouter.post(
         '/cases',
-        mustHaveAnyRole(['curator']),
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
         casesController.create,
+    );
+    apiRouter.post(
+        '/cases/verify/:id(\\d+$)',
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
+        casesController.verify,
     );
     apiRouter.post(
         '/cases/download',
@@ -303,48 +308,48 @@ async function makeApp() {
     apiRouter.post(
         '/cases/batchUpsert',
         authenticateByAPIKey,
-        mustHaveAnyRole(['curator']),
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
         casesController.batchUpsert,
     );
     apiRouter.put(
         '/cases',
-        mustHaveAnyRole(['curator']),
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
         casesController.upsert,
     );
     apiRouter.post(
         '/cases/batchUpdate',
         authenticateByAPIKey,
-        mustHaveAnyRole(['curator']),
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
         casesController.batchUpdate,
     );
     apiRouter.post(
         '/cases/batchUpdateQuery',
         authenticateByAPIKey,
-        mustHaveAnyRole(['curator']),
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
         casesController.batchUpdateQuery,
     );
     apiRouter.post(
         '/cases/batchStatusChange',
         authenticateByAPIKey,
-        mustHaveAnyRole(['curator']),
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
         casesController.batchStatusChange,
     );
     apiRouter.put(
         '/cases/:id(\\d+$)',
         authenticateByAPIKey,
-        mustHaveAnyRole(['curator']),
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
         casesController.update,
     );
     apiRouter.delete(
         '/cases',
         authenticateByAPIKey,
-        mustHaveAnyRole(['curator', 'admin']),
+        mustHaveAnyRole([Role.Curator, Role.Admin]),
         casesController.batchDel,
     );
     apiRouter.delete(
         '/cases/:id(\\d+$)',
         authenticateByAPIKey,
-        mustHaveAnyRole(['curator']),
+        mustHaveAnyRole([Role.Curator]),
         casesController.del,
     );
 
@@ -352,25 +357,25 @@ async function makeApp() {
     apiRouter.get(
         '/users',
         authenticateByAPIKey,
-        mustHaveAnyRole(['admin']),
+        mustHaveAnyRole([Role.Admin]),
         usersController.list,
     );
     apiRouter.put(
         '/users/:id',
         authenticateByAPIKey,
-        mustHaveAnyRole(['admin']),
+        mustHaveAnyRole([Role.Admin]),
         usersController.updateRoles,
     );
     apiRouter.delete(
         '/users/:id',
         authenticateByAPIKey,
-        mustHaveAnyRole(['admin']),
+        mustHaveAnyRole([Role.Admin]),
         usersController.deleteUser,
     );
     apiRouter.get(
         '/users/roles',
         authenticateByAPIKey,
-        mustHaveAnyRole(['admin']),
+        mustHaveAnyRole([Role.Admin]),
         usersController.listRoles,
     );
 
@@ -380,13 +385,13 @@ async function makeApp() {
     apiRouter.get(
         '/geocode/suggest',
         authenticateByAPIKey,
-        mustHaveAnyRole(['curator']),
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
         geocodeProxy.suggest,
     );
     apiRouter.get(
         '/geocode/convertUTM',
         authenticateByAPIKey,
-        mustHaveAnyRole(['curator']),
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
         geocodeProxy.convertUTM,
     );
     apiRouter.get(

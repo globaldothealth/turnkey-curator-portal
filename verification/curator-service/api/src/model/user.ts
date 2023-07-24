@@ -2,7 +2,11 @@ import bcrypt from 'bcrypt';
 import { ObjectId, Collection } from 'mongodb';
 import db from './database';
 
-export const userRoles = ['admin', 'curator'];
+export enum Role {
+    Admin = 'admin',
+    Curator = 'curator',
+    JuniorCurator = 'junior curator',
+}
 
 interface IUserPublicFields {
     id: string;

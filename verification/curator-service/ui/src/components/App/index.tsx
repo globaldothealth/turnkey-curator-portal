@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
     AppBar,
     Avatar,
@@ -47,15 +47,15 @@ import { MapLink } from '../../constants/types';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { setFilterBreadcrumbs } from '../../redux/app/slice';
 import {
-    selectIsLoading,
-    selectEnv,
-    selectVersion,
     selectDiseaseName,
+    selectEnv,
+    selectIsLoading,
+    selectVersion,
 } from '../../redux/app/selectors';
-import { getEnv, getVersion, getDiseaseName } from '../../redux/app/thunk';
+import { getDiseaseName, getEnv, getVersion } from '../../redux/app/thunk';
 import { getUserProfile, logout } from '../../redux/auth/thunk';
 import { selectUser } from '../../redux/auth/selectors';
-import { User } from '../../api/models/User';
+import { Role, User } from '../../api/models/User';
 import PopupSmallScreens from '../PopupSmallScreens';
 import Sidebar from '../Sidebar';
 import Footer from '../Footer';
@@ -346,7 +346,10 @@ export default function App(): JSX.Element {
     useEffect(() => {
         if (!user) return;
 
-        setDrawerOpen(hasAnyRole(user, ['curator', 'admin']) && showMenu);
+        setDrawerOpen(
+            hasAnyRole(user, [Role.Admin, Role.Curator, Role.JuniorCurator]) &&
+                showMenu,
+        );
         //eslint-disable-next-line
     }, [user]);
 
@@ -382,19 +385,24 @@ export default function App(): JSX.Element {
             <CssBaseline />
             <AppBar position="fixed" elevation={0} className={classes.appBar}>
                 <Toolbar>
-                    {user && hasAnyRole(user, ['curator', 'admin']) && (
-                        <IconButton
-                            color="primary"
-                            aria-label="toggle drawer"
-                            onClick={toggleDrawer}
-                            edge="start"
-                            className={classes.menuButton}
-                            data-testid="toggle-sidebar"
-                            size="large"
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                    )}
+                    {user &&
+                        hasAnyRole(user, [
+                            Role.Admin,
+                            Role.Curator,
+                            Role.JuniorCurator,
+                        ]) && (
+                            <IconButton
+                                color="primary"
+                                aria-label="toggle drawer"
+                                onClick={toggleDrawer}
+                                edge="start"
+                                className={classes.menuButton}
+                                data-testid="toggle-sidebar"
+                                size="large"
+                            >
+                                <MenuIcon />
+                            </IconButton>
+                        )}
                     <GHListLogo />
                     {location.pathname === '/cases' && user ? (
                         <>
@@ -421,9 +429,12 @@ export default function App(): JSX.Element {
                     {user && <ProfileMenu user={user} version={appVersion} />}
                 </Toolbar>
             </AppBar>
-            {user && hasAnyRole(user, ['curator', 'admin']) && (
-                <Sidebar drawerOpen={drawerOpen} />
-            )}
+            {user &&
+                hasAnyRole(user, [
+                    Role.Admin,
+                    Role.Curator,
+                    Role.JuniorCurator,
+                ]) && <Sidebar drawerOpen={drawerOpen} />}
             <main
                 className={clsx(classes.content, {
                     [classes.contentShift]: drawerOpen,
@@ -440,12 +451,12 @@ export default function App(): JSX.Element {
                             <LinelistTable />
                         </Route>
                     )}
-                    {hasAnyRole(user, ['curator']) && (
+                    {hasAnyRole(user, [Role.Curator, Role.JuniorCurator]) && (
                         <Route exact path="/sources">
                             <SourceTable />
                         </Route>
                     )}
-                    {hasAnyRole(user, ['curator']) && (
+                    {hasAnyRole(user, [Role.Curator]) && (
                         <Route exact path="/uploads">
                             <UploadsTable />
                         </Route>
@@ -455,48 +466,56 @@ export default function App(): JSX.Element {
                             <Profile />
                         </Route>
                     )}
-                    {user && hasAnyRole(user, ['admin']) && (
+                    {user && hasAnyRole(user, [Role.Admin]) && (
                         <Route path="/users">
                             <Users onUserChange={getUser} />
                         </Route>
                     )}{' '}
-                    {user && hasAnyRole(user, ['curator']) && (
+                    {user && hasAnyRole(user, [Role.Curator]) && (
                         <Route path="/sources/automated">
                             <AutomatedSourceForm onModalClose={onModalClose} />
                         </Route>
                     )}
-                    {user && hasAnyRole(user, ['curator']) && (
+                    {user && hasAnyRole(user, [Role.Curator]) && (
                         <Route path="/cases/bulk">
                             <BulkCaseForm onModalClose={onModalClose} />
                         </Route>
                     )}
-                    {user && hasAnyRole(user, ['curator']) && (
+                    {user && hasAnyRole(user, [Role.Curator]) && (
                         <Route path="/sources/backfill">
                             <AutomatedBackfill onModalClose={onModalClose} />
                         </Route>
                     )}
-                    {user && hasAnyRole(user, ['curator']) && (
-                        <Route path="/cases/new">
-                            <CaseForm
-                                onModalClose={onModalClose}
-                                diseaseName={diseaseName}
+                    {user &&
+                        hasAnyRole(user, [
+                            Role.Curator,
+                            Role.JuniorCurator,
+                        ]) && (
+                            <Route path="/cases/new">
+                                <CaseForm
+                                    onModalClose={onModalClose}
+                                    diseaseName={diseaseName}
+                                />
+                            </Route>
+                        )}
+                    {user &&
+                        hasAnyRole(user, [
+                            Role.Curator,
+                            Role.JuniorCurator,
+                        ]) && (
+                            <Route
+                                path="/cases/edit/:id"
+                                render={({ match }) => {
+                                    return (
+                                        <EditCase
+                                            id={match.params.id}
+                                            onModalClose={onModalClose}
+                                            diseaseName={diseaseName}
+                                        />
+                                    );
+                                }}
                             />
-                        </Route>
-                    )}
-                    {user && hasAnyRole(user, ['curator']) && (
-                        <Route
-                            path="/cases/edit/:id"
-                            render={({ match }) => {
-                                return (
-                                    <EditCase
-                                        id={match.params.id}
-                                        onModalClose={onModalClose}
-                                        diseaseName={diseaseName}
-                                    />
-                                );
-                            }}
-                        />
-                    )}
+                        )}
                     {user && (
                         <Route
                             path="/cases/view/:id"
@@ -505,7 +524,8 @@ export default function App(): JSX.Element {
                                     <ViewCase
                                         id={match.params.id}
                                         enableEdit={hasAnyRole(user, [
-                                            'curator',
+                                            Role.Curator,
+                                            Role.JuniorCurator,
                                         ])}
                                         onModalClose={onModalClose}
                                     />

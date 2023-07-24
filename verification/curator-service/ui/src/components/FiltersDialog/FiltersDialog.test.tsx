@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import { initialLoggedInState } from '../../redux/store';
 import axios from 'axios';
 import validateEnv from '../../util/validate-env';
+import { Role } from '../../api/models/User';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -38,7 +39,7 @@ const axiosResponse = {
         googleID: '42',
         name: 'Alice Smith',
         email: 'foo@bar.com',
-        roles: ['admin'],
+        roles: [Role.Admin],
     },
     status: 200,
     statusText: 'OK',

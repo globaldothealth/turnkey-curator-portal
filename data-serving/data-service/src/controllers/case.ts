@@ -1,29 +1,18 @@
-import {
-    Day0Case,
-    CaseDocument,
-    CaseDTO,
-    caseAgeRange,
-} from '../model/day0-case';
+import {caseAgeRange, CaseDocument, CaseDTO, Day0Case,} from '../model/day0-case';
 import caseFields from '../model/fields.json';
-import {
-    DocumentQuery,
-    Error,
-    LeanDocument,
-    Query,
-    QueryCursor,
-} from 'mongoose';
-import { ObjectId } from 'mongodb';
-import { GeocodeOptions, Geocoder, Resolution } from '../geocoding/geocoder';
-import { NextFunction, Request, Response } from 'express';
-import parseSearchQuery, { ParsingError } from '../util/search';
-import { SortByOrder, SortBy, denormalizeFields } from '../util/case';
-import { removeBlankHeader } from '../util/case';
+import {DocumentQuery, Error, LeanDocument, Query, QueryCursor,} from 'mongoose';
+import {ObjectId} from 'mongodb';
+import {GeocodeOptions, Geocoder, Resolution} from '../geocoding/geocoder';
+import {NextFunction, Request, Response} from 'express';
+import parseSearchQuery, {ParsingError} from '../util/search';
+import {denormalizeFields, removeBlankHeader, SortBy, SortByOrder} from '../util/case';
 
-import { logger } from '../util/logger';
+import {logger} from '../util/logger';
 import stringify from 'csv-stringify/lib/sync';
 import _ from 'lodash';
-import { AgeBucket } from '../model/age-bucket';
-import { IdCounter, COUNTER_DOCUMENT_ID } from '../model/id-counter';
+import {AgeBucket} from '../model/age-bucket';
+import {COUNTER_DOCUMENT_ID, IdCounter} from '../model/id-counter';
+import {User} from '../model/user';
 
 class GeocodeNotFoundError extends Error {}
 
@@ -32,6 +21,7 @@ class InvalidParamError extends Error {}
 type BatchValidationErrors = { index: number; message: string }[];
 
 const caseFromDTO = async (receivedCase: CaseDTO) => {
+    // const users = db.collection('users');
     const aCase = (receivedCase as unknown) as LeanDocument<CaseDocument>;
     if (receivedCase.demographics?.ageRange) {
         // won't be many age buckets, so fetch all of them.
@@ -57,6 +47,20 @@ const caseFromDTO = async (receivedCase: CaseDTO) => {
         aCase.demographics.ageBuckets = matchingBucketIDs;
     }
 
+    const user = await User.findOne({ email: receivedCase.curator?.email });
+    if (user) {
+        if (user.roles.includes('junior curator')) {
+            aCase.curators = {
+                createdBy: user,
+            };
+        } else {
+            aCase.curators = {
+                createdBy: user,
+                verifiedBy: user,
+            };
+        }
+    }
+
     return aCase;
 };
 
@@ -75,6 +79,35 @@ const dtoFromCase = async (storedCase: LeanDocument<CaseDocument>) => {
         delete ((dto as unknown) as {
             demographics: { ageBuckets?: [ObjectId] };
         }).demographics.ageBuckets;
+    }
+    const creator = await User.findOne({
+        _id: storedCase.curators.createdBy,
+    });
+    console.log(';;;;');
+    console.log(creator);
+    console.log(';;;;');
+
+    if (creator) {
+        dto.curators.createdBy = {
+            email: creator.email,
+            name: creator.name,
+        };
+    }
+
+    console.log(';;;;');
+    console.log(dto.curators);
+    console.log(';;;;');
+
+    if (storedCase.curators.verifiedBy) {
+        const verifier = await User.findOne({
+            _id: storedCase.curators.verifiedBy,
+        });
+        if (verifier) {
+            dto.curators.verifiedBy = {
+                email: verifier.email,
+                name: verifier.name,
+            };
+        }
     }
 
     return dto;
@@ -289,6 +322,8 @@ export class CasesController {
         const countLimit = Number(req.query.count_limit) || 10000;
         const sortBy = String(req.query.sort_by) || 'default';
         const sortByOrder = String(req.query.order) || 'ascending';
+        const verificationStatus =
+            Boolean(req.query.verification_status) || undefined;
 
         logger.info('Got query params');
 
@@ -314,10 +349,12 @@ export class CasesController {
             const casesQuery = casesMatchingSearchQuery({
                 searchQuery: req.query.q || '',
                 count: false,
+                verificationStatus: verificationStatus,
             }) as DocumentQuery<CaseDocument[], CaseDocument, unknown>;
             const countQuery = casesMatchingSearchQuery({
                 searchQuery: req.query.q || '',
                 count: true,
+                verificationStatus: verificationStatus,
             });
 
             const sortByKeyword = sortBy as SortBy;
@@ -429,6 +466,51 @@ export class CasesController {
             }
             logger.error(err);
             res.status(500).json(err);
+            return;
+        }
+    };
+
+    /**
+     * Verify case.
+     *
+     * Handles HTTP POST /api/cases/verify/:id.
+     */
+    verify = async (req: Request, res: Response): Promise<void> => {
+        const c = await Day0Case.findOne({
+            _id: req.params.id,
+        });
+
+        if (!c) {
+            res.status(404).send({
+                message: `Day0Case with ID ${req.params.id} not found.`,
+            });
+            return;
+        }
+
+        const verifier = await User.findOne({
+            email: req.body.curator.email,
+        });
+        if (!verifier) {
+            res.status(404).send({
+                message: `Verifier with email ${req.body.curator.email} not found.`,
+            });
+            return;
+        } else {
+            c.set({
+                curators: {
+                    createdBy: c.curators.createdBy,
+                    verifiedBy: verifier._id,
+                },
+            });
+            await c.save();
+            const responseCase = await Day0Case.find({
+                _id: req.params.id,
+            }).lean();
+            res.json(
+                await Promise.all(
+                    responseCase.map((aCase) => dtoFromCase(aCase)),
+                ),
+            );
             return;
         }
     };
@@ -919,17 +1001,28 @@ export const casesMatchingSearchQuery = (opts: {
     searchQuery: string;
     count: boolean;
     limit?: number;
+    verificationStatus?: boolean;
     // Goofy Mongoose types require this.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }): any => {
     // set data limit to 10K by default
     const countLimit = opts.limit ? opts.limit : 10000;
     const parsedSearch = parseSearchQuery(opts.searchQuery);
-    const queryOpts = parsedSearch.fullTextSearch
-        ? {
-              $text: { $search: parsedSearch.fullTextSearch },
-          }
-        : {};
+    let queryOpts;
+    if (opts.verificationStatus) {
+        queryOpts = parsedSearch.fullTextSearch
+            ? {
+                  $text: { $search: parsedSearch.fullTextSearch },
+                  'curators.verifiedBy': { $exists: opts.verificationStatus },
+              }
+            : { 'curators.verifiedBy': { $exists: opts.verificationStatus } };
+    } else {
+        queryOpts = parsedSearch.fullTextSearch
+            ? {
+                  $text: { $search: parsedSearch.fullTextSearch },
+              }
+            : {};
+    }
 
     // Always search with case-insensitivity.
     const casesQuery: Query<CaseDocument[], CaseDocument> = Day0Case.find(

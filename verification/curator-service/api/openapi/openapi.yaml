@@ -895,6 +895,29 @@ paths:
                     $ref: '#/components/responses/404'
                 '500':
                     $ref: '#/components/responses/500'
+    /cases/verify/{id}:
+        post:
+            tags: [ Case ]
+#            summary: Creates one (or multiple identical) new cases
+#            operationId: verifyCase
+#            requestBody:
+#                description: Case with verifier
+#                required: true
+#                content:
+#                    application/json:
+#                        schema:
+#                            $ref: '#/components/schemas/Verifier'
+            responses:
+                '200':
+                    $ref: '#/components/responses/200Case'
+                '400':
+                    $ref: '#/components/responses/400'
+                '403':
+                    $ref: '#/components/responses/403'
+                '422':
+                    $ref: '#/components/responses/422'
+                '500':
+                    $ref: '#/components/responses/500'
     /geocode/seed:
         post:
             tags: [Geocode]
@@ -1380,6 +1403,12 @@ components:
             type: array
             items:
                 $ref: '#/components/schemas/AcknowledgmentSource'
+        Verifier:
+          description: Verifier data.
+          properties:
+            email:
+              description: email address of verifier
+              type: string
         Case:
             description: A single line-list case.
             properties:
@@ -1718,6 +1747,7 @@ components:
             enum:
                 - admin
                 - curator
+                - "junior curator"
         RoleArray:
             type: object
             properties:

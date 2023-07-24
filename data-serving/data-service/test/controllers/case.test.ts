@@ -376,7 +376,7 @@ describe('POST', () => {
     });
     it('create with required properties but invalid input should return 422', () => {
         seedFakeGeocodes('Canada', {
-            country: 'CAN',
+            country: 'CA',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -392,7 +392,7 @@ describe('POST', () => {
     });
     it('create with valid input should return 201 OK', async () => {
         seedFakeGeocodes('Canada', {
-            country: 'CAN',
+            country: 'CA',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -407,7 +407,7 @@ describe('POST', () => {
     });
     it('create with only required location fields should complete with data from geocoding', async () => {
         seedFakeGeocodes('Canada', {
-            country: 'CAN',
+            country: 'CA',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',

@@ -4,6 +4,7 @@ import Users from './Users';
 import axios from 'axios';
 import { initialLoggedInState } from '../redux/store';
 import userEvent from '@testing-library/user-event';
+import { Role } from '../api/models/User';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -17,7 +18,9 @@ function mockGetAxios(getUsersResponse: any): void {
         switch (url) {
             case '/api/users/roles':
                 return Promise.resolve({
-                    data: { roles: ['admin', 'curator'] },
+                    data: {
+                        roles: [Role.Admin, Role.Curator, Role.JuniorCurator],
+                    },
                 });
             case '/api/users/':
             case '/api/users/?limit=10&page=1':
@@ -32,16 +35,22 @@ describe('<Users />', () => {
     test('lists users', async () => {
         const users = [
             {
-                _id: 'abc123',
-                name: 'Alice Smith',
-                email: 'foo@bar.com',
-                roles: ['admin'],
+                _id: 'admin',
+                name: 'Admin',
+                email: 'admin.test@global.health',
+                roles: [Role.Admin],
             },
             {
-                _id: 'abc321',
+                _id: 'curator',
                 name: '',
-                email: 'foo2@bar.com',
-                roles: ['curator'],
+                email: 'curator.test@global.health',
+                roles: [Role.Curator],
+            },
+            {
+                _id: 'junior_curator',
+                name: 'Junior Curator',
+                email: 'junior_curator.test@global.health',
+                roles: [Role.JuniorCurator],
             },
         ];
         const axiosResponse = {
@@ -55,19 +64,33 @@ describe('<Users />', () => {
             headers: {},
         };
         mockGetAxios(axiosResponse);
-
         render(<Users onUserChange={jest.fn()} />);
-        expect(await screen.findByText('Alice Smith')).toBeInTheDocument();
-        expect(await screen.findByText('foo@bar.com')).toBeInTheDocument();
-        expect(
-            await screen.findByText('Name not provided'),
-        ).toBeInTheDocument();
-        expect(await screen.findByText('foo2@bar.com')).toBeInTheDocument();
-        expect(await screen.findByText('Picture')).toBeInTheDocument();
-        expect(screen.queryByText('Carol Smith')).not.toBeInTheDocument();
         expect(mockedAxios.get).toHaveBeenCalledWith(
             '/api/users/?limit=10&page=1',
         );
+
+        // Find Admin user and check if all the data is correct
+        expect(await screen.findByText('Admin')).toBeInTheDocument();
+        expect(
+            await screen.findByText('admin.test@global.health'),
+        ).toBeInTheDocument();
+        expect(await screen.findByText(Role.Admin)).toBeInTheDocument();
+
+        // Find Curator user with missing name and check if all the data is correct
+        expect(
+            await screen.findByText('Name not provided'),
+        ).toBeInTheDocument();
+        expect(
+            await screen.findByText('curator.test@global.health'),
+        ).toBeInTheDocument();
+        expect(await screen.findByText(Role.Curator)).toBeInTheDocument();
+
+        // Find Junior Curator user and chceck if all the data is correct
+        expect(await screen.findByText('Junior Curator')).toBeInTheDocument();
+        expect(
+            await screen.findByText('junior_curator.test@global.health'),
+        ).toBeInTheDocument();
+        expect(await screen.findByText(Role.JuniorCurator)).toBeInTheDocument();
     });
 
     test('updates roles on selection', async () => {
@@ -76,7 +99,7 @@ describe('<Users />', () => {
                 _id: 'abc123',
                 name: 'Alice Smith',
                 email: 'foo@bar.com',
-                roles: ['admin', 'curator'],
+                roles: [Role.Admin],
             },
         ];
         const axiosResponse = {
@@ -94,8 +117,8 @@ describe('<Users />', () => {
         // Shows initial roles
         render(<Users onUserChange={jest.fn()} />);
         expect(await screen.findByText('Alice Smith')).toBeInTheDocument();
-        expect(await screen.findByText(/admin, curator/)).toBeInTheDocument();
-        expect(screen.queryByText('curator')).not.toBeInTheDocument();
+        expect(await screen.findByText(/admin/)).toBeInTheDocument();
+        expect(screen.queryByText(Role.JuniorCurator)).not.toBeInTheDocument();
 
         // Select new role
         const updatedUsers = [
@@ -103,7 +126,7 @@ describe('<Users />', () => {
                 _id: 'abc123',
                 name: 'Alice Smith',
                 email: 'foo@bar.com',
-                roles: ['admin'],
+                roles: [Role.Admin, Role.JuniorCurator],
             },
         ];
         const axiosPutResponse = {
@@ -120,13 +143,13 @@ describe('<Users />', () => {
             screen.getByTestId('Alice Smith-select-roles-button'),
         );
         const listbox = within(screen.getByRole('listbox'));
-        fireEvent.click(listbox.getByText(/curator/i));
+        fireEvent.click(listbox.getByText(/junior curator/i));
         fireEvent.keyDown(screen.getByRole('listbox'), { key: 'Escape' });
 
         // Check roles are updated
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
         expect(mockedAxios.put).toHaveBeenCalledWith('/api/users/abc123', {
-            roles: ['admin'],
+            roles: [Role.Admin, Role.JuniorCurator],
         });
     });
 
@@ -138,7 +161,7 @@ describe('<Users />', () => {
             googleID: '42',
             name: 'Alice Smith',
             email: 'foo@bar.com',
-            roles: ['admin'],
+            roles: [Role.Admin],
         };
         const axiosResponse = {
             data: {
@@ -167,7 +190,7 @@ describe('<Users />', () => {
             googleID: '42',
             name: 'Alice Smith',
             email: 'foo@bar.com',
-            roles: ['admin', 'curator'],
+            roles: [Role.Admin, Role.Curator],
         };
         const axiosPutResponse = {
             data: updatedUser,
@@ -203,7 +226,7 @@ describe('<Users />', () => {
             _id: 'abc123',
             name: 'Alice Smith',
             email: 'foo@bar.com',
-            roles: ['admin'],
+            roles: [Role.Admin],
         };
         const axiosResponse = {
             data: {
@@ -233,7 +256,7 @@ describe('<Users />', () => {
                             googleID: '42',
                             name: 'Alice Smith',
                             email: 'foo@bar.com',
-                            roles: ['admin'],
+                            roles: [Role.Admin],
                         },
                     },
                 },
@@ -245,7 +268,7 @@ describe('<Users />', () => {
             _id: 'abc123',
             name: 'Alice Smith',
             email: 'foo@bar.com',
-            roles: ['admin', 'curator'],
+            roles: [Role.Admin, Role.JuniorCurator],
         };
         const axiosPutResponse = {
             data: {
@@ -264,7 +287,7 @@ describe('<Users />', () => {
             screen.getByTestId('Alice Smith-select-roles-button'),
         );
         const listbox = within(screen.getByRole('listbox'));
-        fireEvent.click(listbox.getByText(/curator/i));
+        fireEvent.click(listbox.getByText(/junior curator/i));
         fireEvent.keyDown(screen.getByRole('listbox'), { key: 'Escape' });
 
         // Awaiting this text gives time for the async functions to complete.

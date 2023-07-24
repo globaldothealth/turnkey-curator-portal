@@ -151,6 +151,16 @@ export interface ISource {
     sourceEntryId?: string;
 }
 
+export interface CuratorData {
+    name?: string;
+    email: string;
+}
+
+export interface Curators {
+    createdBy: CuratorData;
+    verifiedBy?: CuratorData;
+}
+
 export interface Day0Case {
     _id?: string;
     caseStatus: CaseStatus | '';
@@ -168,6 +178,7 @@ export interface Day0Case {
     // helper values
     vaccineSideEffects?: string[];
     preexistingConditionsHelper?: string[];
+    curators?: Curators;
     [key: string]:
         | CaseReference
         | Demographics
@@ -178,6 +189,7 @@ export interface Day0Case {
         | TravelHistory
         | GenomeSequences
         | Vaccination
+        | Curators
         | string
         | string[]
         | number

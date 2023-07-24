@@ -37,6 +37,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useStyles } from './styled';
 import { sendCustomGtmEvent } from '../util/helperFunctions';
 import { Gender, Outcome } from '../../api/models/Day0Case';
+import { Role } from '../../api/models/User';
 
 interface FiltersModalProps {
     showModalAlert: boolean;
@@ -403,7 +404,7 @@ export default function FiltersDialog({
                         />
                     </div>
 
-                    {hasAnyRole(user, ['curator']) && (
+                    {hasAnyRole(user, [Role.Curator]) && (
                         <>
                             <div className={classes.divider} />
 

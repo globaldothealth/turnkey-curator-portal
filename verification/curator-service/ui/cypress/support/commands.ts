@@ -50,11 +50,12 @@ declare global {
         interface Chainable {
             addCase: (opts: AddCaseProps) => void;
             login: (opts?: {
-                name: string;
-                email: string;
-                roles: string[];
+                name?: string;
+                email?: string;
+                roles?: string[];
                 removeGoogleID?: boolean;
             }) => void;
+            logout: () => void;
             addSource: (
                 name: string,
                 url: string,
@@ -127,6 +128,13 @@ export function login(opts?: {
     });
 }
 
+export function logout(): void {
+    cy.request({
+        method: 'GET',
+        url: '/auth/logout',
+    });
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function seedLocation(loc: any): void {
     cy.request({
@@ -176,6 +184,7 @@ Cypress.on('uncaught:exception', (err, runnable) => {
 
 Cypress.Commands.add('addCase', addCase);
 Cypress.Commands.add('login', login);
+Cypress.Commands.add('logout', logout);
 Cypress.Commands.add('addSource', addSource);
 Cypress.Commands.add('seedLocation', seedLocation);
 Cypress.Commands.add('clearSeededLocations', clearSeededLocations);

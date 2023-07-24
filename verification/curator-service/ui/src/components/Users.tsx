@@ -29,6 +29,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import User from './User';
 import axios from 'axios';
+import { Role } from '../api/models/User';
 
 interface ListResponse {
     users: User[];
@@ -296,7 +297,7 @@ const Users = ({ onUserChange }: UsersProps) => {
             <MaterialTable
                 tableRef={tableRef}
                 columns={[
-                    ...((user?.roles ?? []).includes('admin')
+                    ...((user?.roles ?? []).includes(Role.Admin)
                         ? [
                               // TODO: move to the left of selection checkboxes when possible
                               // https://github.com/mbrn/material-table/issues/2317
