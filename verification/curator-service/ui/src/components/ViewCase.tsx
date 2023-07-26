@@ -78,7 +78,6 @@ export default function ViewCase(props: Props): JSX.Element {
             axios
                 .post(`/api/cases/verify/${caseId}`, {
                     email: verifierEmail,
-                    // oko: 'nos',
                 })
                 .then((resp) => {
                     setCase(resp.data[0]);

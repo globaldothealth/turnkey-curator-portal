@@ -1,4 +1,4 @@
-import {caseAgeRange, CaseDocument, CaseDTO, Day0Case,} from '../model/day0-case';
+import {caseAgeRange, CaseDocument, CaseDTO, CuratorsDocument, Day0Case,} from '../model/day0-case';
 import caseFields from '../model/fields.json';
 import {DocumentQuery, Error, LeanDocument, Query, QueryCursor,} from 'mongoose';
 import {ObjectId} from 'mongodb';
@@ -65,49 +65,59 @@ const caseFromDTO = async (receivedCase: CaseDTO) => {
 };
 
 const dtoFromCase = async (storedCase: LeanDocument<CaseDocument>) => {
+
     let dto = (storedCase as unknown) as CaseDTO;
     const ageRange = await caseAgeRange(storedCase);
-    if (ageRange) {
-        dto = {
-            ...dto,
-            demographics: {
-                ...dto.demographics!,
-                ageRange,
-            },
-        };
+    const creator = await User.findOne({
+        _id: storedCase.curators?.createdBy,
+    });
+
+    let verifier;
+    if (storedCase.curators?.verifiedBy) {
+        verifier = await User.findOne({
+            _id: storedCase.curators.verifiedBy,
+        });
+    }
+
+    if (ageRange && creator) {
+        if (verifier) {
+            dto = {
+                ...dto,
+                demographics: {
+                    ...dto.demographics!,
+                    ageRange,
+                },
+                curators: {
+                    createdBy: {
+                        email: creator.email,
+                        name: creator.name,
+                    },
+                    verifiedBy: {
+                        email: verifier.email,
+                        name: verifier.name,
+                    }
+                } as CuratorsDocument,
+            };
+        } else {
+            dto = {
+                ...dto,
+                demographics: {
+                    ...dto.demographics!,
+                    ageRange,
+                },
+                curators: {
+                    createdBy: {
+                        email: creator.email,
+                        name: creator.name,
+                    },
+                } as CuratorsDocument,
+            };
+        }
+
         // although the type system can't see it, there's an ageBuckets property on the demographics DTO now
         delete ((dto as unknown) as {
             demographics: { ageBuckets?: [ObjectId] };
         }).demographics.ageBuckets;
-    }
-    const creator = await User.findOne({
-        _id: storedCase.curators.createdBy,
-    });
-    console.log(';;;;');
-    console.log(creator);
-    console.log(';;;;');
-
-    if (creator) {
-        dto.curators.createdBy = {
-            email: creator.email,
-            name: creator.name,
-        };
-    }
-
-    console.log(';;;;');
-    console.log(dto.curators);
-    console.log(';;;;');
-
-    if (storedCase.curators.verifiedBy) {
-        const verifier = await User.findOne({
-            _id: storedCase.curators.verifiedBy,
-        });
-        if (verifier) {
-            dto.curators.verifiedBy = {
-                email: verifier.email,
-                name: verifier.name,
-            };
-        }
     }
 
     return dto;
