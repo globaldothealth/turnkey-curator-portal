@@ -178,11 +178,6 @@ app.use(
         // Print only after username and password to not log them.
         mongoURL.substring(mongoURL.indexOf('@')),
     );
-    logger.info(mongoURL);
-    console.log('00000');
-    setTimeout(function () {
-        console.log('eee');
-    }, 10000);
 
     try {
         await mongoose.connect(mongoURL, {
