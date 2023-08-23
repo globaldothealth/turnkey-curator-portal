@@ -163,7 +163,7 @@ app.use(
     // Connect to MongoDB.
     // MONGO_URL is provided by the in memory version of jest-mongodb.
     // DB_CONNECTION_STRING is what we use in prod.
-    const mongoURL = env.DB_CONNECTION_STRING || process.env.MONGO_URL;
+    const mongoURL = process.env.DB_CONNECTION_STRING || process.env.MONGO_URL;
 
     if (mongoURL === undefined || mongoURL == '') {
         logger.error(
