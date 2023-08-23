@@ -160,25 +160,51 @@ app.use(
 );
 
 (async (): Promise<void> => {
-    try {
-        // Connect to MongoDB.
-        // MONGO_URL is provided by the in memory version of jest-mongodb.
-        // DB_CONNECTION_STRING is what we use in prod.
-        const mongoURL = process.env.MONGO_URL || env.DB_CONNECTION_STRING;
-        logger.info(
-            'Connecting to MongoDB instance',
-            // Print only after username and password to not log them.
-            mongoURL.substring(mongoURL.indexOf('@')),
-        );
+    // Connect to MongoDB.
+    // MONGO_URL is provided by the in memory version of jest-mongodb.
+    // DB_CONNECTION_STRING is what we use in prod.
+    const mongoURL = process.env.MONGO_URL || process.env.DB_CONNECTION_STRING;
+    // if (process.env.MONGO_URL != 'oaijsdfo') return;
 
+    if (mongoURL === undefined) {
+        logger.error(
+            'Failed to connect to the database. Neither "MONGO_URL" nor "DB_CONNECTION_STRING" environmental variables were provided.',
+        );
+        return process.exit(1);
+    }
+
+    logger.info(
+        'Connecting to MongoDB instance',
+        // Print only after username and password to not log them.
+        mongoURL.substring(mongoURL.indexOf('@')),
+    );
+
+    try {
         await mongoose.connect(mongoURL, {
             useCreateIndex: true,
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useFindAndModify: false,
         });
-        await Day0Case.ensureIndexes();
+    } catch (e) {
+        logger.error(
+            'Failed to connect to the database. Mongoose was unable to establish connection using provided mongoURL.',
+            e,
+        );
+        return process.exit(1);
+    }
 
+    try {
+        await Day0Case.ensureIndexes();
+    } catch (e) {
+        logger.error(
+            'Failed to connect to the database. Ensuring indexes of Day0Case model resulted in error.',
+            e,
+        );
+        return process.exit(1);
+    }
+
+    try {
         // check if there is a document holding unique ID counter
         // used to generate case IDs. If not, create one
         const idCounter = await IdCounter.findById(COUNTER_DOCUMENT_ID);
@@ -191,8 +217,11 @@ app.use(
             });
         }
     } catch (e) {
-        logger.error('Failed to connect to the database. :(', e);
-        process.exit(1);
+        logger.error(
+            'Failed to connect to the database. Finding or initializing of IdCounter resulted in error.',
+            e,
+        );
+        return process.exit(1);
     }
 })();
 
