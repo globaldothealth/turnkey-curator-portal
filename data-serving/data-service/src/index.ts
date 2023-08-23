@@ -163,10 +163,9 @@ app.use(
     // Connect to MongoDB.
     // MONGO_URL is provided by the in memory version of jest-mongodb.
     // DB_CONNECTION_STRING is what we use in prod.
-    const mongoURL = process.env.MONGO_URL || process.env.DB_CONNECTION_STRING;
-    // if (process.env.MONGO_URL != 'oaijsdfo') return;
+    const mongoURL = process.env.DB_CONNECTION_STRING || process.env.MONGO_URL;
 
-    if (mongoURL === undefined) {
+    if (mongoURL === undefined || mongoURL == '') {
         logger.error(
             'Failed to connect to the database. Neither "MONGO_URL" nor "DB_CONNECTION_STRING" environmental variables were provided.',
         );
@@ -189,8 +188,8 @@ app.use(
     } catch (e) {
         logger.error(
             'Failed to connect to the database. Mongoose was unable to establish connection using provided mongoURL.',
-            e,
         );
+        if (e instanceof Error) logger.error(e);
         return process.exit(1);
     }
 
@@ -199,8 +198,8 @@ app.use(
     } catch (e) {
         logger.error(
             'Failed to connect to the database. Ensuring indexes of Day0Case model resulted in error.',
-            e,
         );
+        if (e instanceof Error) logger.error(e);
         return process.exit(1);
     }
 
@@ -219,8 +218,8 @@ app.use(
     } catch (e) {
         logger.error(
             'Failed to connect to the database. Finding or initializing of IdCounter resulted in error.',
-            e,
         );
+        if (e instanceof Error) logger.error(e);
         return process.exit(1);
     }
 })();
