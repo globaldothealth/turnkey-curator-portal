@@ -5,13 +5,7 @@ import {
     caseAgeRange,
 } from '../model/day0-case';
 import caseFields from '../model/fields.json';
-import {
-    DocumentQuery,
-    Error,
-    LeanDocument,
-    Query,
-    QueryCursor,
-} from 'mongoose';
+import { Error, LeanDocument, Query } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { GeocodeOptions, Geocoder, Resolution } from '../geocoding/geocoder';
 import { NextFunction, Request, Response } from 'express';
@@ -142,7 +136,7 @@ export class CasesController {
 
         // Goofy Mongoose types require this.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let cursor: QueryCursor<CaseDocument>;
+        let cursor: any;
         try {
             // Stream from mongoose directly into response
             // Use provided query and limit, if provided
@@ -314,7 +308,7 @@ export class CasesController {
             const casesQuery = casesMatchingSearchQuery({
                 searchQuery: req.query.q || '',
                 count: false,
-            }) as DocumentQuery<CaseDocument[], CaseDocument, unknown>;
+            }) as Query<CaseDocument[], CaseDocument, unknown>;
             const countQuery = casesMatchingSearchQuery({
                 searchQuery: req.query.q || '',
                 count: true,
@@ -370,7 +364,7 @@ export class CasesController {
             }
             logger.error('non-parsing error for query:');
             logger.error(req.query);
-            logger.error(e);
+            if (e instanceof Error) logger.error(e);
             res.status(500).json(e);
             return;
         }
@@ -643,11 +637,13 @@ export class CasesController {
             logger.info('Case save');
             res.json(await dtoFromCase(c));
         } catch (err) {
-            if (err.name === 'ValidationError') {
-                res.status(422).json(err);
-                return;
+            if (err instanceof Error) {
+                if (err.name === 'ValidationError') {
+                    res.status(422).json(err);
+                    return;
+                }
+                res.status(500).json(err);
             }
-            res.status(500).json(err);
             return;
         }
     };
@@ -786,7 +782,7 @@ export class CasesController {
             await Day0Case.deleteMany(casesQuery);
             res.status(204).end();
         } catch (err) {
-            logger.error(err);
+            if (err instanceof Error) logger.error(err);
             res.status(500).json(err);
         }
     };
@@ -1069,7 +1065,7 @@ export const listSymptoms = async (
         });
         return;
     } catch (e) {
-        logger.error(e);
+        if (e instanceof Error) logger.error(e);
         res.status(500).json(e);
         return;
     }
@@ -1099,7 +1095,7 @@ export const listPlacesOfTransmission = async (
         });
         return;
     } catch (e) {
-        logger.error(e);
+        if (e instanceof Error) logger.error(e);
         res.status(500).json(e);
         return;
     }
@@ -1133,7 +1129,7 @@ export const listOccupations = async (
         });
         return;
     } catch (e) {
-        logger.error(e);
+        if (e instanceof Error) logger.error(e);
         res.status(500).json(e);
         return;
     }

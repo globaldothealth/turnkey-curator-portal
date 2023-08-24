@@ -53,7 +53,8 @@ export const caseSchema = new mongoose.Schema(
     {
         _id: Number,
         caseStatus: {
-            type: CaseStatus,
+            type: String,
+            enum: CaseStatus,
             required: true,
         },
         pathogen: {

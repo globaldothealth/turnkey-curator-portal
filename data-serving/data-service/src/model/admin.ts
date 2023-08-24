@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const adminSchema = new mongoose.Schema({
     id: {
         type: String,
-        required: 'Admin must have an id',
+        required: true,
         index: true,
     },
     name: {
