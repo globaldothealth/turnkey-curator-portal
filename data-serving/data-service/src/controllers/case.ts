@@ -1,8 +1,8 @@
 import {
-    Day0Case,
+    caseAgeRange,
     CaseDocument,
     CaseDTO,
-    caseAgeRange,
+    Day0Case,
 } from '../model/day0-case';
 import caseFields from '../model/fields.json';
 import { Error, LeanDocument, Query } from 'mongoose';
@@ -10,14 +10,18 @@ import { ObjectId } from 'mongodb';
 import { GeocodeOptions, Geocoder, Resolution } from '../geocoding/geocoder';
 import { NextFunction, Request, Response } from 'express';
 import parseSearchQuery, { ParsingError } from '../util/search';
-import { SortByOrder, SortBy, denormalizeFields } from '../util/case';
-import { removeBlankHeader } from '../util/case';
+import {
+    denormalizeFields,
+    removeBlankHeader,
+    SortBy,
+    SortByOrder,
+} from '../util/case';
 
 import { logger } from '../util/logger';
 import stringify from 'csv-stringify/lib/sync';
 import _ from 'lodash';
 import { AgeBucket } from '../model/age-bucket';
-import { IdCounter, COUNTER_DOCUMENT_ID } from '../model/id-counter';
+import { COUNTER_DOCUMENT_ID, IdCounter } from '../model/id-counter';
 
 class GeocodeNotFoundError extends Error {}
 
@@ -33,7 +37,7 @@ const caseFromDTO = async (receivedCase: CaseDTO) => {
         const caseStart = receivedCase.demographics?.ageRange.start;
         const caseEnd = receivedCase.demographics?.ageRange.end;
         validateCaseAges(caseStart, caseEnd);
-        const matchingBucketIDs = allBuckets
+        aCase.demographics.ageBuckets = allBuckets
             .filter((b) => {
                 const bucketContainsStart =
                     b.start <= caseStart && b.end >= caseStart;
@@ -48,7 +52,6 @@ const caseFromDTO = async (receivedCase: CaseDTO) => {
                 );
             })
             .map((b) => b._id);
-        aCase.demographics.ageBuckets = matchingBucketIDs;
     }
 
     return aCase;
@@ -61,6 +64,7 @@ const dtoFromCase = async (storedCase: LeanDocument<CaseDocument>) => {
         dto = {
             ...dto,
             demographics: {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 ...dto.demographics!,
                 ageRange,
             },
@@ -77,12 +81,11 @@ const dtoFromCase = async (storedCase: LeanDocument<CaseDocument>) => {
 export class CasesController {
     private csvHeaders: string[];
     constructor(private readonly geocoders: Geocoder[]) {
-        const text = '';
         this.csvHeaders = [];
         this.init();
     }
 
-    init() {
+    init(): CasesController {
         this.csvHeaders = caseFields;
         this.csvHeaders = removeBlankHeader(this.csvHeaders);
         this.csvHeaders.sort((a, b) =>
@@ -539,7 +542,7 @@ export class CasesController {
             logger.info('batchUpsert: splitting cases by sourceID');
             logger.info('batchUpsert: preparing bulk write');
 
-            const setId = async (c: any) => {
+            const setId = async (c: LeanDocument<CaseDocument>) => {
                 const idCounter = await IdCounter.findByIdAndUpdate(
                     COUNTER_DOCUMENT_ID,
                     { $inc: { count: 1 } },
@@ -604,14 +607,24 @@ export class CasesController {
             return;
         } catch (e) {
             const err = e as Error;
-            if (err.name === 'ValidationError') {
+            if (err.message == 'Invalid BulkOperation, Batch cannot be empty') {
+                res.status(200).json({
+                    phase: 'UPSERT',
+                    numCreated: 0,
+                    numUpdated: 0,
+                    errors: [],
+                });
+                return;
+            } else {
+                if (err.name === 'ValidationError') {
+                    logger.error(err);
+                    res.status(422).json(err);
+                    return;
+                }
                 logger.error(err);
-                res.status(422).json(err);
+                res.status(501).json(err);
                 return;
             }
-            logger.error(err);
-            res.status(500).json(err);
-            return;
         }
     };
 
@@ -677,7 +690,7 @@ export class CasesController {
                     return;
                 }
             }
-            const caseLambda = (c: any) => ({
+            const caseLambda = (c: LeanDocument<CaseDocument>) => ({
                 updateOne: {
                     filter: {
                         _id: c._id,
@@ -805,6 +818,7 @@ export class CasesController {
 
     /**
      * Geocodes a single location.
+     * @param location The location data.
      * @param canBeFuzzy The location is allowed to be "fuzzy", in which case it may not get geocoded.
      * @returns The geocoded location.
      * @throws GeocodeNotFoundError if no geocode could be found.
@@ -813,8 +827,10 @@ export class CasesController {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private async geocodeLocation(
+        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
         location: any,
         canBeFuzzy: boolean,
+        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     ): Promise<any> {
         if (!location?.query) {
             if (canBeFuzzy) {
@@ -988,6 +1004,7 @@ export const casesMatchingSearchQuery = (opts: {
 // @TODO
 export const findCasesWithCaseReferenceData = async (
     req: Request,
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     fieldsToSelect: any = undefined,
 ): Promise<CaseDocument[]> => {
     const providedCaseReferenceData = req.body.cases
