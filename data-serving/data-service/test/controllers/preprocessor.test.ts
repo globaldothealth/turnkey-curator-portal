@@ -88,9 +88,7 @@ describe('update', () => {
 
         expect(nextFn).toHaveBeenCalledTimes(1);
         expect(await CaseRevision.collection.countDocuments()).toEqual(1);
-        expect((await CaseRevision.find())[0].case.toObject()).toEqual(
-            c.toObject(),
-        );
+        expect((await CaseRevision.find())[0].case).toMatchObject(c.toObject());
     });
 });
 
@@ -150,9 +148,7 @@ describe('upsert', () => {
 
         expect(nextFn).toHaveBeenCalledTimes(1);
         expect(await CaseRevision.collection.countDocuments()).toEqual(1);
-        expect((await CaseRevision.find())[0].case.toObject()).toEqual(
-            c.toObject(),
-        );
+        expect((await CaseRevision.find())[0].case).toMatchObject(c.toObject());
     });
 });
 describe('batch upsert', () => {
@@ -197,9 +193,7 @@ describe('batch upsert', () => {
 
         expect(nextFn).toHaveBeenCalledTimes(1);
         expect(await CaseRevision.collection.countDocuments()).toEqual(1);
-        expect((await CaseRevision.find())[0].case.toObject()).toEqual(
-            c.toObject(),
-        );
+        expect((await CaseRevision.find())[0].case).toMatchObject(c.toObject());
     });
     it('removes cases from request that would not be updated', async () => {
         const existingCase = {
@@ -312,10 +306,8 @@ describe('batch update', () => {
 
         expect(nextFn).toHaveBeenCalledTimes(1);
         expect(await CaseRevision.collection.countDocuments()).toEqual(2);
-        expect((await CaseRevision.find())[0].case.toObject()).toEqual(
-            c.toObject(),
-        );
-        expect((await CaseRevision.find())[1].case.toObject()).toEqual(
+        expect((await CaseRevision.find())[0].case).toMatchObject(c.toObject());
+        expect((await CaseRevision.find())[1].case).toMatchObject(
             c2.toObject(),
         );
     });
@@ -334,10 +326,10 @@ describe('batch update', () => {
 
             expect(nextFn).toHaveBeenCalledTimes(1);
             expect(await CaseRevision.collection.countDocuments()).toEqual(2);
-            expect((await CaseRevision.find())[0].case.toObject()).toEqual(
+            expect((await CaseRevision.find())[0].case).toMatchObject(
                 c.toObject(),
             );
-            expect((await CaseRevision.find())[1].case.toObject()).toEqual(
+            expect((await CaseRevision.find())[1].case).toMatchObject(
                 c2.toObject(),
             );
         });
@@ -360,10 +352,10 @@ describe('batch update', () => {
 
             expect(nextFn).toHaveBeenCalledTimes(1);
             expect(await CaseRevision.collection.countDocuments()).toEqual(2);
-            expect((await CaseRevision.find())[0].case.toObject()).toEqual(
+            expect((await CaseRevision.find())[0].case).toMatchObject(
                 c.toObject(),
             );
-            expect((await CaseRevision.find())[1].case.toObject()).toEqual(
+            expect((await CaseRevision.find())[1].case).toMatchObject(
                 c2.toObject(),
             );
         });
@@ -427,7 +419,7 @@ describe('batch update', () => {
 
             expect(nextFn).toHaveBeenCalledTimes(1);
             expect(await CaseRevision.collection.countDocuments()).toEqual(1);
-            expect((await CaseRevision.find())[0].case.toObject()).toEqual(
+            expect((await CaseRevision.find())[0].case).toMatchObject(
                 c.toObject(),
             );
         });

@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
 import _ from 'lodash';
-import mongoose, { LeanDocument } from 'mongoose';
+import mongoose from 'mongoose';
 import { CaseReferenceDocument, caseReferenceSchema } from './case-reference';
 import {
     demographicsAgeRange,
@@ -169,14 +169,13 @@ export type CaseDTO = ICase & {
     demographics?: DemographicsDTO;
 };
 
-export type CaseDocument = mongoose.Document &
-    ICase & {
-        _id: ObjectId;
-        demographics: DemographicsDocument;
-        // TODO: Type request Cases.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        equalsJSON(jsonCase: any): boolean;
-    };
+export type CaseDocument = ICase & {
+    _id: number;
+    demographics: DemographicsDocument;
+    // TODO: Type request Cases.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    equalsJSON(jsonCase: any): boolean;
+};
 
 caseSchema.pre('save', async function (this: CaseDocument) {
     this.dateLastModified = new Date().toUTCString();
@@ -198,6 +197,6 @@ caseSchema.pre('updateOne', async function (this: CaseDocument) {
 
 export const Day0Case = mongoose.model<CaseDocument>('Day0Case', caseSchema);
 
-export const caseAgeRange = async (aCase: LeanDocument<CaseDocument>) => {
+export const caseAgeRange = async (aCase: CaseDocument) => {
     return await demographicsAgeRange(aCase.demographics);
 };

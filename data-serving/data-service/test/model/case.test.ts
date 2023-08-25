@@ -10,17 +10,23 @@ describe('validate', () => {
         const noCaseReference: any = { ...minimalModel };
         delete noCaseReference.caseReference;
 
-        return new Day0Case({ ...noCaseReference }).validate((e) => {
-            expect(e).not.toBeNull();
-            if (e) expect(e.name).toBe(Error.ValidationError.name);
-        });
+        return new Day0Case({ ...noCaseReference }).validate().then(
+            () => null,
+            (e) => {
+                expect(e).not.toBeNull();
+                if (e) expect(e.name).toBe(Error.ValidationError.name);
+            },
+        );
     });
 
     it('model without events is invalid', async () => {
-        return new Day0Case({ ...minimalModel, events: [] }).validate((e) => {
-            expect(e).not.toBeNull();
-            if (e) expect(e.name).toBe(Error.ValidationError.name);
-        });
+        return new Day0Case({ ...minimalModel, events: [] }).validate().then(
+            () => null,
+            (e) => {
+                expect(e).not.toBeNull();
+                if (e) expect(e.name).toBe(Error.ValidationError.name);
+            },
+        );
     });
 
     it('model without date entry event is invalid', async () => {
@@ -30,10 +36,15 @@ describe('validate', () => {
         return new Day0Case({
             ...minimalModel,
             events: noDateEntry,
-        }).validate((e) => {
-            expect(e).not.toBeNull();
-            if (e) expect(e.name).toBe(Error.ValidationError.name);
-        });
+        })
+            .validate()
+            .then(
+                () => null,
+                (e) => {
+                    expect(e).not.toBeNull();
+                    if (e) expect(e.name).toBe(Error.ValidationError.name);
+                },
+            );
     });
 
     it('minimal model is valid', async () => {

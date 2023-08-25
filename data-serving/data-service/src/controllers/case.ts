@@ -5,7 +5,7 @@ import {
     Day0Case,
 } from '../model/day0-case';
 import caseFields from '../model/fields.json';
-import { Error, LeanDocument, Query } from 'mongoose';
+import { Error, Query } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { GeocodeOptions, Geocoder, Resolution } from '../geocoding/geocoder';
 import { NextFunction, Request, Response } from 'express';
@@ -30,7 +30,7 @@ class InvalidParamError extends Error {}
 type BatchValidationErrors = { index: number; message: string }[];
 
 const caseFromDTO = async (receivedCase: CaseDTO) => {
-    const aCase = (receivedCase as unknown) as LeanDocument<CaseDocument>;
+    const aCase = (receivedCase as unknown) as CaseDocument;
     if (receivedCase.demographics?.ageRange) {
         // won't be many age buckets, so fetch all of them.
         const allBuckets = await AgeBucket.find({});
@@ -57,7 +57,7 @@ const caseFromDTO = async (receivedCase: CaseDTO) => {
     return aCase;
 };
 
-const dtoFromCase = async (storedCase: LeanDocument<CaseDocument>) => {
+const dtoFromCase = async (storedCase: CaseDocument) => {
     let dto = (storedCase as unknown) as CaseDTO;
     const ageRange = await caseAgeRange(storedCase);
     if (ageRange) {
@@ -112,7 +112,7 @@ export class CasesController {
             return;
         }
 
-        c.forEach((aCase: LeanDocument<CaseDocument>) => {
+        c.forEach((aCase: CaseDocument) => {
             delete aCase.caseReference.sourceEntryId;
         });
 
@@ -542,7 +542,7 @@ export class CasesController {
             logger.info('batchUpsert: splitting cases by sourceID');
             logger.info('batchUpsert: preparing bulk write');
 
-            const setId = async (c: LeanDocument<CaseDocument>) => {
+            const setId = async (c: CaseDocument) => {
                 const idCounter = await IdCounter.findByIdAndUpdate(
                     COUNTER_DOCUMENT_ID,
                     { $inc: { count: 1 } },
@@ -676,7 +676,7 @@ export class CasesController {
             return;
         }
         try {
-            const cases: LeanDocument<CaseDocument>[] = [];
+            const cases: CaseDocument[] = [];
 
             for (const c in req.body.cases) {
                 const caseDoc = await caseFromDTO(req.body.cases[c] as CaseDTO);
@@ -690,7 +690,7 @@ export class CasesController {
                     return;
                 }
             }
-            const caseLambda = (c: LeanDocument<CaseDocument>) => ({
+            const caseLambda = (c: CaseDocument) => ({
                 updateOne: {
                     filter: {
                         _id: c._id,
