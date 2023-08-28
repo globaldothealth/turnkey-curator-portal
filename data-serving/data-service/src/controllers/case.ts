@@ -520,11 +520,12 @@ export class CasesController {
      * upsert.
      */
     batchUpsert = async (req: Request, res: Response): Promise<void> => {
+        let errors: any = [];
         try {
             // Batch validate cases first.
             logger.info('batchUpsert: entrypoint');
             const cases = req.body.cases;
-            const errors = await this.batchValidate(cases);
+            errors = await this.batchValidate(cases);
             logger.info('batchUpsert: validated cases');
 
             if (errors.length > 0) {
@@ -550,6 +551,15 @@ export class CasesController {
                 if (!idCounter)
                     throw new Error('ID counter document not found');
                 c._id = idCounter.count;
+            };
+
+            // After updating mongoose upserting changed and data fields were missing
+            const fillEmpty = (caseData: any) => {
+                if (!caseData.vaccination.vaccineName)
+                    caseData.vaccination.vaccineName = '';
+                if (!caseData.vaccination.vaccineSideEffects)
+                    caseData.vaccination.vaccineSideEffects = '';
+                return caseData;
             };
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -584,7 +594,7 @@ export class CasesController {
                 await setId(c);
                 return {
                     insertOne: {
-                        document: c,
+                        document: fillEmpty(c),
                     },
                 };
             };
@@ -612,7 +622,7 @@ export class CasesController {
                     phase: 'UPSERT',
                     numCreated: 0,
                     numUpdated: 0,
-                    errors: [],
+                    errors: errors,
                 });
                 return;
             } else {
@@ -622,7 +632,7 @@ export class CasesController {
                     return;
                 }
                 logger.error(err);
-                res.status(501).json(err);
+                res.status(500).json(err);
                 return;
             }
         }
