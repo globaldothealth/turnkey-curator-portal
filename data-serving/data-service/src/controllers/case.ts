@@ -80,10 +80,13 @@ const dtoFromCase = async (storedCase: CaseDocument) => {
 
 // After updating mongoose upserting and creating changed and data fields were missing
 const fillEmpty = (caseData: any) => {
+    if (!caseData.vaccination) caseData.vaccination = {};
     if (!caseData.vaccination.vaccineName)
         caseData.vaccination.vaccineName = '';
     if (!caseData.vaccination.vaccineSideEffects)
         caseData.vaccination.vaccineSideEffects = '';
+
+    if (!caseData.transmission) caseData.transmission = {};
     if (!caseData.transmission.contactId) caseData.transmission.contactId = '';
     if (!caseData.transmission.contactSetting)
         caseData.transmission.contactSetting = '';
@@ -91,16 +94,22 @@ const fillEmpty = (caseData: any) => {
         caseData.transmission.contactAnimal = '';
     if (!caseData.transmission.contactComment)
         caseData.transmission.contactComment = '';
+
+    if (!caseData.travelHistory) caseData.travelHistory = {};
     if (!caseData.travelHistory.travelHistoryStart)
         caseData.travelHistory.travelHistoryStart = '';
     if (!caseData.travelHistory.travelHistoryLocation)
         caseData.travelHistory.travelHistoryLocation = '';
     if (!caseData.travelHistory.travelHistoryCountry)
         caseData.travelHistory.travelHistoryCountry = '';
+
+    if (!caseData.genomeSequences) caseData.genomeSequences = {};
     if (!caseData.genomeSequences.genomicsMetadata)
         caseData.genomeSequences.genomicsMetadata = '';
     if (!caseData.genomeSequences.accessionNumber)
         caseData.genomeSequences.accessionNumber = '';
+
+    if (!caseData.preexistingConditions) caseData.preexistingConditions = {};
     if (!caseData.preexistingConditions.coInfection)
         caseData.preexistingConditions.coInfection = '';
     if (!caseData.preexistingConditions.preexistingCondition)
