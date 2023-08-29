@@ -78,6 +78,36 @@ const dtoFromCase = async (storedCase: CaseDocument) => {
     return dto;
 };
 
+// After updating mongoose upserting and creating changed and data fields were missing
+const fillEmpty = (caseData: any) => {
+    if (!caseData.vaccination.vaccineName)
+        caseData.vaccination.vaccineName = '';
+    if (!caseData.vaccination.vaccineSideEffects)
+        caseData.vaccination.vaccineSideEffects = '';
+    if (!caseData.transmission.contactId) caseData.transmission.contactId = '';
+    if (!caseData.transmission.contactSetting)
+        caseData.transmission.contactSetting = '';
+    if (!caseData.transmission.contactAnimal)
+        caseData.transmission.contactAnimal = '';
+    if (!caseData.transmission.contactComment)
+        caseData.transmission.contactComment = '';
+    if (!caseData.travelHistory.travelHistoryStart)
+        caseData.travelHistory.travelHistoryStart = '';
+    if (!caseData.travelHistory.travelHistoryLocation)
+        caseData.travelHistory.travelHistoryLocation = '';
+    if (!caseData.travelHistory.travelHistoryCountry)
+        caseData.travelHistory.travelHistoryCountry = '';
+    if (!caseData.genomeSequences.genomicsMetadata)
+        caseData.genomeSequences.genomicsMetadata = '';
+    if (!caseData.genomeSequences.accessionNumber)
+        caseData.genomeSequences.accessionNumber = '';
+    if (!caseData.preexistingConditions.coInfection)
+        caseData.preexistingConditions.coInfection = '';
+    if (!caseData.preexistingConditions.preexistingCondition)
+        caseData.preexistingConditions.preexistingCondition = '';
+    return caseData;
+};
+
 export class CasesController {
     private csvHeaders: string[];
     constructor(private readonly geocoders: Geocoder[]) {
@@ -385,7 +415,7 @@ export class CasesController {
             await this.geocode(req);
             const receivedCase = req.body as CaseDTO;
 
-            const c = new Day0Case(await caseFromDTO(receivedCase));
+            const c = fillEmpty(new Day0Case(await caseFromDTO(receivedCase)));
 
             let result;
             if (req.query.validate_only) {
@@ -551,15 +581,6 @@ export class CasesController {
                 if (!idCounter)
                     throw new Error('ID counter document not found');
                 c._id = idCounter.count;
-            };
-
-            // After updating mongoose upserting changed and data fields were missing
-            const fillEmpty = (caseData: any) => {
-                if (!caseData.vaccination.vaccineName)
-                    caseData.vaccination.vaccineName = '';
-                if (!caseData.vaccination.vaccineSideEffects)
-                    caseData.vaccination.vaccineSideEffects = '';
-                return caseData;
             };
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
