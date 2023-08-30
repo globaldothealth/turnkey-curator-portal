@@ -1486,7 +1486,6 @@ describe('PUT', () => {
             .expect(200);
 
         expect(await CaseRevision.collection.countDocuments()).toEqual(1);
-        // console.log(JSON.stringify((await CaseRevision.find())[0].case));
         expect((await CaseRevision.find())[0].case).toMatchObject(c.toObject());
     });
     it('upsert new item should return 201 CREATED', async () => {
