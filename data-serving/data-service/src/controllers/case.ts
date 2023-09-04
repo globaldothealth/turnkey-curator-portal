@@ -31,7 +31,8 @@ class InvalidParamError extends Error {}
 type BatchValidationErrors = { index: number; message: string }[];
 
 const caseFromDTO = async (receivedCase: CaseDTO) => {
-    const aCase = (receivedCase as unknown) as CaseDocument;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const aCase: any = receivedCase;
     if (receivedCase.demographics?.ageRange) {
         // won't be many age buckets, so fetch all of them.
         const allBuckets = await AgeBucket.find({});

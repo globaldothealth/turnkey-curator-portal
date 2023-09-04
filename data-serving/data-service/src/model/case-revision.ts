@@ -13,7 +13,7 @@ const caseRevisionSchema = new mongoose.Schema({
     { unique: true },
 );
 
-export type CaseRevisionDocument = mongoose.Document & {
+export type CaseRevisionDocument = {
     _id: ObjectId;
     case: CaseDocument;
 };
