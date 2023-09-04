@@ -72,6 +72,7 @@ services:
       LOCATION_SERVICE_URL: "http://geocoding:8080"
       MAPBOX_TOKEN: "${MAPBOX_TOKEN}"
       OUTBREAK_DATE: "2019-11-01"
+      MONGO_URL: "mongodb://mongo:27017/${MONGO_DB_NAME}"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://data:3000"]
       interval: 30s

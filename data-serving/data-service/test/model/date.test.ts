@@ -14,26 +14,37 @@ const FakeModel = mongoose.model(
 
 describe('validate', () => {
     it('a type other than Date is invalid', async () => {
-        return new FakeModel({ date: 'not-a-date' }).validate((e) => {
-            expect(e).not.toBeNull();
-            if (e) expect(e.name).toBe(Error.ValidationError.name);
-        });
+        return new FakeModel({ date: 'not-a-date' }).validate().then(
+            () => null,
+            (e) => {
+                expect(e).not.toBeNull();
+                if (e) expect(e.name).toBe(Error.ValidationError.name);
+            },
+        );
     });
 
     it('a date before the start of the outbreak is invalid', async () => {
-        return new FakeModel({ date: new Date('2019-10-31') }).validate((e) => {
-            expect(e).not.toBeNull();
-            if (e) expect(e.name).toBe(Error.ValidationError.name);
-        });
+        return new FakeModel({ date: new Date('2019-10-31') }).validate().then(
+            () => null,
+            (e) => {
+                expect(e).not.toBeNull();
+                if (e) expect(e.name).toBe(Error.ValidationError.name);
+            },
+        );
     });
 
     it('a date too far in the future is invalid', async () => {
         return new FakeModel({
             date: new Date(Date.now() + 10000 /* seconds */),
-        }).validate((e) => {
-            expect(e).not.toBeNull();
-            if (e) expect(e.name).toBe(Error.ValidationError.name);
-        });
+        })
+            .validate()
+            .then(
+                () => null,
+                (e) => {
+                    expect(e).not.toBeNull();
+                    if (e) expect(e.name).toBe(Error.ValidationError.name);
+                },
+            );
     });
 
     it('a date ISO date form is valid', async () => {

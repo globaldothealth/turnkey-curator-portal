@@ -1,6 +1,5 @@
-import { ObjectId } from 'mongodb';
 import _ from 'lodash';
-import mongoose, { LeanDocument } from 'mongoose';
+import mongoose from 'mongoose';
 import { CaseReferenceDocument, caseReferenceSchema } from './case-reference';
 import {
     demographicsAgeRange,
@@ -73,7 +72,8 @@ export const caseSchema = new mongoose.Schema(
     {
         _id: Number,
         caseStatus: {
-            type: CaseStatus,
+            type: String,
+            enum: CaseStatus,
             required: true,
         },
         pathogen: {
@@ -138,7 +138,9 @@ caseSchema.pre('save', async function (next) {
 // @TODO: Type request Cases.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 caseSchema.methods.equalsJSON = function (jsonCase: any): boolean {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const thisJson = this.toJSON() as any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const other = new Day0Case(jsonCase).toJSON() as any;
 
     return (
@@ -191,14 +193,14 @@ export type CaseDTO = ICase & {
     curator: { email: string };
 };
 
-export type CaseDocument = mongoose.Document &
-    ICase & {
-        _id: ObjectId;
-        demographics: DemographicsDocument;
-        // TODO: Type request Cases.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        equalsJSON(jsonCase: any): boolean;
-    };
+export type CaseDocument = ICase & {
+    _id: number;
+    demographics: DemographicsDocument;
+    curators: CuratorsDocument;
+    // TODO: Type request Cases.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    equalsJSON(jsonCase: any): boolean;
+};
 
 caseSchema.pre('save', async function (this: CaseDocument) {
     this.dateLastModified = new Date().toUTCString();
@@ -220,6 +222,6 @@ caseSchema.pre('updateOne', async function (this: CaseDocument) {
 
 export const Day0Case = mongoose.model<CaseDocument>('Day0Case', caseSchema);
 
-export const caseAgeRange = async (aCase: LeanDocument<CaseDocument>) => {
+export const caseAgeRange = async (aCase: CaseDocument) => {
     return await demographicsAgeRange(aCase.demographics);
 };

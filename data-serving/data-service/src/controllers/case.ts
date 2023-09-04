@@ -1,18 +1,28 @@
-import {caseAgeRange, CaseDocument, CaseDTO, CuratorsDocument, Day0Case,} from '../model/day0-case';
+import {
+    caseAgeRange,
+    CaseDocument,
+    CaseDTO,
+    Day0Case,
+    CuratorsDocument,
+} from '../model/day0-case';
 import caseFields from '../model/fields.json';
-import {DocumentQuery, Error, LeanDocument, Query, QueryCursor,} from 'mongoose';
-import {ObjectId} from 'mongodb';
-import {GeocodeOptions, Geocoder, Resolution} from '../geocoding/geocoder';
-import {NextFunction, Request, Response} from 'express';
-import parseSearchQuery, {ParsingError} from '../util/search';
-import {denormalizeFields, removeBlankHeader, SortBy, SortByOrder} from '../util/case';
-
-import {logger} from '../util/logger';
+import { Error, Query } from 'mongoose';
+import { ObjectId } from 'mongodb';
+import { GeocodeOptions, Geocoder, Resolution } from '../geocoding/geocoder';
+import { NextFunction, Request, Response } from 'express';
+import parseSearchQuery, { ParsingError } from '../util/search';
+import {
+    denormalizeFields,
+    removeBlankHeader,
+    SortBy,
+    SortByOrder,
+} from '../util/case';
+import { logger } from '../util/logger';
 import stringify from 'csv-stringify/lib/sync';
 import _ from 'lodash';
-import {AgeBucket} from '../model/age-bucket';
-import {COUNTER_DOCUMENT_ID, IdCounter} from '../model/id-counter';
-import {User} from '../model/user';
+import { AgeBucket } from '../model/age-bucket';
+import { COUNTER_DOCUMENT_ID, IdCounter } from '../model/id-counter';
+import { User } from '../model/user';
 
 class GeocodeNotFoundError extends Error {}
 
@@ -21,15 +31,14 @@ class InvalidParamError extends Error {}
 type BatchValidationErrors = { index: number; message: string }[];
 
 const caseFromDTO = async (receivedCase: CaseDTO) => {
-    // const users = db.collection('users');
-    const aCase = (receivedCase as unknown) as LeanDocument<CaseDocument>;
+    const aCase = (receivedCase as unknown) as CaseDocument;
     if (receivedCase.demographics?.ageRange) {
         // won't be many age buckets, so fetch all of them.
         const allBuckets = await AgeBucket.find({});
         const caseStart = receivedCase.demographics?.ageRange.start;
         const caseEnd = receivedCase.demographics?.ageRange.end;
         validateCaseAges(caseStart, caseEnd);
-        const matchingBucketIDs = allBuckets
+        aCase.demographics.ageBuckets = allBuckets
             .filter((b) => {
                 const bucketContainsStart =
                     b.start <= caseStart && b.end >= caseStart;
@@ -44,7 +53,6 @@ const caseFromDTO = async (receivedCase: CaseDTO) => {
                 );
             })
             .map((b) => b._id);
-        aCase.demographics.ageBuckets = matchingBucketIDs;
     }
 
     const user = await User.findOne({ email: receivedCase.curator?.email });
@@ -64,8 +72,7 @@ const caseFromDTO = async (receivedCase: CaseDTO) => {
     return aCase;
 };
 
-const dtoFromCase = async (storedCase: LeanDocument<CaseDocument>) => {
-
+const dtoFromCase = async (storedCase: CaseDocument) => {
     let dto = (storedCase as unknown) as CaseDTO;
     const ageRange = await caseAgeRange(storedCase);
     const creator = await User.findOne({
@@ -95,7 +102,7 @@ const dtoFromCase = async (storedCase: LeanDocument<CaseDocument>) => {
                     verifiedBy: {
                         email: verifier.email,
                         name: verifier.name,
-                    }
+                    },
                 } as CuratorsDocument,
             };
         } else {
@@ -123,15 +130,54 @@ const dtoFromCase = async (storedCase: LeanDocument<CaseDocument>) => {
     return dto;
 };
 
+// After updating mongoose upserting and creating changed and data fields were missing
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const fillEmpty = (caseData: any) => {
+    if (!caseData.vaccination) caseData.vaccination = {};
+    if (!caseData.vaccination.vaccineName)
+        caseData.vaccination.vaccineName = '';
+    if (!caseData.vaccination.vaccineSideEffects)
+        caseData.vaccination.vaccineSideEffects = '';
+
+    if (!caseData.transmission) caseData.transmission = {};
+    if (!caseData.transmission.contactId) caseData.transmission.contactId = '';
+    if (!caseData.transmission.contactSetting)
+        caseData.transmission.contactSetting = '';
+    if (!caseData.transmission.contactAnimal)
+        caseData.transmission.contactAnimal = '';
+    if (!caseData.transmission.contactComment)
+        caseData.transmission.contactComment = '';
+
+    if (!caseData.travelHistory) caseData.travelHistory = {};
+    if (!caseData.travelHistory.travelHistoryStart)
+        caseData.travelHistory.travelHistoryStart = '';
+    if (!caseData.travelHistory.travelHistoryLocation)
+        caseData.travelHistory.travelHistoryLocation = '';
+    if (!caseData.travelHistory.travelHistoryCountry)
+        caseData.travelHistory.travelHistoryCountry = '';
+
+    if (!caseData.genomeSequences) caseData.genomeSequences = {};
+    if (!caseData.genomeSequences.genomicsMetadata)
+        caseData.genomeSequences.genomicsMetadata = '';
+    if (!caseData.genomeSequences.accessionNumber)
+        caseData.genomeSequences.accessionNumber = '';
+
+    if (!caseData.preexistingConditions) caseData.preexistingConditions = {};
+    if (!caseData.preexistingConditions.coInfection)
+        caseData.preexistingConditions.coInfection = '';
+    if (!caseData.preexistingConditions.preexistingCondition)
+        caseData.preexistingConditions.preexistingCondition = '';
+    return caseData;
+};
+
 export class CasesController {
     private csvHeaders: string[];
     constructor(private readonly geocoders: Geocoder[]) {
-        const text = '';
         this.csvHeaders = [];
         this.init();
     }
 
-    init() {
+    init(): CasesController {
         this.csvHeaders = caseFields;
         this.csvHeaders = removeBlankHeader(this.csvHeaders);
         this.csvHeaders.sort((a, b) =>
@@ -158,7 +204,7 @@ export class CasesController {
             return;
         }
 
-        c.forEach((aCase: LeanDocument<CaseDocument>) => {
+        c.forEach((aCase: CaseDocument) => {
             delete aCase.caseReference.sourceEntryId;
         });
 
@@ -185,7 +231,7 @@ export class CasesController {
 
         // Goofy Mongoose types require this.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let cursor: QueryCursor<CaseDocument>;
+        let cursor: any;
         try {
             // Stream from mongoose directly into response
             // Use provided query and limit, if provided
@@ -360,7 +406,7 @@ export class CasesController {
                 searchQuery: req.query.q || '',
                 count: false,
                 verificationStatus: verificationStatus,
-            }) as DocumentQuery<CaseDocument[], CaseDocument, unknown>;
+            }) as Query<CaseDocument[], CaseDocument, unknown>;
             const countQuery = casesMatchingSearchQuery({
                 searchQuery: req.query.q || '',
                 count: true,
@@ -417,7 +463,7 @@ export class CasesController {
             }
             logger.error('non-parsing error for query:');
             logger.error(req.query);
-            logger.error(e);
+            if (e instanceof Error) logger.error(e);
             res.status(500).json(e);
             return;
         }
@@ -435,7 +481,7 @@ export class CasesController {
             await this.geocode(req);
             const receivedCase = req.body as CaseDTO;
 
-            const c = new Day0Case(await caseFromDTO(receivedCase));
+            const c = fillEmpty(new Day0Case(await caseFromDTO(receivedCase)));
 
             let result;
             if (req.query.validate_only) {
@@ -615,11 +661,13 @@ export class CasesController {
      * upsert.
      */
     batchUpsert = async (req: Request, res: Response): Promise<void> => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let errors: any = [];
         try {
             // Batch validate cases first.
             logger.info('batchUpsert: entrypoint');
             const cases = req.body.cases;
-            const errors = await this.batchValidate(cases);
+            errors = await this.batchValidate(cases);
             logger.info('batchUpsert: validated cases');
 
             if (errors.length > 0) {
@@ -637,7 +685,7 @@ export class CasesController {
             logger.info('batchUpsert: splitting cases by sourceID');
             logger.info('batchUpsert: preparing bulk write');
 
-            const setId = async (c: any) => {
+            const setId = async (c: CaseDocument) => {
                 const idCounter = await IdCounter.findByIdAndUpdate(
                     COUNTER_DOCUMENT_ID,
                     { $inc: { count: 1 } },
@@ -679,7 +727,7 @@ export class CasesController {
                 await setId(c);
                 return {
                     insertOne: {
-                        document: c,
+                        document: fillEmpty(c),
                     },
                 };
             };
@@ -702,14 +750,24 @@ export class CasesController {
             return;
         } catch (e) {
             const err = e as Error;
-            if (err.name === 'ValidationError') {
+            if (err.message == 'Invalid BulkOperation, Batch cannot be empty') {
+                res.status(200).json({
+                    phase: 'UPSERT',
+                    numCreated: 0,
+                    numUpdated: 0,
+                    errors: errors,
+                });
+                return;
+            } else {
+                if (err.name === 'ValidationError') {
+                    logger.error(err);
+                    res.status(422).json(err);
+                    return;
+                }
                 logger.error(err);
-                res.status(422).json(err);
+                res.status(500).json(err);
                 return;
             }
-            logger.error(err);
-            res.status(500).json(err);
-            return;
         }
     };
 
@@ -735,11 +793,13 @@ export class CasesController {
             logger.info('Case save');
             res.json(await dtoFromCase(c));
         } catch (err) {
-            if (err.name === 'ValidationError') {
-                res.status(422).json(err);
-                return;
+            if (err instanceof Error) {
+                if (err.name === 'ValidationError') {
+                    res.status(422).json(err);
+                    return;
+                }
+                res.status(500).json(err);
             }
-            res.status(500).json(err);
             return;
         }
     };
@@ -759,7 +819,7 @@ export class CasesController {
             return;
         }
         try {
-            const cases: LeanDocument<CaseDocument>[] = [];
+            const cases: CaseDocument[] = [];
 
             for (const c in req.body.cases) {
                 const caseDoc = await caseFromDTO(req.body.cases[c] as CaseDTO);
@@ -773,7 +833,7 @@ export class CasesController {
                     return;
                 }
             }
-            const caseLambda = (c: any) => ({
+            const caseLambda = (c: CaseDocument) => ({
                 updateOne: {
                     filter: {
                         _id: c._id,
@@ -878,7 +938,7 @@ export class CasesController {
             await Day0Case.deleteMany(casesQuery);
             res.status(204).end();
         } catch (err) {
-            logger.error(err);
+            if (err instanceof Error) logger.error(err);
             res.status(500).json(err);
         }
     };
@@ -901,6 +961,7 @@ export class CasesController {
 
     /**
      * Geocodes a single location.
+     * @param location The location data.
      * @param canBeFuzzy The location is allowed to be "fuzzy", in which case it may not get geocoded.
      * @returns The geocoded location.
      * @throws GeocodeNotFoundError if no geocode could be found.
@@ -909,8 +970,10 @@ export class CasesController {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private async geocodeLocation(
+        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
         location: any,
         canBeFuzzy: boolean,
+        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     ): Promise<any> {
         if (!location?.query) {
             if (canBeFuzzy) {
@@ -1095,6 +1158,7 @@ export const casesMatchingSearchQuery = (opts: {
 // @TODO
 export const findCasesWithCaseReferenceData = async (
     req: Request,
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     fieldsToSelect: any = undefined,
 ): Promise<CaseDocument[]> => {
     const providedCaseReferenceData = req.body.cases
@@ -1172,7 +1236,7 @@ export const listSymptoms = async (
         });
         return;
     } catch (e) {
-        logger.error(e);
+        if (e instanceof Error) logger.error(e);
         res.status(500).json(e);
         return;
     }
@@ -1202,7 +1266,7 @@ export const listPlacesOfTransmission = async (
         });
         return;
     } catch (e) {
-        logger.error(e);
+        if (e instanceof Error) logger.error(e);
         res.status(500).json(e);
         return;
     }
@@ -1236,7 +1300,7 @@ export const listOccupations = async (
         });
         return;
     } catch (e) {
-        logger.error(e);
+        if (e instanceof Error) logger.error(e);
         res.status(500).json(e);
         return;
     }

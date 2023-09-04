@@ -11,7 +11,6 @@ const editMetadataSchema = new mongoose.Schema(
         },
         date: {
             ...dateFieldInfo(validateEnv().OUTBREAK_DATE),
-            required: true,
         },
         notes: String,
     },

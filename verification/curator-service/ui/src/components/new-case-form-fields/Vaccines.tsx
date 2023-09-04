@@ -8,7 +8,6 @@ import { VaccineSideEffects } from './Symptoms';
 import { Day0CaseFormValues } from '../../api/models/Day0Case';
 import { useStyles } from './styled';
 import clsx from 'clsx';
-import { toUTCDate } from '../util/date';
 
 const TooltipText = () => (
     <StyledTooltip>
@@ -72,11 +71,8 @@ export default function Vaccines(): JSX.Element {
                                 ...values,
                                 vaccination: {
                                     ...values.vaccination,
-                                    vaccineDate: toUTCDate(
-                                        newValue
-                                            ? newValue.toDateString()
-                                            : undefined,
-                                    ),
+                                    vaccineDate:
+                                        newValue?.toDateString() || undefined,
                                 },
                             });
                         }}

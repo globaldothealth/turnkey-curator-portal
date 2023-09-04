@@ -11,6 +11,7 @@ const date = makeValidator((x) => {
 export default function validateEnv(): Readonly<{
     LOCATION_SERVICE_URL: string;
     DB_CONNECTION_STRING: string;
+    MONGO_URL: string;
     PORT: number;
     SERVICE_ENV: string;
     OUTBREAK_DATE: Date;
@@ -26,6 +27,9 @@ export default function validateEnv(): Readonly<{
         DB_CONNECTION_STRING: str({
             desc: 'MongoDB URI provided to MongoClient.',
             devDefault: 'mongodb://localhost:27017/covid19',
+        }),
+        MONGO_URL: str({
+            desc: 'MongoDB URL used on local environment.',
         }),
         PORT: port({ default: 3000 }),
         SERVICE_ENV: str({

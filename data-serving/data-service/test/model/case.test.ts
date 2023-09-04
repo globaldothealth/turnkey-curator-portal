@@ -3,37 +3,49 @@ import { Error } from 'mongoose';
 import fullModel from './data/case.full.json';
 import minimalEvent from './data/event.minimal.json';
 import minimalModel from './data/case.minimal.json';
-import _ from 'lodash';
 
 describe('validate', () => {
     it('model without caseReference is invalid', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const noCaseReference: any = { ...minimalModel };
         delete noCaseReference.caseReference;
 
-        return new Day0Case({ ...noCaseReference }).validate((e) => {
-            expect(e).not.toBeNull();
-            if (e) expect(e.name).toBe(Error.ValidationError.name);
-        });
+        return new Day0Case({ ...noCaseReference }).validate().then(
+            () => null,
+            (e) => {
+                expect(e).not.toBeNull();
+                if (e) expect(e.name).toBe(Error.ValidationError.name);
+            },
+        );
     });
 
     it('model without events is invalid', async () => {
-        return new Day0Case({ ...minimalModel, events: [] }).validate((e) => {
-            expect(e).not.toBeNull();
-            if (e) expect(e.name).toBe(Error.ValidationError.name);
-        });
+        return new Day0Case({ ...minimalModel, events: [] }).validate().then(
+            () => null,
+            (e) => {
+                expect(e).not.toBeNull();
+                if (e) expect(e.name).toBe(Error.ValidationError.name);
+            },
+        );
     });
 
     it('model without date entry event is invalid', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const noDateEntry: any = { ...minimalEvent };
         delete noDateEntry.dateEntry;
 
         return new Day0Case({
             ...minimalModel,
             events: noDateEntry,
-        }).validate((e) => {
-            expect(e).not.toBeNull();
-            if (e) expect(e.name).toBe(Error.ValidationError.name);
-        });
+        })
+            .validate()
+            .then(
+                () => null,
+                (e) => {
+                    expect(e).not.toBeNull();
+                    if (e) expect(e.name).toBe(Error.ValidationError.name);
+                },
+            );
     });
 
     it('minimal model is valid', async () => {
@@ -52,12 +64,14 @@ describe('custom instance methods', () => {
     });
     it('equalsJSON returns true for case differing in caseReference', () => {
         const c = new Day0Case(fullModel);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const comparison: any = fullModel;
         delete comparison.caseReference;
         expect(c.equalsJSON(comparison)).toBe(true);
     });
     it('equalsJSON returns false for semantically differing case', () => {
         const c = new Day0Case(fullModel);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const comparison: any = fullModel;
         delete comparison.demographics.gender;
         expect(c.equalsJSON(comparison)).toBe(false);

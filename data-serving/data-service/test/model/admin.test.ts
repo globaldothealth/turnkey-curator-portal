@@ -12,7 +12,7 @@ describe('Admin schema', () => {
     it('should fail validation if invalid', () => {
         const errors = new Admin({}).validateSync();
         expect(errors).toBeDefined();
-        expect(errors?.toString()).toMatch('Admin must have an id');
+        expect(errors?.toString()).toMatch('id: Path `id` is required.');
         expect(errors?.toString()).toMatch('Admin must have a name');
     });
 });

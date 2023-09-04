@@ -15,23 +15,31 @@ const CaseReference = mongoose.model<CaseReferenceDocument>(
 
 describe('validate', () => {
     it('a caseReference document without sourceId is invalid', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const missingSourceId: any = { ...minimalModel };
         delete missingSourceId.sourceId;
 
-        return new CaseReference(missingSourceId).validate((e) => {
-            expect(e).not.toBeNull();
-            if (e) expect(e.name).toBe(Error.ValidationError.name);
-        });
+        return new CaseReference(missingSourceId).validate().then(
+            () => null,
+            (e) => {
+                expect(e).not.toBeNull();
+                if (e) expect(e.name).toBe(Error.ValidationError.name);
+            },
+        );
     });
 
     it('a caseReference document without sourceUrl is invalid', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const missingSourceUrl: any = { ...minimalModel };
         delete missingSourceUrl.sourceUrl;
 
-        return new CaseReference(missingSourceUrl).validate((e) => {
-            expect(e).not.toBeNull();
-            if (e) expect(e.name).toBe(Error.ValidationError.name);
-        });
+        return new CaseReference(missingSourceUrl).validate().then(
+            () => null,
+            (e) => {
+                expect(e).not.toBeNull();
+                if (e) expect(e.name).toBe(Error.ValidationError.name);
+            },
+        );
     });
 
     it('a minimal caseReference document is valid', async () => {

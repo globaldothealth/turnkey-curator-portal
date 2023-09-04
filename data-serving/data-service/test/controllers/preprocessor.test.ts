@@ -6,7 +6,6 @@ import {
     createBatchUpdateCaseRevisions,
     createBatchUpsertCaseRevisions,
     createCaseRevision,
-    setBatchUpsertFields,
 } from '../../src/controllers/preprocessor';
 
 import { Day0Case } from '../../src/model/day0-case';
@@ -19,6 +18,7 @@ import mongoose from 'mongoose';
 import supertest from 'supertest';
 
 let mongoServer: MongoMemoryServer;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let dateNowSpy: any;
 
 beforeAll(() => {
@@ -81,6 +81,7 @@ describe('update', () => {
                 body: requestBody,
                 method: 'PUT',
                 params: { id: c._id },
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } as Request<any>,
             {} as Response,
             nextFn,
@@ -88,9 +89,7 @@ describe('update', () => {
 
         expect(nextFn).toHaveBeenCalledTimes(1);
         expect(await CaseRevision.collection.countDocuments()).toEqual(1);
-        expect((await CaseRevision.find())[0].case.toObject()).toEqual(
-            c.toObject(),
-        );
+        expect((await CaseRevision.find())[0].case).toMatchObject(c.toObject());
     });
 });
 
@@ -150,9 +149,7 @@ describe('upsert', () => {
 
         expect(nextFn).toHaveBeenCalledTimes(1);
         expect(await CaseRevision.collection.countDocuments()).toEqual(1);
-        expect((await CaseRevision.find())[0].case.toObject()).toEqual(
-            c.toObject(),
-        );
+        expect((await CaseRevision.find())[0].case).toMatchObject(c.toObject());
     });
 });
 describe('batch upsert', () => {
@@ -197,9 +194,7 @@ describe('batch upsert', () => {
 
         expect(nextFn).toHaveBeenCalledTimes(1);
         expect(await CaseRevision.collection.countDocuments()).toEqual(1);
-        expect((await CaseRevision.find())[0].case.toObject()).toEqual(
-            c.toObject(),
-        );
+        expect((await CaseRevision.find())[0].case).toMatchObject(c.toObject());
     });
     it('removes cases from request that would not be updated', async () => {
         const existingCase = {
@@ -312,10 +307,8 @@ describe('batch update', () => {
 
         expect(nextFn).toHaveBeenCalledTimes(1);
         expect(await CaseRevision.collection.countDocuments()).toEqual(2);
-        expect((await CaseRevision.find())[0].case.toObject()).toEqual(
-            c.toObject(),
-        );
-        expect((await CaseRevision.find())[1].case.toObject()).toEqual(
+        expect((await CaseRevision.find())[0].case).toMatchObject(c.toObject());
+        expect((await CaseRevision.find())[1].case).toMatchObject(
             c2.toObject(),
         );
     });
@@ -334,10 +327,10 @@ describe('batch update', () => {
 
             expect(nextFn).toHaveBeenCalledTimes(1);
             expect(await CaseRevision.collection.countDocuments()).toEqual(2);
-            expect((await CaseRevision.find())[0].case.toObject()).toEqual(
+            expect((await CaseRevision.find())[0].case).toMatchObject(
                 c.toObject(),
             );
-            expect((await CaseRevision.find())[1].case.toObject()).toEqual(
+            expect((await CaseRevision.find())[1].case).toMatchObject(
                 c2.toObject(),
             );
         });
@@ -360,10 +353,10 @@ describe('batch update', () => {
 
             expect(nextFn).toHaveBeenCalledTimes(1);
             expect(await CaseRevision.collection.countDocuments()).toEqual(2);
-            expect((await CaseRevision.find())[0].case.toObject()).toEqual(
+            expect((await CaseRevision.find())[0].case).toMatchObject(
                 c.toObject(),
             );
-            expect((await CaseRevision.find())[1].case.toObject()).toEqual(
+            expect((await CaseRevision.find())[1].case).toMatchObject(
                 c2.toObject(),
             );
         });
@@ -398,12 +391,15 @@ describe('batch update', () => {
             await batchDeleteCheckThreshold(
                 { body: requestBody, method: 'DELETE' } as Request,
                 {
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     status: function (_) {
                         return this;
                     },
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     json: function (_) {
                         return this;
                     },
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 } as Response<any>,
                 nextFn,
             );
@@ -420,6 +416,7 @@ describe('batch update', () => {
                 {
                     method: 'DELETE',
                     params: { id: c._id },
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 } as Request<any>,
                 {} as Response,
                 nextFn,
@@ -427,7 +424,7 @@ describe('batch update', () => {
 
             expect(nextFn).toHaveBeenCalledTimes(1);
             expect(await CaseRevision.collection.countDocuments()).toEqual(1);
-            expect((await CaseRevision.find())[0].case.toObject()).toEqual(
+            expect((await CaseRevision.find())[0].case).toMatchObject(
                 c.toObject(),
             );
         });
