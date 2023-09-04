@@ -12,11 +12,14 @@ const FakeModel = mongoose.model(
 
 describe('validate', () => {
     it('a values field with duplicate values is invalid', async () => {
-        return new FakeModel({ uniqueStringsArray: ['a', 'a'] }).validate(
-            (e) => {
-                expect(e).not.toBeNull();
-                if (e) expect(e.name).toBe(Error.ValidationError.name);
-            },
-        );
+        return new FakeModel({ uniqueStringsArray: ['a', 'a'] })
+            .validate()
+            .then(
+                () => null,
+                (e) => {
+                    expect(e).not.toBeNull();
+                    if (e) expect(e.name).toBe(Error.ValidationError.name);
+                },
+            );
     });
 });

@@ -1,5 +1,5 @@
 import { Range } from './range';
-import mongoose, { LeanDocument } from 'mongoose';
+import mongoose from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { AgeBucket } from './age-bucket';
 import { YesNo } from '../types/enums';
@@ -67,7 +67,7 @@ export const Demographics = mongoose.model<DemographicsDocument>(
 );
 
 export const demographicsAgeRange = async (
-    demographics: LeanDocument<DemographicsDocument>,
+    demographics: DemographicsDocument,
 ) => {
     if (
         demographics &&

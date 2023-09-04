@@ -6,7 +6,7 @@ import {
 } from './case';
 
 import { CaseRevision } from '../model/case-revision';
-import { DocumentQuery } from 'mongoose';
+import { Query } from 'mongoose';
 import _ from 'lodash';
 
 export const getCase = async (
@@ -120,7 +120,7 @@ export const findCasesToUpdate = async (
     const matchedCases = await (casesMatchingSearchQuery({
         searchQuery: request.body.query,
         count: false,
-    }) as DocumentQuery<CaseDocument[], CaseDocument, unknown>).exec();
+    }) as Query<CaseDocument[], CaseDocument, unknown>).exec();
 
     // Set those case ids to be updated with the request case.
     // TODO: Type request Cases.

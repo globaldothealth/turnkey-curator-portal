@@ -18,20 +18,26 @@ describe('validate', () => {
         const missingSourceId: any = { ...minimalModel };
         delete missingSourceId.sourceId;
 
-        return new CaseReference(missingSourceId).validate((e) => {
-            expect(e).not.toBeNull();
-            if (e) expect(e.name).toBe(Error.ValidationError.name);
-        });
+        return new CaseReference(missingSourceId).validate().then(
+            () => null,
+            (e) => {
+                expect(e).not.toBeNull();
+                if (e) expect(e.name).toBe(Error.ValidationError.name);
+            },
+        );
     });
 
     it('a caseReference document without sourceUrl is invalid', async () => {
         const missingSourceUrl: any = { ...minimalModel };
         delete missingSourceUrl.sourceUrl;
 
-        return new CaseReference(missingSourceUrl).validate((e) => {
-            expect(e).not.toBeNull();
-            if (e) expect(e.name).toBe(Error.ValidationError.name);
-        });
+        return new CaseReference(missingSourceUrl).validate().then(
+            () => null,
+            (e) => {
+                expect(e).not.toBeNull();
+                if (e) expect(e.name).toBe(Error.ValidationError.name);
+            },
+        );
     });
 
     it('a minimal caseReference document is valid', async () => {

@@ -179,12 +179,7 @@ app.use(
     );
 
     try {
-        await mongoose.connect(mongoURL, {
-            useCreateIndex: true,
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            useFindAndModify: false,
-        });
+        await mongoose.connect(mongoURL);
     } catch (e) {
         logger.error(
             'Failed to connect to the database. Mongoose was unable to establish connection using provided mongoURL.',

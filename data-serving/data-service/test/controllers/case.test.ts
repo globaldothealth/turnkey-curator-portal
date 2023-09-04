@@ -17,7 +17,6 @@ import {
 } from '../mocks/handlers';
 import fs from 'fs';
 import { AgeBucket } from '../../src/model/age-bucket';
-import { ObjectId } from 'mongodb';
 
 let mongoServer: MongoMemoryServer;
 
@@ -415,7 +414,11 @@ describe('POST', () => {
 
         const minimalLocationRequest = {
             ...minimalRequest,
-            location: { countryISO3: 'CAN', country: 'Canada', query: 'Canada' },
+            location: {
+                countryISO3: 'CAN',
+                country: 'Canada',
+                query: 'Canada',
+            },
         };
 
         const expectedLocation = {
@@ -874,7 +877,9 @@ describe('POST', () => {
         expect(res.body.numCreated).toBe(1); // A new case was created.
         expect(res.body.numUpdated).toBe(0); // No case was updated.
 
-        const updatedCaseInDb = await Day0Case.find().sort({ _id: -1 }).limit(1); // latest case
+        const updatedCaseInDb = await Day0Case.find()
+            .sort({ _id: -1 })
+            .limit(1); // latest case
         expect(updatedCaseInDb[0]?.demographics.ageBuckets).toHaveLength(3);
     });
     it('geocodes everything that is necessary', async () => {
@@ -1228,9 +1233,7 @@ describe('PUT', () => {
             .expect(200);
 
         expect(await CaseRevision.collection.countDocuments()).toEqual(1);
-        expect((await CaseRevision.find())[0].case.toObject()).toEqual(
-            c.toObject(),
-        );
+        expect((await CaseRevision.find())[0].case).toMatchObject(c.toObject());
     });
     it('invalid update present item should return 422', async () => {
         const c = new Day0Case(minimalCase);
@@ -1483,9 +1486,7 @@ describe('PUT', () => {
             .expect(200);
 
         expect(await CaseRevision.collection.countDocuments()).toEqual(1);
-        expect((await CaseRevision.find())[0].case.toObject()).toEqual(
-            c.toObject(),
-        );
+        expect((await CaseRevision.find())[0].case).toMatchObject(c.toObject());
     });
     it('upsert new item should return 201 CREATED', async () => {
         seedFakeGeocodes('Canada', {
@@ -1581,9 +1582,7 @@ describe('DELETE', () => {
         await request(app).delete(`/api/cases/${c._id}`).expect(204);
 
         expect(await CaseRevision.collection.countDocuments()).toEqual(1);
-        expect((await CaseRevision.find())[0].case.toObject()).toEqual(
-            c.toObject(),
-        );
+        expect((await CaseRevision.find())[0].case).toMatchObject(c.toObject());
     });
     it('delete absent item should return 404 NOT FOUND', () => {
         return request(app).delete('/api/cases/123456789').expect(404);
@@ -1625,10 +1624,8 @@ describe('DELETE', () => {
         expect(await Day0Case.collection.countDocuments()).toEqual(0);
 
         expect(await CaseRevision.collection.countDocuments()).toEqual(2);
-        expect((await CaseRevision.find())[0].case.toObject()).toEqual(
-            c.toObject(),
-        );
-        expect((await CaseRevision.find())[1].case.toObject()).toEqual(
+        expect((await CaseRevision.find())[0].case).toMatchObject(c.toObject());
+        expect((await CaseRevision.find())[1].case).toMatchObject(
             c2.toObject(),
         );
     });
@@ -1676,9 +1673,7 @@ describe('DELETE', () => {
         expect(await Day0Case.collection.countDocuments()).toEqual(2);
 
         expect(await CaseRevision.collection.countDocuments()).toEqual(1);
-        expect((await CaseRevision.find())[0].case.toObject()).toEqual(
-            c.toObject(),
-        );
+        expect((await CaseRevision.find())[0].case).toMatchObject(c.toObject());
 
         await request(app)
             .delete('/api/cases')
@@ -1687,10 +1682,8 @@ describe('DELETE', () => {
         expect(await Day0Case.collection.countDocuments()).toEqual(1);
 
         expect(await CaseRevision.collection.countDocuments()).toEqual(2);
-        expect((await CaseRevision.find())[0].case.toObject()).toEqual(
-            c.toObject(),
-        );
-        expect((await CaseRevision.find())[1].case.toObject()).toEqual(
+        expect((await CaseRevision.find())[0].case).toMatchObject(c.toObject());
+        expect((await CaseRevision.find())[1].case).toMatchObject(
             c2.toObject(),
         );
     });

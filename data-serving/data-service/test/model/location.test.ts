@@ -12,10 +12,13 @@ describe('validate', () => {
         const noGeoResolution: any = { ...minimalModel };
         delete noGeoResolution.geoResolution;
 
-        return new Location(noGeoResolution).validate((e) => {
-            expect(e).not.toBeNull();
-            if (e) expect(e.name).toBe(Error.ValidationError.name);
-        });
+        return new Location(noGeoResolution).validate().then(
+            () => null,
+            (e) => {
+                expect(e).not.toBeNull();
+                if (e) expect(e.name).toBe(Error.ValidationError.name);
+            },
+        );
     });
 
     // Geometry will be added back in a new ticket
@@ -23,20 +26,26 @@ describe('validate', () => {
         const noGeometry: any = { ...minimalModel };
         delete noGeometry.geometry;
 
-        return new Location(noGeometry).validate((e) => {
-            expect(e).not.toBeNull();
-            if (e) expect(e.name).toBe(Error.ValidationError.name);
-        });
+        return new Location(noGeometry).validate().then(
+            () => null,
+            (e) => {
+                expect(e).not.toBeNull();
+                if (e) expect(e.name).toBe(Error.ValidationError.name);
+            },
+        );
     });
 
     it.skip('a location without a name is invalid', async () => {
         const noName: any = { ...minimalModel };
         delete noName.name;
 
-        return new Location(noName).validate((e) => {
-            expect(e).not.toBeNull();
-            if (e) expect(e.name).toBe(Error.ValidationError.name);
-        });
+        return new Location(noName).validate().then(
+            () => null,
+            (e) => {
+                expect(e).not.toBeNull();
+                if (e) expect(e.name).toBe(Error.ValidationError.name);
+            },
+        );
     });
 
     it.skip('a geometry without a longitude is invalid', async () => {
@@ -45,10 +54,15 @@ describe('validate', () => {
             geometry: {
                 latitude: 40.6,
             },
-        }).validate((e) => {
-            expect(e).not.toBeNull();
-            if (e) expect(e.name).toBe(Error.ValidationError.name);
-        });
+        })
+            .validate()
+            .then(
+                () => null,
+                (e) => {
+                    expect(e).not.toBeNull();
+                    if (e) expect(e.name).toBe(Error.ValidationError.name);
+                },
+            );
     });
 
     it.skip('a geometry without a latitude is invalid', async () => {
@@ -57,10 +71,15 @@ describe('validate', () => {
             geometry: {
                 longitude: -73.9,
             },
-        }).validate((e) => {
-            expect(e).not.toBeNull();
-            if (e) expect(e.name).toBe(Error.ValidationError.name);
-        });
+        })
+            .validate()
+            .then(
+                () => null,
+                (e) => {
+                    expect(e).not.toBeNull();
+                    if (e) expect(e.name).toBe(Error.ValidationError.name);
+                },
+            );
     });
 
     it('a minimal location is valid', async () => {

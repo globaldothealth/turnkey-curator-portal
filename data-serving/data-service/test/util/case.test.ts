@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck Unable to block-ignore errors ('Property does not exist' in this file)
 // https://github.com/Microsoft/TypeScript/issues/19573
 
@@ -7,24 +8,14 @@ import { CaseReferenceDocument } from '../model/case-reference';
 import { DemographicsDocument } from '../model/demographics';
 import { EventDocument } from '../model/event';
 import { LocationDocument } from '../model/location';
-import { PathogenDocument } from '../model/pathogen';
 import { PreexistingConditionsDocument } from '../model/preexisting-conditions';
 import { RevisionMetadataDocument } from '../model/revision-metadata';
-import { SymptomsDocument } from '../model/symptoms';
 import { TransmissionDocument } from '../model/transmission';
 import { TravelHistoryDocument } from '../model/travel-history';
 import { VaccineDocument } from '../model/vaccine';
-import { VariantDocument } from '../model/variant';
-import {
-    parseCaseEvents,
-    parseDownloadedCase,
-    denormalizeEventsHeaders,
-    removeBlankHeader,
-    denormalizeFields,
-} from '../../src/util/case';
-import events from '../model/data/case.events.json';
+import { removeBlankHeader, denormalizeFields } from '../../src/util/case';
 import mongoose from 'mongoose';
-import MongoMemoryServer from 'mongodb-memory-server';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 import { GenomeSequenceDocument } from '../../src/model/genome-sequence';
 import { EventsDocument } from '../../src/model/events';
 
@@ -47,12 +38,7 @@ async function createAgeBuckets() {
 beforeAll(async () => {
     mongoServer = new MongoMemoryServer();
     const mongoURL = process.env.MONGO_URL;
-    await mongoose.connect(mongoURL, {
-        useCreateIndex: true,
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useFindAndModify: false,
-    });
+    await mongoose.connect(mongoURL);
     await createAgeBuckets();
 });
 
