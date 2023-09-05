@@ -1522,8 +1522,10 @@ describe('PUT', () => {
             .expect(200);
 
         expect(await CaseRevision.collection.countDocuments()).toEqual(1);
-        // TODO found out why this is not working properly
-        // expect((await CaseRevision.find())[0].case).toMatchObject(c.toObject());
+        // I needed to parse it using JSON to and from string to avoid issues with comparing object in strict mode
+        expect(
+            JSON.parse(JSON.stringify((await CaseRevision.find())[0].case)),
+        ).toEqual(JSON.parse(JSON.stringify(c.toObject())));
     });
     it('upsert new item should return 201 CREATED', async () => {
         seedFakeGeocodes('Canada', {
@@ -1619,8 +1621,10 @@ describe('DELETE', () => {
         await request(app).delete(`/api/cases/${c._id}`).expect(204);
 
         expect(await CaseRevision.collection.countDocuments()).toEqual(1);
-        // TODO found out why this is not working properly
-        // expect((await CaseRevision.find())[0].case).toMatchObject(c.toObject());
+        // I needed to parse it using JSON to and from string to avoid issues with comparing object in strict mode
+        expect(
+            JSON.parse(JSON.stringify((await CaseRevision.find())[0].case)),
+        ).toEqual(JSON.parse(JSON.stringify(c.toObject())));
     });
     it('delete absent item should return 404 NOT FOUND', () => {
         return request(app).delete('/api/cases/123456789').expect(404);
@@ -1662,11 +1666,13 @@ describe('DELETE', () => {
         expect(await Day0Case.collection.countDocuments()).toEqual(0);
 
         expect(await CaseRevision.collection.countDocuments()).toEqual(2);
-        // TODO found out why this is not working properly
-        // expect((await CaseRevision.find())[0].case).toMatchObject(c.toObject());
-        // expect((await CaseRevision.find())[1].case).toMatchObject(
-        //     c2.toObject(),
-        // );
+        // I needed to parse it using JSON to and from string to avoid issues with comparing object in strict mode
+        expect(
+            JSON.parse(JSON.stringify((await CaseRevision.find())[0].case)),
+        ).toEqual(JSON.parse(JSON.stringify(c.toObject())));
+        expect(
+            JSON.parse(JSON.stringify((await CaseRevision.find())[1].case)),
+        ).toEqual(JSON.parse(JSON.stringify(c2.toObject())));
     });
     // @TODO text index not present in the new case schema
     it.skip('delete multiple cases with query should return 204 OK', async () => {
