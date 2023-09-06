@@ -32,7 +32,7 @@ export default function validateEnv(): Readonly<{
     return cleanEnv(process.env, {
         AFTER_LOGIN_REDIRECT_URL: str({
             desc: 'URL to redirect to after the oauth consent screen',
-            devDefault: 'http://localhost:3002/',
+            devDefault: 'https://turnkey-dev-data.covid-19.global.health/cases',
         }),
         AWS_ACCESS_KEY_ID: str({
             desc: 'ID for AWS access key credential',
