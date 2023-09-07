@@ -22,7 +22,7 @@ import bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import EmailClient from '../clients/email-client';
 import { ObjectId } from 'mongodb';
-import { baseURL, welcomeEmail } from '../util/instance-details';
+import { welcomeEmail } from '../util/instance-details';
 import { validateRecaptchaToken } from '../util/validate-recaptcha-token';
 import {
     setupFailedAttempts,
@@ -37,6 +37,7 @@ import {
     forgotPasswordLimiter,
     resetPasswordWithTokenLimiter,
 } from '../util/single-window-rate-limiters';
+import validateEnv from '../util/validate-env';
 
 // Global variable for newsletter acceptance
 let isNewsletterAccepted: boolean;
@@ -582,7 +583,8 @@ export class AuthController {
                         createdAt: Date.now(),
                     });
 
-                    const url = baseURL(this.disease, this.env);
+                    const cleanEnv = validateEnv();
+                    const url = cleanEnv.BASE_URL;
 
                     const resetLink = `${url}/reset-password/${resetToken}/${user._id}`;
 
@@ -637,7 +639,7 @@ export class AuthController {
 
                     // Check if token exists
                     const passwordResetToken = await tokens().findOne({
-                        userId,
+                        userId: new ObjectId(userId),
                     });
                     if (!passwordResetToken) {
                         updateFailedAttempts(
@@ -705,7 +707,7 @@ export class AuthController {
                     );
 
                     // Delete used token
-                    await passwordResetToken.deleteOne();
+                    await tokens().deleteOne({ userId: new ObjectId(userId) });
 
                     res.sendStatus(200);
                 } catch (err) {

@@ -5,11 +5,13 @@ export default function validateEnv(): Readonly<{
     AWS_ACCESS_KEY_ID: string;
     AWS_SECRET_ACCESS_KEY: string;
     AWS_SERVICE_REGION: string;
+    BASE_URL: string;
     COMPLETE_DATA_BUCKET: string;
     COUNTRY_DATA_BUCKET: string;
     CURATOR_VERSION: string;
     DATASERVER_URL: string;
     DB_CONNECTION_STRING: string;
+    DISEASE_NAME: string;
     EMAIL_USER_ADDRESS: string;
     ENABLE_LOCAL_AUTH: boolean;
     EVENT_ROLE_ARN: string;
@@ -19,12 +21,11 @@ export default function validateEnv(): Readonly<{
     LOCATION_SERVICE_URL: string;
     JOB_QUEUE_ARN: string;
     PORT: number;
+    REACT_APP_RECAPTCHA_SITE_KEY: string;
+    RECAPTCHA_SECRET_KEY: string;
     SERVICE_ENV: string;
     SESSION_COOKIE_KEY: string;
     STATIC_DIR: string;
-    DISEASE_NAME: string;
-    REACT_APP_RECAPTCHA_SITE_KEY: string;
-    RECAPTCHA_SECRET_KEY: string;
 }> & {
     readonly [varName: string]: string | boolean | number | undefined;
     // eslint-disable-next-line indent
@@ -47,6 +48,10 @@ export default function validateEnv(): Readonly<{
         AWS_SERVICE_REGION: str({
             desc: 'AWS region in which to interact with services/resources',
             default: 'eu-central-1',
+        }),
+        BASE_URL: str({
+            desc: 'URL of the application, used for generating reset password link',
+            devDefault: 'http://localhost:3002',
         }),
         COMPLETE_DATA_BUCKET: str({
             desc: 'S3 bucket containing case data by country',

@@ -1,16 +1,3 @@
-const urlMap: { [idx: string]: { [idx: string]: string } } = {
-    'COVID-19': {
-        local: 'http://localhost:3002',
-        dev: 'https://dev-data.covid-19.global.health',
-        qa: 'https://qa-data.covid-19.global.health',
-        prod: 'https://data.covid-19.global.health',
-    },
-};
-
-export function baseURL(disease: string, environment: string): string {
-    return urlMap[disease]?.[environment] ?? 'http://localhost:3002';
-}
-
 const welcomeMessages: { [idx: string]: string } = {
     'COVID-19': `<p>Thank you for registering with Global.health! We're thrilled to have you join our international community and mission to advance the global response to infectious diseases through the sharing of trusted and open public health data.</p>
         <p>Here are a few things you can do:</p>
