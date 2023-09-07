@@ -15,6 +15,7 @@ const CaseReference = mongoose.model<CaseReferenceDocument>(
 
 describe('validate', () => {
     it('a caseReference document without sourceId is invalid', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const missingSourceId: any = { ...minimalModel };
         delete missingSourceId.sourceId;
 
@@ -28,6 +29,7 @@ describe('validate', () => {
     });
 
     it('a caseReference document without sourceUrl is invalid', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const missingSourceUrl: any = { ...minimalModel };
         delete missingSourceUrl.sourceUrl;
 

@@ -5,6 +5,7 @@ import { render, fireEvent, screen, waitFor, within } from '../util/test-utils';
 import { initialLoggedInState } from '../../redux/store';
 import { MapLink } from '../../constants/types';
 import validateEnv from '../../util/validate-env';
+import { Role } from '../../api/models/User';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -22,7 +23,7 @@ describe('<App />', () => {
                 googleID: '42',
                 name: 'Alice Smith',
                 email: 'foo@bar.com',
-                roles: ['admin'],
+                roles: [Role.Admin],
             },
             status: 200,
             statusText: 'OK',
@@ -91,7 +92,7 @@ describe('<App />', () => {
                 googleID: '42',
                 name: 'Alice Smith',
                 email: 'foo@bar.com',
-                roles: ['admin'],
+                roles: [Role.Admin],
             },
             status: 200,
             statusText: 'OK',
@@ -146,7 +147,7 @@ describe('<App />', () => {
                 googleID: '42',
                 name: 'Alice Smith',
                 email: 'foo@bar.com',
-                roles: ['admin'],
+                roles: [Role.Admin],
             },
             status: 200,
             statusText: 'OK',
@@ -206,7 +207,7 @@ describe('<App />', () => {
                 googleID: '42',
                 name: 'Alice Smith',
                 email: 'foo@bar.com',
-                roles: ['admin'],
+                roles: [Role.Admin],
             },
             status: 200,
             statusText: 'OK',
@@ -251,7 +252,7 @@ describe('Download dataset', () => {
                 googleID: '42',
                 name: 'Alice Smith',
                 email: 'foo@bar.com',
-                roles: ['admin'],
+                roles: [Role.Admin],
             },
             status: 200,
             statusText: 'OK',

@@ -6,7 +6,6 @@ import {
     createBatchUpdateCaseRevisions,
     createBatchUpsertCaseRevisions,
     createCaseRevision,
-    setBatchUpsertFields,
 } from '../../src/controllers/preprocessor';
 
 import { Day0Case } from '../../src/model/day0-case';
@@ -19,6 +18,7 @@ import mongoose from 'mongoose';
 import supertest from 'supertest';
 
 let mongoServer: MongoMemoryServer;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let dateNowSpy: any;
 
 beforeAll(() => {
@@ -81,6 +81,7 @@ describe('update', () => {
                 body: requestBody,
                 method: 'PUT',
                 params: { id: c._id },
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } as Request<any>,
             {} as Response,
             nextFn,
@@ -390,12 +391,15 @@ describe('batch update', () => {
             await batchDeleteCheckThreshold(
                 { body: requestBody, method: 'DELETE' } as Request,
                 {
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     status: function (_) {
                         return this;
                     },
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     json: function (_) {
                         return this;
                     },
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 } as Response<any>,
                 nextFn,
             );
@@ -412,6 +416,7 @@ describe('batch update', () => {
                 {
                     method: 'DELETE',
                     params: { id: c._id },
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 } as Request<any>,
                 {} as Response,
                 nextFn,

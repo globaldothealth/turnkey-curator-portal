@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongodb';
 import _ from 'lodash';
 import mongoose from 'mongoose';
 import { CaseReferenceDocument, caseReferenceSchema } from './case-reference';
@@ -47,7 +46,27 @@ export const sourceSchema = new mongoose.Schema({
     sourceProviderUrl: String,
     sourceEntryId: String,
     uploadIds: [String],
+    sourceIsGovernmental: Boolean,
 });
+
+export const curatorsSchema = new mongoose.Schema(
+    {
+        verifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
+        createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
+    },
+    { _id: false },
+);
+
+export type CuratorsDocument = mongoose.Document & {
+    verifiedBy?: {
+        name?: string;
+        email: string;
+    };
+    createdBy: {
+        name?: string;
+        email: string;
+    };
+};
 
 export const caseSchema = new mongoose.Schema(
     {
@@ -74,6 +93,7 @@ export const caseSchema = new mongoose.Schema(
         travelHistory: travelHistorySchema,
         genomeSequences: genomeSequenceSchema,
         vaccination: vaccineSchema,
+        curators: curatorsSchema,
     },
     {
         toObject: {
@@ -118,7 +138,9 @@ caseSchema.pre('save', async function (next) {
 // @TODO: Type request Cases.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 caseSchema.methods.equalsJSON = function (jsonCase: any): boolean {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const thisJson = this.toJSON() as any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const other = new Day0Case(jsonCase).toJSON() as any;
 
     return (
@@ -163,15 +185,18 @@ export type ICase = {
     travelHistory: TravelHistoryDocument;
     genomeSequences: GenomeSequenceDocument;
     vaccination: VaccineDocument;
+    curators: CuratorsDocument;
 };
 
 export type CaseDTO = ICase & {
     demographics?: DemographicsDTO;
+    curator: { email: string };
 };
 
 export type CaseDocument = ICase & {
     _id: number;
     demographics: DemographicsDocument;
+    curators: CuratorsDocument;
     // TODO: Type request Cases.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     equalsJSON(jsonCase: any): boolean;

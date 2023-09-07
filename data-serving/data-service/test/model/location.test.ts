@@ -9,6 +9,7 @@ const Location = mongoose.model<LocationDocument>('Location', locationSchema);
 
 describe('validate', () => {
     it.skip('a location without a geo resolution is invalid', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const noGeoResolution: any = { ...minimalModel };
         delete noGeoResolution.geoResolution;
 
@@ -23,6 +24,7 @@ describe('validate', () => {
 
     // Geometry will be added back in a new ticket
     it.skip('a location without a geometry is invalid', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const noGeometry: any = { ...minimalModel };
         delete noGeometry.geometry;
 
@@ -36,6 +38,7 @@ describe('validate', () => {
     });
 
     it.skip('a location without a name is invalid', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const noName: any = { ...minimalModel };
         delete noName.name;
 

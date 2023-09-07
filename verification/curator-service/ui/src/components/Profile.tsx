@@ -35,6 +35,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { SnackbarAlert } from './SnackbarAlert';
 import Helmet from 'react-helmet';
 import PasswordStrengthBar from 'react-password-strength-bar';
+import { Role } from '../api/models/User';
 
 const styles = makeStyles((theme: Theme) => ({
     root: {
@@ -426,14 +427,19 @@ export default function Profile(): JSX.Element {
                                 );
                             };
                             switch (role) {
-                                case 'curator':
+                                case Role.Admin:
+                                    return tooltip(
+                                        'admins can administer roles of other users',
+                                        role,
+                                    );
+                                case Role.Curator:
                                     return tooltip(
                                         'curators can submit and verify cases and ingestion sources',
                                         role,
                                     );
-                                case 'admin':
+                                case Role.JuniorCurator:
                                     return tooltip(
-                                        'admins can administer roles of other users',
+                                        'juniors curators can submit cases',
                                         role,
                                     );
                                 default:

@@ -65,6 +65,9 @@
     "transmission": {},
     "travelHistory": {},
     "genomeSequences": {},
-    "vaccination": {}
+    "vaccination": {},
+    "curator": {
+      "email": "superuser@test.com"
+    }
   }
 ]

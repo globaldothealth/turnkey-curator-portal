@@ -5,6 +5,7 @@ import Profile from './Profile';
 import { RootState, initialLoggedInState } from '../redux/store';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import { Role } from '../api/models/User';
 
 const server = setupServer();
 
@@ -21,7 +22,7 @@ const loggedInWithApiKeyState: RootState = {
             googleID: '42',
             name: 'Alice Smith',
             email: 'foo@bar.com',
-            roles: ['admin', 'curator'],
+            roles: [Role.Admin, Role.Curator],
             apiKey: 'An API Key',
         },
     },

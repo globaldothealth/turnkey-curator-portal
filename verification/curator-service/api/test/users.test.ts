@@ -1,10 +1,9 @@
-import * as baseUser from './users/base.json';
-
-import { IUser, sessions, users } from '../src/model/user';
-
-import { MongoMemoryServer } from 'mongodb-memory-server';
-import makeApp from '../src/index';
 import supertest from 'supertest';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+
+import * as baseUser from './users/base.json';
+import makeApp from '../src/index';
+import { IUser, Role, sessions, users } from '../src/model/user';
 
 jest.mock('../src/clients/email-client', () => {
     return jest.fn().mockImplementation(() => {
@@ -38,7 +37,7 @@ describe('GET', () => {
         adminRequest = supertest.agent(app);
         await adminRequest
             .post('/auth/register')
-            .send({ ...baseUser, ...{ roles: ['admin'] } })
+            .send({ ...baseUser, ...{ roles: [Role.Admin] } })
             .expect(200);
     });
 
@@ -47,7 +46,11 @@ describe('GET', () => {
             .get('/api/users/roles')
             .expect(200)
             .expect('Content-Type', /json/);
-        expect(res.body.roles).toEqual(['admin', 'curator']);
+        expect(res.body.roles).toEqual([
+            Role.Admin,
+            Role.Curator,
+            Role.JuniorCurator,
+        ]);
     });
 
     it('list should return 200', async () => {
@@ -56,7 +59,7 @@ describe('GET', () => {
             .expect(200)
             .expect('Content-Type', /json/);
         expect(res.body.users).toHaveLength(1);
-        expect(res.body.users[0].roles).toEqual(['admin']);
+        expect(res.body.users[0].roles).toEqual([Role.Admin]);
         // No continuation expected.
         expect(res.body.nextPage).toBeUndefined();
     });
@@ -67,7 +70,7 @@ describe('GET', () => {
                 name: 'Alice Smith',
                 email: 'foo@bar.com',
                 googleID: `testGoogleID${i}`,
-                roles: ['curator'],
+                roles: [Role.Curator],
             } as IUser);
         }
         // Fetch first page as an admin.
@@ -114,16 +117,16 @@ describe('PUT', () => {
         const request = supertest.agent(app);
         const userRes = await request
             .post('/auth/register')
-            .send({ ...baseUser, ...{ roles: ['admin'] } })
+            .send({ ...baseUser, ...{ roles: [Role.Admin] } })
             .expect(200, /admin/)
             .expect('Content-Type', /json/);
         const res = await request
             .put(`/api/users/${userRes.body._id}`)
-            .send({ roles: ['admin', 'curator'] })
+            .send({ roles: [Role.Admin, Role.Curator] })
             .expect(200, /curator/)
             .expect('Content-Type', /json/);
         // Check what changed.
-        expect(res.body.roles).toEqual(['admin', 'curator']);
+        expect(res.body.roles).toEqual([Role.Admin, Role.Curator]);
         // Check stuff that didn't change.
         expect(res.body.email).toEqual(userRes.body.email);
     });
@@ -131,19 +134,19 @@ describe('PUT', () => {
         const request = supertest.agent(app);
         await request
             .post('/auth/register')
-            .send({ ...baseUser, ...{ roles: ['admin'] } })
+            .send({ ...baseUser, ...{ roles: [Role.Admin] } })
             .expect(200)
             .expect('Content-Type', /json/);
         return request
             .put('/api/users/5ea86423bae6982635d2e1f8')
-            .send({ ...baseUser, ...{ roles: ['admin'] } })
+            .send({ ...baseUser, ...{ roles: [Role.Admin] } })
             .expect(404);
     });
     it('should not update to an invalid role', async () => {
         const request = supertest.agent(app);
         const userRes = await request
             .post('/auth/register')
-            .send({ ...baseUser, ...{ roles: ['admin'] } })
+            .send({ ...baseUser, ...{ roles: [Role.Admin] } })
             .expect(200)
             .expect('Content-Type', /json/);
         return request
@@ -163,7 +166,7 @@ describe('DELETE', () => {
             .expect('Content-Type', /json/);
         const userRes2 = await request
             .post('/auth/register')
-            .send({ ...baseUser, ...{ roles: ['admin'] } })
+            .send({ ...baseUser, ...{ roles: [Role.Admin] } })
             .expect(200, /admin/)
             .expect('Content-Type', /json/);
 
@@ -178,7 +181,7 @@ describe('DELETE', () => {
         const request = supertest.agent(app);
         await request
             .post('/auth/register')
-            .send({ ...baseUser, ...{ roles: ['admin'] } })
+            .send({ ...baseUser, ...{ roles: [Role.Admin] } })
             .expect(200)
             .expect('Content-Type', /json/);
         return request

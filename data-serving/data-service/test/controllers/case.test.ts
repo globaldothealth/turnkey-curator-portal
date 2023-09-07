@@ -17,15 +17,21 @@ import {
 } from '../mocks/handlers';
 import fs from 'fs';
 import { AgeBucket } from '../../src/model/age-bucket';
+import { User, UserDocument } from '../../src/model/user';
 
 let mongoServer: MongoMemoryServer;
 
-const curatorMetadata = { curator: { email: 'abc@xyz.com' } };
+const curatorUserEmail = 'case_curator@global.health';
+const curatorMetadata = { curator: { email: curatorUserEmail } };
 
 const minimalRequest = {
     ...minimalCase,
     ...curatorMetadata,
 };
+
+let minimalDay0CaseData = { ...minimalCase };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let fullDay0CaseData: any;
 
 const invalidRequest = {
     ...minimalRequest,
@@ -34,6 +40,7 @@ const invalidRequest = {
 
 const realDate = Date.now;
 const mockLocationServer = setupServer(...handlers);
+let curator: UserDocument;
 
 function stringParser(res: request.Response) {
     const chunks: Buffer[] = [];
@@ -62,6 +69,15 @@ beforeAll(async () => {
     mockLocationServer.listen();
     mongoServer = new MongoMemoryServer();
     await createAgeBuckets();
+    curator = await User.create({ email: curatorUserEmail });
+    minimalDay0CaseData = {
+        ...minimalDay0CaseData,
+        ...{ curators: { createdBy: curator._id } },
+    };
+    fullDay0CaseData = {
+        ...fullCase,
+        ...{ curators: { createdBy: curator._id } },
+    };
     global.Date.now = jest.fn(() => new Date('2020-12-12T12:12:37Z').getTime());
 });
 
@@ -84,7 +100,7 @@ afterAll(async () => {
 
 describe('GET', () => {
     it('one present item should return 200 OK', async () => {
-        const c = new Day0Case(minimalCase);
+        const c = new Day0Case(minimalDay0CaseData);
         await c.save();
         const res = await request(app)
             .get(`/api/cases/${c._id}`)
@@ -97,14 +113,14 @@ describe('GET', () => {
         return request(app).get('/api/cases/123456789').expect(404);
     });
     it('should not show the sourceEntryId for a case', async () => {
-        const c = new Day0Case(minimalCase);
+        const c = new Day0Case(minimalDay0CaseData);
         c.caseReference.sourceEntryId = 'Sourcey McSourceFace';
         await c.save();
         const res = await request(app).get(`/api/cases/${c._id}`).expect(200);
         expect(res.body[0].caseReference.sourceEntryId).toBeUndefined();
     });
     it('should convert age bucket to age range', async () => {
-        const c = new Day0Case(minimalCase);
+        const c = new Day0Case(minimalDay0CaseData);
         const bucket = await AgeBucket.findOne({});
         c.demographics.ageBuckets = [bucket!._id];
         await c.save();
@@ -120,8 +136,9 @@ describe('GET', () => {
                 .expect(200);
         });
         it('should paginate', async () => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             for (const i of Array.from(Array(15).keys())) {
-                const c = new Day0Case(minimalCase);
+                const c = new Day0Case(minimalDay0CaseData);
                 await c.save();
             }
             // Fetch first page.
@@ -130,14 +147,7 @@ describe('GET', () => {
                 .expect(200)
                 .expect('Content-Type', /json/);
             expect(res.body.cases).toHaveLength(10);
-            // Results should be ordered by date desc.
-            // for (let i = 0; i < res.body.cases.length - 1; i++) {
-            //     expect(
-            //         res.body.cases[i].revisionMetadata.creationMetadata.date >
-            //             res.body.cases[i + 1].revisionMetadata.creationMetadata
-            //                 .date,
-            //     ).toBeTruthy();
-            // }
+
             // Second page is expected.
             expect(res.body.nextPage).toEqual(2);
             expect(res.body.total).toEqual(15);
@@ -148,6 +158,7 @@ describe('GET', () => {
                 .expect(200)
                 .expect('Content-Type', /json/);
             expect(res.body.cases).toHaveLength(5);
+
             // No continuation expected.
             expect(res.body.nextPage).toBeUndefined();
             expect(res.body.total).toEqual(15);
@@ -158,11 +169,12 @@ describe('GET', () => {
                 .expect(200)
                 .expect('Content-Type', /json/);
             expect(res.body.cases).toHaveLength(0);
+
             // No continuation expected.
             expect(res.body.nextPage).toBeUndefined();
         });
         it('should search by date—less than', async () => {
-            const c = new Day0Case(fullCase);
+            const c = new Day0Case(fullDay0CaseData);
             await c.save();
             const res = await request(app)
                 .get(
@@ -174,7 +186,7 @@ describe('GET', () => {
             expect(res.body.cases).toHaveLength(0);
         });
         it('should search by date—greater than', async () => {
-            const c = new Day0Case(fullCase);
+            const c = new Day0Case(fullDay0CaseData);
             await c.save();
             const res = await request(app)
                 .get(
@@ -186,7 +198,7 @@ describe('GET', () => {
             expect(res.body.cases).toHaveLength(1);
         });
         it('should use age buckets in results', async () => {
-            const c = new Day0Case(minimalCase);
+            const c = new Day0Case(minimalDay0CaseData);
             const aBucket = await AgeBucket.findOne({});
             c.demographics.ageBuckets = [aBucket!._id];
             await c.save();
@@ -203,7 +215,7 @@ describe('GET', () => {
         });
         describe('keywords', () => {
             beforeEach(async () => {
-                const c = new Day0Case(minimalCase);
+                const c = new Day0Case(minimalDay0CaseData);
                 c.location.countryISO3 = 'DEU';
                 c.set('demographics.occupation', 'engineer');
                 await c.save();
@@ -280,7 +292,7 @@ describe('GET', () => {
         // @TODO - Once the symptoms will be stored as array in DB this test will work
         it.skip('should show most frequently used symptoms', async () => {
             for (let i = 1; i <= 5; i++) {
-                const c = new Day0Case(minimalCase);
+                const c = new Day0Case(minimalDay0CaseData);
                 c.set({
                     symptoms: Array.from(
                         Array(i),
@@ -311,7 +323,7 @@ describe('GET', () => {
         });
         it('should show most frequently used occupations', async () => {
             for (let i = 1; i <= 4; i++) {
-                const c = new Day0Case(minimalCase);
+                const c = new Day0Case(minimalDay0CaseData);
                 c.set({
                     demographics: {
                         occupation: 'occupation 1',
@@ -320,7 +332,7 @@ describe('GET', () => {
                 await c.save();
             }
             for (let i = 1; i <= 3; i++) {
-                const c = new Day0Case(minimalCase);
+                const c = new Day0Case(minimalDay0CaseData);
                 c.set({
                     demographics: {
                         occupation: 'occupation 2',
@@ -329,7 +341,7 @@ describe('GET', () => {
                 await c.save();
             }
             for (let i = 1; i <= 2; i++) {
-                const c = new Day0Case(minimalCase);
+                const c = new Day0Case(minimalDay0CaseData);
                 c.set({
                     demographics: {
                         occupation: 'occupation 3',
@@ -337,7 +349,7 @@ describe('GET', () => {
                 });
                 await c.save();
             }
-            const c = new Day0Case(minimalCase);
+            const c = new Day0Case(minimalDay0CaseData);
             c.set({
                 demographics: {
                     occupation: 'occupation 4',
@@ -375,7 +387,7 @@ describe('POST', () => {
     });
     it('create with required properties but invalid input should return 422', () => {
         seedFakeGeocodes('Canada', {
-            country: 'CAN',
+            country: 'CA',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -391,7 +403,7 @@ describe('POST', () => {
     });
     it('create with valid input should return 201 OK', async () => {
         seedFakeGeocodes('Canada', {
-            country: 'CAN',
+            country: 'CA',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -399,14 +411,17 @@ describe('POST', () => {
 
         await request(app)
             .post('/api/cases')
-            .send(minimalRequest)
+            .send({
+                ...minimalRequest,
+                curators: { createdBy: curator._id },
+            })
             .expect('Content-Type', /json/)
             .expect(201);
         expect(await Day0Case.collection.countDocuments()).toEqual(1);
     });
     it('create with only required location fields should complete with data from geocoding', async () => {
         seedFakeGeocodes('Canada', {
-            country: 'CAN',
+            country: 'CA',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
             name: 'Canada',
@@ -422,7 +437,7 @@ describe('POST', () => {
         };
 
         const expectedLocation = {
-            country: 'CAN',
+            country: 'CA',
             countryISO3: 'CAN',
             geoResolution: 'Country',
             geometry: { latitude: 42.42, longitude: 11.11 },
@@ -432,7 +447,10 @@ describe('POST', () => {
 
         const res = await request(app)
             .post('/api/cases')
-            .send(minimalLocationRequest)
+            .send({
+                ...minimalLocationRequest,
+                curators: { createdBy: curator._id },
+            })
             .expect('Content-Type', /json/)
             .expect(201);
 
@@ -467,7 +485,10 @@ describe('POST', () => {
 
         const res = await request(app)
             .post('/api/cases')
-            .send(minimalLocationRequest)
+            .send({
+                ...minimalLocationRequest,
+                curators: { createdBy: curator._id },
+            })
             .expect('Content-Type', /json/)
             .expect(201);
 
@@ -503,7 +524,10 @@ describe('POST', () => {
 
         const res = await request(app)
             .post('/api/cases')
-            .send(minimalLocationRequest)
+            .send({
+                ...minimalLocationRequest,
+                curators: { createdBy: curator._id },
+            })
             .expect('Content-Type', /json/)
             .expect(201);
 
@@ -541,7 +565,10 @@ describe('POST', () => {
 
         const res = await request(app)
             .post('/api/cases')
-            .send(minimalLocationRequest)
+            .send({
+                ...minimalLocationRequest,
+                curators: { createdBy: curator._id },
+            })
             .expect('Content-Type', /json/)
             .expect(201);
 
@@ -579,7 +606,10 @@ describe('POST', () => {
 
         const res = await request(app)
             .post('/api/cases')
-            .send(minimalLocationRequest)
+            .send({
+                ...minimalLocationRequest,
+                curators: { createdBy: curator._id },
+            })
             .expect('Content-Type', /json/)
             .expect(201);
 
@@ -595,7 +625,7 @@ describe('POST', () => {
 
         await request(app)
             .post('/api/cases')
-            .send(minimalRequest)
+            .send({ ...minimalRequest, curators: { createdBy: curator._id } })
             .expect('Content-Type', /json/)
             .expect(201);
         const theCase = await Day0Case.findOne({});
@@ -612,7 +642,7 @@ describe('POST', () => {
 
         const theCase = await request(app)
             .post('/api/cases')
-            .send(minimalRequest)
+            .send({ ...minimalRequest, curators: { createdBy: curator._id } })
             .expect('Content-Type', /json/)
             .expect(201);
 
@@ -636,7 +666,7 @@ describe('POST', () => {
 
         const res = await request(app)
             .post('/api/cases?num_cases=3')
-            .send(minimalRequest)
+            .send({ ...minimalRequest, curators: { createdBy: curator._id } })
             .expect('Content-Type', /json/)
             .expect(201);
         expect(res.body.cases).toHaveLength(3);
@@ -665,7 +695,7 @@ describe('POST', () => {
 
         await request(app)
             .post('/api/cases')
-            .send(minimalRequest)
+            .send({ ...minimalRequest, curators: { createdBy: curator._id } })
             .expect('Content-Type', /json/)
             .expect(201);
         expect(await CaseRevision.collection.countDocuments()).toEqual(0);
@@ -686,7 +716,7 @@ describe('POST', () => {
 
         const res = await request(app)
             .post('/api/cases?validate_only=true')
-            .send(minimalRequest)
+            .send({ ...minimalRequest, curators: { createdBy: curator._id } })
             .expect('Content-Type', /json/)
             .expect(201);
 
@@ -920,11 +950,11 @@ describe('POST', () => {
             name: 'Canada',
         });
 
-        const existingCase = new Day0Case(fullCase);
+        const existingCase = new Day0Case(fullDay0CaseData);
         await existingCase.save();
         existingCase.pathogen = 'Pneumonia';
 
-        const res = await request(app)
+        await request(app)
             .post('/api/cases/batchUpsert')
             .send({
                 cases: [existingCase, minimalCase],
@@ -943,7 +973,13 @@ describe('POST', () => {
 
         const res = await request(app)
             .post('/api/cases/batchUpsert')
-            .send({ cases: [minimalCase, invalidRequest], ...curatorMetadata })
+            .send({
+                cases: [
+                    { ...minimalCase, curators: { createdBy: curator._id } },
+                    invalidRequest,
+                ],
+                ...curatorMetadata,
+            })
             .expect(207, /Day0Case validation failed/);
         expect(res.body.numCreated).toEqual(1);
     });
@@ -960,9 +996,9 @@ describe('download', () => {
         const destination = './test_return.csv';
         const fileStream = fs.createWriteStream(destination);
 
-        const c = new Day0Case(minimalCase);
+        const c = new Day0Case(minimalDay0CaseData);
         await c.save();
-        const c2 = new Day0Case(fullCase);
+        const c2 = new Day0Case(fullDay0CaseData);
         await c2.save();
 
         const responseStream = request(app)
@@ -992,7 +1028,7 @@ describe('download', () => {
         const destination = './test_buckets.csv';
         const fileStream = fs.createWriteStream(destination);
 
-        const c = new Day0Case(minimalCase);
+        const c = new Day0Case(minimalDay0CaseData);
         await c.save();
 
         const responseStream = request(app)
@@ -1021,7 +1057,7 @@ describe('download', () => {
             .expect(422, done);
     });
     it('rejects request bodies with query and caseIds', async () => {
-        const c = new Day0Case(minimalCase);
+        const c = new Day0Case(minimalDay0CaseData);
         await c.save();
 
         await request(app)
@@ -1037,13 +1073,13 @@ describe('download', () => {
         const destination = './test_filter_caseIDs.csv';
         const fileStream = fs.createWriteStream(destination);
 
-        const matchingCase = new Day0Case(minimalCase);
+        const matchingCase = new Day0Case(minimalDay0CaseData);
         await matchingCase.save();
 
-        const matchingCase2 = new Day0Case(minimalCase);
+        const matchingCase2 = new Day0Case(minimalDay0CaseData);
         await matchingCase2.save();
 
-        const unmatchedCase = new Day0Case(minimalCase);
+        const unmatchedCase = new Day0Case(minimalDay0CaseData);
         await unmatchedCase.save();
 
         const responseStream = request(app)
@@ -1081,11 +1117,11 @@ describe('download', () => {
             notes: 'text',
         });
 
-        const matchingCase = new Day0Case(minimalCase);
+        const matchingCase = new Day0Case(minimalDay0CaseData);
         const matchingNotes = 'matching';
         await matchingCase.save();
 
-        const unmatchedCase = new Day0Case(minimalCase);
+        const unmatchedCase = new Day0Case(minimalDay0CaseData);
         const unmatchedNotes = 'unmatched';
         await unmatchedCase.save();
 
@@ -1118,12 +1154,12 @@ describe('download', () => {
         const destination = './test_filter_keyword_query.csv';
         const fileStream = fs.createWriteStream(destination);
 
-        const matchedCase = new Day0Case(minimalCase);
+        const matchedCase = new Day0Case(minimalDay0CaseData);
         matchedCase.location.country = 'DE';
         matchedCase.set('demographics.occupation', 'engineer');
         await matchedCase.save();
 
-        const unmatchedCase = new Day0Case(minimalCase);
+        const unmatchedCase = new Day0Case(minimalDay0CaseData);
         await unmatchedCase.save();
 
         const responseStream = request(app)
@@ -1151,7 +1187,7 @@ describe('download', () => {
     });
 });
 it('should return results in proper format', async () => {
-    const matchedCase = new Day0Case(minimalCase);
+    const matchedCase = new Day0Case(minimalDay0CaseData);
     matchedCase.location.country = 'DE';
     await matchedCase.save();
 
@@ -1188,7 +1224,7 @@ it('should return results in proper format', async () => {
 
 describe('PUT', () => {
     it('update present item should return 200 OK', async () => {
-        const c = new Day0Case(minimalCase);
+        const c = new Day0Case(minimalDay0CaseData);
         await c.save();
 
         const newStatus = 'suspected';
@@ -1201,7 +1237,7 @@ describe('PUT', () => {
         expect(res.body.caseStatus).toEqual(newStatus);
     });
     it('update present item with new age range should change the age buckets', async () => {
-        const c = new Day0Case(minimalCase);
+        const c = new Day0Case(minimalDay0CaseData);
         await c.save();
 
         const newAgeRange = {
@@ -1222,7 +1258,7 @@ describe('PUT', () => {
         expect(res.body.demographics.ageRange.end).toEqual(10);
     });
     it.skip('update present item should create case revision', async () => {
-        const c = new Day0Case(minimalCase);
+        const c = new Day0Case(minimalDay0CaseData);
         await c.save();
 
         const newNotes = 'abc';
@@ -1236,7 +1272,7 @@ describe('PUT', () => {
         expect((await CaseRevision.find())[0].case).toMatchObject(c.toObject());
     });
     it('invalid update present item should return 422', async () => {
-        const c = new Day0Case(minimalCase);
+        const c = new Day0Case(minimalDay0CaseData);
         await c.save();
 
         return request(app)
@@ -1251,11 +1287,11 @@ describe('PUT', () => {
             .expect(404);
     });
     it('update many items should return 200 OK', async () => {
-        const c = new Day0Case(minimalCase);
+        const c = new Day0Case(minimalDay0CaseData);
         await c.save();
-        const c2 = new Day0Case(minimalCase);
+        const c2 = new Day0Case(minimalDay0CaseData);
         await c2.save();
-        await new Day0Case(minimalCase).save();
+        await new Day0Case(minimalDay0CaseData).save();
 
         const newStatus = 'suspected';
         const newStatus2 = 'omit_error';
@@ -1277,7 +1313,7 @@ describe('PUT', () => {
         expect(cases[1].caseStatus).toEqual(newStatus2);
     });
     it('update many items should update the age buckets', async () => {
-        const c = new Day0Case(minimalCase);
+        const c = new Day0Case(minimalDay0CaseData);
         await c.save();
 
         const ageRange = {
@@ -1306,11 +1342,11 @@ describe('PUT', () => {
         expect(cases[0].demographics.ageBuckets).toHaveLength(2);
     });
     it('update many items without _id should return 422', async () => {
-        const c = new Day0Case(minimalCase);
+        const c = new Day0Case(minimalDay0CaseData);
         await c.save();
-        const c2 = new Day0Case(minimalCase);
+        const c2 = new Day0Case(minimalDay0CaseData);
         await c2.save();
-        await new Day0Case(minimalCase).save();
+        await new Day0Case(minimalDay0CaseData).save();
 
         const newStatus = 'suspected';
         const newStatus2 = 'omit_error';
@@ -1335,13 +1371,13 @@ describe('PUT', () => {
             notes: 'text',
         });
 
-        const c = new Day0Case(minimalCase);
+        const c = new Day0Case(minimalDay0CaseData);
         c.caseStatus = CaseStatus.Suspected;
         await c.save();
-        const c2 = new Day0Case(minimalCase);
+        const c2 = new Day0Case(minimalDay0CaseData);
         c2.caseStatus = CaseStatus.Suspected;
         await c2.save();
-        const c3 = new Day0Case(minimalCase);
+        const c3 = new Day0Case(minimalDay0CaseData);
         const unchangedStatus = CaseStatus.Confirmed;
         c3.caseStatus = unchangedStatus;
         await c3.save();
@@ -1382,7 +1418,7 @@ describe('PUT', () => {
             .expect(400);
     });
     it('upsert present item should return 200 OK', async () => {
-        const c = new Day0Case(minimalCase);
+        const c = new Day0Case(minimalDay0CaseData);
         const sourceId = '5ea86423bae6982635d2e1f8';
         const entryId = 'def456';
         c.set('caseReference.sourceId', sourceId);
@@ -1408,7 +1444,7 @@ describe('PUT', () => {
         expect(await c.collection.countDocuments()).toEqual(1);
     });
     it('upsert present item should update the age buckets', async () => {
-        const c = new Day0Case(minimalCase);
+        const c = new Day0Case(minimalDay0CaseData);
         const sourceId = '5ea86423bae6982635d2e1f8';
         const entryId = 'def456';
         c.set('caseReference.sourceId', sourceId);
@@ -1439,7 +1475,7 @@ describe('PUT', () => {
         expect(updatedCase?.demographics.ageBuckets).toHaveLength(1);
     });
     it('upsert present item should create case revision', async () => {
-        const c = new Day0Case(minimalCase);
+        const c = new Day0Case(minimalDay0CaseData);
         const sourceId = '5ea86423bae6982635d2e1f8';
         const entryId = 'def456';
         c.set('caseReference.sourceId', sourceId);
@@ -1463,7 +1499,7 @@ describe('PUT', () => {
     });
 
     it('upsert present item should result in update metadata', async () => {
-        const c = new Day0Case(minimalCase);
+        const c = new Day0Case(minimalDay0CaseData);
         const sourceId = '5ea86423bae6982635d2e1f8';
         const entryId = 'def456';
         c.set('caseReference.sourceId', sourceId);
@@ -1471,7 +1507,7 @@ describe('PUT', () => {
         await c.save();
 
         const newStatus = CaseStatus.Suspected;
-        const res = await request(app)
+        await request(app)
             .put('/api/cases')
             .send({
                 caseReference: {
@@ -1486,7 +1522,10 @@ describe('PUT', () => {
             .expect(200);
 
         expect(await CaseRevision.collection.countDocuments()).toEqual(1);
-        expect((await CaseRevision.find())[0].case).toMatchObject(c.toObject());
+        // I needed to parse it using JSON to and from string to avoid issues with comparing object in strict mode
+        expect(
+            JSON.parse(JSON.stringify((await CaseRevision.find())[0].case)),
+        ).toEqual(JSON.parse(JSON.stringify(c.toObject())));
     });
     it('upsert new item should return 201 CREATED', async () => {
         seedFakeGeocodes('Canada', {
@@ -1498,7 +1537,7 @@ describe('PUT', () => {
 
         return request(app)
             .put('/api/cases')
-            .send(minimalRequest)
+            .send({ ...minimalRequest, curators: { createdBy: curator._id } })
             .expect('Content-Type', /json/)
             .expect(201);
     });
@@ -1512,7 +1551,7 @@ describe('PUT', () => {
 
         await request(app)
             .put('/api/cases')
-            .send(minimalRequest)
+            .send({ ...minimalRequest, curators: { createdBy: curator._id } })
             .expect('Content-Type', /json/)
             .expect(201);
 
@@ -1527,7 +1566,7 @@ describe('PUT', () => {
         });
 
         // NB: Minimal case does not have a sourceEntryId.
-        const firstUniqueCase = new Day0Case(minimalCase);
+        const firstUniqueCase = new Day0Case(minimalDay0CaseData);
         await firstUniqueCase.save();
 
         await request(app)
@@ -1552,7 +1591,7 @@ describe('PUT', () => {
         return request(app).put('/api/cases').send(invalidRequest).expect(422);
     });
     it('invalid upsert present item should return 422', async () => {
-        const c = new Day0Case(minimalCase);
+        const c = new Day0Case(minimalDay0CaseData);
         const sourceId = '5ea86423bae6982635d2e1f8';
         const entryId = 'def456';
         c.set('caseReference.sourceId', sourceId);
@@ -1576,20 +1615,23 @@ describe('PUT', () => {
 
 describe('DELETE', () => {
     it('delete present item should return 204 OK', async () => {
-        const c = new Day0Case(minimalCase);
+        const c = new Day0Case(minimalDay0CaseData);
         await c.save();
 
         await request(app).delete(`/api/cases/${c._id}`).expect(204);
 
         expect(await CaseRevision.collection.countDocuments()).toEqual(1);
-        expect((await CaseRevision.find())[0].case).toMatchObject(c.toObject());
+        // I needed to parse it using JSON to and from string to avoid issues with comparing object in strict mode
+        expect(
+            JSON.parse(JSON.stringify((await CaseRevision.find())[0].case)),
+        ).toEqual(JSON.parse(JSON.stringify(c.toObject())));
     });
     it('delete absent item should return 404 NOT FOUND', () => {
         return request(app).delete('/api/cases/123456789').expect(404);
     });
     it('delete multiple cases cannot specify caseIds and query', async () => {
-        const c = await new Day0Case(minimalCase).save();
-        const c2 = await new Day0Case(minimalCase).save();
+        const c = await new Day0Case(minimalDay0CaseData).save();
+        const c2 = await new Day0Case(minimalDay0CaseData).save();
         expect(await Day0Case.collection.countDocuments()).toEqual(2);
 
         await request(app)
@@ -1613,8 +1655,8 @@ describe('DELETE', () => {
             .expect(400);
     });
     it('delete multiple cases with caseIds should return 204 OK', async () => {
-        const c = await new Day0Case(minimalCase).save();
-        const c2 = await new Day0Case(minimalCase).save();
+        const c = await new Day0Case(minimalDay0CaseData).save();
+        const c2 = await new Day0Case(minimalDay0CaseData).save();
         expect(await Day0Case.collection.countDocuments()).toEqual(2);
 
         await request(app)
@@ -1624,10 +1666,13 @@ describe('DELETE', () => {
         expect(await Day0Case.collection.countDocuments()).toEqual(0);
 
         expect(await CaseRevision.collection.countDocuments()).toEqual(2);
-        expect((await CaseRevision.find())[0].case).toMatchObject(c.toObject());
-        expect((await CaseRevision.find())[1].case).toMatchObject(
-            c2.toObject(),
-        );
+        // I needed to parse it using JSON to and from string to avoid issues with comparing object in strict mode
+        expect(
+            JSON.parse(JSON.stringify((await CaseRevision.find())[0].case)),
+        ).toEqual(JSON.parse(JSON.stringify(c.toObject())));
+        expect(
+            JSON.parse(JSON.stringify((await CaseRevision.find())[1].case)),
+        ).toEqual(JSON.parse(JSON.stringify(c2.toObject())));
     });
     // @TODO text index not present in the new case schema
     it.skip('delete multiple cases with query should return 204 OK', async () => {
@@ -1638,13 +1683,13 @@ describe('DELETE', () => {
             'demographics.gender': -1,
         });
 
-        const c = new Day0Case(minimalCase);
+        const c = new Day0Case(minimalDay0CaseData);
         c.demographics = new Demographics({ gender: Gender.Female });
         await c.save();
-        const c2 = new Day0Case(minimalCase);
+        const c2 = new Day0Case(minimalDay0CaseData);
         c2.demographics = new Demographics({ gender: Gender.Male });
         await c2.save();
-        await new Day0Case(minimalCase).save();
+        await new Day0Case(minimalDay0CaseData).save();
         expect(await Day0Case.collection.countDocuments()).toEqual(3);
 
         // Unmatched query deletes no cases
@@ -1699,13 +1744,13 @@ describe('DELETE', () => {
         );
 
         await Promise.all([
-            new Day0Case(minimalCase)
+            new Day0Case(minimalDay0CaseData)
                 .set('demographics.gender', Gender.Female)
                 .save(),
-            new Day0Case(minimalCase)
+            new Day0Case(minimalDay0CaseData)
                 .set('demographics.gender', Gender.Female)
                 .save(),
-            new Day0Case(minimalCase)
+            new Day0Case(minimalDay0CaseData)
                 .set('demographics.gender', Gender.Female)
                 .save(),
         ]);

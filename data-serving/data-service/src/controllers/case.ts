@@ -3,6 +3,7 @@ import {
     CaseDocument,
     CaseDTO,
     Day0Case,
+    CuratorsDocument,
 } from '../model/day0-case';
 import caseFields from '../model/fields.json';
 import { Error, Query } from 'mongoose';
@@ -16,12 +17,12 @@ import {
     SortBy,
     SortByOrder,
 } from '../util/case';
-
 import { logger } from '../util/logger';
 import stringify from 'csv-stringify/lib/sync';
 import _ from 'lodash';
 import { AgeBucket } from '../model/age-bucket';
 import { COUNTER_DOCUMENT_ID, IdCounter } from '../model/id-counter';
+import { User } from '../model/user';
 
 class GeocodeNotFoundError extends Error {}
 
@@ -30,7 +31,8 @@ class InvalidParamError extends Error {}
 type BatchValidationErrors = { index: number; message: string }[];
 
 const caseFromDTO = async (receivedCase: CaseDTO) => {
-    const aCase = (receivedCase as unknown) as CaseDocument;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const aCase: any = receivedCase;
     if (receivedCase.demographics?.ageRange) {
         // won't be many age buckets, so fetch all of them.
         const allBuckets = await AgeBucket.find({});
@@ -54,21 +56,72 @@ const caseFromDTO = async (receivedCase: CaseDTO) => {
             .map((b) => b._id);
     }
 
+    const user = await User.findOne({ email: receivedCase.curator?.email });
+    if (user) {
+        if (user.roles.includes('junior curator')) {
+            aCase.curators = {
+                createdBy: user,
+            };
+        } else {
+            aCase.curators = {
+                createdBy: user,
+                verifiedBy: user,
+            };
+        }
+    }
+
     return aCase;
 };
 
 const dtoFromCase = async (storedCase: CaseDocument) => {
     let dto = (storedCase as unknown) as CaseDTO;
     const ageRange = await caseAgeRange(storedCase);
-    if (ageRange) {
-        dto = {
-            ...dto,
-            demographics: {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                ...dto.demographics!,
-                ageRange,
-            },
-        };
+    const creator = await User.findOne({
+        _id: storedCase.curators?.createdBy,
+    });
+
+    let verifier;
+    if (storedCase.curators?.verifiedBy) {
+        verifier = await User.findOne({
+            _id: storedCase.curators.verifiedBy,
+        });
+    }
+
+    if (ageRange && creator) {
+        if (verifier) {
+            dto = {
+                ...dto,
+                demographics: {
+                    ...dto.demographics!,
+                    ageRange,
+                },
+                curators: {
+                    createdBy: {
+                        email: creator.email,
+                        name: creator.name,
+                    },
+                    verifiedBy: {
+                        email: verifier.email,
+                        name: verifier.name,
+                    },
+                } as CuratorsDocument,
+            };
+        } else {
+            dto = {
+                ...dto,
+                demographics: {
+                    ...dto.demographics!,
+                    ageRange,
+                },
+                curators: {
+                    createdBy: {
+                        email: creator.email,
+                        name: creator.name,
+                    },
+                } as CuratorsDocument,
+            };
+        }
+
         // although the type system can't see it, there's an ageBuckets property on the demographics DTO now
         delete ((dto as unknown) as {
             demographics: { ageBuckets?: [ObjectId] };
@@ -79,6 +132,7 @@ const dtoFromCase = async (storedCase: CaseDocument) => {
 };
 
 // After updating mongoose upserting and creating changed and data fields were missing
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fillEmpty = (caseData: any) => {
     if (!caseData.vaccination) caseData.vaccination = {};
     if (!caseData.vaccination.vaccineName)
@@ -325,6 +379,8 @@ export class CasesController {
         const countLimit = Number(req.query.count_limit) || 10000;
         const sortBy = String(req.query.sort_by) || 'default';
         const sortByOrder = String(req.query.order) || 'ascending';
+        const verificationStatus =
+            Boolean(req.query.verification_status) || undefined;
 
         logger.info('Got query params');
 
@@ -350,10 +406,12 @@ export class CasesController {
             const casesQuery = casesMatchingSearchQuery({
                 searchQuery: req.query.q || '',
                 count: false,
+                verificationStatus: verificationStatus,
             }) as Query<CaseDocument[], CaseDocument, unknown>;
             const countQuery = casesMatchingSearchQuery({
                 searchQuery: req.query.q || '',
                 count: true,
+                verificationStatus: verificationStatus,
             });
 
             const sortByKeyword = sortBy as SortBy;
@@ -470,6 +528,51 @@ export class CasesController {
     };
 
     /**
+     * Verify case.
+     *
+     * Handles HTTP POST /api/cases/verify/:id.
+     */
+    verify = async (req: Request, res: Response): Promise<void> => {
+        const c = await Day0Case.findOne({
+            _id: req.params.id,
+        });
+
+        if (!c) {
+            res.status(404).send({
+                message: `Day0Case with ID ${req.params.id} not found.`,
+            });
+            return;
+        }
+
+        const verifier = await User.findOne({
+            email: req.body.curator.email,
+        });
+        if (!verifier) {
+            res.status(404).send({
+                message: `Verifier with email ${req.body.curator.email} not found.`,
+            });
+            return;
+        } else {
+            c.set({
+                curators: {
+                    createdBy: c.curators.createdBy,
+                    verifiedBy: verifier._id,
+                },
+            });
+            await c.save();
+            const responseCase = await Day0Case.find({
+                _id: req.params.id,
+            }).lean();
+            res.json(
+                await Promise.all(
+                    responseCase.map((aCase) => dtoFromCase(aCase)),
+                ),
+            );
+            return;
+        }
+    };
+
+    /**
      * Batch validates cases.
      */
     private batchValidate = async (
@@ -559,6 +662,7 @@ export class CasesController {
      * upsert.
      */
     batchUpsert = async (req: Request, res: Response): Promise<void> => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let errors: any = [];
         try {
             // Batch validate cases first.
@@ -971,17 +1075,28 @@ export const casesMatchingSearchQuery = (opts: {
     searchQuery: string;
     count: boolean;
     limit?: number;
+    verificationStatus?: boolean;
     // Goofy Mongoose types require this.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }): any => {
     // set data limit to 10K by default
     const countLimit = opts.limit ? opts.limit : 10000;
     const parsedSearch = parseSearchQuery(opts.searchQuery);
-    const queryOpts = parsedSearch.fullTextSearch
-        ? {
-              $text: { $search: parsedSearch.fullTextSearch },
-          }
-        : {};
+    let queryOpts;
+    if (opts.verificationStatus) {
+        queryOpts = parsedSearch.fullTextSearch
+            ? {
+                  $text: { $search: parsedSearch.fullTextSearch },
+                  'curators.verifiedBy': { $exists: opts.verificationStatus },
+              }
+            : { 'curators.verifiedBy': { $exists: opts.verificationStatus } };
+    } else {
+        queryOpts = parsedSearch.fullTextSearch
+            ? {
+                  $text: { $search: parsedSearch.fullTextSearch },
+              }
+            : {};
+    }
 
     // Always search with case-insensitivity.
     const casesQuery: Query<CaseDocument[], CaseDocument> = Day0Case.find(

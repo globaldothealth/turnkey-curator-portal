@@ -49,6 +49,8 @@ import Pagination from './Pagination';
 import EnhancedTableToolbar from './EnhancedTableToolbar';
 import { CaseDeleteDialog } from '../Dialogs/CaseDeleteDialog';
 import { nameCountry } from '../util/countryNames';
+import VerifiedIcon from '@mui/icons-material/CheckCircleOutline';
+import { Role } from '../../api/models/User';
 
 const dataLimit = 10000;
 
@@ -110,6 +112,7 @@ const LinelistTable = () => {
         cases.map((data) => {
             return createData(
                 data._id || '',
+                !!data.curators?.verifiedBy || false,
                 nameCountry(data.location.countryISO3, data.location.country) ||
                     '-',
                 data.location.city || '-',
@@ -282,7 +285,10 @@ const LinelistTable = () => {
                     >
                         <TableHead>
                             <TableRow>
-                                {hasAnyRole(user, ['curator', 'admin']) && (
+                                {hasAnyRole(user, [
+                                    Role.Admin,
+                                    Role.Curator,
+                                ]) && (
                                     <TableCell
                                         padding="checkbox"
                                         sx={{
@@ -343,8 +349,8 @@ const LinelistTable = () => {
                                         }
                                     >
                                         {hasAnyRole(user, [
-                                            'curator',
-                                            'admin',
+                                            Role.Admin,
+                                            Role.Curator,
                                         ]) && (
                                             <>
                                                 <TableCell padding="checkbox">
@@ -370,6 +376,12 @@ const LinelistTable = () => {
                                         )}
                                         <TableCell align="left">
                                             {row.caseId}
+                                        </TableCell>
+                                        <TableCell
+                                            align="left"
+                                            data-testid="verification-status"
+                                        >
+                                            {row.verified && <VerifiedIcon />}
                                         </TableCell>
                                         <TableCell
                                             align="left"

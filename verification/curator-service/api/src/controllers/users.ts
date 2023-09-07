@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 
-import { userRoles, users } from '../model/user';
+import { Role, users } from '../model/user';
 import { logger } from '../util/logger';
 
 /**
@@ -61,9 +61,27 @@ export const updateRoles = async (
     res: Response,
 ): Promise<void> => {
     try {
+        const userToUpdate = await users().findOne(new ObjectId(req.params.id));
+
+        const currentRoles = userToUpdate?.roles || [];
+        const newRoles = req.body.roles;
+
+        // User cannot have both "curator" and "junior" curator roles
+        if (
+            currentRoles.includes('curator') &&
+            newRoles.includes('junior curator')
+        ) {
+            newRoles.splice(newRoles.indexOf('curator'), 1);
+        } else if (
+            currentRoles.includes('junior curator') &&
+            newRoles.includes('curator')
+        ) {
+            newRoles.splice(newRoles.indexOf('junior curator'), 1);
+        }
+
         const result = await users().findOneAndUpdate(
             { _id: new ObjectId(req.params.id) },
-            { $set: { roles: req.body.roles } },
+            { $set: { roles: newRoles } },
             {
                 // Return the updated object.
                 returnDocument: 'after',
@@ -121,5 +139,5 @@ export const deleteUser = async (
  * List the roles defined in the system.
  */
 export const listRoles = (req: Request, res: Response): void => {
-    res.json({ roles: userRoles });
+    res.json({ roles: Object.values(Role) });
 };

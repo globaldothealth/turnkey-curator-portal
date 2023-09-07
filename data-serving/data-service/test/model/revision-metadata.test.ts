@@ -2,10 +2,10 @@ import { Error } from 'mongoose';
 import { RevisionMetadata } from '../../src/model/revision-metadata';
 import fullModel from './data/revision-metadata.full.json';
 import minimalModel from './data/revision-metadata.minimal.json';
-import mongoose from 'mongoose';
 
 describe('validate', () => {
     it('revision metadata without revision number is invalid', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const noRevisionNumber: any = { ...minimalModel };
         delete noRevisionNumber.revisionNumber;
 
@@ -19,6 +19,7 @@ describe('validate', () => {
     });
 
     it('revision metadata without creation metadata is invalid', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const noCreationMetadata: any = { ...minimalModel };
         delete noCreationMetadata.creationMetadata;
 
@@ -62,6 +63,7 @@ describe('validate', () => {
     });
 
     it('revision metadata beyond revision 0 without update metadata is invalid', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const noUpdateMetadata: any = {
             ...fullModel,
             ...{ revisionNumber: 1 },

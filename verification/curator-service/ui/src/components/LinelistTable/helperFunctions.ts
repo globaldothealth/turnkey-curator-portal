@@ -1,5 +1,6 @@
 export const labels = [
     'Case ID',
+    'Verified',
     'Entry date',
     'Case status',
     'Country',
@@ -15,6 +16,7 @@ export const labels = [
 
 export const createData = (
     caseId: string,
+    verified: boolean,
     country: string,
     city?: string,
     location?: string,
@@ -40,5 +42,6 @@ export const createData = (
         dateHospitalization: dateHospitalization || '',
         dateOnset: dateOnset || '',
         source: source || '',
+        verified: verified || false,
     };
 };

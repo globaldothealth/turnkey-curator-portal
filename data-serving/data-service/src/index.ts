@@ -117,6 +117,7 @@ apiRouter.get('/cases', caseController.list);
 apiRouter.get('/cases/symptoms', cases.listSymptoms);
 apiRouter.get('/cases/placesOfTransmission', cases.listPlacesOfTransmission);
 apiRouter.get('/cases/occupations', cases.listOccupations);
+apiRouter.post('/cases/verify/:id(\\d+$)', caseController.verify);
 apiRouter.get('/cases/:id(\\d+$)', caseController.get);
 apiRouter.post('/cases', caseController.create);
 apiRouter.post('/cases/download', caseController.download);

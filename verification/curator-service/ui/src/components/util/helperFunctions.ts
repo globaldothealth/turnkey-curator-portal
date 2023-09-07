@@ -1,4 +1,4 @@
-import { User } from '../../api/models/User';
+import { Role, User } from '../../api/models/User';
 
 export const getReleaseNotesUrl = (version: string): string => {
     return `https://github.com/globaldothealth/list/releases/tag/${version}`;
@@ -22,12 +22,12 @@ export const sendCustomGtmEvent = (
 
 export const hasAnyRole = (
     user: User | undefined,
-    requiredRoles: string[],
+    requiredRoles: Role[],
 ): boolean => {
     if (!user) {
         return false;
     }
-    return user?.roles?.some((r: string) => requiredRoles.includes(r));
+    return user?.roles?.some((r: Role) => requiredRoles.includes(r));
 };
 
 export const parseAgeRange = (range?: {

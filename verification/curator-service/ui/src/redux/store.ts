@@ -7,6 +7,7 @@ import acknowledgmentDataReducer from './acknowledgmentData/slice';
 import linelistTableReducer from './linelistTable/slice';
 import { SortBy, SortByOrder } from '../constants/types';
 import validateEnv from '../util/validate-env';
+import { Role } from '../api/models/User';
 
 const env = validateEnv();
 
@@ -47,7 +48,7 @@ export const initialLoggedInState: RootState = {
             googleID: '42',
             name: 'Alice Smith',
             email: 'foo@bar.com',
-            roles: ['admin', 'curator'],
+            roles: [Role.Admin, Role.Curator],
         },
         forgotPasswordPopupOpen: false,
         passwordReset: false,

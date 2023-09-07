@@ -21,6 +21,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import { hasAnyRole } from '../util/helperFunctions';
 
 import { useStyles } from './styled';
+import { Role } from '../../api/models/User';
 
 interface SidebarProps {
     drawerOpen: boolean;
@@ -70,21 +71,21 @@ const Sidebar = ({ drawerOpen }: SidebarProps): JSX.Element => {
                           icon: <LinkIcon />,
                           to: '/sources',
                           displayCheck: (): boolean =>
-                              hasAnyRole(user, ['curator']),
+                              hasAnyRole(user, [Role.Curator]),
                       },
                       {
                           text: 'Uploads',
                           icon: <PublishIcon />,
                           to: '/uploads',
                           displayCheck: (): boolean =>
-                              hasAnyRole(user, ['curator']),
+                              hasAnyRole(user, [Role.Curator]),
                       },
                       {
                           text: 'Manage users',
                           icon: <PeopleIcon />,
                           to: '/users',
                           displayCheck: (): boolean =>
-                              hasAnyRole(user, ['admin']),
+                              hasAnyRole(user, [Role.Admin]),
                       },
                   ]
                 : [],
@@ -119,7 +120,7 @@ const Sidebar = ({ drawerOpen }: SidebarProps): JSX.Element => {
                     {diseaseName}
                 </Typography>
                 <>
-                    {hasAnyRole(user, ['curator']) && (
+                    {hasAnyRole(user, [Role.Curator, Role.JuniorCurator]) && (
                         <Fab
                             variant="extended"
                             data-testid="create-new-button"

@@ -1,26 +1,18 @@
+import axios from 'axios';
+import userEvent from '@testing-library/user-event';
+
+import AutomatedBackfill from './AutomatedBackfill';
+import { initialLoggedInState } from '../redux/store';
 import {
     render,
     waitFor,
     screen,
     waitForElementToBeRemoved,
 } from './util/test-utils';
-import userEvent from '@testing-library/user-event';
-
-import AutomatedBackfill from './AutomatedBackfill';
-import axios from 'axios';
-import { format, getMonth, getYear } from 'date-fns';
-import { initialLoggedInState } from '../redux/store';
 
 jest.setTimeout(30000);
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
-
-const user = {
-    _id: 'testUser',
-    name: 'Alice Smith',
-    email: 'foo@bar.com',
-    roles: ['admin', 'curator'],
-};
 
 afterEach(() => {
     jest.clearAllMocks();
@@ -134,18 +126,6 @@ it('displays spinner and status post backfill', async () => {
     if (startDate === null || endDate === null) {
         throw Error('Unable to find date selector');
     }
-
-    // prepare date format for the inputs
-    const month = getMonth(new Date());
-    const year = getYear(new Date());
-    const startDateVal = format(
-        new Date(`${year}-${month + 1}-01`),
-        'MMM d, yyyy',
-    );
-    const endDateVal = format(
-        new Date(`${year}-${month + 1}-02`),
-        'MMM d, yyyy',
-    );
 
     await user.click(screen.getAllByRole('button', { name: 'Choose date' })[0]);
     await user.click(screen.getByRole('gridcell', { name: '1' }));

@@ -1,8 +1,19 @@
-import { useEffect, useState } from 'react';
-import { Button, Grid, LinearProgress, Paper, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import {
+    Button,
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    Grid,
+    IconButton,
+    LinearProgress,
+    Paper,
+    Typography,
+} from '@mui/material';
 import { Day0Case, Outcome, YesNo } from '../api/models/Day0Case';
 import AppModal from './AppModal';
 import EditIcon from '@mui/icons-material/EditOutlined';
+import CheckIcon from '@mui/icons-material/CheckCircleOutline';
 import { Link } from 'react-router-dom';
 import MuiAlert from '@mui/material/Alert';
 import Scroll from 'react-scroll';
@@ -19,6 +30,9 @@ import { selectSearchQuery } from '../redux/linelistTable/selectors';
 import Chip from '@mui/material/Chip';
 import { nameCountry } from './util/countryNames';
 import { parseAgeRange } from './util/helperFunctions';
+import CloseIcon from '@mui/icons-material/Close';
+import { selectUser } from '../redux/auth/selectors';
+import { Role } from '../api/models/User';
 
 const styles = makeStyles(() => ({
     errorMessage: {
@@ -53,6 +67,31 @@ export default function ViewCase(props: Props): JSX.Element {
             .finally(() => setLoading(false));
     }, [props.id]);
 
+    const verifyCase = (
+        onSuccess: () => void,
+        onError: (errorMessage: string) => void,
+        caseId: string,
+        verifierEmail: string,
+    ) => {
+        if (caseId && verifierEmail) {
+            setLoading(true);
+            axios
+                .post(`/api/cases/verify/${caseId}`, {
+                    email: verifierEmail,
+                })
+                .then((resp) => {
+                    setCase(resp.data[0]);
+                    onSuccess();
+                })
+                .catch((e) => {
+                    onError(e.response?.data?.message || e.toString());
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
+        }
+    };
+
     const classes = styles();
 
     return (
@@ -68,12 +107,24 @@ export default function ViewCase(props: Props): JSX.Element {
                     {errorMessage}
                 </MuiAlert>
             )}
-            {c && <CaseDetails enableEdit={props.enableEdit} c={c} />}
+            {c && (
+                <CaseDetails
+                    enableEdit={props.enableEdit}
+                    c={c}
+                    verifyCase={verifyCase}
+                />
+            )}
         </AppModal>
     );
 }
 interface CaseDetailsProps {
     c: Day0Case;
+    verifyCase: (
+        onSuccess: () => void,
+        onError: (errorMessage: string) => void,
+        caseId: string,
+        userEmail: string,
+    ) => void;
     enableEdit?: boolean;
 }
 
@@ -99,6 +150,9 @@ const useStyles = makeStyles((theme) => ({
     editBtn: {
         marginLeft: '1em',
     },
+    verifyBtn: {
+        marginLeft: '1em',
+    },
     navMenu: {
         position: 'fixed',
         lineHeight: '2em',
@@ -118,11 +172,26 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(0.5),
         marginRight: '8px',
     },
+    dialogContainer: {
+        height: '40%',
+    },
+    dialogTitle: {
+        display: 'flex',
+    },
+    closeButton: {
+        position: 'absolute',
+        right: 8,
+        top: 8,
+    },
+    verifyDialogBtn: {
+        margin: '1em',
+    },
 }));
 
 function CaseDetails(props: CaseDetailsProps): JSX.Element {
     const theme = useTheme();
     const showNavMenu = useMediaQuery(theme.breakpoints.up('sm'));
+    const [verifyDialogOpen, setVerifyDialogOpen] = useState(false);
     const classes = useStyles();
 
     const scrollTo = (name: string): void => {
@@ -135,11 +204,18 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
 
     const searchedKeywords = useSelector(selectSearchQuery);
     const filtersBreadcrumb = useSelector(selectFilterBreadcrumbs);
+    const user = useSelector(selectUser);
 
     return (
         <>
             {showNavMenu && (
                 <nav className={classes.navMenu}>
+                    <Button
+                        variant="text"
+                        onClick={(): void => scrollTo('curators')}
+                    >
+                        curators
+                    </Button>
                     <Button
                         variant="text"
                         onClick={(): void => scrollTo('case-data')}
@@ -245,13 +321,108 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             </Button>
                         </Link>
                     )}
+                    {props.c._id &&
+                        !props.c.curators?.verifiedBy &&
+                        user?.roles.includes(Role.Curator) && (
+                            <>
+                                <Dialog
+                                    open={verifyDialogOpen}
+                                    className={classes.dialogContainer}
+                                    id="popup-small-screens"
+                                >
+                                    <DialogTitle
+                                        className={classes.dialogTitle}
+                                    >
+                                        Are you sure?
+                                        <IconButton
+                                            aria-label="close"
+                                            onClick={() =>
+                                                setVerifyDialogOpen(false)
+                                            }
+                                            className={classes.closeButton}
+                                            id="small-screens-popup-close-btn"
+                                            size="large"
+                                            data-testid="verify-dialog-close-button"
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </DialogTitle>
+                                    <DialogContent dividers>
+                                        <Typography gutterBottom>
+                                            Before verifying make sure that all
+                                            the case data is valid.
+                                        </Typography>
+                                    </DialogContent>
+                                    <Button
+                                        data-testid="verify-dialog-confirm-button"
+                                        variant="contained"
+                                        color="primary"
+                                        className={classes.verifyDialogBtn}
+                                        endIcon={<CheckIcon />}
+                                        onClick={() =>
+                                            props.verifyCase(
+                                                () =>
+                                                    setVerifyDialogOpen(false),
+                                                (errorMessage: string) => {
+                                                    console.log(errorMessage);
+                                                },
+                                                props.c._id || '',
+                                                user.email || '',
+                                            )
+                                        }
+                                    >
+                                        Verify
+                                    </Button>
+                                </Dialog>
+                                <Button
+                                    data-testid="verify-button"
+                                    variant="outlined"
+                                    color="primary"
+                                    className={classes.verifyBtn}
+                                    endIcon={<CheckIcon />}
+                                    onClick={() => setVerifyDialogOpen(true)}
+                                >
+                                    Verify
+                                </Button>
+                            </>
+                        )}
                 </Typography>
+                {/* CURATORS */}
+                <Paper className={classes.paper} variant="outlined" square>
+                    <Scroll.Element
+                        name="curators"
+                        className={classes.casebox}
+                    />
+                    <Typography
+                        className={classes.sectionTitle}
+                        variant="overline"
+                    >
+                        Curators
+                    </Typography>
+                    <Grid container className={classes.grid}>
+                        <RowHeader title="Created by" />
+                        <RowContent
+                            content={props.c.curators?.createdBy.email}
+                        />
+
+                        <RowHeader title="Verified by" />
+                        <RowContent
+                            content={
+                                props.c.curators?.verifiedBy
+                                    ? props.c.curators?.verifiedBy.name
+                                        ? props.c.curators?.verifiedBy.name
+                                        : props.c.curators?.verifiedBy.email
+                                    : 'Not verified'
+                            }
+                        />
+                    </Grid>
+                </Paper>
+                {/* CASE DATA */}
                 <Paper className={classes.paper} variant="outlined" square>
                     <Scroll.Element
                         name="case-data"
                         className={classes.casebox}
                     >
-                        {/* CASE DATA */}
                         <Typography
                             className={classes.sectionTitle}
                             variant="overline"
