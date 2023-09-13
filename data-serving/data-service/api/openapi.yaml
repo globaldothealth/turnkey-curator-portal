@@ -917,6 +917,10 @@ components:
                 country:
                     type: string
                     description: name of a country
+                region:
+                    type: string
+                district:
+                    type: string
                 place:
                     type: string
                 location:
@@ -946,6 +950,14 @@ components:
                     type: string
                     description: Third administrative subdivision of a country
                     example: Any district in Costa Rica
+                region:
+                    type: string
+                    description: Name of the region this location refers to
+                    example: Lodz Voivodeship
+                district:
+                    type: string
+                    description: Name of the district this location refers to
+                    example: Lodz County
                 place:
                     type: string
                     description: Name of the place this location refers to

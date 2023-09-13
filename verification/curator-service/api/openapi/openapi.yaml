@@ -1816,7 +1816,7 @@ components:
                   example: Lodz Voivodeship
                 district:
                   type: string
-                  description: Name of the place this location refers to
+                  description: Name of the district this location refers to
                   example: Lodz County
                 place:
                     type: string
