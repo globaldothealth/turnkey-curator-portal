@@ -538,6 +538,12 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                                 }
                             />
 
+                            <RowHeader title="Region" />
+                            <RowContent content={props.c.location.region} />
+
+                            <RowHeader title="District" />
+                            <RowContent content={props.c.location.district} />
+
                             <RowHeader title="Place" />
                             <RowContent content={props.c.location.place} />
 

@@ -81,54 +81,6 @@ export default function Location(): JSX.Element {
     return (
         <>
             <div className={classes.root}>
-                {/*<FastField*/}
-                {/*    variant="outlined"*/}
-                {/*    data-testid="location.geoResolution"*/}
-                {/*    className={classes.field}*/}
-                {/*    name="location.geoResolution"*/}
-                {/*    type="text"*/}
-                {/*    label={<p>Geo resolution</p>}*/}
-                {/*    component={Select}*/}
-                {/*    isClearable="true"*/}
-                {/*    sx={{ minWidth: '13rem' }}*/}
-                {/*>*/}
-                {/*    <MenuItem value={''}>*/}
-                {/*        <em>None</em>*/}
-                {/*    </MenuItem>*/}
-                {/*    {['Point', 'Admin3', 'Admin2', 'Admin1', 'Country'].map(*/}
-                {/*        (res) => (*/}
-                {/*            <MenuItem key={res} value={res}>*/}
-                {/*                {res}*/}
-                {/*            </MenuItem>*/}
-                {/*        ),*/}
-                {/*    )}*/}
-                {/*</FastField>*/}
-                {/*<FastField*/}
-                {/*    variant="outlined"*/}
-                {/*    data-testid="location.countryISO3"*/}
-                {/*    className={classes.field}*/}
-                {/*    name="location.countryISO3"*/}
-                {/*    type="text"*/}
-                {/*    label={<p>Country code</p>}*/}
-                {/*    component={Select}*/}
-                {/*    sx={{ minWidth: '13rem' }}*/}
-                {/*>*/}
-                {/*    {Object.keys(getAlpha3Codes()).map((res) => (*/}
-                {/*        <MenuItem key={res} value={res}>*/}
-                {/*            {res}*/}
-                {/*        </MenuItem>*/}
-                {/*    ))}*/}
-                {/*</FastField>*/}
-                {/*<FastField*/}
-                {/*    variant="outlined"*/}
-                {/*    className={classes.field}*/}
-                {/*    label="Country"*/}
-                {/*    name="location.country"*/}
-                {/*    type="text"*/}
-                {/*    required*/}
-                {/*    component={TextField}*/}
-                {/*    sx={{ minWidth: '13rem' }}*/}
-                {/*/>*/}
                 <FastField
                     variant="outlined"
                     data-testid="location.countryISO3"

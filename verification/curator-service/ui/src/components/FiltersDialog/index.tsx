@@ -47,6 +47,8 @@ interface FiltersModalProps {
 export interface FilterFormValues {
     gender?: Gender;
     country?: string;
+    region?: string;
+    district?: string;
     place?: string;
     location?: string;
     occupation?: string;

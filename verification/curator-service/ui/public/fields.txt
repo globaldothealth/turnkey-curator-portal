@@ -21,6 +21,8 @@ location.geoResolution
 location.geometry.latitude
 location.geometry.longitude
 location.name
+location.region
+location.district
 location.place
 location.query
 notes

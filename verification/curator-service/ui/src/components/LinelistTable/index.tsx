@@ -115,6 +115,8 @@ const LinelistTable = () => {
                 !!data.curators?.verifiedBy || false,
                 nameCountry(data.location.countryISO3, data.location.country) ||
                     '-',
+                data.location.region || '-',
+                data.location.district || '-',
                 data.location.place || '-',
                 data.location.location || '-',
                 renderDate(data.events.dateEntry) || '-',

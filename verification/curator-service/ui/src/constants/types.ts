@@ -6,6 +6,8 @@ export enum SortBy {
     Default = 'default',
     ConfirmationDate = 'confirmationDate',
     Country = 'country',
+    Region = 'region',
+    District = 'district',
     Place = 'place',
     Location = 'location',
     Age = 'age',

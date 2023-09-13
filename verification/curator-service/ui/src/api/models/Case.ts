@@ -56,6 +56,8 @@ export interface Location {
     geoResolution: string;
     geometry: Geometry;
     name: string;
+    region: string;
+    district: string;
     place: string;
     // Set this field to perform geocoding and fill the rest of the location object.
     query?: string;

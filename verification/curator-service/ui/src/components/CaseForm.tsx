@@ -359,13 +359,17 @@ export default function CaseForm(props: Props): JSX.Element {
         const preexistingConditions = values.preexistingConditionsHelper || [];
         const vaccineSideEffects = values.vaccineSideEffects || [];
         const symptoms = values.symptoms || [];
+        const region = values.location.region;
+        const district = values.location.district;
         const place = values.location.place;
         const country = values.location.country;
         let query = '';
         if (values.location.geocodeLocation?.query) {
             query = values.location.geocodeLocation.query;
         } else {
-            query = place ? `${place}, ${country}` : country;
+            query = [place, district, region, country]
+                .filter(Boolean)
+                .join(',');
         }
 
         const newCase: Day0Case = {
@@ -457,6 +461,7 @@ export default function CaseForm(props: Props): JSX.Element {
             },
             symptoms: symptoms.join(', '),
         };
+        console.log('------', newCase);
 
         let newCaseIds = [];
         try {
