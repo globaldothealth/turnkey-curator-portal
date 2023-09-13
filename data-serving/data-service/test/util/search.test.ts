@@ -42,7 +42,7 @@ describe('search query', () => {
             'gender:male ' +
                 'occupation:"clock maker" country:switzerland outcome:recovered ' +
                 'caseId:605c8f6a7ee6c2d7fd2670cc sourceUrl:wsj.com ' +
-                'city:"some city" location:"some location"',
+                'place:"some place" location:"some location"',
         );
 
         expect(res).toEqual({
@@ -60,8 +60,8 @@ describe('search query', () => {
                     values: ['switzerland'],
                 },
                 {
-                    path: 'location.city',
-                    values: ['some city'],
+                    path: 'location.place',
+                    values: ['some place'],
                 },
                 {
                     path: 'location.location',

@@ -115,7 +115,7 @@ const LinelistTable = () => {
                 !!data.curators?.verifiedBy || false,
                 nameCountry(data.location.countryISO3, data.location.country) ||
                     '-',
-                data.location.city || '-',
+                data.location.place || '-',
                 data.location.location || '-',
                 renderDate(data.events.dateEntry) || '-',
                 parseAgeRange(data.demographics.ageRange) || '-',
@@ -402,7 +402,7 @@ const LinelistTable = () => {
                                             align="left"
                                             sx={{ minWidth: 100 }}
                                         >
-                                            {row.city}
+                                            {row.place}
                                         </TableCell>
                                         <TableCell
                                             align="left"

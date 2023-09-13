@@ -6,7 +6,7 @@ export enum SortBy {
     Default = 'default',
     ConfirmationDate = 'confirmationDate',
     Country = 'country',
-    City = 'city',
+    Place = 'place',
     Location = 'location',
     Age = 'age',
     Occupation = 'occupation',

@@ -254,7 +254,7 @@
     },
     "importedCase": {
       "ID": "010-751",
-      "city": "La Perla",
+      "place": "La Perla",
       "province": "Callao",
       "country": "Peru",
       "date_confirmation": "28.03.2020",
@@ -334,7 +334,7 @@
     },
     "importedCase": {
       "ID": "000-1-1",
-      "city": "Shek Lei",
+      "place": "Shek Lei",
       "province": "Hong Kong",
       "country": "China",
       "date_confirmation": "14.02.2020",
@@ -437,7 +437,7 @@
     },
     "importedCase": {
       "ID": "000-2-18700",
-      "city": "Wuhan City",
+      "place": "Wuhan City",
       "province": "Hubei",
       "country": "China",
       "date_confirmation": "17.02.2020",
@@ -648,7 +648,7 @@
     },
     "importedCase": {
       "ID": "002-138000",
-      "city": "Mumbai",
+      "place": "Mumbai",
       "province": "Maharashtra",
       "country": "India",
       "date_confirmation": "05.05.2020",
@@ -700,7 +700,7 @@
     },
     "importedCase": {
       "ID": "002-162325",
-      "city": "Mumbai",
+      "place": "Mumbai",
       "province": "Maharashtra",
       "country": "India",
       "date_confirmation": "11.05.2020",
@@ -752,7 +752,7 @@
     },
     "importedCase": {
       "ID": "002-186650",
-      "city": "Surat",
+      "place": "Surat",
       "province": "Gujarat",
       "country": "India",
       "date_confirmation": "16.05.2020",
@@ -855,7 +855,7 @@
     },
     "importedCase": {
       "ID": "002-235299",
-      "city": "Ahmedabad",
+      "place": "Ahmedabad",
       "province": "Gujarat",
       "country": "India",
       "date_confirmation": "22.05.2020",
@@ -907,7 +907,7 @@
     },
     "importedCase": {
       "ID": "002-259623",
-      "city": "Chennai",
+      "place": "Chennai",
       "province": "Tamil Nadu",
       "country": "India",
       "date_confirmation": "25.05.2020",
@@ -959,7 +959,7 @@
     },
     "importedCase": {
       "ID": "002-283948",
-      "city": "Unassigned",
+      "place": "Unassigned",
       "province": "State Unassigned",
       "country": "India",
       "date_confirmation": "28.05.2020",
@@ -1011,7 +1011,7 @@
     },
     "importedCase": {
       "ID": "002-308271",
-      "city": "Mumbai",
+      "place": "Mumbai",
       "province": "Maharashtra",
       "country": "India",
       "date_confirmation": "29.05.2020",
@@ -1063,7 +1063,7 @@
     },
     "importedCase": {
       "ID": "002-332596",
-      "city": "Thane",
+      "place": "Thane",
       "province": "Maharashtra",
       "country": "India",
       "date_confirmation": "31.05.2020",
@@ -1173,7 +1173,7 @@
     },
     "importedCase": {
       "ID": "002-72321",
-      "city": "Chengalpattu",
+      "place": "Chengalpattu",
       "province": "Tamil Nadu",
       "country": "India",
       "date_confirmation": "21.05.2020",
@@ -1227,7 +1227,7 @@
     },
     "importedCase": {
       "ID": "002-9665",
-      "city": "Nanyang City",
+      "place": "Nanyang City",
       "province": "Henan",
       "country": "China",
       "date_confirmation": "03.02.2020",
@@ -1331,7 +1331,7 @@
     },
     "importedCase": {
       "ID": "003-47489",
-      "city": "Staffordshire",
+      "place": "Staffordshire",
       "province": "England",
       "country": "United Kingdom",
       "date_confirmation": "25.03.2020",
@@ -1389,7 +1389,7 @@
     },
     "importedCase": {
       "ID": "003-71812",
-      "city": "Antwerpen",
+      "place": "Antwerpen",
       "province": "Flanders",
       "country": "Belgium",
       "date_confirmation": "26.03.2020",
@@ -1447,7 +1447,7 @@
     },
     "importedCase": {
       "ID": "003-96137",
-      "city": "Limburg",
+      "place": "Limburg",
       "province": "Flanders",
       "country": "Belgium",
       "date_confirmation": "15.04.2020",
@@ -1568,7 +1568,7 @@
     },
     "importedCase": {
       "ID": "005-14468",
-      "city": "Chicago",
+      "place": "Chicago",
       "province": "Illinois",
       "country": "United States",
       "date_confirmation": "22.03.2020",
@@ -1621,7 +1621,7 @@
     },
     "importedCase": {
       "ID": "005-38804",
-      "city": "Cook County",
+      "place": "Cook County",
       "province": "Illinois",
       "country": "United States",
       "date_confirmation": "26.03.2020",
@@ -1674,7 +1674,7 @@
     },
     "importedCase": {
       "ID": "006-10920",
-      "city": "Orange County",
+      "place": "Orange County",
       "province": "New York",
       "country": "United States",
       "date_confirmation": "21.03.2020",
@@ -1894,7 +1894,7 @@
     },
     "importedCase": {
       "ID": "007-105113",
-      "city": "Ansbach",
+      "place": "Ansbach",
       "province": "Bayern",
       "country": "Germany",
       "date_onset_symptoms": "25.03.2020",
@@ -1997,7 +1997,7 @@
     },
     "importedCase": {
       "ID": "007-1099780",
-      "city": "Sankt Johann im Pongau",
+      "place": "Sankt Johann im Pongau",
       "province": "Salzburg",
       "country": "Austria",
       "date_confirmation": "08.04.2020",
@@ -2119,7 +2119,7 @@
     },
     "importedCase": {
       "ID": "007-127500",
-      "city": "Mansfeld-Sudharz",
+      "place": "Mansfeld-Sudharz",
       "province": "Sachsen-Anhalt",
       "country": "Germany",
       "date_onset_symptoms": "18.03.2020",
@@ -2223,7 +2223,7 @@
     },
     "importedCase": {
       "ID": "007-176150",
-      "city": "Cremona",
+      "place": "Cremona",
       "province": "Lombardia",
       "country": "Italy",
       "date_confirmation": "31.05.2020",
@@ -2276,7 +2276,7 @@
     },
     "importedCase": {
       "ID": "007-200474",
-      "city": "Brescia",
+      "place": "Brescia",
       "province": "Lombardia",
       "country": "Italy",
       "date_confirmation": "16.03.2020",
@@ -2329,7 +2329,7 @@
     },
     "importedCase": {
       "ID": "007-2248",
-      "city": "Varese",
+      "place": "Varese",
       "province": "Lombardia",
       "country": "Italy",
       "date_confirmation": "28.03.2020",
@@ -2380,7 +2380,7 @@
     },
     "importedCase": {
       "ID": "007-249123",
-      "city": "Mantova",
+      "place": "Mantova",
       "province": "Lombardia",
       "country": "Italy",
       "date_confirmation": "26.03.2020",
@@ -2433,7 +2433,7 @@
     },
     "importedCase": {
       "ID": "007-273448",
-      "city": "Frosinone",
+      "place": "Frosinone",
       "province": "Lazio",
       "country": "Italy",
       "date_confirmation": "31.03.2020",
@@ -2486,7 +2486,7 @@
     },
     "importedCase": {
       "ID": "007-297773",
-      "city": "Pavia",
+      "place": "Pavia",
       "province": "Lombardia",
       "country": "Italy",
       "date_confirmation": "05.04.2020",
@@ -2539,7 +2539,7 @@
     },
     "importedCase": {
       "ID": "007-322096",
-      "city": "Pisa",
+      "place": "Pisa",
       "province": "Toscana",
       "country": "Italy",
       "date_confirmation": "11.04.2020",
@@ -2592,7 +2592,7 @@
     },
     "importedCase": {
       "ID": "007-346420",
-      "city": "Bryansk Oblast",
+      "place": "Bryansk Oblast",
       "province": "Central",
       "country": "Russia",
       "date_confirmation": "15.04.2020",
@@ -2645,7 +2645,7 @@
     },
     "importedCase": {
       "ID": "007-370745",
-      "city": "Moscow",
+      "place": "Moscow",
       "province": "Central",
       "country": "Russia",
       "date_confirmation": "20.04.2020",
@@ -2714,7 +2714,7 @@
     },
     "importedCase": {
       "ID": "007-39507",
-      "city": "Lippe",
+      "place": "Lippe",
       "province": "Nordrhein-Westfalen",
       "country": "Germany",
       "date_onset_symptoms": "21.03.2020",
@@ -2768,7 +2768,7 @@
     },
     "importedCase": {
       "ID": "007-419394",
-      "city": "Moscow",
+      "place": "Moscow",
       "province": "Central",
       "country": "Russia",
       "date_confirmation": "29.04.2020",
@@ -2839,7 +2839,7 @@
     },
     "importedCase": {
       "ID": "007-443718",
-      "city": "Tubingen",
+      "place": "Tubingen",
       "province": "Baden-Wurttemberg",
       "country": "Germany",
       "date_onset_symptoms": "24.03.2020",
@@ -2893,7 +2893,7 @@
     },
     "importedCase": {
       "ID": "007-468042",
-      "city": "Moscow",
+      "place": "Moscow",
       "province": "Central",
       "country": "Russia",
       "date_confirmation": "01.05.2020",
@@ -2944,7 +2944,7 @@
     },
     "importedCase": {
       "ID": "007-492367",
-      "city": "Dagestan",
+      "place": "Dagestan",
       "province": "North Caucasian",
       "country": "Russia",
       "date_confirmation": "03.05.2020",
@@ -2997,7 +2997,7 @@
     },
     "importedCase": {
       "ID": "007-516691",
-      "city": "Moscow",
+      "place": "Moscow",
       "province": "Central",
       "country": "Russia",
       "date_confirmation": "06.05.2020",
@@ -3050,7 +3050,7 @@
     },
     "importedCase": {
       "ID": "007-541014",
-      "city": "Moscow",
+      "place": "Moscow",
       "province": "Central",
       "country": "Russia",
       "date_confirmation": "08.05.2020",
@@ -3118,7 +3118,7 @@
     },
     "importedCase": {
       "ID": "007-56534",
-      "city": "Bad Durkheim",
+      "place": "Bad Durkheim",
       "province": "Rheinland-Pfalz",
       "country": "Germany",
       "date_onset_symptoms": "08.04.2020",
@@ -3172,7 +3172,7 @@
     },
     "importedCase": {
       "ID": "007-589665",
-      "city": "Pavia",
+      "place": "Pavia",
       "province": "Lombardia",
       "country": "Italy",
       "date_confirmation": "15.04.2020",
@@ -3225,7 +3225,7 @@
     },
     "importedCase": {
       "ID": "007-613989",
-      "city": "Torino",
+      "place": "Torino",
       "province": "Piemonte",
       "country": "Italy",
       "date_confirmation": "23.04.2020",
@@ -3278,7 +3278,7 @@
     },
     "importedCase": {
       "ID": "007-638312",
-      "city": "Lecco",
+      "place": "Lecco",
       "province": "Lombardia",
       "country": "Italy",
       "date_confirmation": "07.05.2020",
@@ -3331,7 +3331,7 @@
     },
     "importedCase": {
       "ID": "007-662637",
-      "city": "Moscow",
+      "place": "Moscow",
       "province": "Central",
       "country": "Russia",
       "date_confirmation": "11.05.2020",
@@ -3384,7 +3384,7 @@
     },
     "importedCase": {
       "ID": "007-686962",
-      "city": "Moscow",
+      "place": "Moscow",
       "province": "Central",
       "country": "Russia",
       "date_confirmation": "13.05.2020",
@@ -3435,7 +3435,7 @@
     },
     "importedCase": {
       "ID": "007-711285",
-      "city": "Khakassia",
+      "place": "Khakassia",
       "province": "Siberia",
       "country": "Russia",
       "date_confirmation": "15.05.2020",
@@ -3504,7 +3504,7 @@
     },
     "importedCase": {
       "ID": "007-73561",
-      "city": "Ortenaukreis",
+      "place": "Ortenaukreis",
       "province": "Baden-Wurttemberg",
       "country": "Germany",
       "date_onset_symptoms": "25.03.2020",
@@ -3569,7 +3569,7 @@
     },
     "importedCase": {
       "ID": "007-759935",
-      "city": "Bouches-du-Rhone",
+      "place": "Bouches-du-Rhone",
       "province": "Provence-Alpes-Cote d'Azur",
       "country": "France",
       "date_admission_hospital": "12.05.2020",
@@ -3633,7 +3633,7 @@
     },
     "importedCase": {
       "ID": "007-784259",
-      "city": "Nord",
+      "place": "Nord",
       "province": "Hauts-de-France",
       "country": "France",
       "date_admission_hospital": "05.04.2020",
@@ -3697,7 +3697,7 @@
     },
     "importedCase": {
       "ID": "007-808583",
-      "city": "Paris",
+      "place": "Paris",
       "province": "Ile-de-France",
       "country": "France",
       "date_admission_hospital": "07.04.2020",
@@ -3762,7 +3762,7 @@
     },
     "importedCase": {
       "ID": "007-832907",
-      "city": "Seine-Saint-Denis",
+      "place": "Seine-Saint-Denis",
       "province": "Ile-de-France",
       "country": "France",
       "date_admission_hospital": "27.03.2020",
@@ -4362,7 +4362,7 @@
     },
     "importedCase": {
       "ID": "008-2248",
-      "city": "Birmingham,West Midlands",
+      "place": "Birmingham,West Midlands",
       "province": "England",
       "country": "United Kingdom",
       "date_confirmation": "10.04.2020",
@@ -4416,7 +4416,7 @@
     },
     "importedCase": {
       "ID": "008-249123",
-      "city": "Enfield,Greater London",
+      "place": "Enfield,Greater London",
       "province": "England",
       "country": "United Kingdom",
       "date_confirmation": "02.04.2020",
@@ -4470,7 +4470,7 @@
     },
     "importedCase": {
       "ID": "008-273448",
-      "city": "Brighton and Hove,East Sussex",
+      "place": "Brighton and Hove,East Sussex",
       "province": "England",
       "country": "United Kingdom",
       "date_confirmation": "08.04.2020",
@@ -4622,7 +4622,7 @@
     },
     "importedCase": {
       "ID": "008-346420",
-      "city": "Brent,Greater London",
+      "place": "Brent,Greater London",
       "province": "England",
       "country": "United Kingdom",
       "date_confirmation": "18.04.2020",
@@ -4676,7 +4676,7 @@
     },
     "importedCase": {
       "ID": "008-370745",
-      "city": "Enfield,Greater London",
+      "place": "Enfield,Greater London",
       "province": "England",
       "country": "United Kingdom",
       "date_confirmation": "23.04.2020",
@@ -5188,7 +5188,7 @@
     },
     "importedCase": {
       "ID": "009-10214",
-      "city": "Copacabana",
+      "place": "Copacabana",
       "province": "Antioquia",
       "country": "Colombia",
       "date_onset_symptoms": "16.04.2020",
@@ -5247,7 +5247,7 @@
     },
     "importedCase": {
       "ID": "009-3454",
-      "city": "Bellavista",
+      "place": "Bellavista",
       "province": "Callao",
       "country": "Peru",
       "date_confirmation": "06.06.2020",
@@ -5316,7 +5316,7 @@
     },
     "importedCase": {
       "ID": "009-58865",
-      "city": "COMUNA 1",
+      "place": "COMUNA 1",
       "province": "CABA",
       "country": "Argentina",
       "date_onset_symptoms": "27.05.2020",
@@ -5375,7 +5375,7 @@
     },
     "importedCase": {
       "ID": "010-111367",
-      "city": "Comas",
+      "place": "Comas",
       "province": "Lima",
       "country": "Peru",
       "date_confirmation": "20.05.2020",
@@ -5433,7 +5433,7 @@
     },
     "importedCase": {
       "ID": "010-135692",
-      "city": "GROCIO PRADO",
+      "place": "GROCIO PRADO",
       "province": "Chincha",
       "country": "Peru",
       "date_confirmation": "25.05.2020",
@@ -5491,7 +5491,7 @@
     },
     "importedCase": {
       "ID": "010-160015",
-      "city": "Ate",
+      "place": "Ate",
       "province": "Lima",
       "country": "Peru",
       "date_confirmation": "29.05.2020",
@@ -5549,7 +5549,7 @@
     },
     "importedCase": {
       "ID": "010-26450",
-      "city": "MOCHUMI",
+      "place": "MOCHUMI",
       "province": "Lambayeque",
       "country": "Peru",
       "date_confirmation": "23.04.2020",
@@ -5607,7 +5607,7 @@
     },
     "importedCase": {
       "ID": "010-50775",
-      "city": "Florencia de Mora",
+      "place": "Florencia de Mora",
       "province": "Trujillo",
       "country": "Peru",
       "date_confirmation": "02.05.2020",
@@ -5665,7 +5665,7 @@
     },
     "importedCase": {
       "ID": "010-751",
-      "city": "La Perla",
+      "place": "La Perla",
       "province": "Callao",
       "country": "Peru",
       "date_confirmation": "28.03.2020",

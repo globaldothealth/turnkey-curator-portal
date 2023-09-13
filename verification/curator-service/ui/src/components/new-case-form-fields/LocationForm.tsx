@@ -164,6 +164,7 @@ export function PlacesAutocomplete(
                         };
                     });
                 }
+                console.log('geocode:', results);
                 setOptions(newOptions);
             }
         });

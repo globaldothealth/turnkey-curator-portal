@@ -107,7 +107,10 @@ class Geocoder:
             },
             'name': feature['place_name'],
             'country': self.getISO3166Code(self.getFeatureDescriptionFromContext(contexts, 'country')),
-            'place': self.getFeatureDescriptionFromContext(contexts, 'poi'),
+            'poi': self.getFeatureDescriptionFromContext(contexts, 'poi'),
+            'place': self.getFeatureDescriptionFromContext(contexts, 'place'),
+            'district': self.getFeatureDescriptionFromContext(contexts, 'district'),
+            'region': self.getFeatureDescriptionFromContext(contexts, 'region'),
             'geoResolution': self.getResolution(contexts)
         }
         self.admins_fetcher.fill_admins(res)

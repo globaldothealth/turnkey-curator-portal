@@ -82,7 +82,9 @@ const initialValuesFromCase = (
                 country: '',
                 countryISO3: '',
                 location: '',
-                city: '',
+                region: '',
+                district: '',
+                place: '',
                 geometry: {
                     latitude: undefined,
                     longitude: undefined,
@@ -176,6 +178,8 @@ const initialValuesFromCase = (
                 administrativeAreaLevel3: '',
                 name: c.location.name || '',
                 geoResolution: '',
+                region: c.location.region || '',
+                district: c.location.district || '',
                 place: c.location.location || '',
             },
         },
@@ -355,13 +359,13 @@ export default function CaseForm(props: Props): JSX.Element {
         const preexistingConditions = values.preexistingConditionsHelper || [];
         const vaccineSideEffects = values.vaccineSideEffects || [];
         const symptoms = values.symptoms || [];
-        const city = values.location.city;
+        const place = values.location.place;
         const country = values.location.country;
         let query = '';
         if (values.location.geocodeLocation?.query) {
             query = values.location.geocodeLocation.query;
         } else {
-            query = city ? `${city}, ${country}` : country;
+            query = place ? `${place}, ${country}` : country;
         }
 
         const newCase: Day0Case = {

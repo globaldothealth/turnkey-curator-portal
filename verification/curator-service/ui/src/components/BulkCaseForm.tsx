@@ -149,7 +149,7 @@ interface RawParsedCase {
     country: string;
     countryISO3: string;
     location?: string;
-    city?: string;
+    place?: string;
 
     // Bulk upload specific data
     caseCount?: number;
@@ -221,7 +221,7 @@ const BulkCaseForm = (props: BulkCaseFormProps) => {
     const createLocationQuery = (c: RawParsedCase): string => {
         return c.location
             ? c.location
-            : [c.city, c.country].filter((field) => field).join(', ');
+            : [c.place, c.country].filter((field) => field).join(', ');
     };
 
     const createAgeRange = (c: RawParsedCase): AgeRange => {
@@ -266,7 +266,7 @@ const BulkCaseForm = (props: BulkCaseFormProps) => {
             location: {
                 country: c.country,
                 countryISO3: c.countryISO3,
-                city: c.city,
+                place: c.place,
                 location: c.location,
                 query: createLocationQuery(c),
             },

@@ -11,7 +11,7 @@ it('shows location when passed location information', async () => {
                     geoResolution: 'Point',
                     country: 'United States',
                     countryISO3: 'USA',
-                    city: 'Chicago',
+                    place: 'Chicago',
                     geometry: { latitude: 53.426588, longitude: 14.549271 },
                 },
             }}

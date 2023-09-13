@@ -1770,7 +1770,7 @@ components:
                 country:
                     type: string
                     description: Name of a country
-                city:
+                place:
                     type: string
                 location:
                     type: string

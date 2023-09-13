@@ -236,7 +236,7 @@ describe('GET', () => {
             });
             it('returns no case if no wildcard match', async () => {
                 const res = await request(app)
-                    .get('/api/cases?page=1&limit=1&q=city%3A%2A')
+                    .get('/api/cases?page=1&limit=1&q=place%3A%2A')
                     .expect('Content-Type', /json/);
                 expect(res.body.cases).toHaveLength(0);
                 expect(res.body.total).toEqual(0);
@@ -494,7 +494,7 @@ describe('POST', () => {
 
         expect(res.body.location).toEqual(expectedLocation);
     });
-    it('create with minimal + city should complete rest with geocoding', async () => {
+    it('create with minimal + place should complete rest with geocoding', async () => {
         seedFakeGeocodes('Montreal, Canada', {
             country: 'CAN',
             geoResolution: 'Admin3',
@@ -508,13 +508,13 @@ describe('POST', () => {
                 countryISO3: 'CAN',
                 country: 'Canada',
                 query: 'Montreal, Canada',
-                city: 'Montreal',
+                place: 'Montreal',
             },
         };
 
         const expectedLocation = {
             country: 'CAN',
-            city: 'Montreal',
+            place: 'Montreal',
             countryISO3: 'CAN',
             geoResolution: 'Admin3',
             geometry: { latitude: 45.5019, longitude: 73.5674 },
@@ -533,7 +533,7 @@ describe('POST', () => {
 
         expect(res.body.location).toEqual(expectedLocation);
     });
-    it('create with minimal + city + location should complete rest with geocoding', async () => {
+    it('create with minimal + place + location should complete rest with geocoding', async () => {
         seedFakeGeocodes('Jacques Cartier Bridge, Montreal, Canada', {
             country: 'CAN',
             geoResolution: 'Admin3',
@@ -547,14 +547,14 @@ describe('POST', () => {
                 countryISO3: 'CAN',
                 country: 'Canada',
                 query: 'Jacques Cartier Bridge, Montreal, Canada',
-                city: 'Montreal',
+                place: 'Montreal',
                 location: 'Jacques Cartier Bridge',
             },
         };
 
         const expectedLocation = {
             country: 'CAN',
-            city: 'Montreal',
+            place: 'Montreal',
             location: 'Jacques Cartier Bridge',
             countryISO3: 'CAN',
             geoResolution: 'Admin3',
@@ -575,7 +575,7 @@ describe('POST', () => {
         expect(res.body.location).toEqual(expectedLocation);
     });
 
-    it('create with minimal + city + latitude + longitude should automatically set geoResolution to Point', async () => {
+    it('create with minimal + place + latitude + longitude should automatically set geoResolution to Point', async () => {
         seedFakeGeocodes('Jacques Cartier Bridge, Montreal, Canada', {
             country: 'CAN',
             geoResolution: 'Admin3',
@@ -589,14 +589,14 @@ describe('POST', () => {
                 countryISO3: 'CAN',
                 country: 'Canada',
                 query: 'Jacques Cartier Bridge, Montreal, Canada',
-                city: 'Montreal',
+                place: 'Montreal',
                 geometry: { latitude: 45.5018, longitude: 73.5673 },
             },
         };
 
         const expectedLocation = {
             country: 'CAN',
-            city: 'Montreal',
+            place: 'Montreal',
             countryISO3: 'CAN',
             geoResolution: 'Point',
             geometry: { latitude: 45.5018, longitude: 73.5673 },

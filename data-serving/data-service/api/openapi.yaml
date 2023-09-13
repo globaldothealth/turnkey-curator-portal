@@ -917,7 +917,7 @@ components:
                 country:
                     type: string
                     description: name of a country
-                city:
+                place:
                     type: string
                 location:
                     type: string
