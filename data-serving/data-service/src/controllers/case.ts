@@ -479,7 +479,7 @@ export class CasesController {
         const numCases = Number(req.query.num_cases) || 1;
 
         try {
-            await this.geocode(req);
+            // await this.geocode(req);
             const receivedCase = req.body as CaseDTO;
 
             const c = fillEmpty(new Day0Case(await caseFromDTO(receivedCase)));
