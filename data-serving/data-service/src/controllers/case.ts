@@ -479,7 +479,7 @@ export class CasesController {
         const numCases = Number(req.query.num_cases) || 1;
 
         try {
-            // await this.geocode(req);
+            this.addGeoResolution(req);
             const receivedCase = req.body as CaseDTO;
 
             const c = fillEmpty(new Day0Case(await caseFromDTO(receivedCase)));
@@ -1065,6 +1065,22 @@ export class CasesController {
         );
 
         req.body['location'] = { ...req.body['location'], ...locationObject };
+    }
+
+    private addGeoResolution(req: Request | any): void {
+        const location = req.body.location;
+        if (location.geoResolution) return;
+        if (location.geometry?.longitude && location.geometry?.latitude) {
+            req.body.location.geoResolution = 'Point';
+        } else if (location.place) {
+            req.body.location.geoResolution = 'Admin3';
+        } else if (location.district) {
+            req.body.location.geoResolution = 'Admin2';
+        } else if (location.region) {
+            req.body.location.geoResolution = 'Admin1';
+        } else if (location.country) {
+            req.body.location.geoResolution = 'Country';
+        }
     }
 }
 
