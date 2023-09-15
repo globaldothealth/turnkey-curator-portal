@@ -87,10 +87,12 @@ describe('Curator', function () {
             .clear()
             .type('Germany');
         cy.contains('Germany').click();
-        cy.get('div[data-testid="location.geoResolution"]').click()
-        cy.get('li[data-value="Country"').click();
         cy.get('div[data-testid="location.countryISO3"]').click()
         cy.get('li[data-value="DEU"').click();
+        cy.get('input[name="location.region"]').type('Berlin Region');
+        cy.get('input[name="location.district"]').type('Berlin District');
+        cy.get('input[name="location.place"]').type('Berlin City');
+        cy.get('input[name="location.location"]').clear().type('Berlin Central Hospital');
 
         // EVENTS
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
@@ -200,6 +202,8 @@ describe('Curator', function () {
             cy.contains('female');
             // TODO UI for demographics.age needs redesigning
             cy.contains('Germany');
+            cy.contains('Berlin City');
+            cy.contains('Berlin Central Hospital');
             cy.contains('2020-01-01');
             cy.contains('recovered');
 
@@ -240,13 +244,17 @@ describe('Curator', function () {
                 'have.value',
                 'DEU',
             );
-            cy.get('input[name="location.country"]').should(
+            cy.get('input[name="location.region"]').should(
                 'have.value',
-                'Germany',
+                'Berlin Region',
+            );
+            cy.get('input[name="location.district"]').should(
+                'have.value',
+                'Berlin District',
             );
             cy.get('input[name="location.location"]').should(
                 'have.value',
-                'Germany',
+                'Berlin Central Hospital',
             );
 
             // Events.

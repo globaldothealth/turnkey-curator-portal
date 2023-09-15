@@ -52,14 +52,15 @@ export interface Demographics {
 export interface GeocodeLocation {
     country: string;
     countryISO3: string;
-    administrativeAreaLevel1: string;
-    administrativeAreaLevel2: string;
-    administrativeAreaLevel3: string;
+    administrativeAreaLevel1?: string;
+    administrativeAreaLevel2?: string;
+    administrativeAreaLevel3?: string;
     geoResolution: string;
     name: string;
     region: string;
     district: string;
     place: string;
+    location: string;
     // Set this field to perform geocoding and fill the rest of the location object.
     query?: string;
     // Optional to hint geocoding results.

@@ -37,7 +37,6 @@ export default function Location(): JSX.Element {
     const { values, setFieldValue } = useFormikContext<Day0CaseFormValues>();
 
     useEffect(() => {
-        console.log(values);
         if (!values.location.geocodeLocation) return;
 
         const countryName = getName(
@@ -52,28 +51,40 @@ export default function Location(): JSX.Element {
         );
         setFieldValue('location.country', countryName);
         setFieldValue(
-            'location.location',
-            values.location.geocodeLocation.name || '',
-        );
-        setFieldValue(
             'location.region',
-            values.location.geocodeLocation.region || '',
+            values.location.geocodeLocation.region ||
+                values.location.region ||
+                '',
         );
         setFieldValue(
             'location.district',
-            values.location.geocodeLocation.district || '',
+            values.location.geocodeLocation.district ||
+                values.location.district ||
+                '',
         );
         setFieldValue(
             'location.place',
-            values.location.geocodeLocation.place || '',
+            values.location.geocodeLocation.place ||
+                values.location.place ||
+                '',
+        );
+        setFieldValue(
+            'location.location',
+            values.location.geocodeLocation.name ||
+                values.location.location ||
+                '',
         );
         setFieldValue(
             'location.geometry.latitude',
-            values.location.geocodeLocation.geometry?.latitude || '',
+            values.location.geocodeLocation.geometry?.latitude ||
+                values.location.geometry?.latitude ||
+                '',
         );
         setFieldValue(
             'location.geometry.longitude',
-            values.location.geocodeLocation.geometry?.longitude || '',
+            values.location.geocodeLocation.geometry?.longitude ||
+                values.location.geometry?.longitude ||
+                '',
         );
         // eslint-disable-next-line
     }, [values.location.geocodeLocation]);
@@ -91,6 +102,12 @@ export default function Location(): JSX.Element {
                     component={Select}
                     isClearable="true"
                     sx={{ minWidth: '13rem' }}
+                    onChange={(e: any) => {
+                        setFieldValue(
+                            'location.country',
+                            getName(e.target.value, 'en'),
+                        );
+                    }}
                 >
                     <MenuItem value={''}>
                         <em>None</em>

@@ -171,16 +171,14 @@ const initialValuesFromCase = (
         location: {
             ...c.location,
             geocodeLocation: {
-                country: c.location.countryISO3,
+                country: c.location.country,
                 countryISO3: c.location.countryISO3,
-                administrativeAreaLevel1: '',
-                administrativeAreaLevel2: '',
-                administrativeAreaLevel3: '',
                 name: c.location.name || '',
-                geoResolution: '',
+                geoResolution: c.location.geoResolution || '',
                 region: c.location.region || '',
                 district: c.location.district || '',
-                place: c.location.location || '',
+                place: c.location.place || '',
+                location: c.location.location || '',
             },
         },
         pathogen,
@@ -242,7 +240,6 @@ const NewCaseValidation = Yup.object().shape(
         }),
         pathogen: Yup.string().required('Required'),
         location: Yup.object().shape({
-            country: Yup.string().required('Required'),
             countryISO3: Yup.string().required('Required'),
         }),
         events: Yup.object().shape({
@@ -461,7 +458,6 @@ export default function CaseForm(props: Props): JSX.Element {
             },
             symptoms: symptoms.join(', '),
         };
-        console.log('------', newCase);
 
         let newCaseIds = [];
         try {
