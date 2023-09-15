@@ -34,15 +34,15 @@ export default function Location(): JSX.Element {
     useEffect(() => {
         if (!values.location.geocodeLocation) return;
 
-        const countryName = getName(
-            values.location.geocodeLocation.country,
-            'en',
-        );
+        const countryName =
+            getName(values.location.geocodeLocation.country, 'en') ||
+            values.location.country;
 
         setFieldValue(
             'location.countryISO3',
             values.location.geocodeLocation.countryISO3 ||
-                alpha2ToAlpha3(values.location.geocodeLocation.country),
+                alpha2ToAlpha3(values.location.geocodeLocation.country) ||
+                values.location.countryISO3,
         );
         setFieldValue('location.country', countryName);
         setFieldValue(

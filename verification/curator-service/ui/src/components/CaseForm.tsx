@@ -454,6 +454,7 @@ export default function CaseForm(props: Props): JSX.Element {
             },
             location: {
                 ...values.location,
+                country,
                 query,
             },
             symptoms: symptoms.join(', '),
