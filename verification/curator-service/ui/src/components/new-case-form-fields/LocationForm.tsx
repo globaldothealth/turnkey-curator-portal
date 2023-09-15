@@ -61,7 +61,6 @@ const TooltipText = () => (
 function LocationForm(): JSX.Element {
     const { values, initialValues, setFieldValue } =
         useFormikContext<Day0CaseFormValues>();
-    console.log('INITIAL VALUES', initialValues);
 
     return (
         <Scroll.Element name="location">

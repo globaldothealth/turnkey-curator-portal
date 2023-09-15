@@ -5,12 +5,7 @@ import { FastField, useFormikContext } from 'formik';
 import makeStyles from '@mui/styles/makeStyles';
 import { Day0CaseFormValues } from '../../api/models/Day0Case';
 import { useEffect } from 'react';
-import {
-    getAlpha3Codes,
-    getName,
-    alpha2ToAlpha3,
-    getNames,
-} from 'i18n-iso-countries';
+import { getName, alpha2ToAlpha3, getNames } from 'i18n-iso-countries';
 
 const styles = makeStyles(() => ({
     root: {
@@ -102,6 +97,7 @@ export default function Location(): JSX.Element {
                     component={Select}
                     isClearable="true"
                     sx={{ minWidth: '13rem' }}
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     onChange={(e: any) => {
                         setFieldValue(
                             'location.country',
