@@ -52,16 +52,20 @@ export interface Demographics {
 export interface GeocodeLocation {
     country: string;
     countryISO3: string;
-    administrativeAreaLevel1: string;
-    administrativeAreaLevel2: string;
-    administrativeAreaLevel3: string;
+    administrativeAreaLevel1?: string;
+    administrativeAreaLevel2?: string;
+    administrativeAreaLevel3?: string;
     geoResolution: string;
     name: string;
+    region: string;
+    district: string;
     place: string;
+    location: string;
     // Set this field to perform geocoding and fill the rest of the location object.
     query?: string;
     // Optional to hint geocoding results.
     limitToResolution?: string;
+    geometry?: Geometry;
 }
 
 export interface Geometry {
@@ -74,7 +78,9 @@ export interface Location {
     country: string;
     countryISO3: string;
     location?: string;
-    city?: string;
+    region?: string;
+    district?: string;
+    place?: string;
     // this variable is needed in the API in order to geocode properly
     query?: string;
     name?: string;
@@ -241,7 +247,9 @@ export interface Day0CaseFormValues {
         country: string;
         countryISO3: string;
         location?: string;
-        city?: string;
+        region?: string;
+        district?: string;
+        place?: string;
         geocodeLocation?: GeocodeLocation;
         query?: string;
         geometry?: Geometry;

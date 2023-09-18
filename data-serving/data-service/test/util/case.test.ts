@@ -253,7 +253,7 @@ describe('Case', () => {
         expect(denormalizedCase['location.country']).toEqual('');
         expect(denormalizedCase['location.countryISO3']).toEqual('');
         expect(denormalizedCase['location.location']).toEqual('');
-        expect(denormalizedCase['location.city']).toEqual('');
+        expect(denormalizedCase['location.place']).toEqual('');
         expect(denormalizedCase['location.geoResolution']).toEqual('');
         expect(denormalizedCase['location.geometry.latitude']).toEqual('');
         expect(denormalizedCase['location.geometry.longitude']).toEqual('');
@@ -444,7 +444,7 @@ describe('Case', () => {
             country: 'Georgia',
             countryISO3: 'GEO',
             name: 'Tbilisi',
-            city: 'Tibilisi',
+            place: 'Tibilisi',
             geoResolution: 'Point',
             geometry: {
                 latitude: 41.7151,
@@ -475,7 +475,7 @@ describe('Case', () => {
             locationDoc.country,
         );
         expect(denormalizedCase['location.countryISO3']).toEqual('GEO');
-        expect(denormalizedCase['location.city']).toEqual(locationDoc.city);
+        expect(denormalizedCase['location.place']).toEqual(locationDoc.place);
         expect(denormalizedCase['location.geoResolution']).toEqual(
             locationDoc.geoResolution,
         );

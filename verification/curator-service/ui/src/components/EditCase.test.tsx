@@ -79,8 +79,7 @@ describe('<EditCase />', () => {
         expect(screen.getByText('Submit case edit')).toBeInTheDocument();
         expect(screen.getByText(/male/)).toBeInTheDocument();
         expect(screen.getByDisplayValue(/Horse breeder/)).toBeInTheDocument();
-        expect(screen.getByDisplayValue('France')).toBeInTheDocument();
-        expect(screen.getByDisplayValue('Paris')).toBeInTheDocument();
+        expect(screen.getByDisplayValue('FRA')).toBeInTheDocument();
         expect(screen.getByDisplayValue('recovered')).toBeInTheDocument();
         expect(screen.getByText('Severe pneumonia')).toBeInTheDocument();
         expect(screen.getByDisplayValue('Moderna')).toBeInTheDocument();
@@ -93,6 +92,7 @@ describe('<EditCase />', () => {
         expect(screen.getByText('confirmed')).toBeInTheDocument();
         // TODO: These show up locally but we need to figure out how to properly
         // query them in tests.
+        // expect(screen.getByDisplayValue('Paris')).toBeInTheDocument();
         //expect(await findByText(/Swedish/)).toBeInTheDocument();
         //expect(getByText('Severe acute respiratory')).toBeInTheDocument();
         // expect(

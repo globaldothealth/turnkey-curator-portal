@@ -236,7 +236,7 @@ describe('GET', () => {
             });
             it('returns no case if no wildcard match', async () => {
                 const res = await request(app)
-                    .get('/api/cases?page=1&limit=1&q=city%3A%2A')
+                    .get('/api/cases?page=1&limit=1&q=place%3A%2A')
                     .expect('Content-Type', /json/);
                 expect(res.body.cases).toHaveLength(0);
                 expect(res.body.total).toEqual(0);
@@ -419,30 +419,161 @@ describe('POST', () => {
             .expect(201);
         expect(await Day0Case.collection.countDocuments()).toEqual(1);
     });
-    it('create with only required location fields should complete with data from geocoding', async () => {
-        seedFakeGeocodes('Canada', {
-            country: 'CA',
-            geoResolution: 'Country',
-            geometry: { latitude: 42.42, longitude: 11.11 },
-            name: 'Canada',
-        });
-
+    it('create with only required location fields should complete geoResolution with "Country"', async () => {
         const minimalLocationRequest = {
             ...minimalRequest,
             location: {
-                countryISO3: 'CAN',
-                country: 'Canada',
-                query: 'Canada',
+                countryISO3: 'USA',
+                country: 'United States of America',
+                query: 'United States of America',
             },
         };
 
         const expectedLocation = {
-            country: 'CA',
-            countryISO3: 'CAN',
+            country: 'United States of America',
             geoResolution: 'Country',
-            geometry: { latitude: 42.42, longitude: 11.11 },
-            name: 'Canada',
-            query: 'Canada',
+            countryISO3: 'USA',
+            query: 'United States of America',
+        };
+
+        const res = await request(app)
+            .post('/api/cases')
+            .send({
+                ...minimalLocationRequest,
+                curators: { createdBy: curator._id },
+            })
+            .expect('Content-Type', /json/)
+            .expect(201);
+
+        expect(res.body.location).toEqual(expectedLocation);
+    });
+    it('create with location containing region should complete geoResolution with "Admin1"', async () => {
+        const minimalLocationRequest = {
+            ...minimalRequest,
+            location: {
+                countryISO3: 'USA',
+                country: 'United States of America',
+                region: 'Florida',
+                query: 'Florida, United States of America',
+            },
+        };
+
+        const expectedLocation = {
+            country: 'United States of America',
+            geoResolution: 'Admin1',
+            countryISO3: 'USA',
+            region: 'Florida',
+            query: 'Florida, United States of America',
+        };
+
+        const res = await request(app)
+            .post('/api/cases')
+            .send({
+                ...minimalLocationRequest,
+                curators: { createdBy: curator._id },
+            })
+            .expect('Content-Type', /json/)
+            .expect(201);
+
+        expect(res.body.location).toEqual(expectedLocation);
+    });
+    it('create with location containing district should complete geoResolution with "Admin2"', async () => {
+        const minimalLocationRequest = {
+            ...minimalRequest,
+            location: {
+                countryISO3: 'USA',
+                country: 'United States of America',
+                region: 'Florida',
+                district: 'Collier County',
+                query: 'Collier County, Florida, United States of America',
+            },
+        };
+
+        const expectedLocation = {
+            country: 'United States of America',
+            geoResolution: 'Admin2',
+            countryISO3: 'USA',
+            region: 'Florida',
+            district: 'Collier County',
+            query: 'Collier County, Florida, United States of America',
+        };
+
+        const res = await request(app)
+            .post('/api/cases')
+            .send({
+                ...minimalLocationRequest,
+                curators: { createdBy: curator._id },
+            })
+            .expect('Content-Type', /json/)
+            .expect(201);
+
+        expect(res.body.location).toEqual(expectedLocation);
+    });
+    it('create with location containing place should complete geoResolution with "Admin3"', async () => {
+        const minimalLocationRequest = {
+            ...minimalRequest,
+            location: {
+                countryISO3: 'USA',
+                country: 'United States of America',
+                region: 'Florida',
+                district: 'Collier County',
+                place: 'Naples',
+                query:
+                    'Naples, Collier County, Florida, United States of America',
+            },
+        };
+
+        const expectedLocation = {
+            country: 'United States of America',
+            geoResolution: 'Admin3',
+            countryISO3: 'USA',
+            region: 'Florida',
+            district: 'Collier County',
+            place: 'Naples',
+            query: 'Naples, Collier County, Florida, United States of America',
+        };
+
+        const res = await request(app)
+            .post('/api/cases')
+            .send({
+                ...minimalLocationRequest,
+                curators: { createdBy: curator._id },
+            })
+            .expect('Content-Type', /json/)
+            .expect(201);
+
+        expect(res.body.location).toEqual(expectedLocation);
+    });
+    it('create with location containing geometry should complete geoResolution with "Point"', async () => {
+        const minimalLocationRequest = {
+            ...minimalRequest,
+            location: {
+                countryISO3: 'USA',
+                country: 'United States of America',
+                region: 'Florida',
+                district: 'Collier County',
+                place: 'Naples',
+                geometry: {
+                    latitude: 26.1295,
+                    longitude: -81.8056,
+                },
+                query:
+                    'Naples, Collier County, Florida, United States of America',
+            },
+        };
+
+        const expectedLocation = {
+            country: 'United States of America',
+            geoResolution: 'Point',
+            countryISO3: 'USA',
+            region: 'Florida',
+            district: 'Collier County',
+            place: 'Naples',
+            geometry: {
+                latitude: 26.1295,
+                longitude: -81.8056,
+            },
+            query: 'Naples, Collier County, Florida, United States of America',
         };
 
         const res = await request(app)
@@ -475,133 +606,10 @@ describe('POST', () => {
         };
 
         const expectedLocation = {
-            country: 'CAN',
+            country: 'Canada',
             countryISO3: 'CAN',
             geoResolution: 'Admin3',
-            geometry: { latitude: 42.42, longitude: 11.11 },
-            name: 'Canada',
             query: 'Canada',
-        };
-
-        const res = await request(app)
-            .post('/api/cases')
-            .send({
-                ...minimalLocationRequest,
-                curators: { createdBy: curator._id },
-            })
-            .expect('Content-Type', /json/)
-            .expect(201);
-
-        expect(res.body.location).toEqual(expectedLocation);
-    });
-    it('create with minimal + city should complete rest with geocoding', async () => {
-        seedFakeGeocodes('Montreal, Canada', {
-            country: 'CAN',
-            geoResolution: 'Admin3',
-            geometry: { latitude: 45.5019, longitude: 73.5674 },
-            name: 'Montreal, Canada',
-        });
-
-        const minimalLocationRequest = {
-            ...minimalRequest,
-            location: {
-                countryISO3: 'CAN',
-                country: 'Canada',
-                query: 'Montreal, Canada',
-                city: 'Montreal',
-            },
-        };
-
-        const expectedLocation = {
-            country: 'CAN',
-            city: 'Montreal',
-            countryISO3: 'CAN',
-            geoResolution: 'Admin3',
-            geometry: { latitude: 45.5019, longitude: 73.5674 },
-            name: 'Montreal, Canada',
-            query: 'Montreal, Canada',
-        };
-
-        const res = await request(app)
-            .post('/api/cases')
-            .send({
-                ...minimalLocationRequest,
-                curators: { createdBy: curator._id },
-            })
-            .expect('Content-Type', /json/)
-            .expect(201);
-
-        expect(res.body.location).toEqual(expectedLocation);
-    });
-    it('create with minimal + city + location should complete rest with geocoding', async () => {
-        seedFakeGeocodes('Jacques Cartier Bridge, Montreal, Canada', {
-            country: 'CAN',
-            geoResolution: 'Admin3',
-            geometry: { latitude: 45.5218, longitude: 73.5418 },
-            name: 'Jacques Cartier Bridge, Montreal, Canada',
-        });
-
-        const minimalLocationRequest = {
-            ...minimalRequest,
-            location: {
-                countryISO3: 'CAN',
-                country: 'Canada',
-                query: 'Jacques Cartier Bridge, Montreal, Canada',
-                city: 'Montreal',
-                location: 'Jacques Cartier Bridge',
-            },
-        };
-
-        const expectedLocation = {
-            country: 'CAN',
-            city: 'Montreal',
-            location: 'Jacques Cartier Bridge',
-            countryISO3: 'CAN',
-            geoResolution: 'Admin3',
-            geometry: { latitude: 45.5218, longitude: 73.5418 },
-            name: 'Jacques Cartier Bridge, Montreal, Canada',
-            query: 'Jacques Cartier Bridge, Montreal, Canada',
-        };
-
-        const res = await request(app)
-            .post('/api/cases')
-            .send({
-                ...minimalLocationRequest,
-                curators: { createdBy: curator._id },
-            })
-            .expect('Content-Type', /json/)
-            .expect(201);
-
-        expect(res.body.location).toEqual(expectedLocation);
-    });
-
-    it('create with minimal + city + latitude + longitude should automatically set geoResolution to Point', async () => {
-        seedFakeGeocodes('Jacques Cartier Bridge, Montreal, Canada', {
-            country: 'CAN',
-            geoResolution: 'Admin3',
-            geometry: { latitude: 45.5019, longitude: 73.5674 },
-            name: 'Jacques Cartier Bridge, Montreal, Canada',
-        });
-
-        const minimalLocationRequest = {
-            ...minimalRequest,
-            location: {
-                countryISO3: 'CAN',
-                country: 'Canada',
-                query: 'Jacques Cartier Bridge, Montreal, Canada',
-                city: 'Montreal',
-                geometry: { latitude: 45.5018, longitude: 73.5673 },
-            },
-        };
-
-        const expectedLocation = {
-            country: 'CAN',
-            city: 'Montreal',
-            countryISO3: 'CAN',
-            geoResolution: 'Point',
-            geometry: { latitude: 45.5018, longitude: 73.5673 },
-            name: 'Jacques Cartier Bridge, Montreal, Canada',
-            query: 'Jacques Cartier Bridge, Montreal, Canada',
         };
 
         const res = await request(app)
@@ -931,7 +939,8 @@ describe('POST', () => {
             await Day0Case.collection.findOne({ 'location.name': 'CA' }),
         ).toBeDefined();
     });
-    it('throws if cannot geocode', async () => {
+    // Now geocoding is not performed after submitting form
+    it.skip('throws if cannot geocode', async () => {
         await request(app)
             .post('/api/cases')
             .send({

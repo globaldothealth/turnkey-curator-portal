@@ -120,7 +120,7 @@
                     "location": {
                         "bsonType": "string"
                     },
-                    "city": {
+                    "place": {
                         "bsonType": "string"
                     },
                     "query": {

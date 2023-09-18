@@ -34,7 +34,10 @@ class GeocodeTests(unittest.TestCase):
                 'latitude': 45.75889,
                 'longitude': 4.84139
             },
-            'place': '',
+            'place': 'Lyon',
+            'region': 'Rhône',
+            'district': '',
+            'poi': '',
             'name': 'Lyon, Rhône, France',
             'geoResolution': Geocoder.Admin3
         }

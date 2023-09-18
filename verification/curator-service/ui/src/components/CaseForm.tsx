@@ -82,7 +82,9 @@ const initialValuesFromCase = (
                 country: '',
                 countryISO3: '',
                 location: '',
-                city: '',
+                region: '',
+                district: '',
+                place: '',
                 geometry: {
                     latitude: undefined,
                     longitude: undefined,
@@ -169,14 +171,14 @@ const initialValuesFromCase = (
         location: {
             ...c.location,
             geocodeLocation: {
-                country: c.location.countryISO3,
+                country: c.location.country,
                 countryISO3: c.location.countryISO3,
-                administrativeAreaLevel1: '',
-                administrativeAreaLevel2: '',
-                administrativeAreaLevel3: '',
                 name: c.location.name || '',
-                geoResolution: '',
-                place: c.location.location || '',
+                geoResolution: c.location.geoResolution || '',
+                region: c.location.region || '',
+                district: c.location.district || '',
+                place: c.location.place || '',
+                location: c.location.location || '',
             },
         },
         pathogen,
@@ -238,7 +240,6 @@ const NewCaseValidation = Yup.object().shape(
         }),
         pathogen: Yup.string().required('Required'),
         location: Yup.object().shape({
-            country: Yup.string().required('Required'),
             countryISO3: Yup.string().required('Required'),
         }),
         events: Yup.object().shape({
@@ -355,13 +356,17 @@ export default function CaseForm(props: Props): JSX.Element {
         const preexistingConditions = values.preexistingConditionsHelper || [];
         const vaccineSideEffects = values.vaccineSideEffects || [];
         const symptoms = values.symptoms || [];
-        const city = values.location.city;
+        const region = values.location.region;
+        const district = values.location.district;
+        const place = values.location.place;
         const country = values.location.country;
         let query = '';
         if (values.location.geocodeLocation?.query) {
             query = values.location.geocodeLocation.query;
         } else {
-            query = city ? `${city}, ${country}` : country;
+            query = [place, district, region, country]
+                .filter(Boolean)
+                .join(',');
         }
 
         const newCase: Day0Case = {
@@ -449,6 +454,7 @@ export default function CaseForm(props: Props): JSX.Element {
             },
             location: {
                 ...values.location,
+                country,
                 query,
             },
             symptoms: symptoms.join(', '),

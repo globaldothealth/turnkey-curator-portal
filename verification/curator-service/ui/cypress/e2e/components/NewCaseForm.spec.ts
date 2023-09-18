@@ -340,8 +340,7 @@ describe('New case form', function () {
         cy.get('div[data-testid="caseReference"]').type('www.example.com');
         cy.contains('www.example.com').click();
         cy.get('button[id="add-location"]').click();
-        cy.get('input[name="location.country"]').type('France');
-        cy.get('div[data-testid="location.countryISO3"]').click()
+        cy.get('div[data-testid="location.countryISO3"]').click();
         cy.get('li[data-value="FRA"').click();
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
 
