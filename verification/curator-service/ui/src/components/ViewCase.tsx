@@ -435,7 +435,7 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
 
                             <RowHeader title="Data source URL" />
                             <RowContent
-                                content={props.c.caseReference.sourceUrl || ''}
+                                content={props.c.caseReference?.sourceUrl || ''}
                                 isLink
                             />
                             {props.c.caseReference.additionalSources &&

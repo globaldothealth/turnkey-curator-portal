@@ -31,11 +31,13 @@ export enum Outcome {
 export interface CaseReference {
     sourceId: string;
     sourceUrl: string;
+    isGovernmentSource: boolean;
     id?: string;
     sourceEntryId?: string;
     uploadIds?: string[];
     additionalSources?: {
         sourceUrl: string;
+        isGovernmentSource: boolean;
     }[];
 }
 
@@ -223,6 +225,7 @@ export interface Day0CaseFormValues {
     caseReference: {
         sourceId: string;
         sourceUrl: string;
+        isGovernmentSource: boolean;
         id?: string;
         sourceEntryId?: string;
         uploadIds?: string[];
@@ -232,6 +235,7 @@ export interface Day0CaseFormValues {
         sourceProviderUrl?: string;
         additionalSources?: {
             sourceUrl: string;
+            isGovernmentSource: boolean;
         }[];
     };
     demographics: {

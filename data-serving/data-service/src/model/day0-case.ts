@@ -36,6 +36,7 @@ import { IdCounter, COUNTER_DOCUMENT_ID } from '../model/id-counter';
 // to be declared for specific use cases
 export const sourceSchema = new mongoose.Schema({
     sourceId: { type: String, required: true },
+    isGovernmentSource: Boolean,
     sourceUrl: {
         type: String,
         required: true,
@@ -163,6 +164,7 @@ caseSchema.methods.equalsJSON = function (jsonCase: any): boolean {
 
 export interface ISource {
     sourceUrl: string;
+    isGovernmentSource: string;
     sourceId: string;
     sourceName?: string;
     sourceLicense?: string;

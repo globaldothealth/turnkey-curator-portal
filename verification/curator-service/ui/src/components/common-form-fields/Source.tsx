@@ -1,6 +1,6 @@
-import { Autocomplete } from '@mui/material';
+import { Autocomplete, List, ListItem, Grid } from '@mui/material';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
-import { FastField, Field, useFormikContext } from 'formik';
+import { FastField, Field, useFormikContext, Form, FieldArray } from 'formik';
 import { Typography } from '@mui/material';
 
 import makeStyles from '@mui/styles/makeStyles';
@@ -10,7 +10,7 @@ import FieldTitle from './FieldTitle';
 import React, { useState } from 'react';
 import { RequiredHelperText } from './FormikFields';
 import Scroll from 'react-scroll';
-import { TextField } from 'formik-mui';
+import { CheckboxWithLabel, TextField } from 'formik-mui';
 import { StyledTooltip } from '../new-case-form-fields/StyledTooltip';
 import axios from 'axios';
 import { throttle } from 'lodash';
@@ -21,7 +21,9 @@ import {
 } from '../../api/models/Day0Case';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { TextField as MuiTextField } from '@mui/material';
+import Checkbox from '@mui/material/Checkbox';
 
 interface SourceProps {
     initialValue?: CaseReference;
@@ -67,6 +69,12 @@ const useSourceStyles = makeStyles(() => ({
     hidden: {
         display: 'none',
     },
+    halfField: {
+        width: '50%',
+    },
+    fullwidthField: {
+        width: '100%',
+    },
 }));
 
 export default function Source(props: SourceProps) {
@@ -84,38 +92,38 @@ export default function Source(props: SourceProps) {
         setAdditionalSourceNum((state) => state + 1);
     };
 
-    const renderedAdditionalSources = () => {
-        const fields = [];
-        for (let i = 2; i <= additionalSourceNum; i++) {
-            const additionalSources = values.caseReference?.additionalSources;
-
-            fields.push(
-                <MuiTextField
-                    key={`source${i}`}
-                    label={`Source ${i}`}
-                    type="text"
-                    data-testid={`source${i}`}
-                    margin="normal"
-                    fullWidth
-                    value={
-                        additionalSources && additionalSources[i - 2]
-                            ? additionalSources[i - 2].sourceUrl
-                            : ''
-                    }
-                    onChange={(event) => {
-                        setFieldValue(
-                            `caseReference.additionalSources.${
-                                i - 2
-                            }.sourceUrl`,
-                            event.target.value,
-                        );
-                    }}
-                />,
-            );
-        }
-
-        return fields;
-    };
+    // const renderedAdditionalSources = () => {
+    //     const fields = [];
+    //     for (let i = 2; i <= additionalSourceNum; i++) {
+    //         const additionalSources = values.caseReference?.additionalSources;
+    //
+    //         fields.push(
+    //             <MuiTextField
+    //                 key={`source${i}`}
+    //                 label={`Source ${i}`}
+    //                 type="text"
+    //                 data-testid={`source${i}`}
+    //                 margin="normal"
+    //                 fullWidth
+    //                 value={
+    //                     additionalSources && additionalSources[i - 2]
+    //                         ? additionalSources[i - 2].sourceUrl
+    //                         : ''
+    //                 }
+    //                 onChange={(event) => {
+    //                     setFieldValue(
+    //                         `caseReference.additionalSources.${
+    //                             i - 2
+    //                         }.sourceUrl`,
+    //                         event.target.value,
+    //                     );
+    //                 }}
+    //             />,
+    //         );
+    //     }
+    //
+    //     return fields;
+    // };
 
     return (
         <Scroll.Element name="source">
@@ -127,36 +135,143 @@ export default function Source(props: SourceProps) {
                     props.sourcesWithStableIdentifiers
                 }
             />
+            <FastField
+                name={`caseReference.isGovernmentSource`}
+                component={CheckboxWithLabel}
+                type="checkbox"
+                helperText="Whether cases from this source can appear in the line list"
+                required
+                data-testid="governmentSource"
+                Label={{
+                    label: 'Government Source',
+                }}
+            />
+            <FieldArray
+                name="caseReference.additionalSources"
+                render={(arrayHelpers) => (
+                    <List className={classes.halfField}>
+                        {values.caseReference?.additionalSources &&
+                            values.caseReference.additionalSources.length > 0 &&
+                            values.caseReference.additionalSources.map(
+                                (source: any, index: any) => (
+                                    <ListItem key={index}>
+                                        <Grid
+                                            container
+                                            spacing={0.5}
+                                            justifyContent="center"
+                                            alignItems="center"
+                                        >
+                                            <Grid item xs={10}>
+                                                <FastField
+                                                    variant="outlined"
+                                                    // style={{ width: '100%' }}
+                                                    className={
+                                                        classes.fullwidthField
+                                                    }
+                                                    label="Additional source"
+                                                    name={`caseReference.additionalSources.${index}.sourceUrl`}
+                                                    type="text"
+                                                    component={TextField}
+                                                    sx={{ minWidth: '13rem' }}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={2}>
+                                                <Button
+                                                    type="button"
+                                                    // variant="outlined"
+                                                    id="delete-additional-location"
+                                                    startIcon={<DeleteIcon />}
+                                                    onClick={() =>
+                                                        arrayHelpers.remove(
+                                                            index,
+                                                        )
+                                                    }
+                                                >
+                                                    Delete
+                                                </Button>
+                                            </Grid>
+                                            <Grid item xs={12} md={12}>
+                                                <FastField
+                                                    name={`caseReference.additionalSources.${index}.isGovernmentSource`}
+                                                    component={
+                                                        CheckboxWithLabel
+                                                    }
+                                                    type="checkbox"
+                                                    helperText="Whether cases from this source can appear in the line list"
+                                                    required
+                                                    data-testid="governmentSource"
+                                                    Label={{
+                                                        label: 'Government Source',
+                                                    }}
+                                                />
+                                            </Grid>
+                                            {/*<Grid item xs={6} md={8}>*/}
+                                            {/*    xs=6 md=8*/}
+                                            {/*</Grid>*/}
+                                        </Grid>
+                                        {/*<SourcesAutocomplete*/}
+                                        {/*    initialValue={*/}
+                                        {/*        props.initialValue &&*/}
+                                        {/*        props.initialValue[0]*/}
+                                        {/*    }*/}
+                                        {/*    freeSolo={freeSolo}*/}
+                                        {/*    sourcesWithStableIdentifiers={*/}
+                                        {/*        props.sourcesWithStableIdentifiers*/}
+                                        {/*    }*/}
+                                        {/*    index={index}*/}
+                                        {/*/>*/}
+                                    </ListItem>
+                                ),
+                            )}
+                        <ListItem>
+                            <Button
+                                type="button"
+                                variant="outlined"
+                                id="add-additional-source"
+                                startIcon={<AddIcon />}
+                                onClick={() =>
+                                    arrayHelpers.push({
+                                        sourceUrl: '',
+                                        isGovernmentSource: false,
+                                    })
+                                }
+                            >
+                                Add a source
+                            </Button>
+                        </ListItem>
+                    </List>
+                )}
+            />
 
-            {props.hasSourceEntryId && (
-                <FastField
-                    className={classes.sourceEntryId}
-                    label="Source entry ID"
-                    name="caseReference.sourceEntryId"
-                    type="text"
-                    data-testid="sourceEntryId"
-                    component={TextField}
-                    fullWidth
-                />
-            )}
+            {/*{props.hasSourceEntryId && (*/}
+            {/*    <FastField*/}
+            {/*        className={classes.sourceEntryId}*/}
+            {/*        label="Source entry ID"*/}
+            {/*        name="caseReference.sourceEntryId"*/}
+            {/*        type="text"*/}
+            {/*        data-testid="sourceEntryId"*/}
+            {/*        component={TextField}*/}
+            {/*        fullWidth*/}
+            {/*    />*/}
+            {/*)}*/}
 
-            {props.withAdditioanlSources && (
-                <div className={classes.additionalSources}>
-                    {renderedAdditionalSources()}
-                </div>
-            )}
+            {/*{props.withAdditioanlSources && (*/}
+            {/*    <div className={classes.additionalSources}>*/}
+            {/*        {renderedAdditionalSources()}*/}
+            {/*    </div>*/}
+            {/*)}*/}
 
-            {props.withAdditioanlSources && additionalSourceNum < 7 && (
-                <Button
-                    variant="outlined"
-                    id="add-additional-sources"
-                    startIcon={<AddIcon />}
-                    onClick={handleadditionalSourceClick}
-                    sx={{ marginTop: '1rem' }}
-                >
-                    Add additional source
-                </Button>
-            )}
+            {/*{props.withAdditioanlSources && additionalSourceNum < 7 && (*/}
+            {/*    <Button*/}
+            {/*        variant="outlined"*/}
+            {/*        id="add-additional-sources"*/}
+            {/*        startIcon={<AddIcon />}*/}
+            {/*        onClick={handleadditionalSourceClick}*/}
+            {/*        sx={{ marginTop: '1rem' }}*/}
+            {/*    >*/}
+            {/*        Add additional source*/}
+            {/*    </Button>*/}
+            {/*)}*/}
         </Scroll.Element>
     );
 }
@@ -173,6 +288,7 @@ interface SourceData {
     name: string;
     origin: OriginData;
     hasStableIdentifiers?: boolean;
+    isGovernmentSource?: boolean;
 }
 
 export interface CaseReferenceForm extends CaseReference {
@@ -191,6 +307,7 @@ interface SourceAutocompleteProps {
     initialValue?: CaseReference;
     freeSolo: boolean;
     sourcesWithStableIdentifiers?: boolean;
+    index?: number;
 }
 
 export async function submitSource(opts: {
@@ -200,6 +317,7 @@ export async function submitSource(opts: {
     format?: string;
     providerName?: string;
     providerWebsiteUrl?: string;
+    isGovernmentSource?: boolean;
 }): Promise<CaseReference> {
     const newSource = {
         name: opts.name,
@@ -215,11 +333,14 @@ export async function submitSource(opts: {
     return {
         sourceId: resp.data._id,
         sourceUrl: opts.url,
-        additionalSources: [] as unknown as [{ sourceUrl: string }],
+        isGovernmentSource: opts.isGovernmentSource || false,
+        additionalSources: [] as unknown as [
+            { sourceUrl: string; isGovernmentSource: boolean },
+        ],
     };
 }
 
-const filter = createFilterOptions<ISource>();
+const filter = createFilterOptions<CaseReferenceForm>();
 
 const useStyles = makeStyles(() => ({
     sourceTextField: {
@@ -299,22 +420,32 @@ export function SourcesAutocomplete(
 
         fetch({ url: inputValue }, (results?: SourceData[]) => {
             if (active) {
-                let newOptions = [] as ISource[];
+                let newOptions = [] as CaseReferenceForm[];
 
                 if (results) {
                     newOptions = [
                         ...newOptions,
-                        ...results.map((source) => ({
-                            sourceId: source._id,
-                            sourceUrl: source.origin.url,
-                            sourceName: source.name,
-                            sourceLicense: source.origin.license,
-                            sourceProviderName: source.origin.providerName,
-                            sourceProviderUrl: source.origin.providerWebsiteUrl,
-                            additionalSources: [] as unknown as [
-                                { sourceUrl: string },
-                            ],
-                        })),
+                        ...results.map(
+                            (source) =>
+                                ({
+                                    sourceId: source._id,
+                                    sourceUrl: source.origin.url,
+                                    isGovernmentSource:
+                                        source.isGovernmentSource,
+                                    sourceName: source.name,
+                                    sourceLicense: source.origin.license,
+                                    sourceProviderName:
+                                        source.origin.providerName,
+                                    sourceProviderUrl:
+                                        source.origin.providerWebsiteUrl,
+                                    additionalSources: [] as unknown as [
+                                        {
+                                            sourceUrl: string;
+                                            isGovernmentSource: boolean;
+                                        },
+                                    ],
+                                } as CaseReferenceForm),
+                        ),
                     ];
                 }
 
@@ -349,6 +480,7 @@ export function SourcesAutocomplete(
                     _: unknown,
                     newValue: CaseReferenceForm | string | null,
                 ): void => {
+                    console.log('ONCHANGE', values);
                     // newValue is a string if the user typed a URL and did not
                     // select a dropdown value.
                     if (typeof newValue === 'string') {
@@ -358,6 +490,7 @@ export function SourcesAutocomplete(
                         newValue = existingOption ?? {
                             inputValue: newValue,
                             sourceUrl: newValue,
+                            isGovernmentSource: false,
                             sourceId: '',
                             sourceName: values.caseReference?.sourceName ?? '',
                             sourceLicense:
@@ -366,10 +499,29 @@ export function SourcesAutocomplete(
                                 values.caseReference?.sourceProviderName ?? '',
                             sourceProviderUrl:
                                 values.caseReference?.sourceProviderUrl ?? '',
-                            additionalSources: [] as unknown as [
-                                { sourceUrl: string },
-                            ],
+                            additionalSources:
+                                values.caseReference?.additionalSources ||
+                                ([] as unknown as [
+                                    {
+                                        sourceUrl: string;
+                                        isGovernmentSource: boolean;
+                                    },
+                                ]),
                         };
+                    } else {
+                        if (
+                            newValue &&
+                            values.caseReference?.additionalSources
+                        ) {
+                            newValue.additionalSources =
+                                values.caseReference?.additionalSources ||
+                                ([] as unknown as [
+                                    {
+                                        sourceUrl: string;
+                                        isGovernmentSource: boolean;
+                                    },
+                                ]);
+                        }
                     }
                     setValue(newValue);
                     setFieldValue(name, newValue);
@@ -394,6 +546,9 @@ export function SourcesAutocomplete(
                         filtered.push({
                             inputValue: params.inputValue,
                             sourceUrl: params.inputValue,
+                            isGovernmentSource:
+                                values.caseReference?.isGovernmentSource ??
+                                false,
                             sourceId: '',
                             sourceName: values.caseReference?.sourceName ?? '',
                             sourceLicense:
@@ -403,7 +558,10 @@ export function SourcesAutocomplete(
                             sourceProviderUrl:
                                 values.caseReference?.sourceProviderUrl ?? '',
                             additionalSources: [] as unknown as [
-                                { sourceUrl: string },
+                                {
+                                    sourceUrl: string;
+                                    isGovernmentSource: boolean;
+                                },
                             ],
                         });
                     }
@@ -450,8 +608,20 @@ export function SourcesAutocomplete(
                             <Typography
                                 variant="body2"
                                 onClick={() => {
-                                    setValue(option);
-                                    setFieldValue(name, option);
+                                    const newValue = {
+                                        ...option,
+                                        additionalSources:
+                                            values.caseReference
+                                                ?.additionalSources ||
+                                            ([] as unknown as [
+                                                {
+                                                    sourceUrl: string;
+                                                    isGovernmentSource: boolean;
+                                                },
+                                            ]),
+                                    };
+                                    setValue(newValue);
+                                    setFieldValue(name, newValue);
                                 }}
                                 sx={{ cursor: 'pointer' }}
                             >
@@ -461,49 +631,92 @@ export function SourcesAutocomplete(
                     );
                 }}
             />
+            {/*<Form>*/}
+            {/*    <FieldArray*/}
+            {/*        name="friends"*/}
+            {/*        render={(arrayHelpers) => (*/}
+            {/*            <div>*/}
+            {/*                {values.friends && values.friends.length > 0 ? (*/}
+            {/*                    values.friends.map((friend: any, index: any) => (*/}
+            {/*                        <div key={index}>*/}
+            {/*                            <Field name={`friends.${index}`} />*/}
+            {/*                            <button*/}
+            {/*                                type="button"*/}
+            {/*                                onClick={() =>*/}
+            {/*                                    arrayHelpers.remove(index)*/}
+            {/*                                } // remove a friend from the list*/}
+            {/*                            >*/}
+            {/*                                -*/}
+            {/*                            </button>*/}
+            {/*                            <button*/}
+            {/*                                type="button"*/}
+            {/*                                onClick={() =>*/}
+            {/*                                    arrayHelpers.insert(index, '')*/}
+            {/*                                } // insert an empty string at a position*/}
+            {/*                            >*/}
+            {/*                                +*/}
+            {/*                            </button>*/}
+            {/*                        </div>*/}
+            {/*                    ))*/}
+            {/*                ) : (*/}
+            {/*                    <button*/}
+            {/*                        type="button"*/}
+            {/*                        onClick={() => arrayHelpers.push('')}*/}
+            {/*                    >*/}
+            {/*                        /!* show this when user has removed all friends from the list *!/*/}
+            {/*                        Add a friend*/}
+            {/*                    </button>*/}
+            {/*                )}*/}
+            {/*                <div>*/}
+            {/*                    <button type="submit">Submit</button>*/}
+            {/*                </div>*/}
+            {/*            </div>*/}
+            {/*        )}*/}
+            {/*    />*/}
+            {/*</Form>*/}
             {/* If this is a new source, show option to add name */}
-            {inputValue &&
-                props.freeSolo &&
-                !options.find((option) => option.sourceUrl === inputValue) && (
-                    <>
-                        <FastField
-                            className={classes.sourceTextField}
-                            label="Source name"
-                            name={`${name}.sourceName`}
-                            type="text"
-                            data-testid="sourceName"
-                            component={TextField}
-                            fullWidth
-                        />
-                        <FastField
-                            className={classes.sourceTextField}
-                            label="Source license"
-                            name={`${name}.sourceLicense`}
-                            type="text"
-                            data-testid="sourceLicense"
-                            component={TextField}
-                            fullWidth
-                        />
-                        <FastField
-                            className={classes.sourceTextField}
-                            label="Source provider name"
-                            name={`${name}.sourceProviderName`}
-                            type="text"
-                            data-testid="sourceProviderName"
-                            component={TextField}
-                            fullWidth
-                        />
-                        <FastField
-                            className={classes.sourceTextField}
-                            label="Source provider website"
-                            name={`${name}.sourceProviderUrl`}
-                            type="text"
-                            data-testid="sourceProviderUrl"
-                            component={TextField}
-                            fullWidth
-                        />
-                    </>
-                )}
+            {/*{inputValue &&*/}
+            {/*    props.freeSolo &&*/}
+            {/*    !options.find((option) => option.sourceUrl === inputValue) && (*/}
+            {/*        <>*/}
+            {/*            <FastField*/}
+            {/*                className={classes.sourceTextField}*/}
+            {/*                label="Source name"*/}
+            {/*                name={`${name}.sourceName`}*/}
+            {/*                type="text"*/}
+            {/*                data-testid="sourceName"*/}
+            {/*                component={TextField}*/}
+            {/*                fullWidth*/}
+            {/*            />*/}
+            {/*            <FastField*/}
+            {/*                className={classes.sourceTextField}*/}
+            {/*                label="Source license"*/}
+            {/*                name={`${name}.sourceLicense`}*/}
+            {/*                type="text"*/}
+            {/*                data-testid="sourceLicense"*/}
+            {/*                component={TextField}*/}
+            {/*                fullWidth*/}
+            {/*            />*/}
+            {/*            <FastField*/}
+            {/*                className={classes.sourceTextField}*/}
+            {/*                label="Source provider name"*/}
+            {/*                name={`${name}.sourceProviderName`}*/}
+            {/*                type="text"*/}
+            {/*                data-testid="sourceProviderName"*/}
+            {/*                component={TextField}*/}
+            {/*                fullWidth*/}
+            {/*            />*/}
+            {/*            <FastField*/}
+            {/*                className={classes.sourceTextField}*/}
+            {/*                label="Source provider website"*/}
+            {/*                name={`${name}.sourceProviderUrl`}*/}
+            {/*                type="text"*/}
+            {/*                data-testid="sourceProviderUrl"*/}
+            {/*                component={TextField}*/}
+            {/*                fullWidth*/}
+            {/*            />*/}
+            {/*        </>*/}
+            {/*    )}*/}
         </div>
     );
 }

@@ -68,6 +68,7 @@ const initialValuesFromCase = (
             caseReference: {
                 sourceId: '',
                 sourceUrl: '',
+                isGovernmentSource: false,
             },
             demographics: {
                 minAge: undefined,
@@ -229,14 +230,33 @@ interface Props {
     diseaseName: string;
 }
 
+const testSourceUrl = (value: any) => {
+    console.log('FORMIK TESTING', value);
+    if (value && value.length > 0) {
+        const pattern = new RegExp(
+            '^(https?:\\/\\/)?' + // protocol
+                '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+                '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+                '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+                '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+                '(\\#[-a-z\\d_]*)?$',
+            'i',
+        ); // fragment locator
+        return pattern.test(value);
+    }
+    return false;
+};
+
 // @TODO: get 0 and 120 min/max age values from the backend.
 const NewCaseValidation = Yup.object().shape(
     {
         caseStatus: Yup.string()
             .oneOf(['confirmed', 'suspected', 'discarded', 'omit_error'])
-            .required(),
+            .required('Case Status is a required field.'),
         caseReference: Yup.object().shape({
-            sourceUrl: Yup.string().required('Required'),
+            sourceUrl: Yup.string()
+                .test('Url validation', 'Invalid URL', testSourceUrl)
+                .required('Required'),
         }),
         pathogen: Yup.string().required('Required'),
         location: Yup.object().shape({
@@ -302,8 +322,8 @@ const NewCaseValidation = Yup.object().shape(
 function hasErrors(fields: string[], errors: any, touched: any): boolean {
     for (const field of fields) {
         if (
-            hasKey(touched, field) &&
-            touched[field] &&
+            // hasKey(touched, field) && TODO remove it, we want errors to be visible from the beginning
+            // touched[field] &&
             hasKey(errors, field) &&
             errors[field] !== undefined
         ) {
@@ -322,10 +342,11 @@ export default function CaseForm(props: Props): JSX.Element {
     const diseaseName = useAppSelector(selectDiseaseName);
 
     const submitCase = async (values: Day0CaseFormValues): Promise<void> => {
+        console.log('On submit values', values);
         if (values.location.geoResolution === '') {
             values.location.geoResolution = undefined;
         }
-        if (values.caseReference && values.caseReference.sourceId === '') {
+        if (values.caseReference && values.caseReference?.sourceId === '') {
             try {
                 const newCaseReference = await submitSource({
                     name: values.caseReference.sourceName as string,
@@ -564,6 +585,22 @@ export default function CaseForm(props: Props): JSX.Element {
         return requiredValues.every((value) => !!value);
     };
 
+    const requiredMessages = {
+        caseStatus: 'Required',
+        caseReference: {
+            sourceUrl: 'Required',
+        },
+    };
+
+    const requiredTouched = {
+        // caseStatus: true,
+        // caseReference: [
+        //     {
+        //         sourceUrl: true,
+        //     },
+        // ],
+    };
+
     return (
         <AppModal
             title={
@@ -579,6 +616,8 @@ export default function CaseForm(props: Props): JSX.Element {
                         diseaseName,
                         initialCase,
                     )}
+                    // initialErrors={!props.initialCase ? requiredMessages : {}}
+                    initialTouched={!props.initialCase ? requiredTouched : {}}
                     validationSchema={NewCaseValidation}
                     // Validating on change slows down the form too much. It will
                     // validate on blur and form submission.
@@ -593,6 +632,8 @@ export default function CaseForm(props: Props): JSX.Element {
                         touched,
                     }): JSX.Element => (
                         <>
+                            {/*{console.log('Values', values.caseReference)}*/}
+                            {/*{console.log('Errors', errors.caseReference)}*/}
                             {showTableOfContents && (
                                 <TableOfContents>
                                     <TableOfContentsRow
