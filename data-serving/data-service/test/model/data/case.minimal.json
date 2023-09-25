@@ -3,7 +3,8 @@
     "pathogen": "COVID-19",
     "caseReference": {
         "sourceId": "5ea86423bae6982635d2e1f8",
-        "sourceUrl": "cdc.gov"
+        "sourceUrl": "cdc.gov",
+        "isGovernmentSource": false
     },
     "events": {
         "dateEntry": "2019-12-03"

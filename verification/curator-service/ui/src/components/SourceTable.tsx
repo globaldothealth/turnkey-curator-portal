@@ -11,6 +11,7 @@ import {
 import { WithStyles } from '@mui/styles';
 import createStyles from '@mui/styles/createStyles';
 import withStyles from '@mui/styles/withStyles';
+import Checkbox from '@mui/material/Checkbox';
 import MaterialTable, { QueryResult } from 'material-table';
 import { nameCountry } from './util/countryNames';
 
@@ -36,6 +37,7 @@ interface DateFilter {
 interface Source {
     _id: string;
     name: string;
+    isGovernmentSource: boolean;
     countryCodes: string[];
     format?: string;
     origin: Origin;
@@ -61,6 +63,7 @@ interface SourceTableState {
 interface TableRow {
     _id: string;
     name: string;
+    isGovernmentSource: boolean;
     countryCodes: string; // flattened
     // origin
     url: string;
@@ -276,6 +279,30 @@ class SourceTable extends React.Component<Props, SourceTableState> {
                                             props.onChange(event.target.value)
                                         }
                                         defaultValue={props.value}
+                                    />
+                                ),
+                            },
+                            {
+                                title: 'Government Source',
+                                field: 'isGovernmentSource',
+                                editComponent: (props): JSX.Element => (
+                                    <Checkbox
+                                        // type="text"
+                                        // size="small"
+                                        // fullWidth
+                                        // placeholder="Name"
+                                        // error={
+                                        //     !this.validateRequired(props.value)
+                                        // }
+                                        // helperText={
+                                        //     this.validateRequired(props.value)
+                                        //         ? ''
+                                        //         : 'Required field'
+                                        // }
+                                        onChange={(event): void =>
+                                            props.onChange(event.target.value)
+                                        }
+                                        checked={props.value}
                                     />
                                 ),
                             },

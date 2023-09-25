@@ -179,6 +179,7 @@ export default class UploadsController {
                             _id: false,
                             sourceName: '$name',
                             sourceUrl: '$origin.url',
+                            // isGovernmentSource: '$origin.isGovernmentSource', TODO what do we use it for?
                             upload: '$uploads',
                         },
                     },

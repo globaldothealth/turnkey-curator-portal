@@ -12,6 +12,10 @@ export const caseReferenceSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        isGovernmentSource: {
+            type: Boolean,
+            required: true,
+        },
         uploadIds: {
             ...uniqueStringsArrayFieldInfo,
             required: true,
@@ -19,6 +23,7 @@ export const caseReferenceSchema = new mongoose.Schema(
         additionalSources: [
             {
                 sourceUrl: String,
+                isGovernmentSource: Boolean,
                 _id: false,
             },
         ],
@@ -36,6 +41,9 @@ export type CaseReferenceDocument = mongoose.Document & {
     /** The URL of the source of the case data at the time of ingestion. */
     sourceUrl: string;
 
+    /** Indication whether source is a government source or not. */
+    isGovernmentSource: boolean;
+
     /**
      * Array of UUIDs of uploads from which this case was created or updated.
      *
@@ -47,6 +55,7 @@ export type CaseReferenceDocument = mongoose.Document & {
     additionalSources: [
         {
             sourceUrl: string;
+            isGovernmentSource: boolean;
         },
     ];
 };

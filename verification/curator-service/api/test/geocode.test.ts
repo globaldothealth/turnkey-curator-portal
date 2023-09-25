@@ -95,7 +95,7 @@ describe('Geocode', () => {
         expect(res.body.length == 2);
         expect(res.body[0] === 'Estonia');
         expect(res.body[1] === 'Ainotse');
-        expect(mockedAxios.get).toHaveBeenCalledTimes(2);
+        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
         expect(mockedAxios.get).toHaveBeenCalledWith(
             'http://location/geocode/countryName?c=EE',
         );

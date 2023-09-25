@@ -231,7 +231,6 @@ interface Props {
 }
 
 const testSourceUrl = (value: any) => {
-    console.log('FORMIK TESTING', value);
     if (value && value.length > 0) {
         const pattern = new RegExp(
             '^(https?:\\/\\/)?' + // protocol
@@ -342,7 +341,6 @@ export default function CaseForm(props: Props): JSX.Element {
     const diseaseName = useAppSelector(selectDiseaseName);
 
     const submitCase = async (values: Day0CaseFormValues): Promise<void> => {
-        console.log('On submit values', values);
         if (values.location.geoResolution === '') {
             values.location.geoResolution = undefined;
         }
@@ -351,6 +349,7 @@ export default function CaseForm(props: Props): JSX.Element {
                 const newCaseReference = await submitSource({
                     name: values.caseReference.sourceName as string,
                     url: values.caseReference.sourceUrl,
+                    isGovernmentSource: values.caseReference.isGovernmentSource,
                     license: values.caseReference.sourceLicense as string,
                     providerName: values.caseReference.sourceProviderName,
                     providerWebsiteUrl: values.caseReference.sourceProviderUrl,
@@ -632,8 +631,6 @@ export default function CaseForm(props: Props): JSX.Element {
                         touched,
                     }): JSX.Element => (
                         <>
-                            {/*{console.log('Values', values.caseReference)}*/}
-                            {/*{console.log('Errors', errors.caseReference)}*/}
                             {showTableOfContents && (
                                 <TableOfContents>
                                     <TableOfContentsRow

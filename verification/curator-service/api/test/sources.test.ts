@@ -342,6 +342,7 @@ describe('DELETE', () => {
             caseReference: {
                 sourceId: id.toHexString(),
                 sourceUrl: 'http://foo.bar',
+                isGovernmentSource: false,
             },
             events: {
                 dateEntry: new Date('2020-02-01'),

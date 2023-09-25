@@ -42,6 +42,20 @@ describe('validate', () => {
         );
     });
 
+    it('a caseReference document without isGovernmentSource is invalid', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const missingIsGovernmentSource: any = { ...minimalModel };
+        delete missingIsGovernmentSource.isGovernmentSource;
+
+        return new CaseReference(missingIsGovernmentSource).validate().then(
+            () => null,
+            (e) => {
+                expect(e).not.toBeNull();
+                if (e) expect(e.name).toBe(Error.ValidationError.name);
+            },
+        );
+    });
+
     it('a minimal caseReference document is valid', async () => {
         return new CaseReference(minimalModel).validate();
     });

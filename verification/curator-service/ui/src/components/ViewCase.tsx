@@ -33,6 +33,7 @@ import { parseAgeRange } from './util/helperFunctions';
 import CloseIcon from '@mui/icons-material/Close';
 import { selectUser } from '../redux/auth/selectors';
 import { Role } from '../api/models/User';
+import Checkbox from '@mui/material/Checkbox';
 
 const styles = makeStyles(() => ({
     errorMessage: {
@@ -437,6 +438,14 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             <RowContent
                                 content={props.c.caseReference?.sourceUrl || ''}
                                 isLink
+                            />
+                            <RowHeader title="Government Source" />
+                            <RowContent
+                                content={
+                                    props.c.caseReference?.isGovernmentSource
+                                        ? 'YES'
+                                        : 'NO'
+                                }
                             />
                             {props.c.caseReference.additionalSources &&
                                 props.c.caseReference.additionalSources.length >

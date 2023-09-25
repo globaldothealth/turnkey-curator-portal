@@ -206,7 +206,7 @@ type CompleteParsedCase = RecursivePartial<Day0Case> & { caseCount?: number };
 const BulkFormSchema = Yup.object().shape({
     caseReference: Yup.object().shape({
         sourceUrl: Yup.string().required('Required'),
-        sourceName: Yup.string().required('Required'),
+        isGovernmentSource: Yup.boolean().required('Required'),
     }),
     file: Yup.mixed().required('Please upload a file'),
 });
@@ -259,6 +259,7 @@ const BulkCaseForm = (props: BulkCaseFormProps) => {
                 sourceId: caseReference.sourceId,
                 sourceEntryId: c.sourceEntryId?.toString(),
                 sourceUrl: caseReference.sourceUrl,
+                isGovernmentSource: caseReference.isGovernmentSource,
                 uploadIds: [uploadId],
             },
             demographics: {
@@ -430,6 +431,7 @@ const BulkCaseForm = (props: BulkCaseFormProps) => {
                 const newCaseReference = await submitSource({
                     name: values.caseReference.sourceName as string,
                     url: values.caseReference.sourceUrl,
+                    isGovernmentSource: values.caseReference.isGovernmentSource,
                     license: values.caseReference.sourceLicense as string,
                     providerName: values.caseReference.sourceProviderName,
                     providerWebsiteUrl: values.caseReference.sourceProviderUrl,

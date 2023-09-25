@@ -1,29 +1,21 @@
-import { Autocomplete, List, ListItem, Grid } from '@mui/material';
-import { createFilterOptions } from '@mui/material/useAutocomplete';
-import { FastField, Field, useFormikContext, Form, FieldArray } from 'formik';
-import { Typography } from '@mui/material';
-
-import makeStyles from '@mui/styles/makeStyles';
-
-import BulkCaseFormValues from '../bulk-case-form-fields/BulkCaseFormValues';
-import FieldTitle from './FieldTitle';
-import React, { useState } from 'react';
-import { RequiredHelperText } from './FormikFields';
-import Scroll from 'react-scroll';
-import { CheckboxWithLabel, TextField } from 'formik-mui';
-import { StyledTooltip } from '../new-case-form-fields/StyledTooltip';
 import axios from 'axios';
+import React from 'react';
+import Scroll from 'react-scroll';
 import { throttle } from 'lodash';
-import {
-    Day0CaseFormValues,
-    CaseReference,
-    ISource,
-} from '../../api/models/Day0Case';
-import Button from '@mui/material/Button';
+import { FastField, Field, useFormikContext, FieldArray } from 'formik';
+import { CheckboxWithLabel, TextField } from 'formik-mui';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { TextField as MuiTextField } from '@mui/material';
-import Checkbox from '@mui/material/Checkbox';
+import { Autocomplete, List, ListItem, Grid, Typography } from '@mui/material';
+import Button from '@mui/material/Button';
+import { createFilterOptions } from '@mui/material/useAutocomplete';
+import makeStyles from '@mui/styles/makeStyles';
+
+import { Day0CaseFormValues, CaseReference } from '../../api/models/Day0Case';
+import BulkCaseFormValues from '../bulk-case-form-fields/BulkCaseFormValues';
+import FieldTitle from './FieldTitle';
+import { RequiredHelperText } from './FormikFields';
+import { StyledTooltip } from '../new-case-form-fields/StyledTooltip';
 
 interface SourceProps {
     initialValue?: CaseReference;
@@ -79,51 +71,11 @@ const useSourceStyles = makeStyles(() => ({
 
 export default function Source(props: SourceProps) {
     const classes = useSourceStyles();
-    const [additionalSourceNum, setAdditionalSourceNum] = useState(1);
-    const { setFieldValue, values } = useFormikContext<
+    const { values } = useFormikContext<
         Day0CaseFormValues | BulkCaseFormValues
     >();
 
     const freeSolo = props.freeSolo === undefined ? true : props.freeSolo;
-
-    const handleadditionalSourceClick = () => {
-        if (additionalSourceNum >= 7) return;
-
-        setAdditionalSourceNum((state) => state + 1);
-    };
-
-    // const renderedAdditionalSources = () => {
-    //     const fields = [];
-    //     for (let i = 2; i <= additionalSourceNum; i++) {
-    //         const additionalSources = values.caseReference?.additionalSources;
-    //
-    //         fields.push(
-    //             <MuiTextField
-    //                 key={`source${i}`}
-    //                 label={`Source ${i}`}
-    //                 type="text"
-    //                 data-testid={`source${i}`}
-    //                 margin="normal"
-    //                 fullWidth
-    //                 value={
-    //                     additionalSources && additionalSources[i - 2]
-    //                         ? additionalSources[i - 2].sourceUrl
-    //                         : ''
-    //                 }
-    //                 onChange={(event) => {
-    //                     setFieldValue(
-    //                         `caseReference.additionalSources.${
-    //                             i - 2
-    //                         }.sourceUrl`,
-    //                         event.target.value,
-    //                     );
-    //                 }}
-    //             />,
-    //         );
-    //     }
-    //
-    //     return fields;
-    // };
 
     return (
         <Scroll.Element name="source">
@@ -141,7 +93,7 @@ export default function Source(props: SourceProps) {
                 type="checkbox"
                 helperText="Whether cases from this source can appear in the line list"
                 required
-                data-testid="governmentSource"
+                data-testid="isGovernmentSource"
                 Label={{
                     label: 'Government Source',
                 }}
@@ -153,7 +105,13 @@ export default function Source(props: SourceProps) {
                         {values.caseReference?.additionalSources &&
                             values.caseReference.additionalSources.length > 0 &&
                             values.caseReference.additionalSources.map(
-                                (source: any, index: any) => (
+                                (
+                                    source: {
+                                        isGovernmentSource: boolean;
+                                        sourceUrl: string;
+                                    },
+                                    index: number,
+                                ) => (
                                     <ListItem key={index}>
                                         <Grid
                                             container
@@ -164,7 +122,6 @@ export default function Source(props: SourceProps) {
                                             <Grid item xs={10}>
                                                 <FastField
                                                     variant="outlined"
-                                                    // style={{ width: '100%' }}
                                                     className={
                                                         classes.fullwidthField
                                                     }
@@ -178,7 +135,6 @@ export default function Source(props: SourceProps) {
                                             <Grid item xs={2}>
                                                 <Button
                                                     type="button"
-                                                    // variant="outlined"
                                                     id="delete-additional-location"
                                                     startIcon={<DeleteIcon />}
                                                     onClick={() =>
@@ -205,21 +161,7 @@ export default function Source(props: SourceProps) {
                                                     }}
                                                 />
                                             </Grid>
-                                            {/*<Grid item xs={6} md={8}>*/}
-                                            {/*    xs=6 md=8*/}
-                                            {/*</Grid>*/}
                                         </Grid>
-                                        {/*<SourcesAutocomplete*/}
-                                        {/*    initialValue={*/}
-                                        {/*        props.initialValue &&*/}
-                                        {/*        props.initialValue[0]*/}
-                                        {/*    }*/}
-                                        {/*    freeSolo={freeSolo}*/}
-                                        {/*    sourcesWithStableIdentifiers={*/}
-                                        {/*        props.sourcesWithStableIdentifiers*/}
-                                        {/*    }*/}
-                                        {/*    index={index}*/}
-                                        {/*/>*/}
                                     </ListItem>
                                 ),
                             )}
@@ -278,6 +220,7 @@ export default function Source(props: SourceProps) {
 
 interface OriginData {
     url: string;
+    isGovernmentSource: boolean;
     license: string;
     providerName?: string;
     providerWebsiteUrl?: string;
@@ -323,6 +266,7 @@ export async function submitSource(opts: {
         name: opts.name,
         origin: {
             url: opts.url,
+            isGovernmentSource: opts.isGovernmentSource,
             license: opts.license,
             providerName: opts.providerName,
             providerWebsiteUrl: opts.providerWebsiteUrl,
@@ -409,7 +353,7 @@ export function SourcesAutocomplete(
                     '(\\#[-a-z\\d_]*)?$',
                 'i',
             ); // fragment locator
-            return !!pattern.test(str);
+            return pattern.test(str);
         } else {
             return true;
         }
@@ -431,7 +375,7 @@ export function SourcesAutocomplete(
                                     sourceId: source._id,
                                     sourceUrl: source.origin.url,
                                     isGovernmentSource:
-                                        source.isGovernmentSource,
+                                        source.origin.isGovernmentSource,
                                     sourceName: source.name,
                                     sourceLicense: source.origin.license,
                                     sourceProviderName:
@@ -480,7 +424,6 @@ export function SourcesAutocomplete(
                     _: unknown,
                     newValue: CaseReferenceForm | string | null,
                 ): void => {
-                    console.log('ONCHANGE', values);
                     // newValue is a string if the user typed a URL and did not
                     // select a dropdown value.
                     if (typeof newValue === 'string') {
@@ -522,6 +465,26 @@ export function SourcesAutocomplete(
                                     },
                                 ]);
                         }
+                    }
+                    if (newValue == null) {
+                        newValue = {
+                            inputValue: '',
+                            sourceUrl: '',
+                            isGovernmentSource: false,
+                            sourceId: '',
+                            sourceName: '',
+                            sourceLicense: '',
+                            sourceProviderName: '',
+                            sourceProviderUrl: '',
+                            additionalSources:
+                                values.caseReference?.additionalSources ||
+                                ([] as unknown as [
+                                    {
+                                        sourceUrl: string;
+                                        isGovernmentSource: boolean;
+                                    },
+                                ]),
+                        };
                     }
                     setValue(newValue);
                     setFieldValue(name, newValue);

@@ -151,6 +151,7 @@ export interface Vaccination {
 // to have such properties in order to work with the API
 export interface ISource {
     sourceUrl: string;
+    isGovernmentSource: string;
     sourceId: string;
     sourceName?: string;
     sourceLicense?: string;
