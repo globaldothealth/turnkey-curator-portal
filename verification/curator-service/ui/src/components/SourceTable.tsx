@@ -24,6 +24,7 @@ import ChipInput from './ChipInput';
 
 interface Origin {
     url: string;
+    isGovernmentSource: boolean;
     license: string;
     providerName?: string;
     providerWebsiteUrl?: string;
@@ -37,7 +38,6 @@ interface DateFilter {
 interface Source {
     _id: string;
     name: string;
-    isGovernmentSource: boolean;
     countryCodes: string[];
     format?: string;
     origin: Origin;
@@ -206,6 +206,7 @@ class SourceTable extends React.Component<Props, SourceTableState> {
             countryCodes: rowData.countryCodes?.split(',') ?? [],
             origin: {
                 url: rowData.url,
+                isGovernmentSource: rowData.isGovernmentSource,
                 license: rowData.license,
                 providerName: rowData.providerName,
                 providerWebsiteUrl: rowData.providerWebsiteUrl,
@@ -285,6 +286,7 @@ class SourceTable extends React.Component<Props, SourceTableState> {
                             {
                                 title: 'Government Source',
                                 field: 'isGovernmentSource',
+                                type: 'boolean',
                                 editComponent: (props): JSX.Element => (
                                     <Checkbox
                                         // type="text"
@@ -299,9 +301,9 @@ class SourceTable extends React.Component<Props, SourceTableState> {
                                         //         ? ''
                                         //         : 'Required field'
                                         // }
-                                        onChange={(event): void =>
-                                            props.onChange(event.target.value)
-                                        }
+                                        onChange={(event): void => {
+                                            props.onChange(!props.value);
+                                        }}
                                         checked={props.value}
                                     />
                                 ),
@@ -659,6 +661,8 @@ class SourceTable extends React.Component<Props, SourceTableState> {
                                             flattenedSources.push({
                                                 _id: s._id,
                                                 name: s.name,
+                                                isGovernmentSource:
+                                                    s.origin.isGovernmentSource,
                                                 countryCodes:
                                                     s.countryCodes?.join(',') ??
                                                     '',
