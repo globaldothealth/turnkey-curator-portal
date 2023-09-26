@@ -61,11 +61,7 @@ describe('Curator', function () {
 
         cy.get('div[data-testid="caseReference"]').type('www.example.com');
         cy.contains('www.example.com').click();
-        cy.get('input[name="caseReference.sourceName"]').type('Example source');
-        cy.get('input[name="caseReference.sourceLicense"]').type('MPL');
-        cy.get('div[data-testid="sourceEntryId"]')
-            .click()
-            .type('testSourceEntryID123');
+        cy.get('input[name="caseReference.isGovernmentSource"]').click()
 
         // DEMOGRAPHICS
         cy.get('div[data-testid="demographics.gender"]').click();

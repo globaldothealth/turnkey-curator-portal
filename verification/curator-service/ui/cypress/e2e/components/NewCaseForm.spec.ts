@@ -24,7 +24,7 @@ describe('New case form', function () {
 
     // Full case is covered in curator test.
     it('Can add minimal row to linelist with existing source', function () {
-        cy.addSource('Test source', 'www.example.com');
+        cy.addSource('Test source', 'www.example.com', false);
 
         cy.visit('/');
 
@@ -92,7 +92,7 @@ describe('New case form', function () {
     });
 
     it('Can add multiple cases to linelist', function () {
-        cy.addSource('Test source', 'www.example.com');
+        cy.addSource('Test source', 'www.example.com', false);
 
         cy.visit('/');
         cy.wait('@getProfile');
@@ -125,7 +125,7 @@ describe('New case form', function () {
         cy.visit('/');
         cy.visit('/cases');
         cy.contains('No records to display');
-        cy.addSource('Test source', 'www.example.com');
+        cy.addSource('Test source', 'www.example.com', false);
 
         cy.visit('/');
         cy.wait('@getProfile');
@@ -170,7 +170,7 @@ describe('New case form', function () {
     });
 
     it.skip('Can add fields from chips', function () {
-        cy.addSource('Test source', 'www.example.com');
+        cy.addSource('Test source', 'www.example.com', false);
         cy.addCase({
             country: 'France',
             countryISO3: 'FRA',
@@ -242,7 +242,7 @@ describe('New case form', function () {
     });
 
     it('Does not add row on submission error', function () {
-        cy.addSource('Test source', 'www.example.com');
+        cy.addSource('Test source', 'www.example.com', false);
         cy.visit('/');
         cy.visit('/cases');
         cy.contains('No records to display');
@@ -273,23 +273,6 @@ describe('New case form', function () {
 
         cy.get('button[aria-label="close overlay"').click();
         cy.contains('No records to display');
-    });
-
-    it('Can change source URL without changing source name', function () {
-        cy.visit('/');
-        cy.wait('@getProfile');
-
-        cy.visit('/cases/new');
-
-        cy.get('div[data-testid="caseReference"]').type('www.example.com');
-        cy.contains('www.example.com').click();
-        cy.get('input[name="caseReference.sourceName"]').type('New source');
-        cy.get('div[data-testid="caseReference"]').type('www.example.com2');
-        cy.contains('www.example.com2').click();
-        cy.get('input[name="caseReference.sourceName"]').should(
-            'have.value',
-            'New source',
-        );
     });
 
     it('Check for required fields', function () {
@@ -328,7 +311,7 @@ describe('New case form', function () {
     });
 
     it('Can specify geocode manually', function () {
-        cy.addSource('Test source', 'www.example.com');
+        cy.addSource('Test source', 'www.example.com', false);
 
         cy.visit('/');
         cy.wait('@getProfile');

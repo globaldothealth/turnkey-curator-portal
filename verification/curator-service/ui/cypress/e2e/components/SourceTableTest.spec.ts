@@ -9,6 +9,7 @@ describe('Sources table', function () {
         cy.addSource(
             'Example source',
             'www.example.com',
+            true,
             'Example',
             'www.example.com',
             ['US', 'CA', 'MX'],
@@ -36,6 +37,7 @@ describe('Sources table', function () {
         cy.addSource(
             'Example source',
             'www.example.com',
+            true,
             'Example',
             'www.example.com',
             ['US', 'CA', 'MX'],
@@ -77,6 +79,7 @@ describe('Sources table', function () {
         cy.addSource(
             'Example source',
             'www.example.com',
+            true,
             'Example',
             'www.example.com',
             ['US', 'CA', 'MX'],

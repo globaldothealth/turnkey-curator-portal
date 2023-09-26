@@ -26,7 +26,8 @@ describe('<AcknowledgmentsPage />', function () {
             cy.addSource(
                 countries[i],
                 'https://test.com',
-                countries[i],
+                false,
+                 countries[i],
                 'https://test.com',
             );
         }
