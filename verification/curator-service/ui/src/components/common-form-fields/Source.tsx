@@ -2,7 +2,13 @@ import axios from 'axios';
 import React from 'react';
 import Scroll from 'react-scroll';
 import { throttle } from 'lodash';
-import { FastField, Field, useFormikContext, FieldArray } from 'formik';
+import {
+    FastField,
+    Field,
+    useFormikContext,
+    FieldArray,
+    ErrorMessage,
+} from 'formik';
 import { CheckboxWithLabel, TextField } from 'formik-mui';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -14,7 +20,6 @@ import makeStyles from '@mui/styles/makeStyles';
 import { Day0CaseFormValues, CaseReference } from '../../api/models/Day0Case';
 import BulkCaseFormValues from '../bulk-case-form-fields/BulkCaseFormValues';
 import FieldTitle from './FieldTitle';
-import { RequiredHelperText } from './FormikFields';
 import { StyledTooltip } from '../new-case-form-fields/StyledTooltip';
 
 interface SourceProps {
@@ -293,6 +298,12 @@ const useStyles = makeStyles(() => ({
     fieldRow: {
         maxWidth: '50%',
     },
+    errorMessage: {
+        fontSize: '0.75em',
+        color: '#FD685B',
+        marginLeft: '14px',
+        marginTop: '3px',
+    },
 }));
 
 export function SourcesAutocomplete(
@@ -355,7 +366,7 @@ export function SourcesAutocomplete(
             ); // fragment locator
             return pattern.test(str);
         } else {
-            return true;
+            return false;
         }
     };
 
@@ -555,11 +566,16 @@ export function SourcesAutocomplete(
                             placeholder="https://..."
                             component={TextField}
                             fullWidth
+                            // Using custom error validation for this field
+                            error={!sourceURLValidation(inputValue)}
                         />
-                        <RequiredHelperText
-                            name={name}
-                            wrongUrl={sourceURLValidation(inputValue)}
-                        />
+                        <ErrorMessage name={'caseReference.sourceUrl'}>
+                            {(msg) => (
+                                <div className={classes.errorMessage}>
+                                    {msg}
+                                </div>
+                            )}
+                        </ErrorMessage>
                     </div>
                 )}
                 renderOption={(

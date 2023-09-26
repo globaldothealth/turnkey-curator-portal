@@ -62,7 +62,7 @@ const initialValuesFromCase = (
     c?: Day0Case,
 ): Day0CaseFormValues => {
     if (!c) {
-        // return minimal vialable case
+        // return minimal viable case
         return {
             caseStatus: '',
             caseReference: {
@@ -230,9 +230,9 @@ interface Props {
     diseaseName: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const testSourceUrl = (value: any) => {
-    if (value && value.length > 0) {
+const sourceURLValidation = (str: string | undefined) => {
+    if (!str) return false;
+    if (str.length > 0) {
         const pattern = new RegExp(
             '^(https?:\\/\\/)?' + // protocol
                 '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
@@ -242,9 +242,10 @@ const testSourceUrl = (value: any) => {
                 '(\\#[-a-z\\d_]*)?$',
             'i',
         ); // fragment locator
-        return pattern.test(value);
+        return pattern.test(str);
+    } else {
+        return false;
     }
-    return false;
 };
 
 // @TODO: get 0 and 120 min/max age values from the backend.
@@ -252,11 +253,11 @@ const NewCaseValidation = Yup.object().shape(
     {
         caseStatus: Yup.string()
             .oneOf(['confirmed', 'suspected', 'discarded', 'omit_error'])
-            .required('Case Status is a required field.'),
+            .required('Required'),
         caseReference: Yup.object().shape({
             sourceUrl: Yup.string()
-                .test('Url validation', 'Invalid URL', testSourceUrl)
-                .required('Required'),
+                .required('Required')
+                .test('valid-url', 'Invalid URL', sourceURLValidation),
         }),
         pathogen: Yup.string().required('Required'),
         location: Yup.object().shape({
@@ -319,11 +320,11 @@ const NewCaseValidation = Yup.object().shape(
 );
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function hasErrors(fields: string[], errors: any): boolean {
+function hasErrors(fields: string[], errors: any, touched: any): boolean {
     for (const field of fields) {
         if (
-            // hasKey(touched, field) && TODO remove it, we want errors to be visible from the beginning
-            // touched[field] &&
+            hasKey(touched, field) &&
+            touched[field] &&
             hasKey(errors, field) &&
             errors[field] !== undefined
         ) {
@@ -345,12 +346,11 @@ export default function CaseForm(props: Props): JSX.Element {
         if (values.location.geoResolution === '') {
             values.location.geoResolution = undefined;
         }
-        if (values.caseReference && values.caseReference?.sourceId === '') {
+        if (values.caseReference && values.caseReference.sourceId === '') {
             try {
                 const newCaseReference = await submitSource({
                     name: values.caseReference.sourceName as string,
                     url: values.caseReference.sourceUrl,
-                    isGovernmentSource: values.caseReference.isGovernmentSource,
                     license: values.caseReference.sourceLicense as string,
                     providerName: values.caseReference.sourceProviderName,
                     providerWebsiteUrl: values.caseReference.sourceProviderUrl,
@@ -381,7 +381,7 @@ export default function CaseForm(props: Props): JSX.Element {
         const district = values.location.district;
         const place = values.location.place;
         const country = values.location.country;
-        let query = '';
+        let query;
         if (values.location.geocodeLocation?.query) {
             query = values.location.geocodeLocation.query;
         } else {
@@ -585,6 +585,17 @@ export default function CaseForm(props: Props): JSX.Element {
         return requiredValues.every((value) => !!value);
     };
 
+    // const newCaseErrors = {
+    //
+    // }
+    //
+    const newCaseTouched = {
+        caseStatus: true,
+        caseReference: { sourceUrl: true },
+        location: { countryISO3: true },
+        events: { dateEntry: true },
+    };
+
     return (
         <AppModal
             title={
@@ -600,10 +611,13 @@ export default function CaseForm(props: Props): JSX.Element {
                         diseaseName,
                         initialCase,
                     )}
+                    initialErrors={initialCase ? {} : {}}
+                    initialTouched={initialCase ? {} : newCaseTouched}
                     validationSchema={NewCaseValidation}
                     // Validating on change slows down the form too much. It will
                     // validate on blur and form submission.
-                    validateOnChange={false}
+                    validateOnChange={true}
+                    validateOnMount={true}
                     onSubmit={submitCase}
                 >
                     {({
@@ -631,6 +645,7 @@ export default function CaseForm(props: Props): JSX.Element {
                                             hasError: hasErrors(
                                                 ['caseStatus', 'pathogen'],
                                                 errors,
+                                                touched,
                                             ),
                                         })}
                                         {'General'.toLocaleUpperCase()}
@@ -648,6 +663,7 @@ export default function CaseForm(props: Props): JSX.Element {
                                             hasError: hasErrors(
                                                 ['caseReference'],
                                                 errors,
+                                                touched,
                                             ),
                                         })}
                                         {'Source'.toLocaleUpperCase()}
@@ -671,6 +687,7 @@ export default function CaseForm(props: Props): JSX.Element {
                                             hasError: hasErrors(
                                                 ['demographics'],
                                                 errors,
+                                                touched,
                                             ),
                                         })}
                                         {'Demographics'.toLocaleUpperCase()}
@@ -692,6 +709,7 @@ export default function CaseForm(props: Props): JSX.Element {
                                             hasError: hasErrors(
                                                 ['location'],
                                                 errors,
+                                                touched,
                                             ),
                                         })}
                                         {'Location'.toLocaleUpperCase()}
@@ -708,6 +726,7 @@ export default function CaseForm(props: Props): JSX.Element {
                                             hasError: hasErrors(
                                                 ['events'],
                                                 errors,
+                                                touched,
                                             ),
                                         })}
                                         {'Events'.toLocaleUpperCase()}
@@ -726,6 +745,7 @@ export default function CaseForm(props: Props): JSX.Element {
                                             hasError: hasErrors(
                                                 ['symptoms'],
                                                 errors,
+                                                touched,
                                             ),
                                         })}
                                         {'Symptoms'.toLocaleUpperCase()}
@@ -755,6 +775,7 @@ export default function CaseForm(props: Props): JSX.Element {
                                                     'pregnancyStatus',
                                                 ],
                                                 errors,
+                                                touched,
                                             ),
                                         })}
                                         {'Preexisting conditions'.toLocaleUpperCase()}
@@ -791,6 +812,7 @@ export default function CaseForm(props: Props): JSX.Element {
                                                     'transmission',
                                                 ],
                                                 errors,
+                                                touched,
                                             ),
                                         })}
                                         {'Transmission'.toLocaleUpperCase()}
@@ -824,6 +846,7 @@ export default function CaseForm(props: Props): JSX.Element {
                                                     'travelHistoryCountry',
                                                 ],
                                                 errors,
+                                                touched,
                                             ),
                                         })}
                                         {'Travel History'.toLocaleUpperCase()}
@@ -848,6 +871,7 @@ export default function CaseForm(props: Props): JSX.Element {
                                                     'accessionNumber',
                                                 ],
                                                 errors,
+                                                touched,
                                             ),
                                         })}
                                         {'Genome Sequences'.toLocaleUpperCase()}
@@ -877,6 +901,7 @@ export default function CaseForm(props: Props): JSX.Element {
                                                     'vaccineSideEffects',
                                                 ],
                                                 errors,
+                                                touched,
                                             ),
                                         })}
                                         {'Vaccines'.toLocaleUpperCase()}
@@ -893,6 +918,7 @@ export default function CaseForm(props: Props): JSX.Element {
                                                 hasError: hasErrors(
                                                     ['numCases'],
                                                     errors,
+                                                    touched,
                                                 ),
                                             })}
                                             {'Number of cases'.toLocaleUpperCase()}
