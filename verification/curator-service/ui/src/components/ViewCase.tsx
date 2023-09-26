@@ -33,7 +33,6 @@ import { parseAgeRange } from './util/helperFunctions';
 import CloseIcon from '@mui/icons-material/Close';
 import { selectUser } from '../redux/auth/selectors';
 import { Role } from '../api/models/User';
-import Checkbox from '@mui/material/Checkbox';
 
 const styles = makeStyles(() => ({
     errorMessage: {
