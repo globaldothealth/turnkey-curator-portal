@@ -23,6 +23,7 @@ export type ICase = {
     caseReference: {
         sourceId: string;
         sourceUrl: string;
+        isGovernmentSource: boolean;
     };
     events: {
         dateEntry: Date;

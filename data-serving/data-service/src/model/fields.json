@@ -6,6 +6,7 @@
     "caseReference.sourceEntryId",
     "caseReference.sourceId",
     "caseReference.sourceUrl",
+    "caseReference.isGovernmentSource",
     "caseReference.uploadIds",
     "demographics.ageRange.end",
     "demographics.ageRange.start",

@@ -692,6 +692,8 @@ components:
                             pattern: '^[a-f\d]{24}$'
                         sourceUrl:
                             type: string
+                        isGovernmentSource:
+                            type: boolean
                         uploadIds:
                             description: >
                                 An array of UUIDs of uploads where this case was created or updated
@@ -707,6 +709,8 @@ components:
                                 properties:
                                     sourceUrl:
                                         type: string
+                                    isGovernmentSource:
+                                        type: boolean
                 demographics:
                     type: object
                     properties:
@@ -1006,6 +1010,7 @@ components:
                     required:
                         - sourceId
                         - sourceUrl
+                        - isGovernmentSource
                 curator:
                     $ref: '#/components/schemas/Curator'
             required:

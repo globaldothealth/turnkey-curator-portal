@@ -12,6 +12,7 @@ const caseReference = {
     sourceId: '5ea86423bae6982635d2e1f8',
     sourceEntryId: 'abc',
     sourceUrl: 'cdc.gov',
+    isGovernmentSource: false,
 };
 
 const location = {

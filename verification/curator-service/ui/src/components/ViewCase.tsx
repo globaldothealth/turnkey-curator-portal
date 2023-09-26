@@ -435,8 +435,16 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
 
                             <RowHeader title="Data source URL" />
                             <RowContent
-                                content={props.c.caseReference.sourceUrl || ''}
+                                content={props.c.caseReference?.sourceUrl || ''}
                                 isLink
+                            />
+                            <RowHeader title="Government Source" />
+                            <RowContent
+                                content={
+                                    props.c.caseReference?.isGovernmentSource
+                                        ? 'YES'
+                                        : 'NO'
+                                }
                             />
                             {props.c.caseReference.additionalSources &&
                                 props.c.caseReference.additionalSources.length >

@@ -40,6 +40,10 @@ export const sourceSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    isGovernmentSource: {
+        type: Boolean,
+        required: true,
+    },
     sourceName: String,
     sourceLicense: String,
     sourceProviderName: String,
@@ -163,6 +167,7 @@ caseSchema.methods.equalsJSON = function (jsonCase: any): boolean {
 
 export interface ISource {
     sourceUrl: string;
+    isGovernmentSource: string;
     sourceId: string;
     sourceName?: string;
     sourceLicense?: string;

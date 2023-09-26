@@ -1244,6 +1244,8 @@ components:
                             sourceUrl:
                                 type: string
                                 example: https://api.covid19india.org/raw_data7.json
+                            isGovernmentSource:
+                                type: boolean
                             upload:
                                 $ref: '#/components/schemas/Upload'
         Retrieval:
@@ -1433,6 +1435,9 @@ components:
                             type: string
                             description: URL of the source this case was extracted from
                             example: https://api.covid19india.org/raw_data7.json
+                        isGovernmentSource:
+                            type: boolean
+                            description: Indicates whether source is government source or not
                         uploadIds:
                             description: >
                                 An array of UUIDs of uploads where this case was created or updated
@@ -1450,6 +1455,8 @@ components:
                                 properties:
                                     sourceUrl:
                                         type: string
+                                    isGovernmentSource:
+                                        type: boolean
                 demographics:
                     type: object
                     properties:
@@ -1676,6 +1683,7 @@ components:
                     required:
                         - sourceId
                         - sourceUrl
+                        - isGovernmentSource
                 location:
                     description: >
                         Either `query` or all of `geometry`, `country`, and `geoResolution`

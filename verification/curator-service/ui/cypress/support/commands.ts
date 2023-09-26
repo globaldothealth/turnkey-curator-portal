@@ -38,6 +38,7 @@ interface AddCaseProps {
     occupation?: string;
     symptoms?: string;
     sourceUrl?: string;
+    isGovernmentSource? :boolean;
     gender?: Gender;
     outcome?: Outcome;
     uploadIds?: string[];
@@ -59,6 +60,7 @@ declare global {
             addSource: (
                 name: string,
                 url: string,
+                isGovernmentSource: boolean,
                 providerName?: string,
                 providerWebsiteUrl?: string,
                 countryCodes?: string[],
@@ -81,6 +83,7 @@ export function addCase(opts: AddCaseProps): void {
             caseReference: {
                 sourceId: '5ef8e943dfe6e00030892d58',
                 sourceUrl: opts.sourceUrl || 'www.example.com',
+                isGovernmentSource: opts.isGovernmentSource || false,
                 uploadIds: opts.uploadIds,
             },
             demographics: {
@@ -154,6 +157,7 @@ export function clearSeededLocations(): void {
 export function addSource(
     name: string,
     url: string,
+    isGovernmentSource: boolean,
     providerName?: string,
     providerWebsiteUrl?: string,
     countryCodes?: string[],
@@ -168,6 +172,7 @@ export function addSource(
             origin: {
                 url: url,
                 license: 'MIT',
+                isGovernmentSource: isGovernmentSource ?? false,
                 providerName: providerName ?? 'Example',
                 providerWebsiteUrl: providerWebsiteUrl ?? 'www.example.com',
             },

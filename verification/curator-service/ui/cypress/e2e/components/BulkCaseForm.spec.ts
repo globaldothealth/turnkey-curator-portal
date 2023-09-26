@@ -19,7 +19,7 @@ describe('Bulk upload form', function () {
     });
 
     it('Can upload all fields', function () {
-        cy.addSource('Bulk source', 'www.bulksource.com');
+        cy.addSource('Bulk source', 'www.bulksource.com', false);
 
         cy.visit('/');
         cy.contains('No records to display');
@@ -49,6 +49,7 @@ describe('Bulk upload form', function () {
 
         // Case data
         cy.contains('www.bulksource.com');
+        cy.contains('NO');
         cy.contains('Data upload IDs')
             .parent()
             .parent()
@@ -87,7 +88,7 @@ describe('Bulk upload form', function () {
     });
 
     it('Can upload CSV with existing source', function () {
-        cy.addSource('Bulk source', 'www.bulksource.com');
+        cy.addSource('Bulk source', 'www.bulksource.com', false);
 
         cy.visit('/');
         cy.contains('No records to display');
@@ -123,8 +124,7 @@ describe('Bulk upload form', function () {
         cy.contains('New bulk upload').click();
         cy.get('div[data-testid="caseReference"]').type('www.new-source.com');
         cy.contains('www.new-source.com').click();
-        cy.get('input[name="caseReference.sourceName"]').type('New source');
-        cy.get('input[name="caseReference.sourceLicense"]').type('GPL3');
+        cy.get('input[name="caseReference.isGovernmentSource"]').click();
         const csvFixture = '../fixtures/bulk_data.csv';
         cy.get('input[type="file"]').attachFile(csvFixture);
 
@@ -146,11 +146,10 @@ describe('Bulk upload form', function () {
 
         cy.visit('/sources');
         cy.contains('www.new-source.com');
-        cy.contains('New source');
     });
 
     it('Upserts data', function () {
-        cy.addSource('Bulk source', 'www.bulksource.com');
+        cy.addSource('Bulk source', 'www.bulksource.com', false);
 
         cy.visit('/');
         cy.contains('No records to display');
@@ -205,7 +204,7 @@ describe('Bulk upload form', function () {
     });
 
     it('Upserts multiple cases if dictated by caseCount CSV field', function () {
-        cy.addSource('Bulk source', 'www.bulksource.com');
+        cy.addSource('Bulk source', 'www.bulksource.com', false);
 
         cy.visit('/');
         cy.contains('No records to display');
@@ -229,7 +228,7 @@ describe('Bulk upload form', function () {
     });
 
     it('Does not upload bad data and displays validation errors', function () {
-        cy.addSource('Bulk source', 'www.bulksource.com');
+        cy.addSource('Bulk source', 'www.bulksource.com', false);
 
         cy.visit('/');
         cy.contains('No records to display');
@@ -249,9 +248,9 @@ describe('Bulk upload form', function () {
             'p',
             'The selected file could not be uploaded. Found 1 row(s) with errors.',
         );
-        cy.get('ul').eq(3).should('contain', 'Row 1');
+        cy.get('ul').eq(4).should('contain', 'Row 1');
         cy.get('ul')
-            .eq(3)
+            .eq(4)
             .should('have.length', 1)
             .should('contain', 'age range 142-42 invalid');
         cy.get('button[aria-label="close overlay"').click();
@@ -261,7 +260,7 @@ describe('Bulk upload form', function () {
     });
 
     it('Fails gracefully when no header in CSV', function () {
-        cy.addSource('Bulk source', 'www.bulksource.com');
+        cy.addSource('Bulk source', 'www.bulksource.com', false);
 
         cy.visit('/');
         cy.contains('No records to display');

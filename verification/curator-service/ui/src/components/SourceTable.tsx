@@ -11,6 +11,7 @@ import {
 import { WithStyles } from '@mui/styles';
 import createStyles from '@mui/styles/createStyles';
 import withStyles from '@mui/styles/withStyles';
+import Checkbox from '@mui/material/Checkbox';
 import MaterialTable, { QueryResult } from 'material-table';
 import { nameCountry } from './util/countryNames';
 
@@ -23,6 +24,7 @@ import ChipInput from './ChipInput';
 
 interface Origin {
     url: string;
+    isGovernmentSource: boolean;
     license: string;
     providerName?: string;
     providerWebsiteUrl?: string;
@@ -61,6 +63,7 @@ interface SourceTableState {
 interface TableRow {
     _id: string;
     name: string;
+    isGovernmentSource: boolean;
     countryCodes: string; // flattened
     // origin
     url: string;
@@ -203,6 +206,7 @@ class SourceTable extends React.Component<Props, SourceTableState> {
             countryCodes: rowData.countryCodes?.split(',') ?? [],
             origin: {
                 url: rowData.url,
+                isGovernmentSource: rowData.isGovernmentSource,
                 license: rowData.license,
                 providerName: rowData.providerName,
                 providerWebsiteUrl: rowData.providerWebsiteUrl,
@@ -276,6 +280,19 @@ class SourceTable extends React.Component<Props, SourceTableState> {
                                             props.onChange(event.target.value)
                                         }
                                         defaultValue={props.value}
+                                    />
+                                ),
+                            },
+                            {
+                                title: 'Government Source',
+                                field: 'isGovernmentSource',
+                                type: 'boolean',
+                                editComponent: (props): JSX.Element => (
+                                    <Checkbox
+                                        onChange={(): void =>
+                                            props.onChange(!props.value)
+                                        }
+                                        checked={props.value}
                                     />
                                 ),
                             },
@@ -632,6 +649,8 @@ class SourceTable extends React.Component<Props, SourceTableState> {
                                             flattenedSources.push({
                                                 _id: s._id,
                                                 name: s.name,
+                                                isGovernmentSource:
+                                                    s.origin.isGovernmentSource,
                                                 countryCodes:
                                                     s.countryCodes?.join(',') ??
                                                     '',

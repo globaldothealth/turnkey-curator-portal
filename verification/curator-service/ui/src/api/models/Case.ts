@@ -9,11 +9,13 @@ export interface CaseReference {
     sourceId: string;
     sourceEntryId?: string;
     sourceUrl: string;
+    isGovernmentSource: boolean;
     uploadIds?: string[];
     verificationStatus?: VerificationStatus;
     additionalSources?: [
         {
             sourceUrl: string;
+            isGovernmentSource: boolean;
         },
     ];
 }
