@@ -289,21 +289,9 @@ class SourceTable extends React.Component<Props, SourceTableState> {
                                 type: 'boolean',
                                 editComponent: (props): JSX.Element => (
                                     <Checkbox
-                                        // type="text"
-                                        // size="small"
-                                        // fullWidth
-                                        // placeholder="Name"
-                                        // error={
-                                        //     !this.validateRequired(props.value)
-                                        // }
-                                        // helperText={
-                                        //     this.validateRequired(props.value)
-                                        //         ? ''
-                                        //         : 'Required field'
-                                        // }
-                                        onChange={(event): void => {
-                                            props.onChange(!props.value);
-                                        }}
+                                        onChange={(): void =>
+                                            props.onChange(!props.value)
+                                        }
                                         checked={props.value}
                                     />
                                 ),

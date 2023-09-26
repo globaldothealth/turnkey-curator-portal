@@ -248,9 +248,9 @@ describe('Bulk upload form', function () {
             'p',
             'The selected file could not be uploaded. Found 1 row(s) with errors.',
         );
-        cy.get('ul').eq(3).should('contain', 'Row 1');
+        cy.get('ul').eq(4).should('contain', 'Row 1');
         cy.get('ul')
-            .eq(3)
+            .eq(4)
             .should('have.length', 1)
             .should('contain', 'age range 142-42 invalid');
         cy.get('button[aria-label="close overlay"').click();
