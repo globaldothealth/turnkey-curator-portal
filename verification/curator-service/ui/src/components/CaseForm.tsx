@@ -264,7 +264,7 @@ const NewCaseValidation = Yup.object().shape(
             countryISO3: Yup.string().required('Required'),
         }),
         events: Yup.object().shape({
-            dateEntry: Yup.date().required('Required'),
+            dateEntry: Yup.date().typeError('Required').required('Required'),
         }),
         demographics: Yup.object().shape({
             minAge: Yup.number()
@@ -354,6 +354,7 @@ export default function CaseForm(props: Props): JSX.Element {
                     license: values.caseReference.sourceLicense as string,
                     providerName: values.caseReference.sourceProviderName,
                     providerWebsiteUrl: values.caseReference.sourceProviderUrl,
+                    isGovernmentSource: values.caseReference.isGovernmentSource,
                 });
                 values.caseReference.sourceId = newCaseReference.sourceId;
             } catch (e) {
@@ -702,8 +703,6 @@ export default function CaseForm(props: Props): JSX.Element {
                                             isChecked: isChecked({
                                                 requiredValues: [
                                                     values.location.countryISO3,
-                                                    values.location
-                                                        .geocodeLocation,
                                                 ],
                                             }),
                                             hasError: hasErrors(

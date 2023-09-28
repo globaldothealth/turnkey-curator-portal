@@ -1,7 +1,7 @@
 import { Select, TextField } from 'formik-mui';
 
 import { MenuItem } from '@mui/material';
-import { FastField, useFormikContext } from 'formik';
+import { FastField, useFormikContext, Field } from 'formik';
 import makeStyles from '@mui/styles/makeStyles';
 import { Day0CaseFormValues } from '../../api/models/Day0Case';
 import { useEffect } from 'react';
@@ -29,7 +29,9 @@ const styles = makeStyles(() => ({
 export default function Location(): JSX.Element {
     const countryNames = getNames('en');
     const classes = styles();
-    const { values, setFieldValue } = useFormikContext<Day0CaseFormValues>();
+    const { values, setFieldValue, touched } =
+        useFormikContext<Day0CaseFormValues>();
+    console.log(touched);
 
     useEffect(() => {
         if (!values.location.geocodeLocation) return;
@@ -159,15 +161,21 @@ export default function Location(): JSX.Element {
                     label="Latitude"
                     name={`location.geometry.latitude`}
                     type="number"
+                    InputLabelProps={{
+                        shrink: values.location.geometry?.latitude,
+                    }}
                     component={TextField}
                     sx={{ minWidth: '13rem' }}
                 />
-                <FastField
+                <Field
                     variant="outlined"
                     className={classes.field}
                     label="Longitude"
                     name={`location.geometry.longitude`}
                     type="number"
+                    InputLabelProps={{
+                        shrink: values.location.geometry?.longitude,
+                    }}
                     component={TextField}
                     sx={{ minWidth: '13rem' }}
                 />

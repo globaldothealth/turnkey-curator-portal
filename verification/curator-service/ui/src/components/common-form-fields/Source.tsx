@@ -386,7 +386,8 @@ export function SourcesAutocomplete(
                                     sourceId: source._id,
                                     sourceUrl: source.origin.url,
                                     isGovernmentSource:
-                                        source.origin.isGovernmentSource,
+                                        source.origin.isGovernmentSource ||
+                                        false,
                                     sourceName: source.name,
                                     sourceLicense: source.origin.license,
                                     sourceProviderName:
@@ -403,7 +404,6 @@ export function SourcesAutocomplete(
                         ),
                     ];
                 }
-
                 setOptions(newOptions);
             }
         });

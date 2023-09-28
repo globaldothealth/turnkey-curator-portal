@@ -68,21 +68,8 @@ function LocationForm(): JSX.Element {
             <PlacesAutocomplete
                 initialValue={initialValues.location.geocodeLocation?.name}
                 name="location.geocodeLocation"
-                required
             />
-            {!values.location.geocodeLocation && (
-                <Button
-                    variant="outlined"
-                    id="add-location"
-                    startIcon={<AddIcon />}
-                    onClick={() =>
-                        setFieldValue('location.geocodeLocation', {})
-                    }
-                >
-                    Specify geocode manually
-                </Button>
-            )}
-            {values.location.geocodeLocation && <Location />}
+            <Location />
         </Scroll.Element>
     );
 }
@@ -108,7 +95,6 @@ const useStyles = makeStyles((theme) => ({
 
 interface PlacesAutocompleteProps {
     name: string;
-    required?: boolean;
     initialValue?: string;
 }
 
@@ -206,12 +192,6 @@ export function PlacesAutocomplete(
                         component={TextField}
                         fullWidth
                     />
-                    {props.required && (
-                        <RequiredHelperText
-                            name={props.name}
-                            locationRequiredText="A location must be provided"
-                        />
-                    )}
                 </>
             )}
             renderOption={(
