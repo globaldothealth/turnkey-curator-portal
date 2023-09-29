@@ -435,7 +435,6 @@ export function SourcesAutocomplete(
                     _: unknown,
                     newValue: CaseReferenceForm | string | null,
                 ): void => {
-                    console.log('CHANGRE');
                     // newValue is a string if the user typed a URL and did not
                     // select a dropdown value.
                     if (typeof newValue === 'string') {
@@ -498,7 +497,6 @@ export function SourcesAutocomplete(
                                 ]),
                         };
                     }
-                    console.log('NEW VALUE', newValue);
                     setValue(newValue);
                     setFieldValue(name, newValue);
                 }}
@@ -607,7 +605,6 @@ export function SourcesAutocomplete(
                 //                     };
                 //                     setValue(newValue);
                 //                     setFieldValue(name, newValue);
-                //                     console.log('click');
                 //                 }}
                 //                 sx={{ cursor: 'pointer' }}
                 //             >
