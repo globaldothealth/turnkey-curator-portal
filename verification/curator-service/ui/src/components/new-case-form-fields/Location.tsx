@@ -31,7 +31,6 @@ export default function Location(): JSX.Element {
     const classes = styles();
     const { values, setFieldValue, touched } =
         useFormikContext<Day0CaseFormValues>();
-    console.log(touched);
 
     useEffect(() => {
         if (!values.location.geocodeLocation) return;
@@ -161,6 +160,7 @@ export default function Location(): JSX.Element {
                     label="Latitude"
                     name={`location.geometry.latitude`}
                     type="number"
+                    // Workaround for formik + MUI issue
                     InputLabelProps={{
                         shrink: values.location.geometry?.latitude,
                     }}
@@ -173,6 +173,7 @@ export default function Location(): JSX.Element {
                     label="Longitude"
                     name={`location.geometry.longitude`}
                     type="number"
+                    // Workaround for formik + MUI issue
                     InputLabelProps={{
                         shrink: values.location.geometry?.longitude,
                     }}

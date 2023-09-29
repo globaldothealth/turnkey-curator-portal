@@ -435,6 +435,7 @@ export function SourcesAutocomplete(
                     _: unknown,
                     newValue: CaseReferenceForm | string | null,
                 ): void => {
+                    console.log('CHANGRE');
                     // newValue is a string if the user typed a URL and did not
                     // select a dropdown value.
                     if (typeof newValue === 'string') {
@@ -497,6 +498,7 @@ export function SourcesAutocomplete(
                                 ]),
                         };
                     }
+                    console.log('NEW VALUE', newValue);
                     setValue(newValue);
                     setFieldValue(name, newValue);
                 }}
@@ -545,6 +547,8 @@ export function SourcesAutocomplete(
                 autoSelect
                 freeSolo={props.freeSolo}
                 selectOnFocus
+                blurOnSelect={'mouse'}
+                disableCloseOnSelect={true}
                 handleHomeEndKeys
                 options={options}
                 value={value}
@@ -569,46 +573,49 @@ export function SourcesAutocomplete(
                             // Using custom error validation for this field
                             error={!sourceURLValidation(inputValue)}
                         />
-                        <ErrorMessage name={'caseReference.sourceUrl'}>
-                            {(msg) => (
-                                <div className={classes.errorMessage}>
-                                    {msg}
-                                </div>
-                            )}
-                        </ErrorMessage>
+                        {!sourceURLValidation(inputValue) && (
+                            <ErrorMessage name={'caseReference.sourceUrl'}>
+                                {(msg) => (
+                                    <div className={classes.errorMessage}>
+                                        {msg}
+                                    </div>
+                                )}
+                            </ErrorMessage>
+                        )}
                     </div>
                 )}
-                renderOption={(
-                    props,
-                    option: CaseReferenceForm,
-                ): React.ReactNode => {
-                    return (
-                        <span key={option.sourceId}>
-                            <Typography
-                                variant="body2"
-                                onClick={() => {
-                                    const newValue = {
-                                        ...option,
-                                        additionalSources:
-                                            values.caseReference
-                                                ?.additionalSources ||
-                                            ([] as unknown as [
-                                                {
-                                                    sourceUrl: string;
-                                                    isGovernmentSource: boolean;
-                                                },
-                                            ]),
-                                    };
-                                    setValue(newValue);
-                                    setFieldValue(name, newValue);
-                                }}
-                                sx={{ cursor: 'pointer' }}
-                            >
-                                {option.sourceUrl}
-                            </Typography>
-                        </span>
-                    );
-                }}
+                // renderOption={(
+                //     props,
+                //     option: CaseReferenceForm,
+                // ): React.ReactNode => {
+                //     return (
+                //         <span key={option.sourceId}>
+                //             <Typography
+                //                 variant="body2"
+                //                 onClick={() => {
+                //                     const newValue = {
+                //                         ...option,
+                //                         additionalSources:
+                //                             values.caseReference
+                //                                 ?.additionalSources ||
+                //                             ([] as unknown as [
+                //                                 {
+                //                                     sourceUrl: string;
+                //                                     isGovernmentSource: boolean;
+                //                                 },
+                //                             ]),
+                //                     };
+                //                     setValue(newValue);
+                //                     setFieldValue(name, newValue);
+                //                     console.log('click');
+                //                 }}
+                //                 sx={{ cursor: 'pointer' }}
+                //             >
+                //                 {option.sourceUrl}
+                //             </Typography>
+                //         </span>
+                //     );
+                // }}
             />
             {/*<Form>*/}
             {/*    <FieldArray*/}
