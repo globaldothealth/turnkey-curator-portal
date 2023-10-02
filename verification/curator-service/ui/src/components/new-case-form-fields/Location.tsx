@@ -29,8 +29,7 @@ const styles = makeStyles(() => ({
 export default function Location(): JSX.Element {
     const countryNames = getNames('en');
     const classes = styles();
-    const { values, setFieldValue, touched } =
-        useFormikContext<Day0CaseFormValues>();
+    const { values, setFieldValue } = useFormikContext<Day0CaseFormValues>();
 
     useEffect(() => {
         if (!values.location.geocodeLocation) return;

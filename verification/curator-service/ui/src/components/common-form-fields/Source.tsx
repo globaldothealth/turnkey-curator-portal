@@ -12,7 +12,7 @@ import {
 import { CheckboxWithLabel, TextField } from 'formik-mui';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Autocomplete, List, ListItem, Grid, Typography } from '@mui/material';
+import { Autocomplete, List, ListItem, Grid } from '@mui/material';
 import Button from '@mui/material/Button';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
 import makeStyles from '@mui/styles/makeStyles';
