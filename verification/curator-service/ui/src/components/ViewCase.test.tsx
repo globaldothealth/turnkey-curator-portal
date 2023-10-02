@@ -54,6 +54,7 @@ it('loads and displays case', async () => {
     ).toBeInTheDocument();
 
     expect(screen.getAllByText('2020-01-02')).toHaveLength(2);
+    expect(screen.getAllByText('2020-01-04')).toHaveLength(1);
     // Demographics.
     expect(screen.getByText('male')).toBeInTheDocument();
     expect(screen.getByText('20')).toBeInTheDocument();

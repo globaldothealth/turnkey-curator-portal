@@ -4,6 +4,7 @@
     "pathogen": "COVID-19",
     "events": {
         "dateEntry": "2020-01-02",
+        "dateReported": "2020-01-04",
         "dateLastModified": "2020-01-02",
         "dateOnset": "2020-01-03",
         "dateConfirmation": "2020-01-05",

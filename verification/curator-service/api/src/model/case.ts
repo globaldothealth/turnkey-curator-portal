@@ -27,6 +27,7 @@ export type ICase = {
     };
     events: {
         dateEntry: Date;
+        dateReported: Date;
     };
 };
 

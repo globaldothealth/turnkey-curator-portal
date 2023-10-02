@@ -120,6 +120,7 @@ const LinelistTable = () => {
                 data.location.place || '-',
                 data.location.location || '-',
                 renderDate(data.events.dateEntry) || '-',
+                renderDate(data.events.dateReported) || '-',
                 parseAgeRange(data.demographics.ageRange) || '-',
                 data.demographics.gender || '-',
                 data.events.outcome || '-',
@@ -390,6 +391,12 @@ const LinelistTable = () => {
                                             sx={{ minWidth: 100 }}
                                         >
                                             {row.dateEntry}
+                                        </TableCell>
+                                        <TableCell
+                                            align="left"
+                                            sx={{ minWidth: 100 }}
+                                        >
+                                            {row.dateReported}
                                         </TableCell>
                                         <TableCell component="th" scope="row">
                                             {row.caseStatus}

@@ -2,7 +2,7 @@ import { CaseStatus } from '../../support/commands';
 import { Role } from '../../../src/api/models/User'
 
 /* eslint-disable no-undef */
-describe('New case form', function () {
+describe('Verify case', function () {
     beforeEach(() => {
         cy.task('clearSourcesDB', {});
         cy.task('clearCasesDB', {});
@@ -39,6 +39,7 @@ describe('New case form', function () {
         cy.get('div[data-testid="location.countryISO3"]').click()
         cy.get('li[data-value="FRA"').click();
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
+        cy.get('input[name="events.dateReported"]').type('2020-01-01');
 
         cy.intercept('POST', '/api/cases?num_cases=1').as('addCase');
         cy.get('button[data-testid="submit"]').click();
@@ -65,6 +66,7 @@ describe('New case form', function () {
         cy.wait('@geolocationFranceSuggest');
         cy.contains('li', 'France').click();
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
+        cy.get('input[name="events.dateReported"]').type('2020-01-01');
 
         cy.intercept('POST', '/api/cases?num_cases=1').as('addCase');
         cy.get('button[data-testid="submit"]').click();
@@ -83,6 +85,7 @@ describe('New case form', function () {
             country: 'France',
             countryISO3: 'FRA',
             dateEntry: '2020-01-01',
+            dateReported: '2020-01-01',
             caseStatus: CaseStatus.Confirmed,
             sourceUrl: 'www.example.com',
             occupation: 'Actor',

@@ -18,6 +18,10 @@ export const EventsSchema = new mongoose.Schema(
             type: Date,
             required: true,
         },
+        dateReported: {
+            type: Date,
+            required: true,
+        },
         dateLastModified: Date,
         dateOnset: Date,
         dateConfirmation: Date,
@@ -60,6 +64,7 @@ export const EventsSchema = new mongoose.Schema(
 
 export type EventsDocument = mongoose.Document & {
     dateEntry: Date;
+    dateReported: Date;
     dateLastModified?: Date;
     dateOnset?: Date;
     dateConfirmation?: Date;

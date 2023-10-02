@@ -51,6 +51,7 @@ describe('Linelist table', function () {
             country: 'France',
             countryISO3: 'FRA',
             dateEntry: '2020-05-01',
+            dateReported: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
@@ -72,6 +73,7 @@ describe('Linelist table', function () {
             country: 'France',
             countryISO3: 'FRA',
             dateEntry: '2020-05-01',
+            dateReported: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
@@ -97,6 +99,7 @@ describe('Linelist table', function () {
             country: 'France',
             countryISO3: 'FRA',
             dateEntry: '2020-05-01',
+            dateReported: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
@@ -115,6 +118,7 @@ describe('Linelist table', function () {
             country: 'France',
             countryISO3: 'FRA',
             dateEntry: '2020-05-01',
+            dateReported: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
@@ -135,6 +139,7 @@ describe('Linelist table', function () {
             country: 'France',
             countryISO3: 'FRA',
             dateEntry: '2020-05-01',
+            dateReported: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
@@ -142,6 +147,7 @@ describe('Linelist table', function () {
             country: 'Germany',
             countryISO3: 'DEU',
             dateEntry: '2020-05-01',
+            dateReported: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
@@ -149,6 +155,7 @@ describe('Linelist table', function () {
             country: 'Spain',
             countryISO3: 'ESP',
             dateEntry: '2020-05-01',
+            dateReported: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
@@ -179,6 +186,7 @@ describe('Linelist table', function () {
             country: 'France',
             countryISO3: 'FRA',
             dateEntry: '2020-05-01',
+            dateReported: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
@@ -194,6 +202,7 @@ describe('Linelist table', function () {
             country: 'France',
             countryISO3: 'FRA',
             dateEntry: '2020-05-01',
+            dateReported: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
@@ -201,6 +210,7 @@ describe('Linelist table', function () {
             country: 'Germany',
             countryISO3: 'DEU',
             dateEntry: '2020-05-01',
+            dateReported: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
@@ -237,6 +247,7 @@ describe('Linelist table', function () {
             country: 'France',
             countryISO3: 'FRA',
             dateEntry: '2020-05-01',
+            dateReported: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
@@ -244,6 +255,7 @@ describe('Linelist table', function () {
             country: 'United Kingdom',
             countryISO3: 'GBR',
             dateEntry: '2020-05-01',
+            dateReported: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
@@ -278,6 +290,7 @@ describe('Linelist table', function () {
                 country: 'France',
                 countryISO3: 'FRA',
                 dateEntry: '2020-05-01',
+                dateReported: '2020-05-01',
                 sourceUrl: 'www.example.com',
                 caseStatus: CaseStatus.Confirmed,
             });
@@ -321,6 +334,7 @@ describe('Linelist table', function () {
                 country: 'France',
                 countryISO3: 'FRA',
                 dateEntry: '2020-05-01',
+                dateReported: '2020-05-01',
                 sourceUrl: 'www.example.com',
                 caseStatus: CaseStatus.Confirmed,
             });
@@ -329,6 +343,7 @@ describe('Linelist table', function () {
             country: 'Germany',
             countryISO3: 'DEU',
             dateEntry: '2020-05-01',
+            dateReported: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
@@ -336,6 +351,7 @@ describe('Linelist table', function () {
             country: 'United Kingdom',
             countryISO3: 'GBR',
             dateEntry: '2020-05-01',
+            dateReported: '2020-05-01',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
@@ -375,6 +391,7 @@ describe('Linelist table', function () {
                 country: 'France',
                 countryISO3: 'FRA',
                 dateEntry: '2020-05-01',
+                dateReported: '2020-05-01',
                 sourceUrl: 'www.example.com',
                 caseStatus: CaseStatus.Confirmed,
             });
@@ -402,6 +419,7 @@ describe('Linelist table', function () {
                 country: 'France',
                 countryISO3: 'FRA',
                 dateEntry: '2020-05-01',
+                dateReported: '2020-05-01',
                 sourceUrl: 'www.example.com',
                 caseStatus: CaseStatus.Confirmed,
             });
@@ -430,6 +448,7 @@ describe('Linelist table', function () {
             country: 'France',
             countryISO3: 'FRA',
             dateEntry: '2022-05-10T13:35:33.6 31Z',
+            dateReported: '2020-05-01',
             dateConfirmation: '2022-05-10T13:35:33.631Z',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
@@ -438,6 +457,7 @@ describe('Linelist table', function () {
             country: 'Germany',
             countryISO3: 'DEU',
             dateEntry: '2022-02-19T13:35:33.631Z',
+            dateReported: '2020-05-01',
             dateConfirmation: '2022-02-19T13:35:33.631Z',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
@@ -446,6 +466,7 @@ describe('Linelist table', function () {
             country: 'Argentina',
             countryISO3: 'ARG',
             dateEntry: '2021-07-15T13:35:33.631Z',
+            dateReported: '2020-05-01',
             dateConfirmation: '2021-07-15T13:35:33.631Z',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,

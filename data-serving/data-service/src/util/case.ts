@@ -212,6 +212,9 @@ export const denormalizeEventsFields = (
     denormalizedData['events.dateEntry'] = doc.dateEntry
         ? doc.dateEntry.toDateString()
         : undefined || '';
+    denormalizedData['events.dateReported'] = doc.dateReported
+        ? doc.dateReported.toDateString()
+        : undefined || '';
     denormalizedData['events.dateOnset'] = doc.dateOnset?.toDateString() || '';
     denormalizedData['events.dateConfirmation'] =
         doc.dateConfirmation?.toDateString() || '';

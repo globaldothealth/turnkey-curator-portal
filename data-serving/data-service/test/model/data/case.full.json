@@ -41,6 +41,7 @@
     },
     "events": {
         "dateEntry": "2020-01-10",
+        "dateReported": "2020-01-10",
         "dateOnset": "2020-01-10",
         "dateConfirmation": "2020-01-10",
         "confirmationMethod": "PCR Test",

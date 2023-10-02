@@ -33,6 +33,7 @@ interface AddCaseProps {
     country: string;
     countryISO3: string;
     dateEntry: string;
+    dateReported: string;
     dateConfirmation?: string;
     confirmationMethod?: string;
     occupation?: string;
@@ -99,6 +100,7 @@ export function addCase(opts: AddCaseProps): void {
             },
             events: {
                 dateEntry: opts.dateEntry,
+                dateReported: opts.dateReported,
                 dateConfirmation: opts.dateConfirmation,
                 confirmationMethod: opts.confirmationMethod,
                 outcome: opts.outcome,

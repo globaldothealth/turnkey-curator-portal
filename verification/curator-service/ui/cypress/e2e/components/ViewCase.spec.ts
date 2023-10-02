@@ -26,6 +26,7 @@ describe('View case', function () {
             sourceUrl: 'www.example.com',
             confirmationMethod: 'PCR test',
             dateEntry: '2020-01-01',
+            dateReported: '2020-01-01',
             caseStatus: CaseStatus.Confirmed,
         });
 
@@ -54,6 +55,7 @@ describe('View case', function () {
             sourceUrl: 'www.example.com',
             confirmationMethod: 'PCR test',
             dateEntry: '2020-01-01',
+            dateReported: '2020-01-01',
             caseStatus: CaseStatus.Confirmed,
         });
         cy.request({ method: 'GET', url: '/api/cases' }).then((resp) => {

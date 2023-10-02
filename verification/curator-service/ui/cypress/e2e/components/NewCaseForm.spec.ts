@@ -42,6 +42,7 @@ describe('New case form', function () {
         cy.get('div[data-testid="location.countryISO3"]').click()
         cy.get('li[data-value="FRA"').click();
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
+        cy.get('input[name="events.dateReported"]').type('2020-01-01');
 
         cy.intercept('POST', '/api/cases?num_cases=1').as('addCase');
         cy.get('button[data-testid="submit"]').click();
@@ -72,6 +73,7 @@ describe('New case form', function () {
         cy.get('div[data-testid="location.countryISO3"]').click()
         cy.get('li[data-value="FRA"').click();
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
+        cy.get('input[name="events.dateReported"]').type('2020-01-01');
 
         cy.intercept('POST', '/api/cases?num_cases=1').as('addCase');
         cy.get('button[data-testid="submit"]').click();
@@ -108,7 +110,8 @@ describe('New case form', function () {
         cy.contains('li', 'France').click();
         cy.get('div[data-testid="location.countryISO3"]').click()
         cy.get('li[data-value="FRA"').click();
-        cy.get('input[name="events.dateEntry"]').type('2020-01-01');
+        cy.get('input[name="events.dateEntry"]').type('2020-02-01');
+        cy.get('input[name="events.dateReported"]').type('2020-01-01');
         cy.get('input[name="numCases"]').clear().type('3');
 
         cy.intercept('POST', '/api/cases?num_cases=3').as('addCases');
@@ -119,6 +122,7 @@ describe('New case form', function () {
         cy.contains('No records to display').should('not.exist');
         cy.get('td:contains("www.example.com")').should('have.length', 3);
         cy.get('td:contains("2020-01-01")').should('have.length', 3);
+        cy.get('td:contains("2020-02-01")').should('have.length', 3);
     });
 
     it('Can submit events without dates', function () {
@@ -141,6 +145,7 @@ describe('New case form', function () {
         cy.get('div[data-testid="location.countryISO3"]').click()
         cy.get('li[data-value="FRA"').click();
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
+        cy.get('input[name="events.dateReported"]').type('2020-01-01');
         // Outcome without a date.
         cy.get('div[data-testid="events.outcome"]').click();
         cy.get('li[data-value="recovered"').click();
@@ -175,6 +180,7 @@ describe('New case form', function () {
             country: 'France',
             countryISO3: 'FRA',
             dateEntry: '2020-01-01',
+            dateReported: '2020-01-01',
             caseStatus: CaseStatus.Confirmed,
             sourceUrl: 'www.example.com',
             occupation: 'Actor',
@@ -184,6 +190,7 @@ describe('New case form', function () {
             country: 'France',
             countryISO3: 'FRA',
             dateEntry: '2020-01-01',
+            dateReported: '2020-01-01',
             caseStatus: CaseStatus.Confirmed,
             sourceUrl: 'www.example.com',
             occupation: 'Horse trainer',
@@ -261,6 +268,7 @@ describe('New case form', function () {
         cy.get('div[data-testid="location.countryISO3"]').click()
         cy.get('li[data-value="FRA"').click();
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
+        cy.get('input[name="events.dateReported"]').type('2020-01-01');
 
         // Force server to return error
         cy.intercept('POST', '/api/cases?num_cases=1', {
@@ -281,7 +289,7 @@ describe('New case form', function () {
 
         cy.visit('/cases/new');
 
-        cy.get('p:contains("Required")').should('have.length', 4);
+        cy.get('p:contains("Required")').should('have.length', 5);
     });
 
     it('Shows checkbox on field completion', function () {
@@ -325,6 +333,7 @@ describe('New case form', function () {
         cy.get('div[data-testid="location.countryISO3"]').click();
         cy.get('li[data-value="FRA"').click();
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
+        cy.get('input[name="events.dateReported"]').type('2020-01-01');
 
         cy.intercept('POST', '/api/cases?num_cases=1').as('addCase');
         cy.get('button[data-testid="submit"]').click();

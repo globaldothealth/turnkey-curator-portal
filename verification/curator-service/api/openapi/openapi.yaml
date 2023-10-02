@@ -1489,6 +1489,8 @@ components:
                     properties:
                         dateEntry:
                             $ref: '#/components/schemas/Date'
+                        dateReported:
+                            $ref: '#/components/schemas/Date'
                         dateOnset:
                             $ref: '#/components/schemas/Date'
                         dateConfirmation:

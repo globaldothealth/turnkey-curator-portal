@@ -132,6 +132,17 @@ export default function Events(): JSX.Element {
                 errorMessage={errors.events?.dateEntry}
             />
             <DateField
+                name="events.dateReported"
+                label="Reported date"
+                value={values.events.dateReported}
+                onChange={(newValue) => {
+                    if (newValue) {
+                        setFieldValue('events.dateReported', newValue);
+                    }
+                }}
+                errorMessage={errors.events?.dateReported}
+            />
+            <DateField
                 name="events.dateConfirmation"
                 label="Confirmed case date"
                 value={values.events.dateConfirmation}
