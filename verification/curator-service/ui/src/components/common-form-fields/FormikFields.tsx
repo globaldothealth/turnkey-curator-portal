@@ -179,6 +179,7 @@ interface DateFieldProps {
     value: Date | string | undefined | null;
     onChange: (value: Date | null) => void;
     required?: boolean;
+    errorMessage?: string;
 }
 
 export function DateField(props: DateFieldProps): JSX.Element {
@@ -198,7 +199,14 @@ export function DateField(props: DateFieldProps): JSX.Element {
                     value={props.value}
                     onChange={props.onChange}
                     renderInput={(params) => (
-                        <MuiTextField {...params} name={props.name} fullWidth />
+                        <MuiTextField
+                            {...params}
+                            name={props.name}
+                            fullWidth
+                            // Non formik component needs different error handling
+                            error={!!props.errorMessage}
+                            helperText={props.errorMessage}
+                        />
                     )}
                 />
             </LocalizationProvider>

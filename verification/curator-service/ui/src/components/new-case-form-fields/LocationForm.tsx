@@ -1,23 +1,18 @@
+import axios from 'axios';
 import React from 'react';
 import { Field, useFormikContext } from 'formik';
-import { Typography } from '@mui/material';
-
-import { makeStyles } from '@mui/styles';
-
-import AddIcon from '@mui/icons-material/Add';
-import Autocomplete from '@mui/material/Autocomplete';
-import Button from '@mui/material/Button';
-import FieldTitle from '../common-form-fields/FieldTitle';
-import { GeocodeLocation } from '../../api/models/Day0Case';
-import Location from './Location';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import { RequiredHelperText } from '../common-form-fields/FormikFields';
-import Scroll from 'react-scroll';
 import { TextField } from 'formik-mui';
-import { StyledTooltip } from './StyledTooltip';
-import axios from 'axios';
 import throttle from 'lodash/throttle';
-import { Day0CaseFormValues } from '../../api/models/Day0Case';
+import { Typography } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import { makeStyles } from '@mui/styles';
+import Scroll from 'react-scroll';
+
+import { Day0CaseFormValues, GeocodeLocation } from '../../api/models/Day0Case';
+import FieldTitle from '../common-form-fields/FieldTitle';
+import Location from './Location';
+import { StyledTooltip } from './StyledTooltip';
 
 const TooltipText = () => (
     <StyledTooltip>
@@ -59,8 +54,7 @@ const TooltipText = () => (
 );
 
 function LocationForm(): JSX.Element {
-    const { values, initialValues, setFieldValue } =
-        useFormikContext<Day0CaseFormValues>();
+    const { initialValues } = useFormikContext<Day0CaseFormValues>();
 
     return (
         <Scroll.Element name="location">
@@ -68,21 +62,8 @@ function LocationForm(): JSX.Element {
             <PlacesAutocomplete
                 initialValue={initialValues.location.geocodeLocation?.name}
                 name="location.geocodeLocation"
-                required
             />
-            {!values.location.geocodeLocation && (
-                <Button
-                    variant="outlined"
-                    id="add-location"
-                    startIcon={<AddIcon />}
-                    onClick={() =>
-                        setFieldValue('location.geocodeLocation', {})
-                    }
-                >
-                    Specify geocode manually
-                </Button>
-            )}
-            {values.location.geocodeLocation && <Location />}
+            <Location />
         </Scroll.Element>
     );
 }
@@ -108,7 +89,6 @@ const useStyles = makeStyles((theme) => ({
 
 interface PlacesAutocompleteProps {
     name: string;
-    required?: boolean;
     initialValue?: string;
 }
 
@@ -206,19 +186,9 @@ export function PlacesAutocomplete(
                         component={TextField}
                         fullWidth
                     />
-                    {props.required && (
-                        <RequiredHelperText
-                            name={props.name}
-                            locationRequiredText="A location must be provided"
-                        />
-                    )}
                 </>
             )}
-            renderOption={(
-                props,
-                option: GeocodeLocation,
-                state,
-            ): React.ReactNode => {
+            renderOption={(props, option: GeocodeLocation): React.ReactNode => {
                 return (
                     <li {...props} className={classes.suggestion}>
                         <LocationOnIcon className={classes.icon} />

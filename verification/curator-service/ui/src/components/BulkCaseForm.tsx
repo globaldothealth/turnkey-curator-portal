@@ -475,7 +475,14 @@ const BulkCaseForm = (props: BulkCaseFormProps) => {
             <Formik
                 validationSchema={BulkFormSchema}
                 validateOnChange={false}
-                initialValues={{ file: null, caseReference: undefined }}
+                initialValues={{
+                    file: null,
+                    caseReference: {
+                        sourceId: '',
+                        sourceUrl: '',
+                        isGovernmentSource: false,
+                    },
+                }}
                 onSubmit={async (values): Promise<void> => {
                     await submitCases(values);
                 }}

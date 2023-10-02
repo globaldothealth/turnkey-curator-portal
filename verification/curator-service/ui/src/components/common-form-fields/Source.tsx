@@ -2,11 +2,17 @@ import axios from 'axios';
 import React from 'react';
 import Scroll from 'react-scroll';
 import { throttle } from 'lodash';
-import { FastField, Field, useFormikContext, FieldArray } from 'formik';
+import {
+    FastField,
+    Field,
+    useFormikContext,
+    FieldArray,
+    ErrorMessage,
+} from 'formik';
 import { CheckboxWithLabel, TextField } from 'formik-mui';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Autocomplete, List, ListItem, Grid, Typography } from '@mui/material';
+import { Autocomplete, List, ListItem, Grid } from '@mui/material';
 import Button from '@mui/material/Button';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
 import makeStyles from '@mui/styles/makeStyles';
@@ -14,7 +20,6 @@ import makeStyles from '@mui/styles/makeStyles';
 import { Day0CaseFormValues, CaseReference } from '../../api/models/Day0Case';
 import BulkCaseFormValues from '../bulk-case-form-fields/BulkCaseFormValues';
 import FieldTitle from './FieldTitle';
-import { RequiredHelperText } from './FormikFields';
 import { StyledTooltip } from '../new-case-form-fields/StyledTooltip';
 
 interface SourceProps {
@@ -293,6 +298,12 @@ const useStyles = makeStyles(() => ({
     fieldRow: {
         maxWidth: '50%',
     },
+    errorMessage: {
+        fontSize: '0.75em',
+        color: '#FD685B',
+        marginLeft: '14px',
+        marginTop: '3px',
+    },
 }));
 
 export function SourcesAutocomplete(
@@ -355,7 +366,7 @@ export function SourcesAutocomplete(
             ); // fragment locator
             return pattern.test(str);
         } else {
-            return true;
+            return false;
         }
     };
 
@@ -375,7 +386,8 @@ export function SourcesAutocomplete(
                                     sourceId: source._id,
                                     sourceUrl: source.origin.url,
                                     isGovernmentSource:
-                                        source.origin.isGovernmentSource,
+                                        source.origin.isGovernmentSource ||
+                                        false,
                                     sourceName: source.name,
                                     sourceLicense: source.origin.license,
                                     sourceProviderName:
@@ -392,7 +404,6 @@ export function SourcesAutocomplete(
                         ),
                     ];
                 }
-
                 setOptions(newOptions);
             }
         });
@@ -534,6 +545,8 @@ export function SourcesAutocomplete(
                 autoSelect
                 freeSolo={props.freeSolo}
                 selectOnFocus
+                blurOnSelect={'mouse'}
+                disableCloseOnSelect={true}
                 handleHomeEndKeys
                 options={options}
                 value={value}
@@ -555,44 +568,51 @@ export function SourcesAutocomplete(
                             placeholder="https://..."
                             component={TextField}
                             fullWidth
+                            // Using custom error validation for this field
+                            error={!sourceURLValidation(inputValue)}
                         />
-                        <RequiredHelperText
-                            name={name}
-                            wrongUrl={sourceURLValidation(inputValue)}
-                        />
+                        {!sourceURLValidation(inputValue) && (
+                            <ErrorMessage name={'caseReference.sourceUrl'}>
+                                {(msg) => (
+                                    <div className={classes.errorMessage}>
+                                        {msg}
+                                    </div>
+                                )}
+                            </ErrorMessage>
+                        )}
                     </div>
                 )}
-                renderOption={(
-                    props,
-                    option: CaseReferenceForm,
-                ): React.ReactNode => {
-                    return (
-                        <span key={option.sourceId}>
-                            <Typography
-                                variant="body2"
-                                onClick={() => {
-                                    const newValue = {
-                                        ...option,
-                                        additionalSources:
-                                            values.caseReference
-                                                ?.additionalSources ||
-                                            ([] as unknown as [
-                                                {
-                                                    sourceUrl: string;
-                                                    isGovernmentSource: boolean;
-                                                },
-                                            ]),
-                                    };
-                                    setValue(newValue);
-                                    setFieldValue(name, newValue);
-                                }}
-                                sx={{ cursor: 'pointer' }}
-                            >
-                                {option.sourceUrl}
-                            </Typography>
-                        </span>
-                    );
-                }}
+                // renderOption={(
+                //     props,
+                //     option: CaseReferenceForm,
+                // ): React.ReactNode => {
+                //     return (
+                //         <span key={option.sourceId}>
+                //             <Typography
+                //                 variant="body2"
+                //                 onClick={() => {
+                //                     const newValue = {
+                //                         ...option,
+                //                         additionalSources:
+                //                             values.caseReference
+                //                                 ?.additionalSources ||
+                //                             ([] as unknown as [
+                //                                 {
+                //                                     sourceUrl: string;
+                //                                     isGovernmentSource: boolean;
+                //                                 },
+                //                             ]),
+                //                     };
+                //                     setValue(newValue);
+                //                     setFieldValue(name, newValue);
+                //                 }}
+                //                 sx={{ cursor: 'pointer' }}
+                //             >
+                //                 {option.sourceUrl}
+                //             </Typography>
+                //         </span>
+                //     );
+                // }}
             />
             {/*<Form>*/}
             {/*    <FieldArray*/}

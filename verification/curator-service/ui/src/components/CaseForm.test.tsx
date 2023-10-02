@@ -78,7 +78,7 @@ describe('<CaseForm />', () => {
         ).toBeInTheDocument();
         expect(screen.getByText(/Submit case/i)).toBeInTheDocument();
         expect(screen.getAllByText(/Demographics/i)).toHaveLength(1);
-        expect(screen.getAllByText(/Location/i)).toHaveLength(4);
+        expect(screen.getAllByText(/Location/i)).toHaveLength(5);
         expect(screen.getAllByText(/Events/i)).toHaveLength(1);
         expect(screen.getByTestId('caseReference')).toBeInTheDocument();
     });

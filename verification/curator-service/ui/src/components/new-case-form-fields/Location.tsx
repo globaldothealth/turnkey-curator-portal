@@ -1,7 +1,7 @@
 import { Select, TextField } from 'formik-mui';
 
 import { MenuItem } from '@mui/material';
-import { FastField, useFormikContext } from 'formik';
+import { FastField, useFormikContext, Field } from 'formik';
 import makeStyles from '@mui/styles/makeStyles';
 import { Day0CaseFormValues } from '../../api/models/Day0Case';
 import { useEffect } from 'react';
@@ -159,15 +159,23 @@ export default function Location(): JSX.Element {
                     label="Latitude"
                     name={`location.geometry.latitude`}
                     type="number"
+                    // Workaround for formik + MUI issue
+                    InputLabelProps={{
+                        shrink: values.location.geometry?.latitude,
+                    }}
                     component={TextField}
                     sx={{ minWidth: '13rem' }}
                 />
-                <FastField
+                <Field
                     variant="outlined"
                     className={classes.field}
                     label="Longitude"
                     name={`location.geometry.longitude`}
                     type="number"
+                    // Workaround for formik + MUI issue
+                    InputLabelProps={{
+                        shrink: values.location.geometry?.longitude,
+                    }}
                     component={TextField}
                     sx={{ minWidth: '13rem' }}
                 />

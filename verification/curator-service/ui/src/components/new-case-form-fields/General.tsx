@@ -37,7 +37,6 @@ export default function General(): JSX.Element {
                 name="caseStatus"
                 label="Case status"
                 values={Object.values(CaseStatus)}
-                required
             />
 
             <div className={clsx([classes.fieldRow, classes.halfWidth])}>
