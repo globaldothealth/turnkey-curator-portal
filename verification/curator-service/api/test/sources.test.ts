@@ -346,6 +346,7 @@ describe('DELETE', () => {
             },
             events: {
                 dateEntry: new Date('2020-02-01'),
+                dateReported: new Date('2020-02-01'),
             },
             location: {
                 country: 'France',

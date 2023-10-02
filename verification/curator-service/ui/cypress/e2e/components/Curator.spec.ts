@@ -92,6 +92,7 @@ describe('Curator', function () {
 
         // EVENTS
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
+        cy.get('input[name="events.dateReported"]').type('2020-01-01');
         cy.get('input[name="events.dateConfirmation"]').type('2020-01-02');
         cy.get('input[name="events.confirmationMethod').type('PCR test');
         cy.get('input[name="events.dateOnset"]').type('2020-01-03');
@@ -255,6 +256,10 @@ describe('Curator', function () {
 
             // Events.
             cy.get('input[name="events.dateEntry"]').should(
+                'have.value',
+                '2020/01/01',
+            );
+            cy.get('input[name="events.dateReported"]').should(
                 'have.value',
                 '2020/01/01',
             );

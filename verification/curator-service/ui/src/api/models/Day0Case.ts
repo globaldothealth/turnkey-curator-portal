@@ -91,6 +91,7 @@ export interface Location {
 
 export interface Events {
     dateEntry: string | null;
+    dateReported: string | null;
     dateLastModified: string | null;
     dateOnset?: string | null;
     dateConfirmation?: string | null;

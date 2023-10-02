@@ -2,6 +2,7 @@ export const labels = [
     'Case ID',
     'Verified',
     'Entry date',
+    'Reported date',
     'Case status',
     'Country',
     'Place',
@@ -23,6 +24,7 @@ export const createData = (
     place?: string,
     location?: string,
     dateEntry?: string,
+    dateReported?: string,
     age?: string,
     gender?: string,
     outcome?: string,
@@ -34,6 +36,7 @@ export const createData = (
     return {
         caseId: caseId || '',
         dateEntry: dateEntry || '',
+        dateReported: dateReported || '',
         caseStatus: caseStatus || '',
         country: country || '',
         region: region || '',

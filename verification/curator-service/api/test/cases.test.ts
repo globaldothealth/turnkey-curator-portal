@@ -32,6 +32,7 @@ const creatorMetadata = {
 
 const events = {
     dateEntry: '2019-12-03T14:07:03.382Z',
+    dateReported: '2019-12-03T14:07:03.382Z',
 };
 
 const minimalCreateRequest = {
@@ -40,6 +41,7 @@ const minimalCreateRequest = {
     caseReference,
     events: {
         dateEntry: '2019-12-03T14:07:03.382Z',
+        dateReported: '2019-12-03T14:07:03.382Z',
     },
     location: {
         query: 'Canada',

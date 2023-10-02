@@ -232,6 +232,7 @@ describe('Case', () => {
         expect(denormalizedCase['demographics.occupation']).toEqual('');
 
         expect(denormalizedCase['events.dateEntry']).toEqual('');
+        expect(denormalizedCase['events.dateReported']).toEqual('');
         expect(denormalizedCase['events.dateOnset']).toEqual('');
         expect(denormalizedCase['events.dateConfirmation']).toEqual('');
         expect(denormalizedCase['events.confirmationMethod']).toEqual('');
@@ -391,6 +392,7 @@ describe('Case', () => {
     it('denormalizes events fields', async () => {
         const eventsDoc = {
             dateEntry: new Date('2020-11-01'),
+            dateReported: new Date('2020-11-01'),
             dateOnset: new Date('2020-11-02'),
             dateConfirmation: new Date('2020-11-03'),
         } as EventsDocument;
@@ -416,6 +418,9 @@ describe('Case', () => {
 
         expect(denormalizedCase['events.dateEntry']).toEqual(
             eventsDoc.dateEntry.toDateString(),
+        );
+        expect(denormalizedCase['events.dateReported']).toEqual(
+            eventsDoc.dateReported.toDateString(),
         );
         expect(denormalizedCase['events.dateOnset']).toEqual(
             eventsDoc.dateOnset?.toDateString(),

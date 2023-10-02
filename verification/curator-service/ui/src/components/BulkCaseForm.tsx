@@ -118,6 +118,7 @@ interface RawParsedCase {
 
     // Events
     dateEntry: string;
+    dateReported: string;
     dateOnset?: string;
     dateConfirmation?: string;
     confirmationMethod?: string;
@@ -279,6 +280,7 @@ const BulkCaseForm = (props: BulkCaseFormProps) => {
             },
             events: {
                 dateEntry: c.dateEntry,
+                dateReported: c.dateReported,
                 dateOnset: c.dateOnset,
                 dateConfirmation: c.dateConfirmation,
                 confirmationMethod: c.confirmationMethod,

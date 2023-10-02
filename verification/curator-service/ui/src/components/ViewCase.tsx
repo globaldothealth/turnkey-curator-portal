@@ -477,6 +477,13 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                                 content={renderDate(props.c.events.dateEntry)}
                             />
 
+                            <RowHeader title="Reported date" />
+                            <RowContent
+                                content={renderDate(
+                                    props.c.events.dateReported,
+                                )}
+                            />
+
                             <RowHeader title="Date of edit" />
                             <RowContent
                                 content={renderDate(

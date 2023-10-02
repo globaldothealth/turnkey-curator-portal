@@ -76,6 +76,7 @@ describe('App', function () {
                 country: countries[i].name,
                 countryISO3: countries[i].iso,
                 dateEntry: dateEntries[i],
+                dateReported: dateEntries[i],
                 caseStatus: CaseStatus.Confirmed,
             });
         }
@@ -123,6 +124,7 @@ describe('App', function () {
                 gender: genders[i] === '' ? undefined : genders[i],
                 caseStatus: CaseStatus.Confirmed,
                 dateEntry: '2020-05-01',
+                dateReported: '2020-04-01',
             });
         }
 
@@ -165,6 +167,7 @@ describe('App', function () {
             outcome: Outcome.Recovered,
             sourceUrl: 'www.recovered.com',
             dateEntry: '2020-05-01',
+            dateReported: '2020-04-01',
             caseStatus: CaseStatus.Confirmed,
         });
 
@@ -207,6 +210,7 @@ describe('App', function () {
                 country: countries[i].name,
                 countryISO3: countries[i].iso,
                 dateEntry: dateEntries[i],
+                dateReported: dateEntries[i],
                 caseStatus: CaseStatus.Confirmed,
             });
         }

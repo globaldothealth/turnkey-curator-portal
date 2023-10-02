@@ -48,6 +48,25 @@ describe('validate', () => {
             );
     });
 
+    it('model without date reported event is invalid', async () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const noDateReported: any = { ...minimalEvent };
+        delete noDateReported.dateReported;
+
+        return new Day0Case({
+            ...minimalModel,
+            events: noDateReported,
+        })
+            .validate()
+            .then(
+                () => null,
+                (e) => {
+                    expect(e).not.toBeNull();
+                    if (e) expect(e.name).toBe(Error.ValidationError.name);
+                },
+            );
+    });
+
     it('minimal model is valid', async () => {
         return new Day0Case(minimalModel).validate();
     });

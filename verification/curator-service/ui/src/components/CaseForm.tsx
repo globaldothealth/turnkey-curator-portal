@@ -93,6 +93,7 @@ const initialValuesFromCase = (
             },
             events: {
                 dateEntry: null,
+                dateReported: null,
                 dateLastModified: null,
                 dateOnset: null,
                 dateConfirmation: null,
@@ -265,6 +266,7 @@ const NewCaseValidation = Yup.object().shape(
         }),
         events: Yup.object().shape({
             dateEntry: Yup.date().typeError('Required').required('Required'),
+            dateReported: Yup.date().typeError('Required').required('Required'),
         }),
         demographics: Yup.object().shape({
             minAge: Yup.number()
@@ -409,6 +411,8 @@ export default function CaseForm(props: Props): JSX.Element {
                 ...values.events,
                 dateEntry:
                     toUTCDate(values.events.dateEntry || undefined) || null,
+                dateReported:
+                    toUTCDate(values.events.dateReported || undefined) || null,
                 dateOnset: toUTCDate(values.events.dateOnset || undefined),
                 dateConfirmation: toUTCDate(
                     values.events.dateConfirmation || undefined,
@@ -586,15 +590,11 @@ export default function CaseForm(props: Props): JSX.Element {
         return requiredValues.every((value) => !!value);
     };
 
-    // const newCaseErrors = {
-    //
-    // }
-    //
-    const newCaseTouched = {
+    const initialTouched = {
         caseStatus: true,
         caseReference: { sourceUrl: true },
         location: { countryISO3: true },
-        events: { dateEntry: true },
+        events: { dateEntry: true, dateReported: true },
     };
 
     return (
@@ -612,8 +612,7 @@ export default function CaseForm(props: Props): JSX.Element {
                         diseaseName,
                         initialCase,
                     )}
-                    initialErrors={initialCase ? {} : {}}
-                    initialTouched={initialCase ? {} : newCaseTouched}
+                    initialTouched={initialTouched}
                     validationSchema={NewCaseValidation}
                     // Validating on change slows down the form too much. It will
                     // validate on blur and form submission.
@@ -720,6 +719,7 @@ export default function CaseForm(props: Props): JSX.Element {
                                             isChecked: isChecked({
                                                 requiredValues: [
                                                     values.events.dateEntry,
+                                                    values.events.dateReported,
                                                 ],
                                             }),
                                             hasError: hasErrors(
