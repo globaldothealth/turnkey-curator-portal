@@ -225,13 +225,6 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                     <br />
                     <Button
                         variant="text"
-                        onClick={(): void => scrollTo('demographics')}
-                    >
-                        demographics
-                    </Button>
-                    <br />
-                    <Button
-                        variant="text"
                         onClick={(): void => scrollTo('location')}
                     >
                         location
@@ -242,6 +235,13 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                         onClick={(): void => scrollTo('event-history')}
                     >
                         event history
+                    </Button>
+                    <br />
+                    <Button
+                        variant="text"
+                        onClick={(): void => scrollTo('demographics')}
+                    >
+                        demographics
                     </Button>
                     <br />
                     <Button
@@ -494,39 +494,6 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                     </Scroll.Element>
                 </Paper>
 
-                {/* DEMOGRAPHICS */}
-                <Paper className={classes.paper} variant="outlined" square>
-                    <Scroll.Element
-                        name="demographics"
-                        className={classes.casebox}
-                    />
-                    <Typography
-                        className={classes.sectionTitle}
-                        variant="overline"
-                    >
-                        Demographics
-                    </Typography>
-                    <Grid container className={classes.grid}>
-                        <RowHeader title="Age" />
-                        <RowContent
-                            content={parseAgeRange(
-                                props.c.demographics.ageRange,
-                            )}
-                        />
-
-                        <RowHeader title="Gender" />
-                        <RowContent content={props.c.demographics.gender} />
-
-                        <RowHeader title="Occupation" />
-                        <RowContent content={props.c.demographics.occupation} />
-
-                        <RowHeader title="Healthcare worker" />
-                        <RowContent
-                            content={props.c.demographics.healthcareWorker}
-                        />
-                    </Grid>
-                </Paper>
-
                 {/* LOCATION */}
                 <Paper className={classes.paper} variant="outlined" square>
                     <Scroll.Element name="location" className={classes.casebox}>
@@ -706,6 +673,39 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             )}
                         </Grid>
                     </Scroll.Element>
+                </Paper>
+
+                {/* DEMOGRAPHICS */}
+                <Paper className={classes.paper} variant="outlined" square>
+                    <Scroll.Element
+                        name="demographics"
+                        className={classes.casebox}
+                    />
+                    <Typography
+                        className={classes.sectionTitle}
+                        variant="overline"
+                    >
+                        Demographics
+                    </Typography>
+                    <Grid container className={classes.grid}>
+                        <RowHeader title="Age" />
+                        <RowContent
+                            content={parseAgeRange(
+                                props.c.demographics.ageRange,
+                            )}
+                        />
+
+                        <RowHeader title="Gender" />
+                        <RowContent content={props.c.demographics.gender} />
+
+                        <RowHeader title="Occupation" />
+                        <RowContent content={props.c.demographics.occupation} />
+
+                        <RowHeader title="Healthcare worker" />
+                        <RowContent
+                            content={props.c.demographics.healthcareWorker}
+                        />
+                    </Grid>
                 </Paper>
 
                 {/* SYMPTOMS */}
