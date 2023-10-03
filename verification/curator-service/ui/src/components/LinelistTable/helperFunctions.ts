@@ -32,12 +32,14 @@ export const createData = (
     dateOnset?: string,
     source?: string,
     caseStatus?: string,
+    comment?: string,
 ) => {
     return {
         caseId: caseId || '',
         dateEntry: dateEntry || '',
         dateReported: dateReported || '',
         caseStatus: caseStatus || '',
+        comment: comment || '',
         country: country || '',
         region: region || '',
         district: district || '',

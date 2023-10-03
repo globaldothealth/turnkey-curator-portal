@@ -65,6 +65,7 @@ const initialValuesFromCase = (
         // return minimal viable case
         return {
             caseStatus: '',
+            comment: '',
             caseReference: {
                 sourceId: '',
                 sourceUrl: '',
@@ -255,6 +256,7 @@ const NewCaseValidation = Yup.object().shape(
         caseStatus: Yup.string()
             .oneOf(['confirmed', 'suspected', 'discarded', 'omit_error'])
             .required('Required'),
+        comment: Yup.string(),
         caseReference: Yup.object().shape({
             sourceUrl: Yup.string()
                 .required('Required')

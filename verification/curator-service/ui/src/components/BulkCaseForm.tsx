@@ -101,6 +101,7 @@ interface RawParsedCase {
     [key: string]: string | number | boolean | undefined;
 
     caseStatus: CaseStatus;
+    comment?: string;
     pathogen: string;
 
     // CaseReference
@@ -255,6 +256,7 @@ const BulkCaseForm = (props: BulkCaseFormProps) => {
     ): CompleteParsedCase => {
         return {
             caseStatus: c.caseStatus,
+            comment: c.comment,
             pathogen: c.pathogen,
             caseReference: {
                 sourceId: caseReference.sourceId,

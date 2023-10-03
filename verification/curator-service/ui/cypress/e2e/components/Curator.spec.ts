@@ -56,6 +56,7 @@ describe('Curator', function () {
         // GENERAL
         cy.get('div[data-testid="caseStatus"]').click();
         cy.get('li[data-value="confirmed"').click();
+        cy.get('div[data-testid="comment"]').type('This case should be consulted with Supervisor.');
 
         // DATA SOURCE
 
@@ -426,6 +427,8 @@ describe('Curator', function () {
             // TODO UI for demographics.age needs redesigning
             // View full details about the case
             cy.contains('td', 'www.example.com').click({ force: true });
+            // Curator's comment.
+            cy.contains('This case should be consulted with Supervisor.');
             // Case data.
             cy.contains('www.example.com');
             // Demographics.

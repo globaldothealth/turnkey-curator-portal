@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import {
     Button,
     Dialog,
@@ -490,6 +490,8 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                                     props.c.events.dateLastModified,
                                 )}
                             />
+                            <RowHeader title="Curator's comment" />
+                            <RowContent content={props.c.comment} isMultiline />
                         </Grid>
                     </Scroll.Element>
                 </Paper>
@@ -951,6 +953,7 @@ function RowHeader(props: { title: string }): JSX.Element {
 function RowContent(props: {
     content?: string;
     isLink?: boolean;
+    isMultiline?: boolean;
 }): JSX.Element {
     const searchQuery = useSelector(selectSearchQuery);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -984,6 +987,7 @@ function RowContent(props: {
                 </a>
             ) : (
                 <Highlighter
+                    style={{ whiteSpace: 'pre-wrap' }}
                     highlightStyle={{ fontWeight: 'bold' }}
                     className="highlighted"
                     searchWords={searchQueryArray}

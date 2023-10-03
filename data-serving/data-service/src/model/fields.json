@@ -1,6 +1,7 @@
 [
     "_id",
     "caseStatus",
+    "comment",
     "pathogen",
     "caseReference.additionalSources",
     "caseReference.sourceEntryId",

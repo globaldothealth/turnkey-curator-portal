@@ -174,6 +174,7 @@ export interface Curators {
 export interface Day0Case {
     _id?: string;
     caseStatus: CaseStatus | '';
+    comment?: string;
     caseReference: CaseReference;
     demographics: Demographics;
     location: Location;
@@ -224,6 +225,7 @@ interface VaccinationFormValues {
 // contains all the fields present in manual case entry form
 export interface Day0CaseFormValues {
     caseStatus: CaseStatus | '';
+    comment?: string;
     caseReference: {
         sourceId: string;
         sourceUrl: string;

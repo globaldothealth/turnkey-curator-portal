@@ -1,6 +1,7 @@
 {
     "_id": "5ef8e943dfe6e00030892d58",
     "caseStatus": "confirmed",
+    "comment": "This case might not contain valid data.\nNeeds to be checked by region supervisor.",
     "pathogen": "COVID-19",
     "events": {
         "dateEntry": "2020-01-02",
