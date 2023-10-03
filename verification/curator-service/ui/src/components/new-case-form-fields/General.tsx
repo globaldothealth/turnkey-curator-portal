@@ -8,7 +8,6 @@ import clsx from 'clsx';
 import { useStyles } from './styled';
 import { FastField } from 'formik';
 import { TextField } from 'formik-mui';
-import { TextareaAutosize } from '@material-ui/core';
 
 const TooltipText = () => (
     <StyledTooltip>
