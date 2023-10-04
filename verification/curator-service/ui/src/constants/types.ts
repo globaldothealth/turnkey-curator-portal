@@ -13,6 +13,7 @@ export enum SortBy {
     Age = 'age',
     Occupation = 'occupation',
     Outcome = 'outcome',
+    Identifier = '_id',
 }
 
 export enum SortByOrder {

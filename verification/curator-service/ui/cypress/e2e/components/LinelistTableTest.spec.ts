@@ -440,34 +440,28 @@ describe('Linelist table', function () {
         cy.contains('1 - 5 of 7').should('exist');
     });
 
-    // For some reason all the added cases have the same confirmation date
-    // without taking into consideration passed creationDate
-    // which makes this test always fail, this has to be debugged
-    it.skip('Can sort the data', () => {
+    it('Can sort the data', () => {
         cy.addCase({
             country: 'France',
             countryISO3: 'FRA',
-            dateEntry: '2022-05-10T13:35:33.6 31Z',
+            dateEntry: '2020-05-01',
             dateReported: '2020-05-01',
-            dateConfirmation: '2022-05-10T13:35:33.631Z',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
         cy.addCase({
             country: 'Germany',
             countryISO3: 'DEU',
-            dateEntry: '2022-02-19T13:35:33.631Z',
+            dateEntry: '2020-05-01',
             dateReported: '2020-05-01',
-            dateConfirmation: '2022-02-19T13:35:33.631Z',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
         cy.addCase({
             country: 'Argentina',
             countryISO3: 'ARG',
-            dateEntry: '2021-07-15T13:35:33.631Z',
+            dateEntry: '2020-05-01',
             dateReported: '2020-05-01',
-            dateConfirmation: '2021-07-15T13:35:33.631Z',
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
         });
@@ -481,12 +475,12 @@ describe('Linelist table', function () {
         cy.visit('/cases');
         cy.wait('@getCases');
 
-        cy.get('tr').eq(2).contains('Germany');
+        cy.get('tr').eq(1).contains('Argentina');
 
         cy.get('#sort-by-select').click();
         cy.get('li').contains('ascending').click();
         cy.wait('@getCasesAscending');
 
-        cy.get('tr').eq(2).contains('France');
+        cy.get('tr').eq(1).contains('France');
     });
 });

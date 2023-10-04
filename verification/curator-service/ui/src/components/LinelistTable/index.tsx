@@ -1,13 +1,30 @@
 import React, { useEffect } from 'react';
+import { Helmet } from 'react-helmet';
+import { Link, useHistory, useLocation } from 'react-router-dom';
+
+import VerifiedIcon from '@mui/icons-material/CheckCircleOutline';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import CircularProgress from '@mui/material/CircularProgress';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableFooter from '@mui/material/TableFooter';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+
+import { Role } from '../../api/models/User';
+import { CaseDeleteDialog } from '../Dialogs/CaseDeleteDialog';
+import EnhancedTableToolbar from './EnhancedTableToolbar';
+import { createData, labels } from './helperFunctions';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import Pagination from './Pagination';
+import { selectUser } from '../../redux/auth/selectors';
 import { fetchLinelistData } from '../../redux/linelistTable/thunk';
-import {
-    setCurrentPage,
-    setRowsPerPage,
-    setCasesSelected,
-    setDeleteCasesDialogOpen,
-    setRowsAcrossPagesSelected,
-} from '../../redux/linelistTable/slice';
 import {
     selectIsLoading,
     selectCases,
@@ -21,36 +38,18 @@ import {
     selectRefetchData,
     selectRowsAcrossPages,
 } from '../../redux/linelistTable/selectors';
-import { selectUser } from '../../redux/auth/selectors';
-import { Link, useHistory, useLocation } from 'react-router-dom';
-
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import TablePagination from '@mui/material/TablePagination';
-import Stack from '@mui/material/Stack';
-import TableFooter from '@mui/material/TableFooter';
-import CircularProgress from '@mui/material/CircularProgress';
-import Checkbox from '@mui/material/Checkbox';
-import Button from '@mui/material/Button';
-
-import renderDate from '../util/date';
-import { createData, labels } from './helperFunctions';
+import {
+    setCurrentPage,
+    setRowsPerPage,
+    setCasesSelected,
+    setDeleteCasesDialogOpen,
+    setRowsAcrossPagesSelected,
+} from '../../redux/linelistTable/slice';
 import { LoaderContainer, StyledAlert } from './styled';
-import { URLToSearchQuery } from '../util/searchQuery';
-import { hasAnyRole, parseAgeRange } from '../util/helperFunctions';
-import { Helmet } from 'react-helmet';
-
-import Pagination from './Pagination';
-import EnhancedTableToolbar from './EnhancedTableToolbar';
-import { CaseDeleteDialog } from '../Dialogs/CaseDeleteDialog';
 import { nameCountry } from '../util/countryNames';
-import VerifiedIcon from '@mui/icons-material/CheckCircleOutline';
-import { Role } from '../../api/models/User';
+import renderDate from '../util/date';
+import { hasAnyRole, parseAgeRange } from '../util/helperFunctions';
+import { URLToSearchQuery } from '../util/searchQuery';
 
 const dataLimit = 10000;
 
@@ -181,7 +180,7 @@ const LinelistTable = () => {
         caseId: string,
     ) => {
         const selectedIndex = casesSelected.indexOf(caseId);
-        let newSelected: string[] = [];
+        let newSelected: string[];
 
         if (selectedIndex === -1) {
             newSelected = [...casesSelected, caseId];
