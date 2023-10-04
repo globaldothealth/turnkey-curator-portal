@@ -684,6 +684,8 @@ components:
                         - suspected
                         - discarded
                         - omit_error
+                comment:
+                    type: string
                 caseReference:
                     type: object
                     properties:

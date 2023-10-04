@@ -80,6 +80,7 @@ export const caseSchema = new mongoose.Schema(
             enum: CaseStatus,
             required: true,
         },
+        comment: String,
         pathogen: {
             type: String,
             required: true,
@@ -149,6 +150,7 @@ caseSchema.methods.equalsJSON = function (jsonCase: any): boolean {
 
     return (
         _.isEqual(thisJson.caseStatus, other.caseStatus) &&
+        _.isEqual(thisJson.comment, other.comment) &&
         _.isEqual(thisJson.demographics, other.demographics) &&
         _.isEqual(thisJson.events, other.events) &&
         _.isEqual(thisJson.genomeSequences, other.genomeSequences) &&
@@ -179,6 +181,7 @@ export interface ISource {
 
 export type ICase = {
     caseStatus: CaseStatus;
+    comment?: string;
     pathogen: string;
     symptoms: string;
     dateLastModified: string;

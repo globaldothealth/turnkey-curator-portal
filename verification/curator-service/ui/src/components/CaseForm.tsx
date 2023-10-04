@@ -65,6 +65,7 @@ const initialValuesFromCase = (
         // return minimal viable case
         return {
             caseStatus: '',
+            comment: '',
             caseReference: {
                 sourceId: '',
                 sourceUrl: '',
@@ -255,6 +256,7 @@ const NewCaseValidation = Yup.object().shape(
         caseStatus: Yup.string()
             .oneOf(['confirmed', 'suspected', 'discarded', 'omit_error'])
             .required('Required'),
+        comment: Yup.string(),
         caseReference: Yup.object().shape({
             sourceUrl: Yup.string()
                 .required('Required')
@@ -670,31 +672,6 @@ export default function CaseForm(props: Props): JSX.Element {
                                     </TableOfContentsRow>
                                     <TableOfContentsRow
                                         onClick={(): void =>
-                                            scrollTo('demographics')
-                                        }
-                                    >
-                                        {tableOfContentsIcon({
-                                            isChecked: isChecked({
-                                                optionalValues: [
-                                                    values.demographics.gender,
-                                                    values.demographics.age,
-                                                    values.demographics
-                                                        .occupation,
-                                                    values.demographics
-                                                        .healthcareWorker,
-                                                ],
-                                            }),
-                                            hasError: hasErrors(
-                                                ['demographics'],
-                                                errors,
-                                                touched,
-                                            ),
-                                        })}
-                                        {'Demographics'.toLocaleUpperCase()}
-                                    </TableOfContentsRow>
-
-                                    <TableOfContentsRow
-                                        onClick={(): void =>
                                             scrollTo('location')
                                         }
                                     >
@@ -729,6 +706,30 @@ export default function CaseForm(props: Props): JSX.Element {
                                             ),
                                         })}
                                         {'Events'.toLocaleUpperCase()}
+                                    </TableOfContentsRow>
+                                    <TableOfContentsRow
+                                        onClick={(): void =>
+                                            scrollTo('demographics')
+                                        }
+                                    >
+                                        {tableOfContentsIcon({
+                                            isChecked: isChecked({
+                                                optionalValues: [
+                                                    values.demographics.gender,
+                                                    values.demographics.age,
+                                                    values.demographics
+                                                        .occupation,
+                                                    values.demographics
+                                                        .healthcareWorker,
+                                                ],
+                                            }),
+                                            hasError: hasErrors(
+                                                ['demographics'],
+                                                errors,
+                                                touched,
+                                            ),
+                                        })}
+                                        {'Demographics'.toLocaleUpperCase()}
                                     </TableOfContentsRow>
                                     <TableOfContentsRow
                                         onClick={(): void =>
@@ -950,13 +951,13 @@ export default function CaseForm(props: Props): JSX.Element {
                                         />
                                     </FormSection>
                                     <FormSection>
-                                        <Demographics />
-                                    </FormSection>
-                                    <FormSection>
                                         <LocationForm />
                                     </FormSection>
                                     <FormSection>
                                         <Events />
+                                    </FormSection>
+                                    <FormSection>
+                                        <Demographics />
                                     </FormSection>
                                     <FormSection>
                                         <Symptoms />

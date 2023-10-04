@@ -128,6 +128,7 @@ const LinelistTable = () => {
                 renderDate(data.events.dateOnset) || '-',
                 data.caseReference.sourceUrl || '-',
                 data.caseStatus || '-',
+                data.comment || '',
             );
         });
 

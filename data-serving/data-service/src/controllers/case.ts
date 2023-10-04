@@ -316,6 +316,7 @@ export class CasesController {
                 while (doc != null) {
                     delete doc.caseReference.sourceEntryId;
                     const caseDTO = await dtoFromCase(doc);
+                    delete caseDTO.comment;
                     const stringifiedCase = stringify([caseDTO], {
                         header: false,
                         columns: this.csvHeaders,

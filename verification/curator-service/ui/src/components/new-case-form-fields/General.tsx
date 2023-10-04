@@ -23,6 +23,10 @@ const TooltipText = () => (
                 <strong>Entry date:</strong> Date case was entered into line
                 list.
             </li>
+            <li>
+                <strong>Curator's comment:</strong> Comment added by curator,
+                visible only in turnkey system, not downloadable.
+            </li>
         </ul>
     </StyledTooltip>
 );
@@ -45,6 +49,17 @@ export default function General(): JSX.Element {
                     type="text"
                     label="Pathogen"
                     disabled
+                    component={TextField}
+                    fullWidth
+                />
+            </div>
+            <div className={clsx([classes.fieldRow, classes.halfWidth])}>
+                <FastField
+                    data-testid="comment"
+                    name="comment"
+                    type="text"
+                    multiline
+                    label="Curator's comment"
                     component={TextField}
                     fullWidth
                 />
