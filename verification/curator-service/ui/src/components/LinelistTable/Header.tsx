@@ -15,13 +15,13 @@ import FilterChips from './FilterChips';
 
 const sortKeywords = [
     {
-        name: 'Confirmation date ascending',
-        value: SortBy.ConfirmationDate,
+        name: 'Identifier ascending',
+        value: SortBy.Identifier,
         order: SortByOrder.Ascending,
     },
     {
-        name: 'Confirmation date descending',
-        value: SortBy.ConfirmationDate,
+        name: 'Identifier descending',
+        value: SortBy.Identifier,
         order: SortByOrder.Descending,
     },
 ];
