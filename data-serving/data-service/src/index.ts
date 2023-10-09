@@ -141,7 +141,7 @@ apiRouter.post(
     createBatchUpdateCaseRevisions,
     caseController.batchUpdate,
 );
-apiRouter.put('/cases/:id', caseController.update);
+apiRouter.put('/cases/:id', createCaseRevision, caseController.update);
 apiRouter.delete(
     '/cases',
     batchDeleteCheckThreshold,
