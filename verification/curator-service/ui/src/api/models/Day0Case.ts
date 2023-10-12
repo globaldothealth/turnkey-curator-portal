@@ -171,6 +171,16 @@ export interface Curators {
     verifiedBy?: CuratorData;
 }
 
+export interface RevisionMetadata {
+    revisionNumber: number;
+    creationMetadata: {
+        curator: string;
+    };
+    updateMetadata: {
+        curator: string;
+    };
+}
+
 export interface Day0Case {
     _id?: string;
     caseStatus: CaseStatus | '';
@@ -190,6 +200,7 @@ export interface Day0Case {
     vaccineSideEffects?: string[];
     preexistingConditionsHelper?: string[];
     curators?: Curators;
+    revisionMetadata?: RevisionMetadata;
     [key: string]:
         | CaseReference
         | Demographics
@@ -201,6 +212,7 @@ export interface Day0Case {
         | GenomeSequences
         | Vaccination
         | Curators
+        | RevisionMetadata
         | string
         | string[]
         | number
@@ -220,6 +232,16 @@ interface VaccinationFormValues {
     vaccineName?: string;
     vaccineDate?: string | null;
     vaccineSideEffects?: string[];
+}
+
+interface RevisionMetadataValues {
+    revisionNumber: number;
+    creationMetadata: {
+        curator: string;
+    };
+    updateMetadata: {
+        curator: string;
+    };
 }
 
 // contains all the fields present in manual case entry form
@@ -276,6 +298,7 @@ export interface Day0CaseFormValues {
     preexistingConditionsHelper?: string[];
     transmissionHelper?: string;
     occupation?: string;
+    revisionMetadata?: RevisionMetadataValues;
     // eslint-disable-next-line
     [key: string]: any;
 }

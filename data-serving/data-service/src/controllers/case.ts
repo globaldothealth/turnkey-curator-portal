@@ -171,6 +171,22 @@ const fillEmpty = (caseData: any) => {
     return caseData;
 };
 
+// For operations that change any of the value a new version needs to be created
+const updatedRevisionMetadata = (
+    day0Case: CaseDocument,
+    curator: string,
+    note?: string,
+) => {
+    return {
+        creationMetadata: day0Case.revisionMetadata.creationMetadata,
+        updateMetadata: {
+            curator: curator,
+            note: note,
+        },
+        revisionNumber: day0Case.revisionMetadata.revisionNumber + 1,
+    };
+};
+
 export class CasesController {
     private csvHeaders: string[];
     constructor(private readonly geocoders: Geocoder[]) {
@@ -481,7 +497,15 @@ export class CasesController {
 
         try {
             this.addGeoResolution(req);
-            const receivedCase = req.body as CaseDTO;
+            const receivedCase = {
+                ...req.body,
+                revisionMetadata: {
+                    revisionNumber: 0,
+                    creationMetadata: {
+                        curator: req.body.curator.email,
+                    },
+                },
+            } as CaseDTO;
 
             const c = fillEmpty(new Day0Case(await caseFromDTO(receivedCase)));
 
@@ -559,6 +583,11 @@ export class CasesController {
                     createdBy: c.curators.createdBy,
                     verifiedBy: verifier._id,
                 },
+                revisionMetadata: updatedRevisionMetadata(
+                    c,
+                    req.body.curator.email,
+                    'Case Verification',
+                ),
             });
             await c.save();
             const responseCase = await Day0Case.find({
@@ -789,7 +818,14 @@ export class CasesController {
             }
             const caseDetails = await caseFromDTO(req.body);
             logger.info('Case details');
-            c.set(caseDetails);
+            // c.set(caseDetails);
+            c.set({
+                ...caseDetails,
+                revisionMetadata: updatedRevisionMetadata(
+                    c,
+                    req.body.curator.email,
+                ),
+            });
             logger.info('case set');
             await c.save();
             logger.info('Case save');

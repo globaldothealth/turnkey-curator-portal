@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import mongoose from 'mongoose';
+
 import { CaseReferenceDocument, caseReferenceSchema } from './case-reference';
 import {
     demographicsAgeRange,
@@ -8,20 +9,24 @@ import {
     demographicsSchema,
 } from './demographics';
 import { EventsDocument, EventsSchema } from './events';
-import { LocationDocument, locationSchema } from './location';
 import {
     GenomeSequenceDocument,
     genomeSequenceSchema,
 } from './genome-sequence';
-import { TravelHistoryDocument, travelHistorySchema } from './travel-history';
-import { TransmissionDocument, transmissionSchema } from './transmission';
-import { VaccineDocument, vaccineSchema } from './vaccine';
+import { LocationDocument, locationSchema } from './location';
 import {
     PreexistingConditionsDocument,
     preexistingConditionsSchema,
 } from './preexisting-conditions';
+import { TravelHistoryDocument, travelHistorySchema } from './travel-history';
+import { TransmissionDocument, transmissionSchema } from './transmission';
+import { VaccineDocument, vaccineSchema } from './vaccine';
 import { CaseStatus } from '../types/enums';
 import { IdCounter, COUNTER_DOCUMENT_ID } from '../model/id-counter';
+import {
+    RevisionMetadataDocument,
+    revisionMetadataSchema,
+} from './revision-metadata';
 
 /*
  * There are separate types for case for data storage (the mongoose document) and
@@ -99,6 +104,7 @@ export const caseSchema = new mongoose.Schema(
         genomeSequences: genomeSequenceSchema,
         vaccination: vaccineSchema,
         curators: curatorsSchema,
+        revisionMetadata: revisionMetadataSchema,
     },
     {
         toObject: {
@@ -194,6 +200,7 @@ export type ICase = {
     genomeSequences: GenomeSequenceDocument;
     vaccination: VaccineDocument;
     curators: CuratorsDocument;
+    revisionMetadata: RevisionMetadataDocument;
 };
 
 export type CaseDTO = ICase & {
