@@ -73,10 +73,26 @@ beforeAll(async () => {
     minimalDay0CaseData = {
         ...minimalDay0CaseData,
         ...{ curators: { createdBy: curator._id } },
+        ...{
+            revisionMetadata: {
+                revisionNumber: 0,
+                creationMetadata: {
+                    curator: curatorUserEmail,
+                },
+            },
+        },
     };
     fullDay0CaseData = {
         ...fullCase,
         ...{ curators: { createdBy: curator._id } },
+        ...{
+            revisionMetadata: {
+                revisionNumber: 0,
+                creationMetadata: {
+                    curator: curatorUserEmail,
+                },
+            },
+        },
     };
     global.Date.now = jest.fn(() => new Date('2020-12-12T12:12:37Z').getTime());
 });
@@ -1266,19 +1282,21 @@ describe('PUT', () => {
         expect(res.body.demographics.ageRange.start).toEqual(6);
         expect(res.body.demographics.ageRange.end).toEqual(10);
     });
-    it.skip('update present item should create case revision', async () => {
+    it('update present item should create case revision', async () => {
         const c = new Day0Case(minimalDay0CaseData);
         await c.save();
 
-        const newNotes = 'abc';
+        const newComment = 'abc';
         await request(app)
             .put(`/api/cases/${c._id}`)
-            .send({ ...curatorMetadata, notes: newNotes })
+            .send({ ...curatorMetadata, comment: newComment })
             .expect('Content-Type', /json/)
             .expect(200);
 
         expect(await CaseRevision.collection.countDocuments()).toEqual(1);
-        expect((await CaseRevision.find())[0].case).toMatchObject(c.toObject());
+        expect(
+            JSON.parse(JSON.stringify((await CaseRevision.find())[0].case)),
+        ).toEqual(JSON.parse(JSON.stringify(c.toObject())));
     });
     it('invalid update present item should return 422', async () => {
         const c = new Day0Case(minimalDay0CaseData);

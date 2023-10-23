@@ -817,18 +817,17 @@ export class CasesController {
                 return;
             }
             const caseDetails = await caseFromDTO(req.body);
-            logger.info('Case details');
-            // c.set(caseDetails);
+
             c.set({
                 ...caseDetails,
                 revisionMetadata: updatedRevisionMetadata(
                     c,
                     req.body.curator.email,
+                    'Case Update',
                 ),
             });
-            logger.info('case set');
             await c.save();
-            logger.info('Case save');
+
             res.json(await dtoFromCase(c));
         } catch (err) {
             if (err instanceof Error) {
