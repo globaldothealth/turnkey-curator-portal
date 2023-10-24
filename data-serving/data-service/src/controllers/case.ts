@@ -182,6 +182,7 @@ const updatedRevisionMetadata = (
         updateMetadata: {
             curator: curator,
             note: note,
+            date: Date.now(),
         },
         revisionNumber: day0Case.revisionMetadata.revisionNumber + 1,
     };
@@ -503,9 +504,13 @@ export class CasesController {
                     revisionNumber: 0,
                     creationMetadata: {
                         curator: req.body.curator.email,
+                        date: Date.now(),
                     },
                 },
             } as CaseDTO;
+            logger.info('====receivedCase');
+            logger.info(receivedCase);
+            logger.info('====receivedCase');
 
             const c = fillEmpty(new Day0Case(await caseFromDTO(receivedCase)));
 

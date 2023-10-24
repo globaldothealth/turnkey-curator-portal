@@ -175,9 +175,12 @@ export interface RevisionMetadata {
     revisionNumber: number;
     creationMetadata: {
         curator: string;
+        date?: string;
     };
     updateMetadata: {
         curator: string;
+        date?: string;
+        notes?: string;
     };
 }
 
