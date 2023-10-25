@@ -105,7 +105,6 @@ const LinelistTable = () => {
         dispatch(setCurrentPage(0));
         // eslint-disable-next-line
     }, [dispatch, searchQuery]);
-    console.log(cases);
 
     const rows =
         cases &&

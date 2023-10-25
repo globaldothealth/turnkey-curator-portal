@@ -508,9 +508,6 @@ export class CasesController {
                     },
                 },
             } as CaseDTO;
-            logger.info('====receivedCase');
-            logger.info(receivedCase);
-            logger.info('====receivedCase');
 
             const c = fillEmpty(new Day0Case(await caseFromDTO(receivedCase)));
 
