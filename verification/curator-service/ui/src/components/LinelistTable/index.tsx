@@ -112,6 +112,12 @@ const LinelistTable = () => {
             return createData(
                 data._id || '',
                 !!data.curators?.verifiedBy || false,
+                renderDate(data.revisionMetadata?.updateMetadata?.date) ||
+                    renderDate(data.revisionMetadata?.creationMetadata?.date) ||
+                    '',
+                data.revisionMetadata?.updateMetadata?.curator ||
+                    data.revisionMetadata?.creationMetadata?.curator ||
+                    '',
                 nameCountry(data.location.countryISO3, data.location.country) ||
                     '-',
                 data.location.region || '-',
@@ -385,6 +391,18 @@ const LinelistTable = () => {
                                             data-testid="verification-status"
                                         >
                                             {row.verified && <VerifiedIcon />}
+                                        </TableCell>
+                                        <TableCell
+                                            align="left"
+                                            sx={{ minWidth: 100 }}
+                                        >
+                                            {row.dateModified}
+                                        </TableCell>
+                                        <TableCell
+                                            align="left"
+                                            sx={{ minWidth: 100 }}
+                                        >
+                                            {row.lastModifiedBy}
                                         </TableCell>
                                         <TableCell
                                             align="left"

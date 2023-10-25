@@ -57,6 +57,14 @@ describe('Linelist table', function () {
         });
         cy.visit('/');
         cy.visit('/cases');
+
+        // We don't need additional library for just one test, we can format date manually
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth() < 9 ? `0${today.getMonth() + 1}` : today.getMonth() + 1;
+        const day = today.getDate() < 10 ? `0${today.getDate()}` : today.getDate();
+        cy.contains(`${year}-${month}-${day}`)
+        cy.contains('test@bar.com');
         cy.contains('France');
         cy.contains('www.example.com');
         cy.contains('2020-05-01');
