@@ -23,10 +23,13 @@ const keywords = new Map<string, string>([
     ['place', 'location.place'],
     ['location', 'location.location'],
     ['outcome', 'events.outcome'],
+    ['lastModifiedBy', 'revisionMetadata.updateMetadata.curator'],
     ['caseId', '_id'],
     ['sourceUrl', 'caseReference.sourceUrl'],
     ['dateConfirmedFrom', 'events.dateEntry'],
     ['dateConfirmedTo', 'events.dateEntry'],
+    ['dateModifiedFrom', 'revisionMetadata.updateMetadata.date'],
+    ['dateModifiedTo', 'revisionMetadata.updateMetadata.date'],
 ]);
 
 export default function parseSearchQuery(q: string): ParsedSearch {
@@ -57,11 +60,15 @@ export default function parseSearchQuery(q: string): ParsedSearch {
         res.fullTextSearch = searchParsedResult.text as string;
         // Get the keywords into our result struct.
         keywords.forEach((path, keyword): void => {
+            // Clear filter by date from previous keyword
+            if (searchParsedResult.dateOperator) {
+                delete searchParsedResult.dateOperator;
+            }
             // Enable to filter by date
-            keyword === 'dateConfirmedFrom'
+            keyword === 'dateConfirmedFrom' || keyword === 'dateModifiedFrom'
                 ? (searchParsedResult.dateOperator = '$gte')
                 : null;
-            keyword === 'dateConfirmedTo'
+            keyword === 'dateConfirmedTo' || keyword === 'dateModifiedTo'
                 ? (searchParsedResult.dateOperator = '$lt')
                 : null;
 

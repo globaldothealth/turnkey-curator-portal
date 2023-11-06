@@ -498,13 +498,20 @@ export class CasesController {
 
         try {
             this.addGeoResolution(req);
+            const currentDate = Date.now();
+            const curator = req.body.curator.email;
             const receivedCase = {
                 ...req.body,
                 revisionMetadata: {
                     revisionNumber: 0,
                     creationMetadata: {
-                        curator: req.body.curator.email,
-                        date: Date.now(),
+                        curator,
+                        date: currentDate,
+                    },
+                    updateMetadata: {
+                        curator,
+                        date: currentDate,
+                        notes: 'Creation',
                     },
                 },
             } as CaseDTO;
