@@ -262,21 +262,6 @@ describe('App', function () {
 
         cy.contains('test@example.com').should('not.exist');
         cy.contains('No records to display').should('exist');
-        //
-        // cy.contains('2020-06-02').should('exist');
-        //
-        // cy.get('.filter-button').click();
-        // cy.get('#dateModifiedTo').type('2020-05-01');
-        //
-        // cy.get('body').then(($body) => {
-        //     if ($body.find('.iubenda-cs-accept-btn').length) {
-        //         cy.get('.iubenda-cs-accept-btn').click();
-        //     }
-        // });
-        //
-        // cy.get('button[data-test-id="search-by-filter-button"]').click();
-
-
     });
 
     it('allows the user to search by last modified date', function () {
