@@ -49,7 +49,7 @@ describe('App', function () {
         });
     });
 
-    it('allows the user to search by date', function () {
+    it('allows the user to search by confirmation date', function () {
         cy.login({
             roles: ['curator'],
             name: 'testName',
@@ -228,6 +228,102 @@ describe('App', function () {
         cy.contains('Italy');
         cy.contains('2020-02-15').should('not.exist');
         cy.contains('Germany').should('not.exist');
+    });
+
+    it.only('allows the user to search by last modified by', function () {
+        cy.login({
+            roles: ['curator'],
+            name: 'testName',
+            email: 'test@example.com',
+        });
+
+        cy.task('clearCasesDB', {});
+
+        cy.addCase({
+            country: 'Germany',
+            countryISO3: 'DEU',
+            dateEntry: '2020-06-02',
+            dateReported: '2020-06-01',
+            caseStatus: CaseStatus.Confirmed,
+        });
+
+        cy.visit('/');
+        cy.contains('Line list').click();
+
+        cy.get('.filter-button').click();
+        cy.get('#lastModifiedBy').type('test@example.com');
+        cy.get('button[data-test-id="search-by-filter-button"]').click();
+
+        cy.contains('test@example.com').should('exist');
+
+        cy.get('.filter-button').click();
+        cy.get('#lastModifiedBy').clear().type('wrongUser@example.com');
+        cy.get('button[data-test-id="search-by-filter-button"]').click();
+
+        cy.contains('test@example.com').should('not.exist');
+        cy.contains('No records to display').should('exist');
+        //
+        // cy.contains('2020-06-02').should('exist');
+        //
+        // cy.get('.filter-button').click();
+        // cy.get('#dateModifiedTo').type('2020-05-01');
+        //
+        // cy.get('body').then(($body) => {
+        //     if ($body.find('.iubenda-cs-accept-btn').length) {
+        //         cy.get('.iubenda-cs-accept-btn').click();
+        //     }
+        // });
+        //
+        // cy.get('button[data-test-id="search-by-filter-button"]').click();
+
+
+    });
+
+    it('allows the user to search by last modified date', function () {
+        cy.login({
+            roles: ['curator'],
+            name: 'testName',
+            email: 'test@example.com',
+        });
+
+        cy.task('clearCasesDB', {});
+
+        cy.addCase({
+            country: 'Germany',
+            countryISO3: 'DEU',
+            dateEntry: '2020-06-02',
+            dateReported: '2020-06-01',
+            caseStatus: CaseStatus.Confirmed,
+        });
+
+        cy.visit('/');
+        cy.contains('Line list').click();
+
+        cy.get('.filter-button').click();
+        cy.get('#dateModifiedFrom').type('2020-04-30');
+
+        cy.get('body').then(($body) => {
+            if ($body.find('.iubenda-cs-accept-btn').length) {
+                cy.get('.iubenda-cs-accept-btn').click();
+            }
+        });
+
+        cy.get('button[data-test-id="search-by-filter-button"]').click();
+
+        cy.contains('2020-06-02').should('exist');
+
+        cy.get('.filter-button').click();
+        cy.get('#dateModifiedTo').type('2020-05-01');
+
+        cy.get('body').then(($body) => {
+            if ($body.find('.iubenda-cs-accept-btn').length) {
+                cy.get('.iubenda-cs-accept-btn').click();
+            }
+        });
+
+        cy.get('button[data-test-id="search-by-filter-button"]').click();
+
+        cy.contains('2020-06-02').should('not.exist');
     });
 
     it('shows logout button when logged in', function () {
