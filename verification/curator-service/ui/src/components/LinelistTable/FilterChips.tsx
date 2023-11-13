@@ -7,6 +7,7 @@ import { setModalOpen, setActiveFilterInput } from '../../redux/filters/slice';
 
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
+import { FilterLabels } from '../../constants/types';
 
 const FilterChips = () => {
     const dispatch = useAppDispatch();
@@ -37,7 +38,9 @@ const FilterChips = () => {
             {filterBreadcrumbs.map((breadcrumb) => (
                 <Chip
                     key={breadcrumb.key}
-                    label={`${breadcrumb.key} - ${breadcrumb.value}`}
+                    label={`${
+                        FilterLabels[breadcrumb.key] || breadcrumb.key
+                    } - ${breadcrumb.value}`}
                     onDelete={() => handleChipDelete(breadcrumb)}
                     onClick={() => {
                         dispatch(setModalOpen(true));

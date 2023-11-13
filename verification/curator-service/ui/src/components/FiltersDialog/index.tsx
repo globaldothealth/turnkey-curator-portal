@@ -38,6 +38,7 @@ import { useStyles } from './styled';
 import { sendCustomGtmEvent } from '../util/helperFunctions';
 import { Gender, Outcome } from '../../api/models/Day0Case';
 import { Role } from '../../api/models/User';
+import { FilterLabels } from '../../constants/types';
 
 interface FiltersModalProps {
     showModalAlert: boolean;
@@ -47,8 +48,6 @@ interface FiltersModalProps {
 export interface FilterFormValues {
     gender?: Gender;
     country?: string;
-    region?: string;
-    district?: string;
     place?: string;
     location?: string;
     occupation?: string;
@@ -56,12 +55,19 @@ export interface FilterFormValues {
     dateConfirmedFrom?: string;
     dateConfirmedTo?: string;
     caseId?: string;
+    lastModifiedBy?: string;
+    dateModifiedFrom?: string;
+    dateModifiedTo?: string;
     sourceUrl?: string;
+    region?: string;
+    district?: string;
 }
 
 interface FilterFormErrors {
     dateConfirmedFrom?: string | null;
     dateConfirmedTo?: string | null;
+    dateModifiedFrom?: string | null;
+    dateModifiedTo?: string | null;
 }
 
 export default function FiltersDialog({
@@ -104,6 +110,14 @@ export default function FiltersDialog({
         const errors: FilterFormErrors = {};
 
         if (
+            values.dateConfirmedFrom &&
+            new Date(values.dateConfirmedFrom) > new Date()
+        ) {
+            errors.dateConfirmedFrom =
+                "Date confirmed from can't be a future date";
+        }
+
+        if (
             values.dateConfirmedTo &&
             new Date(values.dateConfirmedTo) > new Date()
         ) {
@@ -111,11 +125,18 @@ export default function FiltersDialog({
         }
 
         if (
-            values.dateConfirmedFrom &&
-            new Date(values.dateConfirmedFrom) > new Date()
+            values.dateModifiedFrom &&
+            new Date(values.dateModifiedFrom) > new Date()
         ) {
-            errors.dateConfirmedFrom =
-                "Date confirmed from can't be a future date";
+            errors.dateModifiedFrom =
+                "Date modified from can't be a future date";
+        }
+
+        if (
+            values.dateModifiedTo &&
+            new Date(values.dateModifiedTo) > new Date()
+        ) {
+            errors.dateModifiedTo = "Date confirmed to can't be a future date";
         }
 
         return errors;
@@ -221,7 +242,7 @@ export default function FiltersDialog({
                                 labelId="gender-label"
                                 id="gender"
                                 name="gender"
-                                label="Gender"
+                                label={FilterLabels['gender']}
                                 value={formik.values.gender || ''}
                                 onChange={formik.handleChange}
                             >
@@ -247,7 +268,7 @@ export default function FiltersDialog({
                                     labelId="country-label"
                                     id="country"
                                     name="country"
-                                    label="Country"
+                                    label={FilterLabels['country']}
                                     value={formik.values.country || ''}
                                     onChange={formik.handleChange}
                                     disabled={loadingState}
@@ -279,7 +300,7 @@ export default function FiltersDialog({
                                 autoFocus={activeFilterInput === 'place'}
                                 id="place"
                                 type="text"
-                                label="Place"
+                                label={FilterLabels['place']}
                                 name="place"
                                 value={formik.values.place || ''}
                                 onChange={formik.handleChange}
@@ -295,7 +316,7 @@ export default function FiltersDialog({
                                 autoFocus={activeFilterInput === 'location'}
                                 id="location"
                                 type="text"
-                                label="Location"
+                                label={FilterLabels['location']}
                                 name="location"
                                 value={formik.values.location || ''}
                                 onChange={formik.handleChange}
@@ -309,7 +330,7 @@ export default function FiltersDialog({
                         <TextField
                             autoFocus={activeFilterInput === 'occupation'}
                             id="occupation"
-                            label="Occupation"
+                            label={FilterLabels['occupation']}
                             name="occupation"
                             type="text"
                             variant="outlined"
@@ -337,7 +358,7 @@ export default function FiltersDialog({
                                     labelId="outcome-label"
                                     id="outcome"
                                     name="outcome"
-                                    label="Outcome"
+                                    label={FilterLabels['outcome']}
                                     value={formik.values.outcome || ''}
                                     onChange={formik.handleChange}
                                     disabled={loadingState}
@@ -359,7 +380,7 @@ export default function FiltersDialog({
                                 activeFilterInput === 'dateConfirmedFrom'
                             }
                             id="dateConfirmedFrom"
-                            label="Date confirmed from"
+                            label={FilterLabels['dateConfirmedFrom']}
                             name="dateConfirmedFrom"
                             type="date"
                             variant="outlined"
@@ -383,7 +404,7 @@ export default function FiltersDialog({
                         <TextField
                             autoFocus={activeFilterInput === 'dateConfirmedTo'}
                             id="dateConfirmedTo"
-                            label="Date confirmed to"
+                            label={FilterLabels['dateConfirmedTo']}
                             name="dateConfirmedTo"
                             type="date"
                             variant="outlined"
@@ -414,7 +435,7 @@ export default function FiltersDialog({
                                 <TextField
                                     autoFocus={activeFilterInput === 'caseId'}
                                     id="caseId"
-                                    label="Case ID"
+                                    label={FilterLabels['caseId']}
                                     name="caseId"
                                     type="text"
                                     variant="outlined"
@@ -428,6 +449,83 @@ export default function FiltersDialog({
                                     helperText={
                                         formik.touched.caseId &&
                                         formik.errors.caseId
+                                    }
+                                />
+
+                                <TextField
+                                    autoFocus={
+                                        activeFilterInput === 'lastModifiedBy'
+                                    }
+                                    id="lastModifiedBy"
+                                    label={FilterLabels['lastModifiedBy']}
+                                    name="lastModifiedBy"
+                                    type="text"
+                                    variant="outlined"
+                                    size={inputSize}
+                                    value={formik.values.lastModifiedBy || ''}
+                                    onChange={formik.handleChange}
+                                    error={
+                                        formik.touched.lastModifiedBy &&
+                                        Boolean(formik.errors.lastModifiedBy)
+                                    }
+                                    helperText={
+                                        formik.touched.lastModifiedBy &&
+                                        formik.errors.lastModifiedBy
+                                    }
+                                />
+                            </div>
+
+                            <div>
+                                <TextField
+                                    autoFocus={
+                                        activeFilterInput === 'dateModifiedFrom'
+                                    }
+                                    id="dateModifiedFrom"
+                                    label={FilterLabels['dateModifiedFrom']}
+                                    name="dateModifiedFrom"
+                                    type="date"
+                                    variant="outlined"
+                                    // This makes sure that only 4 digits can be entered as a year
+                                    InputProps={{
+                                        inputProps: { max: getMaxDate() },
+                                    }}
+                                    size={inputSize}
+                                    InputLabelProps={{ shrink: true }}
+                                    value={formik.values.dateModifiedFrom || ''}
+                                    onChange={formik.handleChange}
+                                    error={
+                                        formik.touched.dateModifiedFrom &&
+                                        Boolean(formik.errors.dateModifiedFrom)
+                                    }
+                                    helperText={
+                                        formik.touched.dateModifiedFrom &&
+                                        formik.errors.dateModifiedFrom
+                                    }
+                                />
+                                <TextField
+                                    autoFocus={
+                                        activeFilterInput === 'dateModifiedTo'
+                                    }
+                                    id="dateModifiedTo"
+                                    label={FilterLabels['dateModifiedTo']}
+                                    name="dateModifiedTo"
+                                    type="date"
+                                    variant="outlined"
+                                    // This makes sure that only 4 digits can be entered as a year
+                                    InputProps={{
+                                        inputProps: { max: getMaxDate() },
+                                    }}
+                                    size={inputSize}
+                                    InputLabelProps={{ shrink: true }}
+                                    value={formik.values.dateModifiedTo || ''}
+                                    onChange={formik.handleChange}
+                                    error={
+                                        formik.touched.dateModifiedTo &&
+                                        Boolean(formik.errors.dateModifiedTo)
+                                    }
+                                    helperText={
+                                        formik.touched.dateModifiedTo &&
+                                        formik.errors.dateModifiedTo
                                     }
                                 />
                             </div>

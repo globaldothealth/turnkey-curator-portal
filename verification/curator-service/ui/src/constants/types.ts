@@ -21,6 +21,25 @@ export enum SortByOrder {
     Descending = 'descending',
 }
 
+interface IFilterLabels {
+    [id: string]: string;
+}
+
+export const FilterLabels: IFilterLabels = {
+    caseId: 'Case ID',
+    country: 'Country',
+    dateConfirmedFrom: 'Date confirmed from',
+    dateConfirmedTo: 'Date confirmed to',
+    dateModifiedFrom: 'Date modified from',
+    dateModifiedTo: 'Date modified to',
+    gender: 'Gender',
+    lastModifiedBy: 'Last modified by',
+    location: 'Location',
+    occupation: 'Occupation',
+    outcome: 'Outcome',
+    place: 'Place',
+};
+
 interface IMapLink {
     [id: string]: string;
 }
