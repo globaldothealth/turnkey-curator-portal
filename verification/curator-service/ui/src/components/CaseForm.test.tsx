@@ -53,6 +53,14 @@ describe('<CaseForm />', () => {
             headers: {},
         };
         mockedAxios.get.mockResolvedValueOnce(axiosOccupationResponse);
+        const axiosLocationCommentsResponse = {
+            data: { locationComments: [] },
+            status: 200,
+            statusText: 'OK',
+            config: {},
+            headers: {},
+        };
+        mockedAxios.get.mockResolvedValueOnce(axiosLocationCommentsResponse);
     });
 
     afterEach(() => {
@@ -72,13 +80,13 @@ describe('<CaseForm />', () => {
                 initialRoute: '/cases/new',
             },
         );
-        await waitFor(() => expect(mockedAxios.get).toHaveBeenCalledTimes(3));
+        await waitFor(() => expect(mockedAxios.get).toHaveBeenCalledTimes(4));
         expect(
             screen.getByText('Enter the details for a new case'),
         ).toBeInTheDocument();
         expect(screen.getByText(/Submit case/i)).toBeInTheDocument();
         expect(screen.getAllByText(/Demographics/i)).toHaveLength(1);
-        expect(screen.getAllByText(/Location/i)).toHaveLength(5);
+        expect(screen.getAllByText(/Location/i)).toHaveLength(7);
         expect(screen.getAllByText(/Events/i)).toHaveLength(1);
         expect(screen.getByTestId('caseReference')).toBeInTheDocument();
     });
