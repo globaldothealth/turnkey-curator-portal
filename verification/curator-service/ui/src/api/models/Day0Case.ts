@@ -286,6 +286,7 @@ export interface Day0CaseFormValues {
         geocodeLocation?: GeocodeLocation;
         query?: string;
         geometry?: Geometry;
+        comment?: string;
     };
     events: Events;
     symptoms?: string[];

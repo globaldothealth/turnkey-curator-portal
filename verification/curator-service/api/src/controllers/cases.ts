@@ -378,6 +378,23 @@ export default class CasesController {
         }
     };
 
+    /** listLocationComments simply forwards the request to the data service */
+    listLocationComments = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const response = await axios.get(
+                this.dataServerURL + '/api' + req.url,
+            );
+            res.status(response.status).json(response.data);
+        } catch (err) {
+            logger.error(err);
+            if (err.response?.status && err.response?.data) {
+                res.status(err.response.status).send(err.response.data);
+                return;
+            }
+            res.status(500).send(err);
+        }
+    };
+
     /** get simply forwards the request to the data service */
     get = async (req: Request, res: Response): Promise<void> => {
         try {

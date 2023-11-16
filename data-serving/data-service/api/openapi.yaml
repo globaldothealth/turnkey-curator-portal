@@ -431,6 +431,31 @@ paths:
                     $ref: '#/components/responses/403'
                 '500':
                     $ref: '#/components/responses/500'
+    /cases/locationComments:
+        get:
+            summary: Lists most frequently used location comments
+            operationId: listLocationComments
+            tags: [ Suggest ]
+            parameters:
+                - name: limit
+                  in: query
+                  description: The number of items to return
+                  required: false
+                  schema:
+                      type: integer
+                      format: int32
+                      minimum: 1
+                      maximum: 100
+                      default: 5
+            responses:
+                '200':
+                    $ref: '#/components/responses/200LocationCommentArray'
+                '400':
+                    $ref: '#/components/responses/400'
+                '403':
+                    $ref: '#/components/responses/403'
+                '500':
+                    $ref: '#/components/responses/500'
     /cases/{id}:
         parameters:
             - name: id
@@ -890,6 +915,13 @@ components:
                     type: array
                     items:
                         type: string
+        LocationCommentArray:
+            type: object
+            properties:
+                locationComments:
+                    type: array
+                    items:
+                        type: string
         Date:
             oneOf:
                 - type: string
@@ -935,6 +967,8 @@ components:
                     type: string
                     description: exact location
                 geoResolution:
+                    type: string
+                comment:
                     type: string
         FuzzyLocation:
             description: A geo location that can be unspecific. It may not be geocoded if it lacks information.
@@ -1098,6 +1132,12 @@ components:
                 application/json:
                     schema:
                         $ref: '#/components/schemas/OccupationArray'
+        '200LocationCommentArray':
+            description: OK
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/LocationCommentArray'
         '201Case':
             description: Created
             content:
