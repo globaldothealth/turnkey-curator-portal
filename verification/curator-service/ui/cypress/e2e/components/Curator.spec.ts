@@ -90,6 +90,7 @@ describe('Curator', function () {
         cy.get('input[name="location.district"]').type('Berlin District');
         cy.get('input[name="location.place"]').type('Berlin City');
         cy.get('input[name="location.location"]').clear().type('Berlin Central Hospital');
+        cy.get('div[data-testid="location.comment"]').type('2nd wing, 3rd floor');
 
         // EVENTS
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
@@ -255,6 +256,8 @@ describe('Curator', function () {
                 'Berlin Central Hospital',
             );
 
+            cy.get('input[value="2nd wing, 3rd floor"]').should("exist");
+
             // Events.
             cy.get('input[name="events.dateEntry"]').should(
                 'have.value',
@@ -413,6 +416,8 @@ describe('Curator', function () {
                 cy.get('input[type="text"]').clear().type('Test occupation');
             });
             cy.contains('li', 'Test occupation').click();
+            cy.get('div[data-testid="location.comment"]').clear()
+            cy.contains('li', '2nd wing, 3rd floor').click();
             // Submit the changes.
             cy.get('button[data-testid="submit"]').click();
 

@@ -87,6 +87,7 @@ export interface Location {
     query?: string;
     name?: string;
     geometry?: Geometry;
+    comment?: string;
 }
 
 export interface Events {
