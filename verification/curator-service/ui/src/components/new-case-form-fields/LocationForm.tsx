@@ -93,8 +93,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function LocationCommentsList(): JSX.Element {
-    const { values, initialValues, setFieldValue } =
-        useFormikContext<Day0CaseFormValues>();
+    const { initialValues } = useFormikContext<Day0CaseFormValues>();
     const [locationComments, setLocationComments] = React.useState([]);
     const classes = useStyles();
 
