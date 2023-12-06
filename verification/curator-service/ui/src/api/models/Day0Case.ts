@@ -87,6 +87,7 @@ export interface Location {
     query?: string;
     name?: string;
     geometry?: Geometry;
+    comment?: string;
 }
 
 export interface Events {
@@ -286,6 +287,7 @@ export interface Day0CaseFormValues {
         geocodeLocation?: GeocodeLocation;
         query?: string;
         geometry?: Geometry;
+        comment?: string;
     };
     events: Events;
     symptoms?: string[];

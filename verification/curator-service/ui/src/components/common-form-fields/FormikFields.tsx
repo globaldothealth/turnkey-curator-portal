@@ -1,22 +1,22 @@
-import React from 'react';
-import { Autocomplete } from '@mui/material';
-import { createFilterOptions } from '@mui/material/Autocomplete';
+import axios from 'axios';
 import { FastField, Field, useFormikContext } from 'formik';
+import { Select, TextField } from 'formik-mui';
+import { get } from 'lodash';
+import { Autocomplete, FormHelperText } from '@mui/material';
+import { createFilterOptions } from '@mui/material/Autocomplete';
+import FormControl from '@mui/material/FormControl';
+import MenuItem from '@mui/material/MenuItem';
+import MuiTextField from '@mui/material/TextField';
+import makeStyles from '@mui/styles/makeStyles';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import React, { BaseSyntheticEvent } from 'react';
 
+import { Day0CaseFormValues } from '../../api/models/Day0Case';
 import { AutomatedSourceFormValues } from '../AutomatedSourceForm';
 import BulkCaseFormValues from '../bulk-case-form-fields/BulkCaseFormValues';
-import FormControl from '@mui/material/FormControl';
-import { FormHelperText } from '@mui/material';
-import MenuItem from '@mui/material/MenuItem';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
-import MuiTextField from '@mui/material/TextField';
-import { Select, TextField } from 'formik-mui';
-import axios from 'axios';
 import { hasKey } from '../Utils';
-import makeStyles from '@mui/styles/makeStyles';
-import { Day0CaseFormValues } from '../../api/models/Day0Case';
 
 const useStyles = makeStyles(() => ({
     fieldRow: {
@@ -106,7 +106,7 @@ export function FormikAutocomplete(
             onClose={(): void => {
                 setOpen(false);
             }}
-            value={values[props.name] || fallbackValue}
+            value={get(values, props.name, fallbackValue)}
             options={options}
             filterOptions={(options: string[], params): string[] => {
                 const filtered = filter(options, params) as string[];
@@ -118,9 +118,9 @@ export function FormikAutocomplete(
                 return filtered;
             }}
             loading={loading}
-            onChange={(_, values): void => {
-                setFieldValue(props.name, values ?? undefined);
-            }}
+            onChange={(_, values): void =>
+                setFieldValue(props.name, values ?? undefined)
+            }
             onBlur={(): void => setTouched({ [props.name]: true })}
             defaultValue={props.initialValue}
             renderInput={(params): JSX.Element => (
@@ -134,6 +134,14 @@ export function FormikAutocomplete(
                     data-testid={props.name}
                     label={props.label}
                     component={TextField}
+                    // This onChange event handles situation when user did not
+                    // select element from the list of autocomplete.
+                    // It will only work for single element autocomplete.
+                    onChange={(event: BaseSyntheticEvent) => {
+                        if (!props.multiple) {
+                            setFieldValue(props.name, event.target.value || '');
+                        }
+                    }}
                 />
             )}
         />

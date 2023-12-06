@@ -24,6 +24,7 @@ export const locationSchema = new mongoose.Schema(
             latitude: Number,
             longitude: Number,
         },
+        comment: String,
     },
     { _id: false },
 );
@@ -42,4 +43,5 @@ export type LocationDocument = mongoose.Document & {
         latitude?: number;
         longitude?: number;
     };
+    comment?: string;
 };

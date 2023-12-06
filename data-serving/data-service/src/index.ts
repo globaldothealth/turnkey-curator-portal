@@ -117,6 +117,7 @@ apiRouter.get('/cases', caseController.list);
 apiRouter.get('/cases/symptoms', cases.listSymptoms);
 apiRouter.get('/cases/placesOfTransmission', cases.listPlacesOfTransmission);
 apiRouter.get('/cases/occupations', cases.listOccupations);
+apiRouter.get('/cases/locationComments', cases.listLocationComments);
 apiRouter.post(
     '/cases/verify/:id(\\d+$)',
     createCaseRevision,

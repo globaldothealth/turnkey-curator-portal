@@ -1367,6 +1367,41 @@ export const listOccupations = async (
         return;
     }
 };
+
+/**
+ * List most frequently used location comments.
+ *
+ * Handles HTTP GET /api/cases/location-comments.
+ */
+export const listLocationComments = async (
+    req: Request,
+    res: Response,
+): Promise<void> => {
+    const limit = Number(req.query.limit);
+    try {
+        const locationComments = await Day0Case.aggregate([
+            { $unwind: '$location.comment' },
+            { $sortByCount: '$location.comment' },
+            { $sort: { count: -1, _id: 1 } },
+        ]).limit(limit);
+        for (let i = 0; i < locationComments.length; i++) {
+            if (locationComments[i]._id === null) {
+                locationComments.splice(i, 1);
+            }
+        }
+        res.json({
+            locationComments: locationComments.map(
+                (locationCommentsObject) => locationCommentsObject._id,
+            ),
+        });
+        return;
+    } catch (e) {
+        if (e instanceof Error) logger.error(e);
+        res.status(500).json(e);
+        return;
+    }
+};
+
 function validateCaseAges(caseStart: number, caseEnd: number) {
     if (
         caseStart < 0 ||

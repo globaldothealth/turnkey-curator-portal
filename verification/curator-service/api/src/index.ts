@@ -272,6 +272,12 @@ async function makeApp() {
         casesController.listOccupations,
     );
     apiRouter.get(
+        '/cases/locationComments',
+        authenticateByAPIKey,
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
+        casesController.listLocationComments,
+    );
+    apiRouter.get(
         '/cases/:id(\\d+$)',
         authenticateByAPIKey,
         mustBeAuthenticated,

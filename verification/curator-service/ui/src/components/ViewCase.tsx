@@ -546,6 +546,9 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                                     4,
                                 )}`}
                             />
+
+                            <RowHeader title="Comment" />
+                            <RowContent content={props.c.location.comment} />
                         </Grid>
                     </Scroll.Element>
                 </Paper>
