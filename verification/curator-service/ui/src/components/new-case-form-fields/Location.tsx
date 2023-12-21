@@ -1,7 +1,7 @@
 import { Select, TextField } from 'formik-mui';
 
 import { IconButton, MenuItem, Tooltip, Typography } from '@mui/material';
-import { FastField, useFormikContext, Field } from 'formik';
+import { FastField, useFormikContext, Field, ErrorMessage } from 'formik';
 import makeStyles from '@mui/styles/makeStyles';
 import { Day0CaseFormValues, GeocodeLocation } from '../../api/models/Day0Case';
 import React, { useEffect } from 'react';
@@ -47,6 +47,12 @@ const styles = makeStyles(() => ({
     mapIcon: {
         color: '#0094E2',
     },
+    errorMessage: {
+        fontSize: '0.75em',
+        color: '#FD685B',
+        marginLeft: '14px',
+        marginTop: '3px',
+    },
 }));
 
 export default function Location(): JSX.Element {
@@ -56,19 +62,19 @@ export default function Location(): JSX.Element {
         useFormikContext<Day0CaseFormValues>();
     const myObj: { [index: string]: any } = lookupTable;
 
-    const [regionOptions, setRegionOptions] = React.useState<string[]>([]);
-    const [regionAvailableOnMap, setRegionAvailableOnMap] =
+    const [regionOptions, setStateOptions] = React.useState<string[]>([]);
+    const [regionAvailableOnMap, setStateAvailableOnMap] =
         React.useState<boolean>(false);
-    const [districtOptions, setDistrictOptions] = React.useState<string[]>([]);
-    const [districtAvailableOnMap, setDistrictAvailableOnMap] =
+    const [districtOptions, setRegionOptions] = React.useState<string[]>([]);
+    const [districtAvailableOnMap, setRegionAvailableOnMap] =
         React.useState<boolean>(false);
-    const [placeOptions, setPlaceOptions] = React.useState<string[]>([]);
-    const [placeAvailableOnMap, setPlaceAvailableOnMap] =
+    const [placeOptions, setDistrictOptions] = React.useState<string[]>([]);
+    const [placeAvailableOnMap, setDistrictAvailableOnMap] =
         React.useState<boolean>(false);
 
     // Update options for region
     useEffect(() => {
-        setRegionOptions(
+        setStateOptions(
             Object.keys(myObj[values.location.countryISO3] || {}) || [],
         );
     }, [values.location.countryISO3]);
@@ -80,15 +86,15 @@ export default function Location(): JSX.Element {
             regionOptions &&
             regionOptions.includes(values.location.region)
         ) {
-            setRegionAvailableOnMap(true);
+            setStateAvailableOnMap(true);
         } else {
-            setRegionAvailableOnMap(false);
+            setStateAvailableOnMap(false);
         }
     }, [regionOptions, values.location.region]);
 
     // Update options for district
     useEffect(() => {
-        setDistrictOptions(
+        setRegionOptions(
             Object.keys(
                 myObj[values.location.countryISO3]?.[
                     values.location.region || ''
@@ -104,15 +110,15 @@ export default function Location(): JSX.Element {
             districtOptions &&
             districtOptions.includes(values.location.district)
         ) {
-            setDistrictAvailableOnMap(true);
+            setRegionAvailableOnMap(true);
         } else {
-            setDistrictAvailableOnMap(false);
+            setRegionAvailableOnMap(false);
         }
     }, [districtOptions, values.location.district]);
 
     // Update options for place
     useEffect(() => {
-        setPlaceOptions(
+        setDistrictOptions(
             myObj[values.location.countryISO3]?.[
                 values.location.region || ''
             ]?.[values.location.district || ''] || [],
@@ -130,9 +136,9 @@ export default function Location(): JSX.Element {
             placeOptions &&
             placeOptions.includes(values.location.place)
         ) {
-            setPlaceAvailableOnMap(true);
+            setDistrictAvailableOnMap(true);
         } else {
-            setPlaceAvailableOnMap(false);
+            setDistrictAvailableOnMap(false);
         }
     }, [placeOptions, values.location.place]);
 
@@ -246,9 +252,12 @@ export default function Location(): JSX.Element {
                                 label={'Country'}
                                 component={TextField}
                                 fullWidth
+                                required={true}
+                                error={!values.location.countryISO3}
                                 InputProps={
                                     values.location.country && {
                                         ...params.InputProps,
+                                        required: true,
                                         startAdornment: (
                                             <>
                                                 {values.location
@@ -276,6 +285,15 @@ export default function Location(): JSX.Element {
                                     }
                                 }
                             />
+                            {!values.location.countryISO3 && (
+                                <ErrorMessage name={'caseReference.sourceUrl'}>
+                                    {(msg) => (
+                                        <div className={classes.errorMessage}>
+                                            {msg}
+                                        </div>
+                                    )}
+                                </ErrorMessage>
+                            )}
                         </>
                     )}
                     renderOption={(props, option: string): React.ReactNode => {
@@ -312,9 +330,11 @@ export default function Location(): JSX.Element {
                         setFieldValue('location.region', newValue);
                     }}
                     // onBlur={(): void => setTouched({ [props.name]: true })}
-                    onInputChange={(_, newInputValue): void => {
+                    onInputChange={(_, newInputValue, reason): void => {
                         // setInputValue(newInputValue);
-                        setFieldValue('location.region', newInputValue);
+                        if (reason === 'reset') {
+                            setFieldValue('location.region', '');
+                        } else setFieldValue('location.region', newInputValue);
                     }}
                     noOptionsText="No States are represented on the map for the given Country"
                     renderInput={(params): JSX.Element => (
@@ -329,36 +349,40 @@ export default function Location(): JSX.Element {
                                 data-testid={'location.region'}
                                 // Use the initial valuelocation name as a hint when untouched
                                 // otherwise just use the field name.
-                                label={'Region'}
+                                label={'State'}
                                 component={TextField}
                                 fullWidth
                                 InputProps={
-                                    values.location.region && {
-                                        ...params.InputProps,
-                                        startAdornment: (
-                                            <>
-                                                {regionAvailableOnMap && (
-                                                    <InputAdornment position="start">
-                                                        <Tooltip
-                                                            title={
-                                                                'Represented on the State Map View'
-                                                            }
-                                                        >
-                                                            <PublicIcon
-                                                                className={
-                                                                    classes.mapIcon
-                                                                }
-                                                            />
-                                                        </Tooltip>
-                                                    </InputAdornment>
-                                                )}
-                                                {
-                                                    params.InputProps
-                                                        .startAdornment
-                                                }
-                                            </>
-                                        ),
-                                    }
+                                    values.location.region
+                                        ? {
+                                              ...params.InputProps,
+                                              startAdornment: (
+                                                  <>
+                                                      {regionAvailableOnMap && (
+                                                          <InputAdornment position="start">
+                                                              <Tooltip
+                                                                  title={
+                                                                      'Represented on the State Map View'
+                                                                  }
+                                                              >
+                                                                  <PublicIcon
+                                                                      className={
+                                                                          classes.mapIcon
+                                                                      }
+                                                                  />
+                                                              </Tooltip>
+                                                          </InputAdornment>
+                                                      )}
+                                                      {
+                                                          params.InputProps
+                                                              .startAdornment
+                                                      }
+                                                  </>
+                                              ),
+                                          }
+                                        : {
+                                              ...params.InputProps,
+                                          }
                                 }
                             />
                         </>
@@ -369,7 +393,7 @@ export default function Location(): JSX.Element {
                                 <Typography variant="body2">
                                     <Tooltip
                                         title={
-                                            'Represented on the Country Map View'
+                                            'Represented on the State Map View'
                                         }
                                     >
                                         <IconButton>
@@ -405,10 +429,14 @@ export default function Location(): JSX.Element {
                         setFieldValue('location.district', newValue);
                     }}
                     // onBlur={(): void => setTouched({ [props.name]: true })}
-                    onInputChange={(_, newInputValue): void => {
+                    onInputChange={(_, newInputValue, reason): void => {
                         // setInputValue(newInputValue);
+                        if (reason === 'reset') {
+                            setFieldValue('location.district', '');
+                        } else
+                            setFieldValue('location.district', newInputValue);
                     }}
-                    noOptionsText="No Regions are represented on the map for the given State and Country"
+                    noOptionsText="No States are represented on the map for the given State and Country"
                     renderInput={(params): JSX.Element => (
                         <>
                             {/* Do not use FastField here */}
@@ -421,36 +449,40 @@ export default function Location(): JSX.Element {
                                 data-testid={'location.district'}
                                 // Use the initial valuelocation name as a hint when untouched
                                 // otherwise just use the field name.
-                                label={'District'}
+                                label={'Region'}
                                 component={TextField}
                                 fullWidth
                                 InputProps={
-                                    values.location.district && {
-                                        ...params.InputProps,
-                                        startAdornment: (
-                                            <>
-                                                {districtAvailableOnMap && (
-                                                    <InputAdornment position="start">
-                                                        <Tooltip
-                                                            title={
-                                                                'Represented on the Region Map View'
-                                                            }
-                                                        >
-                                                            <PublicIcon
-                                                                className={
-                                                                    classes.mapIcon
-                                                                }
-                                                            />
-                                                        </Tooltip>
-                                                    </InputAdornment>
-                                                )}
-                                                {
-                                                    params.InputProps
-                                                        .startAdornment
-                                                }
-                                            </>
-                                        ),
-                                    }
+                                    values.location.district
+                                        ? {
+                                              ...params.InputProps,
+                                              startAdornment: (
+                                                  <>
+                                                      {districtAvailableOnMap && (
+                                                          <InputAdornment position="start">
+                                                              <Tooltip
+                                                                  title={
+                                                                      'Represented on the Region Map View'
+                                                                  }
+                                                              >
+                                                                  <PublicIcon
+                                                                      className={
+                                                                          classes.mapIcon
+                                                                      }
+                                                                  />
+                                                              </Tooltip>
+                                                          </InputAdornment>
+                                                      )}
+                                                      {
+                                                          params.InputProps
+                                                              .startAdornment
+                                                      }
+                                                  </>
+                                              ),
+                                          }
+                                        : {
+                                              ...params.InputProps,
+                                          }
                                 }
                             />
                         </>
@@ -479,7 +511,7 @@ export default function Location(): JSX.Element {
                 {/*<FastField*/}
                 {/*    variant="outlined"*/}
                 {/*    className={classes.field}*/}
-                {/*    label="District"*/}
+                {/*    label="Region"*/}
                 {/*    name="location.district"*/}
                 {/*    type="text"*/}
                 {/*    component={TextField}*/}
@@ -498,8 +530,11 @@ export default function Location(): JSX.Element {
                         setFieldValue('location.place', newValue);
                     }}
                     // onBlur={(): void => setTouched({ [props.name]: true })}
-                    onInputChange={(_, newInputValue): void => {
+                    onInputChange={(_, newInputValue, reason): void => {
                         // setInputValue(newInputValue);
+                        if (reason === 'reset') {
+                            setFieldValue('location.place', '');
+                        } else setFieldValue('location.place', newInputValue);
                     }}
                     noOptionsText="No Districts are represented on the map for the given Region, State and Country"
                     renderInput={(params): JSX.Element => (
@@ -514,36 +549,40 @@ export default function Location(): JSX.Element {
                                 data-testid={'location.place'}
                                 // Use the initial valuelocation name as a hint when untouched
                                 // otherwise just use the field name.
-                                label={'Place'}
+                                label={'District'}
                                 component={TextField}
                                 fullWidth
                                 InputProps={
-                                    values.location.place && {
-                                        ...params.InputProps,
-                                        startAdornment: (
-                                            <>
-                                                {placeAvailableOnMap && (
-                                                    <InputAdornment position="start">
-                                                        <Tooltip
-                                                            title={
-                                                                'Visible on mapbox map'
-                                                            }
-                                                        >
-                                                            <PublicIcon
-                                                                className={
-                                                                    classes.mapIcon
-                                                                }
-                                                            />
-                                                        </Tooltip>
-                                                    </InputAdornment>
-                                                )}
-                                                {
-                                                    params.InputProps
-                                                        .startAdornment
-                                                }
-                                            </>
-                                        ),
-                                    }
+                                    values.location.place
+                                        ? {
+                                              ...params.InputProps,
+                                              startAdornment: (
+                                                  <>
+                                                      {placeAvailableOnMap && (
+                                                          <InputAdornment position="start">
+                                                              <Tooltip
+                                                                  title={
+                                                                      'Represented on the District Map View'
+                                                                  }
+                                                              >
+                                                                  <PublicIcon
+                                                                      className={
+                                                                          classes.mapIcon
+                                                                      }
+                                                                  />
+                                                              </Tooltip>
+                                                          </InputAdornment>
+                                                      )}
+                                                      {
+                                                          params.InputProps
+                                                              .startAdornment
+                                                      }
+                                                  </>
+                                              ),
+                                          }
+                                        : {
+                                              ...params.InputProps,
+                                          }
                                 }
                             />
                         </>
@@ -551,8 +590,18 @@ export default function Location(): JSX.Element {
                     renderOption={(props, option: string): React.ReactNode => {
                         return (
                             <li {...props} className={classes.suggestion}>
-                                {/*<LocationOnIcon className={classes.icon} />/!**!/*/}
                                 <Typography variant="body2">
+                                    <Tooltip
+                                        title={
+                                            'Represented on the District Map View'
+                                        }
+                                    >
+                                        <IconButton>
+                                            <PublicIcon
+                                                className={classes.mapIcon}
+                                            />
+                                        </IconButton>
+                                    </Tooltip>
                                     {option}
                                 </Typography>
                             </li>
@@ -562,7 +611,7 @@ export default function Location(): JSX.Element {
                 {/*<FastField*/}
                 {/*    variant="outlined"*/}
                 {/*    className={classes.field}*/}
-                {/*    label="Place (ex. City)"*/}
+                {/*    label="District (ex. City)"*/}
                 {/*    name="location.place"*/}
                 {/*    type="text"*/}
                 {/*    component={TextField}*/}

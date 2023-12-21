@@ -28,7 +28,7 @@ const TooltipText = () => (
                     </li>
                     <li>
                         <strong>
-                            Country, Region, District, Place autocomplete fields
+                            Country, State, Region, Place autocomplete fields
                         </strong>{' '}
                         - allow to select location from the list of location
                         reckognized by the Mapbox API or type custom one. Only
@@ -46,24 +46,6 @@ const TooltipText = () => (
                         to add comments like hospital name or other details
                         about the location that cannot be represented by the
                         address.
-                    </li>
-                </ul>
-            </li>
-            <li>
-                <strong>Example:</strong> If your case has 'Location = USA,
-                California, Santa Clara' type 'Santa Clara' and select that
-                option from the drop down list. On selection the rest of the
-                location fields would be prepopulated.
-                <ul>
-                    <li>
-                        If you need to change the location you can press X in
-                        the location field and then retype the location and
-                        select the desidered one. This will change the
-                        prepoulated fields to the new location.
-                    </li>
-                    <li>
-                        If you cannot find a specific location please provide
-                        details to your Global.health contact.
                     </li>
                 </ul>
             </li>
