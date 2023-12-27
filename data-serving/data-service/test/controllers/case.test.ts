@@ -463,13 +463,13 @@ describe('POST', () => {
 
         expect(res.body.location).toEqual(expectedLocation);
     });
-    it('create with location containing region should complete geoResolution with "Admin1"', async () => {
+    it('create with location containing admin1 should complete geoResolution with "Admin1"', async () => {
         const minimalLocationRequest = {
             ...minimalRequest,
             location: {
                 countryISO3: 'USA',
                 country: 'United States of America',
-                region: 'Florida',
+                admin1: 'Florida',
                 query: 'Florida, United States of America',
             },
         };
@@ -478,7 +478,7 @@ describe('POST', () => {
             country: 'United States of America',
             geoResolution: 'Admin1',
             countryISO3: 'USA',
-            region: 'Florida',
+            admin1: 'Florida',
             query: 'Florida, United States of America',
         };
 
@@ -493,14 +493,14 @@ describe('POST', () => {
 
         expect(res.body.location).toEqual(expectedLocation);
     });
-    it('create with location containing district should complete geoResolution with "Admin2"', async () => {
+    it('create with location containing admin2 should complete geoResolution with "Admin2"', async () => {
         const minimalLocationRequest = {
             ...minimalRequest,
             location: {
                 countryISO3: 'USA',
                 country: 'United States of America',
-                region: 'Florida',
-                district: 'Collier County',
+                admin1: 'Florida',
+                admin2: 'Collier County',
                 query: 'Collier County, Florida, United States of America',
             },
         };
@@ -509,8 +509,8 @@ describe('POST', () => {
             country: 'United States of America',
             geoResolution: 'Admin2',
             countryISO3: 'USA',
-            region: 'Florida',
-            district: 'Collier County',
+            admin1: 'Florida',
+            admin2: 'Collier County',
             query: 'Collier County, Florida, United States of America',
         };
 
@@ -525,15 +525,15 @@ describe('POST', () => {
 
         expect(res.body.location).toEqual(expectedLocation);
     });
-    it('create with location containing place should complete geoResolution with "Admin3"', async () => {
+    it('create with location containing admin3 should complete geoResolution with "Admin3"', async () => {
         const minimalLocationRequest = {
             ...minimalRequest,
             location: {
                 countryISO3: 'USA',
                 country: 'United States of America',
-                region: 'Florida',
-                district: 'Collier County',
-                place: 'Naples',
+                admin1: 'Florida',
+                admin2: 'Collier County',
+                admin3: 'Naples',
                 query:
                     'Naples, Collier County, Florida, United States of America',
             },
@@ -543,9 +543,9 @@ describe('POST', () => {
             country: 'United States of America',
             geoResolution: 'Admin3',
             countryISO3: 'USA',
-            region: 'Florida',
-            district: 'Collier County',
-            place: 'Naples',
+            admin1: 'Florida',
+            admin2: 'Collier County',
+            admin3: 'Naples',
             query: 'Naples, Collier County, Florida, United States of America',
         };
 
@@ -566,9 +566,9 @@ describe('POST', () => {
             location: {
                 countryISO3: 'USA',
                 country: 'United States of America',
-                region: 'Florida',
-                district: 'Collier County',
-                place: 'Naples',
+                admin1: 'Florida',
+                admin2: 'Collier County',
+                admin3: 'Naples',
                 geometry: {
                     latitude: 26.1295,
                     longitude: -81.8056,
@@ -582,9 +582,9 @@ describe('POST', () => {
             country: 'United States of America',
             geoResolution: 'Point',
             countryISO3: 'USA',
-            region: 'Florida',
-            district: 'Collier County',
-            place: 'Naples',
+            admin1: 'Florida',
+            admin2: 'Collier County',
+            admin3: 'Naples',
             geometry: {
                 latitude: 26.1295,
                 longitude: -81.8056,

@@ -957,11 +957,11 @@ components:
                 country:
                     type: string
                     description: name of a country
-                region:
+                admin1:
                     type: string
-                district:
+                admin2:
                     type: string
-                place:
+                admin3:
                     type: string
                 location:
                     type: string
@@ -992,17 +992,17 @@ components:
                     type: string
                     description: Third administrative subdivision of a country
                     example: Any district in Costa Rica
-                region:
+                admin1:
                     type: string
-                    description: Name of the region this location refers to
+                    description: Name of the area in admin1 resolution for given country
                     example: Lodz Voivodeship
-                district:
+                admin2:
                     type: string
-                    description: Name of the district this location refers to
+                    description: Name of the area in admin2 resolution for given admin1 area and country
                     example: Lodz County
-                place:
+                admin3:
                     type: string
-                    description: Name of the place this location refers to
+                    description: Name of the area in admin3 resolution for given admin2 area, admin1 area and country
                     example: Boston Children's Hospital
                 name:
                     type: string

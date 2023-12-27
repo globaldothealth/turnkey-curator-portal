@@ -1117,11 +1117,11 @@ export class CasesController {
         if (location.geoResolution) return;
         if (location.geometry?.longitude && location.geometry?.latitude) {
             req.body.location.geoResolution = 'Point';
-        } else if (location.place) {
+        } else if (location.admin3) {
             req.body.location.geoResolution = 'Admin3';
-        } else if (location.district) {
+        } else if (location.admin2) {
             req.body.location.geoResolution = 'Admin2';
-        } else if (location.region) {
+        } else if (location.admin1) {
             req.body.location.geoResolution = 'Admin1';
         } else if (location.country) {
             req.body.location.geoResolution = 'Country';
