@@ -201,6 +201,7 @@ export default function Location(): JSX.Element {
     return (
         <>
             <div className={classes.root}>
+                {/* Country */}
                 <Autocomplete
                     className={classes.autocompleteField}
                     itemType="string"
@@ -213,7 +214,6 @@ export default function Location(): JSX.Element {
                             ? undefined
                             : values.location.country
                     }
-                    sx={{ width: '50%' }}
                     disableClearable
                     onChange={(_: unknown, newValue: string | null): void => {
                         const countryCode = alpha2ToAlpha3(
@@ -224,7 +224,6 @@ export default function Location(): JSX.Element {
                         setFieldValue('location.country', newValue);
                         setFieldValue('location.countryISO3', countryCode);
                     }}
-                    // onBlur={(): void => setTouched({ [props.name]: true })}
                     onInputChange={(_, newInputValue): void => {
                         setFieldValue('location.country', newInputValue);
                         const countryCode = alpha2ToAlpha3(
@@ -255,34 +254,37 @@ export default function Location(): JSX.Element {
                                 required={true}
                                 error={!values.location.countryISO3}
                                 InputProps={
-                                    values.location.country && {
-                                        ...params.InputProps,
-                                        required: true,
-                                        startAdornment: (
-                                            <>
-                                                {values.location
-                                                    .countryISO3 && (
-                                                    <InputAdornment position="start">
-                                                        <Tooltip
-                                                            title={
-                                                                'Represented on the Country Map View'
-                                                            }
-                                                        >
-                                                            <PublicIcon
-                                                                className={
-                                                                    classes.mapIcon
-                                                                }
-                                                            />
-                                                        </Tooltip>
-                                                    </InputAdornment>
-                                                )}
-                                                {
-                                                    params.InputProps
-                                                        .startAdornment
-                                                }
-                                            </>
-                                        ),
-                                    }
+                                    values.location.country
+                                        ? {
+                                              ...params.InputProps,
+                                              startAdornment: (
+                                                  <>
+                                                      {values.location
+                                                          .countryISO3 && (
+                                                          <InputAdornment position="start">
+                                                              <Tooltip
+                                                                  title={
+                                                                      'Represented on the Country Map View'
+                                                                  }
+                                                              >
+                                                                  <PublicIcon
+                                                                      className={
+                                                                          classes.mapIcon
+                                                                      }
+                                                                  />
+                                                              </Tooltip>
+                                                          </InputAdornment>
+                                                      )}
+                                                      {
+                                                          params.InputProps
+                                                              .startAdornment
+                                                      }
+                                                  </>
+                                              ),
+                                          }
+                                        : {
+                                              ...params.InputProps,
+                                          }
                                 }
                             />
                             {!values.location.countryISO3 && (
@@ -317,26 +319,22 @@ export default function Location(): JSX.Element {
                         );
                     }}
                 />
+                {/* Admin 1 */}
                 <Autocomplete
                     className={classes.autocompleteField}
                     itemType="string"
                     getOptionLabel={(option: string): string => option}
                     options={regionOptions}
                     value={values.location.region}
-                    sx={{ width: '50%' }}
                     onChange={(_: unknown, newValue: string | null): void => {
-                        // setOptions(newValue ? [newValue, ...options] : options);
-                        // setValue(newValue);
                         setFieldValue('location.region', newValue);
                     }}
-                    // onBlur={(): void => setTouched({ [props.name]: true })}
                     onInputChange={(_, newInputValue, reason): void => {
-                        // setInputValue(newInputValue);
                         if (reason === 'reset') {
                             setFieldValue('location.region', '');
                         } else setFieldValue('location.region', newInputValue);
                     }}
-                    noOptionsText="No States are represented on the map for the given Country"
+                    noOptionsText="No Admin 1 locations are represented on the map for the given Country"
                     renderInput={(params): JSX.Element => (
                         <>
                             {/* Do not use FastField here */}
@@ -349,7 +347,7 @@ export default function Location(): JSX.Element {
                                 data-testid={'location.region'}
                                 // Use the initial valuelocation name as a hint when untouched
                                 // otherwise just use the field name.
-                                label={'State'}
+                                label={'Admin 1'}
                                 component={TextField}
                                 fullWidth
                                 InputProps={
@@ -362,7 +360,7 @@ export default function Location(): JSX.Element {
                                                           <InputAdornment position="start">
                                                               <Tooltip
                                                                   title={
-                                                                      'Represented on the State Map View'
+                                                                      'Represented on the Admin 1 Map View'
                                                                   }
                                                               >
                                                                   <PublicIcon
@@ -393,7 +391,7 @@ export default function Location(): JSX.Element {
                                 <Typography variant="body2">
                                     <Tooltip
                                         title={
-                                            'Represented on the State Map View'
+                                            'Represented on the Admin 1 Map View'
                                         }
                                     >
                                         <IconButton>
@@ -408,6 +406,7 @@ export default function Location(): JSX.Element {
                         );
                     }}
                 />
+                {/* Admin 2 */}
                 <Autocomplete
                     className={classes.autocompleteField}
                     itemType="string"
@@ -424,11 +423,8 @@ export default function Location(): JSX.Element {
                     value={values.location.district}
                     sx={{ width: '50%' }}
                     onChange={(_: unknown, newValue: string | null): void => {
-                        // setOptions(newValue ? [newValue, ...options] : options);
-                        // setValue(newValue);
                         setFieldValue('location.district', newValue);
                     }}
-                    // onBlur={(): void => setTouched({ [props.name]: true })}
                     onInputChange={(_, newInputValue, reason): void => {
                         // setInputValue(newInputValue);
                         if (reason === 'reset') {
@@ -436,7 +432,7 @@ export default function Location(): JSX.Element {
                         } else
                             setFieldValue('location.district', newInputValue);
                     }}
-                    noOptionsText="No States are represented on the map for the given State and Country"
+                    noOptionsText="No Admin 2 locations are represented on the map for the given Admin 1 and Country"
                     renderInput={(params): JSX.Element => (
                         <>
                             {/* Do not use FastField here */}
@@ -449,7 +445,7 @@ export default function Location(): JSX.Element {
                                 data-testid={'location.district'}
                                 // Use the initial valuelocation name as a hint when untouched
                                 // otherwise just use the field name.
-                                label={'Region'}
+                                label={'Admin 2'}
                                 component={TextField}
                                 fullWidth
                                 InputProps={
@@ -462,7 +458,7 @@ export default function Location(): JSX.Element {
                                                           <InputAdornment position="start">
                                                               <Tooltip
                                                                   title={
-                                                                      'Represented on the Region Map View'
+                                                                      'Represented on the Admin 2 Map View'
                                                                   }
                                                               >
                                                                   <PublicIcon
@@ -493,7 +489,7 @@ export default function Location(): JSX.Element {
                                 <Typography variant="body2">
                                     <Tooltip
                                         title={
-                                            'Represented on the Region Map View'
+                                            'Represented on the Admin 2 Map View'
                                         }
                                     >
                                         <IconButton>
@@ -508,35 +504,22 @@ export default function Location(): JSX.Element {
                         );
                     }}
                 />
-                {/*<FastField*/}
-                {/*    variant="outlined"*/}
-                {/*    className={classes.field}*/}
-                {/*    label="Region"*/}
-                {/*    name="location.district"*/}
-                {/*    type="text"*/}
-                {/*    component={TextField}*/}
-                {/*    sx={{ minWidth: '13rem' }}*/}
-                {/*/>*/}
+                {/* Admin 3 */}
                 <Autocomplete
                     className={classes.autocompleteField}
                     itemType="string"
                     getOptionLabel={(option: string): string => option}
                     options={placeOptions}
                     value={values.location.place}
-                    sx={{ width: '50%' }}
                     onChange={(_: unknown, newValue: string | null): void => {
-                        // setOptions(newValue ? [newValue, ...options] : options);
-                        // setValue(newValue);
                         setFieldValue('location.place', newValue);
                     }}
-                    // onBlur={(): void => setTouched({ [props.name]: true })}
                     onInputChange={(_, newInputValue, reason): void => {
-                        // setInputValue(newInputValue);
                         if (reason === 'reset') {
                             setFieldValue('location.place', '');
                         } else setFieldValue('location.place', newInputValue);
                     }}
-                    noOptionsText="No Districts are represented on the map for the given Region, State and Country"
+                    noOptionsText="No Admin 3 are represented on the map for the given Admin 2, Admin 1 and Country"
                     renderInput={(params): JSX.Element => (
                         <>
                             {/* Do not use FastField here */}
@@ -549,7 +532,7 @@ export default function Location(): JSX.Element {
                                 data-testid={'location.place'}
                                 // Use the initial valuelocation name as a hint when untouched
                                 // otherwise just use the field name.
-                                label={'District'}
+                                label={'Admin 3'}
                                 component={TextField}
                                 fullWidth
                                 InputProps={
@@ -562,7 +545,7 @@ export default function Location(): JSX.Element {
                                                           <InputAdornment position="start">
                                                               <Tooltip
                                                                   title={
-                                                                      'Represented on the District Map View'
+                                                                      'Represented on the Admin 3 Map View'
                                                                   }
                                                               >
                                                                   <PublicIcon
@@ -593,7 +576,7 @@ export default function Location(): JSX.Element {
                                 <Typography variant="body2">
                                     <Tooltip
                                         title={
-                                            'Represented on the District Map View'
+                                            'Represented on the Admin 3 Map View'
                                         }
                                     >
                                         <IconButton>
@@ -608,15 +591,6 @@ export default function Location(): JSX.Element {
                         );
                     }}
                 />
-                {/*<FastField*/}
-                {/*    variant="outlined"*/}
-                {/*    className={classes.field}*/}
-                {/*    label="District (ex. City)"*/}
-                {/*    name="location.place"*/}
-                {/*    type="text"*/}
-                {/*    component={TextField}*/}
-                {/*    sx={{ minWidth: '13rem' }}*/}
-                {/*/>*/}
                 <FastField
                     variant="outlined"
                     className={classes.field}
