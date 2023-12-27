@@ -28,12 +28,11 @@ class Geocoder:
         self.admins_fetcher = admins_fetcher
 
     def resolutionToMapboxType(self, resolution):
-        """Map (sorrynotsorry) from our names for administrative regions to mapbox's names."""
         return {
             Geocoder.Country: 'country',
-            Geocoder.Admin3: 'place',
-            Geocoder.Admin2: 'district',
-            Geocoder.Admin1: 'region',
+            Geocoder.Admin3: 'admin3',
+            Geocoder.Admin2: 'admin2',
+            Geocoder.Admin1: 'admin1',
             Geocoder.Point: 'poi'
         }[resolution]
 
@@ -49,11 +48,11 @@ class Geocoder:
         types = {c['id'].split('.')[0] for c in contexts}
         if 'poi' in types:
             return Geocoder.Point
-        elif 'place' in types:
+        elif 'admin3' in types:
             return Geocoder.Admin3
-        elif 'district' in types:
+        elif 'admin2' in types:
             return Geocoder.Admin2
-        elif 'region' in types:
+        elif 'admin1' in types:
             return Geocoder.Admin1
         else:
             return Geocoder.Country
@@ -108,9 +107,9 @@ class Geocoder:
             'name': feature['place_name'],
             'country': self.getISO3166Code(self.getFeatureDescriptionFromContext(contexts, 'country')),
             'poi': self.getFeatureDescriptionFromContext(contexts, 'poi'),
-            'place': self.getFeatureDescriptionFromContext(contexts, 'place'),
-            'district': self.getFeatureDescriptionFromContext(contexts, 'district'),
-            'region': self.getFeatureDescriptionFromContext(contexts, 'region'),
+            'admin3': self.getFeatureDescriptionFromContext(contexts, 'place'),
+            'admin2': self.getFeatureDescriptionFromContext(contexts, 'district'),
+            'admin1': self.getFeatureDescriptionFromContext(contexts, 'region'),
             'geoResolution': self.getResolution(contexts)
         }
         self.admins_fetcher.fill_admins(res)

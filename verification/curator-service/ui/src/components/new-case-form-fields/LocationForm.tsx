@@ -28,7 +28,7 @@ const TooltipText = () => (
                     </li>
                     <li>
                         <strong>
-                            Country, State, Region, Place autocomplete fields
+                            Country, Admin1, Admin2, Admin3 autocomplete fields
                         </strong>{' '}
                         - allow to select location from the list of location
                         reckognized by the Mapbox API or type custom one. Only

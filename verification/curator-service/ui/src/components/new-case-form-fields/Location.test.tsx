@@ -10,9 +10,9 @@ it('shows location when passed location information', async () => {
                 location: {
                     country: 'United States',
                     countryISO3: 'USA',
-                    region: 'Florida',
-                    district: 'Collier County',
-                    place: 'Chicago',
+                    admin1: 'Florida',
+                    admin2: 'Collier County',
+                    admin3: 'Chicago',
                     location: 'Central hospital',
                     geometry: { latitude: 53.426588, longitude: 14.549271 },
                 },

@@ -151,9 +151,9 @@ interface RawParsedCase {
     country: string;
     countryISO3: string;
     location?: string;
-    region?: string;
-    district?: string;
-    place?: string;
+    admin1?: string;
+    admin2?: string;
+    admin3?: string;
 
     // Bulk upload specific data
     caseCount?: number;
@@ -225,7 +225,7 @@ const BulkCaseForm = (props: BulkCaseFormProps) => {
     const createLocationQuery = (c: RawParsedCase): string => {
         return c.location
             ? c.location
-            : [c.place, c.district, c.region, c.country]
+            : [c.admin3, c.admin2, c.admin1, c.country]
                   .filter((field) => field)
                   .join(', ');
     };
@@ -274,9 +274,9 @@ const BulkCaseForm = (props: BulkCaseFormProps) => {
             location: {
                 country: c.country,
                 countryISO3: c.countryISO3,
-                region: c.region,
-                district: c.district,
-                place: c.place,
+                admin1: c.admin1,
+                admin2: c.admin2,
+                admin3: c.admin3,
                 location: c.location,
                 query: createLocationQuery(c),
             },

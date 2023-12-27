@@ -62,85 +62,85 @@ export default function Location(): JSX.Element {
         useFormikContext<Day0CaseFormValues>();
     const myObj: { [index: string]: any } = lookupTable;
 
-    const [regionOptions, setStateOptions] = React.useState<string[]>([]);
-    const [regionAvailableOnMap, setStateAvailableOnMap] =
+    const [admin1Options, setAdmin1Options] = React.useState<string[]>([]);
+    const [admin1AvailableOnMap, setAdmin1AvailableOnMap] =
         React.useState<boolean>(false);
-    const [districtOptions, setRegionOptions] = React.useState<string[]>([]);
-    const [districtAvailableOnMap, setRegionAvailableOnMap] =
+    const [admin2Options, setAdmin2Options] = React.useState<string[]>([]);
+    const [admin2AvailableOnMap, setAdmin2AvailableOnMap] =
         React.useState<boolean>(false);
-    const [placeOptions, setDistrictOptions] = React.useState<string[]>([]);
-    const [placeAvailableOnMap, setDistrictAvailableOnMap] =
+    const [admin3Options, setAdmin3Options] = React.useState<string[]>([]);
+    const [admin3AvailableOnMap, setAdmin3AvailableOnMap] =
         React.useState<boolean>(false);
 
-    // Update options for region
+    // Update options for admin1
     useEffect(() => {
-        setStateOptions(
+        setAdmin1Options(
             Object.keys(myObj[values.location.countryISO3] || {}) || [],
         );
     }, [values.location.countryISO3]);
 
-    // Update mapbox indicator for region
+    // Update mapbox indicator for admin1
     useEffect(() => {
         if (
-            values.location.region &&
-            regionOptions &&
-            regionOptions.includes(values.location.region)
+            values.location.admin1 &&
+            admin1Options &&
+            admin1Options.includes(values.location.admin1)
         ) {
-            setStateAvailableOnMap(true);
+            setAdmin1AvailableOnMap(true);
         } else {
-            setStateAvailableOnMap(false);
+            setAdmin1AvailableOnMap(false);
         }
-    }, [regionOptions, values.location.region]);
+    }, [admin1Options, values.location.admin1]);
 
-    // Update options for district
+    // Update options for admin2
     useEffect(() => {
-        setRegionOptions(
+        setAdmin2Options(
             Object.keys(
                 myObj[values.location.countryISO3]?.[
-                    values.location.region || ''
+                    values.location.admin1 || ''
                 ] || {},
             ) || [],
         );
-    }, [values.location.countryISO3, values.location.region]);
+    }, [values.location.countryISO3, values.location.admin1]);
 
-    // Update mapbox indicator for district
+    // Update mapbox indicator for admin2
     useEffect(() => {
         if (
-            values.location.district &&
-            districtOptions &&
-            districtOptions.includes(values.location.district)
+            values.location.admin2 &&
+            admin2Options &&
+            admin2Options.includes(values.location.admin2)
         ) {
-            setRegionAvailableOnMap(true);
+            setAdmin2AvailableOnMap(true);
         } else {
-            setRegionAvailableOnMap(false);
+            setAdmin2AvailableOnMap(false);
         }
-    }, [districtOptions, values.location.district]);
+    }, [admin2Options, values.location.admin2]);
 
-    // Update options for place
+    // Update options for admin3
     useEffect(() => {
-        setDistrictOptions(
+        setAdmin3Options(
             myObj[values.location.countryISO3]?.[
-                values.location.region || ''
-            ]?.[values.location.district || ''] || [],
+                values.location.admin1 || ''
+            ]?.[values.location.admin2 || ''] || [],
         );
     }, [
         values.location.countryISO3,
-        values.location.region,
-        values.location.district,
+        values.location.admin1,
+        values.location.admin2,
     ]);
 
-    // Update mapbox indicator for place
+    // Update mapbox indicator for admin3
     useEffect(() => {
         if (
-            values.location.place &&
-            placeOptions &&
-            placeOptions.includes(values.location.place)
+            values.location.admin3 &&
+            admin3Options &&
+            admin3Options.includes(values.location.admin3)
         ) {
-            setDistrictAvailableOnMap(true);
+            setAdmin3AvailableOnMap(true);
         } else {
-            setDistrictAvailableOnMap(false);
+            setAdmin3AvailableOnMap(false);
         }
-    }, [placeOptions, values.location.place]);
+    }, [admin3Options, values.location.admin3]);
 
     useEffect(() => {
         if (!values.location.geocodeLocation) return;
@@ -157,21 +157,21 @@ export default function Location(): JSX.Element {
         );
         setFieldValue('location.country', countryName);
         setFieldValue(
-            'location.region',
-            values.location.geocodeLocation.region ||
-                values.location.region ||
+            'location.admin1',
+            values.location.geocodeLocation.admin1 ||
+                values.location.admin1 ||
                 '',
         );
         setFieldValue(
-            'location.district',
-            values.location.geocodeLocation.district ||
-                values.location.district ||
+            'location.admin2',
+            values.location.geocodeLocation.admin2 ||
+                values.location.admin2 ||
                 '',
         );
         setFieldValue(
-            'location.place',
-            values.location.geocodeLocation.place ||
-                values.location.place ||
+            'location.admin3',
+            values.location.geocodeLocation.admin3 ||
+                values.location.admin3 ||
                 '',
         );
         setFieldValue(
@@ -194,9 +194,6 @@ export default function Location(): JSX.Element {
         );
         // eslint-disable-next-line
     }, [values.location.geocodeLocation]);
-
-    console.log(values.location.country);
-    console.log(values.location.countryISO3);
 
     return (
         <>
@@ -324,15 +321,15 @@ export default function Location(): JSX.Element {
                     className={classes.autocompleteField}
                     itemType="string"
                     getOptionLabel={(option: string): string => option}
-                    options={regionOptions}
-                    value={values.location.region}
+                    options={admin1Options}
+                    value={values.location.admin1}
                     onChange={(_: unknown, newValue: string | null): void => {
-                        setFieldValue('location.region', newValue);
+                        setFieldValue('location.admin1', newValue);
                     }}
                     onInputChange={(_, newInputValue, reason): void => {
                         if (reason === 'reset') {
-                            setFieldValue('location.region', '');
-                        } else setFieldValue('location.region', newInputValue);
+                            setFieldValue('location.admin1', '');
+                        } else setFieldValue('location.admin1', newInputValue);
                     }}
                     noOptionsText="No Admin 1 locations are represented on the map for the given Country"
                     renderInput={(params): JSX.Element => (
@@ -343,20 +340,20 @@ export default function Location(): JSX.Element {
                                 // Setting the name properly allows any typed value
                                 // to be set in the form values, rather than only selected
                                 // dropdown values. Thus we use an unused form value here.
-                                name="location.region"
-                                data-testid={'location.region'}
+                                name="location.admin1"
+                                data-testid={'location.admin1'}
                                 // Use the initial valuelocation name as a hint when untouched
                                 // otherwise just use the field name.
                                 label={'Admin 1'}
                                 component={TextField}
                                 fullWidth
                                 InputProps={
-                                    values.location.region
+                                    values.location.admin1
                                         ? {
                                               ...params.InputProps,
                                               startAdornment: (
                                                   <>
-                                                      {regionAvailableOnMap && (
+                                                      {admin1AvailableOnMap && (
                                                           <InputAdornment position="start">
                                                               <Tooltip
                                                                   title={
@@ -415,22 +412,21 @@ export default function Location(): JSX.Element {
                         (values.location.countryISO3 &&
                             Object.keys(
                                 myObj[values.location.countryISO3]?.[
-                                    values.location.region || ''
+                                    values.location.admin1 || ''
                                 ] || {},
                             )) ||
                         []
                     }
-                    value={values.location.district}
+                    value={values.location.admin2}
                     sx={{ width: '50%' }}
                     onChange={(_: unknown, newValue: string | null): void => {
-                        setFieldValue('location.district', newValue);
+                        setFieldValue('location.admin2', newValue);
                     }}
                     onInputChange={(_, newInputValue, reason): void => {
                         // setInputValue(newInputValue);
                         if (reason === 'reset') {
-                            setFieldValue('location.district', '');
-                        } else
-                            setFieldValue('location.district', newInputValue);
+                            setFieldValue('location.admin2', '');
+                        } else setFieldValue('location.admin2', newInputValue);
                     }}
                     noOptionsText="No Admin 2 locations are represented on the map for the given Admin 1 and Country"
                     renderInput={(params): JSX.Element => (
@@ -441,20 +437,20 @@ export default function Location(): JSX.Element {
                                 // Setting the name properly allows any typed value
                                 // to be set in the form values, rather than only selected
                                 // dropdown values. Thus we use an unused form value here.
-                                name="location.district"
-                                data-testid={'location.district'}
+                                name="location.admin2"
+                                data-testid={'location.admin2'}
                                 // Use the initial valuelocation name as a hint when untouched
                                 // otherwise just use the field name.
                                 label={'Admin 2'}
                                 component={TextField}
                                 fullWidth
                                 InputProps={
-                                    values.location.district
+                                    values.location.admin2
                                         ? {
                                               ...params.InputProps,
                                               startAdornment: (
                                                   <>
-                                                      {districtAvailableOnMap && (
+                                                      {admin2AvailableOnMap && (
                                                           <InputAdornment position="start">
                                                               <Tooltip
                                                                   title={
@@ -509,15 +505,15 @@ export default function Location(): JSX.Element {
                     className={classes.autocompleteField}
                     itemType="string"
                     getOptionLabel={(option: string): string => option}
-                    options={placeOptions}
-                    value={values.location.place}
+                    options={admin3Options}
+                    value={values.location.admin3}
                     onChange={(_: unknown, newValue: string | null): void => {
-                        setFieldValue('location.place', newValue);
+                        setFieldValue('location.admin3', newValue);
                     }}
                     onInputChange={(_, newInputValue, reason): void => {
                         if (reason === 'reset') {
-                            setFieldValue('location.place', '');
-                        } else setFieldValue('location.place', newInputValue);
+                            setFieldValue('location.admin3', '');
+                        } else setFieldValue('location.admin3', newInputValue);
                     }}
                     noOptionsText="No Admin 3 are represented on the map for the given Admin 2, Admin 1 and Country"
                     renderInput={(params): JSX.Element => (
@@ -528,20 +524,20 @@ export default function Location(): JSX.Element {
                                 // Setting the name properly allows any typed value
                                 // to be set in the form values, rather than only selected
                                 // dropdown values. Thus we use an unused form value here.
-                                name="location.place"
-                                data-testid={'location.place'}
+                                name="location.admin3"
+                                data-testid={'location.admin3'}
                                 // Use the initial valuelocation name as a hint when untouched
                                 // otherwise just use the field name.
                                 label={'Admin 3'}
                                 component={TextField}
                                 fullWidth
                                 InputProps={
-                                    values.location.place
+                                    values.location.admin3
                                         ? {
                                               ...params.InputProps,
                                               startAdornment: (
                                                   <>
-                                                      {placeAvailableOnMap && (
+                                                      {admin3AvailableOnMap && (
                                                           <InputAdornment position="start">
                                                               <Tooltip
                                                                   title={

@@ -1814,11 +1814,11 @@ components:
                 country:
                     type: string
                     description: Name of a country
-                region:
+                admin1:
                   type: string
-                district:
+                admin2:
                   type: string
-                place:
+                admin3:
                     type: string
                 location:
                     type: string
@@ -1856,18 +1856,18 @@ components:
                     type: string
                     description: Third administrative subdivision of a country
                     example: Any district in Costa Rica
-                region:
+                admin1:
                   type: string
-                  description: Name of the region this location refers to
+                  description: Name of the area in admin1 resolution
                   example: Lodz Voivodeship
-                district:
+                admin2:
                   type: string
-                  description: Name of the district this location refers to
+                  description: Name of the area in admin2 resolution
                   example: Lodz County
-                place:
+                admin3:
                     type: string
-                    description: Name of the place this location refers to
-                    example: Boston Children's Hospital
+                    description: Name of the area in admin3 resolution
+                    example: Lodz
                 name:
                     type: string
                     description: >
