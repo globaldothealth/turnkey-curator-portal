@@ -31,7 +31,7 @@ const TooltipText = () => (
                             Country, Admin1, Admin2, Admin3 autocomplete fields
                         </strong>{' '}
                         - allow to select location from the list of location
-                        reckognized by the Mapbox API or type custom one. Only
+                        recognized by the Mapbox API or type custom one. Only
                         the locations from the Mapbox API are going to be
                         visible on the map.
                     </li>
@@ -218,10 +218,10 @@ export function PlacesAutocomplete(
                         {...params}
                         // Setting the name properly allows any typed value
                         // to be set in the form values, rather than only selected
-                        // dropdown values. Thus we use an unused form value here.
+                        // dropdown values. Thus, we use an unused form value here.
                         name="unused"
                         data-testid={props.name}
-                        // Use the initial valuelocation name as a hint when untouched
+                        // Use the initialValue location name as a hint when untouched
                         // otherwise just use the field name.
                         label={props.initialValue || 'Location to geocode'}
                         component={TextField}

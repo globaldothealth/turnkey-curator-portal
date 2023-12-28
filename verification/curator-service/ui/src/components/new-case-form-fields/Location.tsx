@@ -1,51 +1,30 @@
-import { Select, TextField } from 'formik-mui';
-
-import { IconButton, MenuItem, Tooltip, Typography } from '@mui/material';
 import { FastField, useFormikContext, Field, ErrorMessage } from 'formik';
-import makeStyles from '@mui/styles/makeStyles';
-import { Day0CaseFormValues, GeocodeLocation } from '../../api/models/Day0Case';
-import React, { useEffect } from 'react';
-import {
-    getName,
-    alpha2ToAlpha3,
-    getNames,
-    alpha3ToAlpha2,
-} from 'i18n-iso-countries';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import Autocomplete from '@mui/material/Autocomplete';
-import lookupTable from '../../data/lookup_table.json';
-import PublicIcon from '@mui/icons-material/Public';
+import { TextField } from 'formik-mui';
+import { getName, alpha2ToAlpha3, getNames } from 'i18n-iso-countries';
 import { InputAdornment } from '@material-ui/core';
+import PublicIcon from '@mui/icons-material/Public';
+import {
+    Autocomplete,
+    Grid,
+    IconButton,
+    Tooltip,
+    Typography,
+} from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import React, { useEffect } from 'react';
+
+import { Day0CaseFormValues } from '../../api/models/Day0Case';
+import lookupTable from '../../data/lookup_table.json';
 
 const styles = makeStyles(() => ({
-    root: {
-        display: 'flex',
-        flexWrap: 'wrap',
-    },
-    field: {
-        marginRight: '1em',
-        marginTop: '1em',
-        width: '8em',
-    },
-    mapContainer: {
-        textAlign: 'center',
-    },
-    divider: {
-        marginTop: '1em',
-        marginBottom: '1em',
-    },
-    autocompleteField: {
-        marginRight: '1em',
-        marginTop: '1em',
-        width: '16em',
-    },
+    autocompleteField: { width: '100%' },
+    field: { width: '100%' },
+    halfWidth: { marginTop: '1em', width: '50%' },
+    mapIcon: { color: '#0094E2' },
     suggestion: {
         '&:hover': {
             backgroundColor: '#00000014',
         },
-    },
-    mapIcon: {
-        color: '#0094E2',
     },
     errorMessage: {
         fontSize: '0.75em',
@@ -58,9 +37,14 @@ const styles = makeStyles(() => ({
 export default function Location(): JSX.Element {
     const countryNames = getNames('en');
     const classes = styles();
-    const { values, setFieldValue, setTouched } =
-        useFormikContext<Day0CaseFormValues>();
-    const myObj: { [index: string]: any } = lookupTable;
+    const { values, setFieldValue } = useFormikContext<Day0CaseFormValues>();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const lookupTableData: { [index: string]: any } = lookupTable;
+
+    const [selectedCountry, setSelectedCountry] = React.useState<string>('');
+    const [selectedAdmin1, setSelectedAdmin1] = React.useState<string>('');
+    const [selectedAdmin2, setSelectedAdmin2] = React.useState<string>('');
+    const [selectedAdmin3, setSelectedAdmin3] = React.useState<string>('');
 
     const [admin1Options, setAdmin1Options] = React.useState<string[]>([]);
     const [admin1AvailableOnMap, setAdmin1AvailableOnMap] =
@@ -75,8 +59,10 @@ export default function Location(): JSX.Element {
     // Update options for admin1
     useEffect(() => {
         setAdmin1Options(
-            Object.keys(myObj[values.location.countryISO3] || {}) || [],
+            Object.keys(lookupTableData[values.location.countryISO3] || {}) ||
+                [],
         );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [values.location.countryISO3]);
 
     // Update mapbox indicator for admin1
@@ -96,11 +82,12 @@ export default function Location(): JSX.Element {
     useEffect(() => {
         setAdmin2Options(
             Object.keys(
-                myObj[values.location.countryISO3]?.[
+                lookupTableData[values.location.countryISO3]?.[
                     values.location.admin1 || ''
                 ] || {},
             ) || [],
         );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [values.location.countryISO3, values.location.admin1]);
 
     // Update mapbox indicator for admin2
@@ -119,10 +106,11 @@ export default function Location(): JSX.Element {
     // Update options for admin3
     useEffect(() => {
         setAdmin3Options(
-            myObj[values.location.countryISO3]?.[
+            lookupTableData[values.location.countryISO3]?.[
                 values.location.admin1 || ''
             ]?.[values.location.admin2 || ''] || [],
         );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         values.location.countryISO3,
         values.location.admin1,
@@ -144,6 +132,7 @@ export default function Location(): JSX.Element {
 
     useEffect(() => {
         if (!values.location.geocodeLocation) return;
+        console.log(values.location.geocodeLocation);
 
         const countryName =
             getName(values.location.geocodeLocation.country, 'en') ||
@@ -156,8 +145,14 @@ export default function Location(): JSX.Element {
                 values.location.countryISO3,
         );
         setFieldValue('location.country', countryName);
+        setSelectedCountry(countryName);
         setFieldValue(
             'location.admin1',
+            values.location.geocodeLocation.admin1 ||
+                values.location.admin1 ||
+                '',
+        );
+        setSelectedAdmin1(
             values.location.geocodeLocation.admin1 ||
                 values.location.admin1 ||
                 '',
@@ -168,8 +163,18 @@ export default function Location(): JSX.Element {
                 values.location.admin2 ||
                 '',
         );
+        setSelectedAdmin2(
+            values.location.geocodeLocation.admin2 ||
+                values.location.admin2 ||
+                '',
+        );
         setFieldValue(
             'location.admin3',
+            values.location.geocodeLocation.admin3 ||
+                values.location.admin3 ||
+                '',
+        );
+        setSelectedAdmin3(
             values.location.geocodeLocation.admin3 ||
                 values.location.admin3 ||
                 '',
@@ -192,158 +197,169 @@ export default function Location(): JSX.Element {
                 values.location.geometry?.longitude ||
                 '',
         );
-        // eslint-disable-next-line
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [values.location.geocodeLocation]);
 
     return (
-        <>
-            <div className={classes.root}>
-                {/* Country */}
-                <Autocomplete
-                    className={classes.autocompleteField}
-                    itemType="string"
-                    getOptionLabel={(option: string): string => option}
-                    options={Object.keys(countryNames)
-                        .map((alpha2key) => countryNames[alpha2key])
-                        .sort()}
-                    value={
-                        values.location.country === ''
-                            ? undefined
-                            : values.location.country
-                    }
-                    disableClearable
-                    onChange={(_: unknown, newValue: string | null): void => {
-                        const countryCode = alpha2ToAlpha3(
-                            Object.keys(countryNames).find(
-                                (key: string) => countryNames[key] === newValue,
-                            ) || '',
-                        );
-                        setFieldValue('location.country', newValue);
-                        setFieldValue('location.countryISO3', countryCode);
-                    }}
-                    onInputChange={(_, newInputValue): void => {
-                        setFieldValue('location.country', newInputValue);
-                        const countryCode = alpha2ToAlpha3(
-                            Object.keys(countryNames).find(
-                                (key: string) =>
-                                    countryNames[key] === newInputValue,
-                            ) || '',
-                        );
-                        if (countryCode)
+        <div className={classes.halfWidth}>
+            <Grid container spacing={2}>
+                <Grid item xs={6}>
+                    {/* Country */}
+                    <Autocomplete
+                        className={classes.autocompleteField}
+                        itemType="string"
+                        getOptionLabel={(option: string): string => option}
+                        options={Object.keys(countryNames)
+                            .map((alpha2key) => countryNames[alpha2key])
+                            .sort()}
+                        value={selectedCountry}
+                        disableClearable
+                        onChange={(
+                            _: unknown,
+                            newValue: string | null,
+                        ): void => {
+                            const countryCode = alpha2ToAlpha3(
+                                Object.keys(countryNames).find(
+                                    (key: string) =>
+                                        countryNames[key] === newValue,
+                                ) || '',
+                            );
+                            setSelectedCountry(newValue || '');
+                            setFieldValue('location.country', newValue);
                             setFieldValue('location.countryISO3', countryCode);
-                        else setFieldValue('location.countryISO3', '');
-                    }}
-                    renderInput={(params): JSX.Element => (
-                        <>
-                            {/* Do not use FastField here */}
-                            <Field
-                                {...params}
-                                // Setting the name properly allows any typed value
-                                // to be set in the form values, rather than only selected
-                                // dropdown values. Thus we use an unused form value here.
-                                name="location.country"
-                                data-testid={'location.country'}
-                                // Use the initial valuelocation name as a hint when untouched
-                                // otherwise just use the field name.
-                                label={'Country'}
-                                component={TextField}
-                                fullWidth
-                                required={true}
-                                error={!values.location.countryISO3}
-                                InputProps={
-                                    values.location.country
-                                        ? {
-                                              ...params.InputProps,
-                                              startAdornment: (
-                                                  <>
-                                                      {values.location
-                                                          .countryISO3 && (
-                                                          <InputAdornment position="start">
-                                                              <Tooltip
-                                                                  title={
-                                                                      'Represented on the Country Map View'
-                                                                  }
-                                                              >
-                                                                  <PublicIcon
-                                                                      className={
-                                                                          classes.mapIcon
+                        }}
+                        onInputChange={(_, newInputValue): void => {
+                            setFieldValue('location.country', newInputValue);
+                            const countryCode = alpha2ToAlpha3(
+                                Object.keys(countryNames).find(
+                                    (key: string) =>
+                                        countryNames[key] === newInputValue,
+                                ) || '',
+                            );
+                            if (countryCode) {
+                                setFieldValue(
+                                    'location.countryISO3',
+                                    countryCode,
+                                );
+                            } else setFieldValue('location.countryISO3', '');
+                            setSelectedCountry(newInputValue || '');
+                        }}
+                        renderInput={(params): JSX.Element => (
+                            <>
+                                {/* Do not use FastField here */}
+                                <Field
+                                    {...params}
+                                    name="location.country"
+                                    data-testid={'location.country'}
+                                    label={'Country'}
+                                    component={TextField}
+                                    fullWidth
+                                    required
+                                    error={!values.location.countryISO3}
+                                    InputProps={
+                                        selectedCountry
+                                            ? {
+                                                  ...params.InputProps,
+                                                  startAdornment: (
+                                                      <>
+                                                          {values.location
+                                                              .countryISO3 && (
+                                                              <InputAdornment position="start">
+                                                                  <Tooltip
+                                                                      title={
+                                                                          'Represented on the Country Map View'
                                                                       }
-                                                                  />
-                                                              </Tooltip>
-                                                          </InputAdornment>
-                                                      )}
-                                                      {
-                                                          params.InputProps
-                                                              .startAdornment
-                                                      }
-                                                  </>
-                                              ),
-                                          }
-                                        : {
-                                              ...params.InputProps,
-                                          }
-                                }
-                            />
-                            {!values.location.countryISO3 && (
-                                <ErrorMessage name={'caseReference.sourceUrl'}>
-                                    {(msg) => (
-                                        <div className={classes.errorMessage}>
-                                            {msg}
-                                        </div>
-                                    )}
-                                </ErrorMessage>
-                            )}
-                        </>
-                    )}
-                    renderOption={(props, option: string): React.ReactNode => {
-                        return (
-                            <li {...props} className={classes.suggestion}>
-                                <Typography variant="body2">
-                                    <Tooltip
-                                        title={
-                                            'Represented on the Country Map View'
-                                        }
+                                                                  >
+                                                                      <PublicIcon
+                                                                          className={
+                                                                              classes.mapIcon
+                                                                          }
+                                                                      />
+                                                                  </Tooltip>
+                                                              </InputAdornment>
+                                                          )}
+                                                          {
+                                                              params.InputProps
+                                                                  .startAdornment
+                                                          }
+                                                      </>
+                                                  ),
+                                              }
+                                            : {
+                                                  ...params.InputProps,
+                                              }
+                                    }
+                                />
+                                {!selectedCountry && (
+                                    <ErrorMessage
+                                        name={'caseReference.sourceUrl'}
                                     >
-                                        <IconButton>
-                                            <PublicIcon
-                                                className={classes.mapIcon}
-                                            />
-                                        </IconButton>
-                                    </Tooltip>
-                                    {option}
-                                </Typography>
-                            </li>
-                        );
-                    }}
-                />
-                {/* Admin 1 */}
-                <Autocomplete
-                    className={classes.autocompleteField}
-                    itemType="string"
-                    getOptionLabel={(option: string): string => option}
-                    options={admin1Options}
-                    value={values.location.admin1}
-                    onChange={(_: unknown, newValue: string | null): void => {
-                        setFieldValue('location.admin1', newValue);
-                    }}
-                    onInputChange={(_, newInputValue, reason): void => {
-                        if (reason === 'reset') {
-                            setFieldValue('location.admin1', '');
-                        } else setFieldValue('location.admin1', newInputValue);
-                    }}
-                    noOptionsText="No Admin 1 locations are represented on the map for the given Country"
-                    renderInput={(params): JSX.Element => (
-                        <>
-                            {/* Do not use FastField here */}
+                                        {(msg) => (
+                                            <div
+                                                className={classes.errorMessage}
+                                            >
+                                                {msg}
+                                            </div>
+                                        )}
+                                    </ErrorMessage>
+                                )}
+                            </>
+                        )}
+                        renderOption={(
+                            props,
+                            option: string,
+                        ): React.ReactNode => {
+                            return (
+                                <li {...props} className={classes.suggestion}>
+                                    <Typography variant="body2">
+                                        <Tooltip
+                                            title={
+                                                'Represented on the Country Map View'
+                                            }
+                                        >
+                                            <IconButton>
+                                                <PublicIcon
+                                                    className={classes.mapIcon}
+                                                />
+                                            </IconButton>
+                                        </Tooltip>
+                                        {option}
+                                    </Typography>
+                                </li>
+                            );
+                        }}
+                    />
+                </Grid>
+                <Grid item xs={6}>
+                    {/* Admin 1 */}
+                    <Autocomplete
+                        className={classes.autocompleteField}
+                        itemType="string"
+                        getOptionLabel={(option: string): string => option}
+                        options={admin1Options}
+                        value={selectedAdmin1}
+                        onChange={(
+                            _: unknown,
+                            newValue: string | null,
+                        ): void => {
+                            setFieldValue('location.admin1', newValue);
+                            setSelectedAdmin1(newValue || '');
+                        }}
+                        onInputChange={(_, newInputValue, reason): void => {
+                            if (reason === 'clear') {
+                                setFieldValue('location.admin1', '');
+                                setSelectedAdmin1('');
+                            } else {
+                                setFieldValue('location.admin1', newInputValue);
+                                setSelectedAdmin1(newInputValue || '');
+                            }
+                        }}
+                        noOptionsText="No Admin 1 locations are represented on the map for the given Country"
+                        renderInput={(params): JSX.Element => (
                             <Field
                                 {...params}
-                                // Setting the name properly allows any typed value
-                                // to be set in the form values, rather than only selected
-                                // dropdown values. Thus we use an unused form value here.
                                 name="location.admin1"
                                 data-testid={'location.admin1'}
-                                // Use the initial valuelocation name as a hint when untouched
-                                // otherwise just use the field name.
                                 label={'Admin 1'}
                                 component={TextField}
                                 fullWidth
@@ -380,67 +396,72 @@ export default function Location(): JSX.Element {
                                           }
                                 }
                             />
-                        </>
-                    )}
-                    renderOption={(props, option: string): React.ReactNode => {
-                        return (
-                            <li {...props} className={classes.suggestion}>
-                                <Typography variant="body2">
-                                    <Tooltip
-                                        title={
-                                            'Represented on the Admin 1 Map View'
-                                        }
-                                    >
-                                        <IconButton>
-                                            <PublicIcon
-                                                className={classes.mapIcon}
-                                            />
-                                        </IconButton>
-                                    </Tooltip>
-                                    {option}
-                                </Typography>
-                            </li>
-                        );
-                    }}
-                />
-                {/* Admin 2 */}
-                <Autocomplete
-                    className={classes.autocompleteField}
-                    itemType="string"
-                    getOptionLabel={(option: string): string => option}
-                    options={
-                        (values.location.countryISO3 &&
-                            Object.keys(
-                                myObj[values.location.countryISO3]?.[
-                                    values.location.admin1 || ''
-                                ] || {},
-                            )) ||
-                        []
-                    }
-                    value={values.location.admin2}
-                    sx={{ width: '50%' }}
-                    onChange={(_: unknown, newValue: string | null): void => {
-                        setFieldValue('location.admin2', newValue);
-                    }}
-                    onInputChange={(_, newInputValue, reason): void => {
-                        // setInputValue(newInputValue);
-                        if (reason === 'reset') {
-                            setFieldValue('location.admin2', '');
-                        } else setFieldValue('location.admin2', newInputValue);
-                    }}
-                    noOptionsText="No Admin 2 locations are represented on the map for the given Admin 1 and Country"
-                    renderInput={(params): JSX.Element => (
-                        <>
-                            {/* Do not use FastField here */}
+                        )}
+                        renderOption={(
+                            props,
+                            option: string,
+                        ): React.ReactNode => {
+                            return (
+                                <li {...props} className={classes.suggestion}>
+                                    <Typography variant="body2">
+                                        <Tooltip
+                                            title={
+                                                'Represented on the Admin 1 Map View'
+                                            }
+                                        >
+                                            <IconButton>
+                                                <PublicIcon
+                                                    className={classes.mapIcon}
+                                                />
+                                            </IconButton>
+                                        </Tooltip>
+                                        {option}
+                                    </Typography>
+                                </li>
+                            );
+                        }}
+                    />
+                </Grid>
+                <Grid item xs={6}>
+                    {/* Admin 2 */}
+                    <Autocomplete
+                        className={classes.autocompleteField}
+                        itemType="string"
+                        getOptionLabel={(option: string): string => option}
+                        options={
+                            (values.location.countryISO3 &&
+                                Object.keys(
+                                    lookupTableData[
+                                        values.location.countryISO3
+                                    ]?.[values.location.admin1 || ''] || {},
+                                )) ||
+                            []
+                        }
+                        value={selectedAdmin2}
+                        sx={{ width: '50%' }}
+                        onChange={(
+                            _: unknown,
+                            newValue: string | null,
+                        ): void => {
+                            setFieldValue('location.admin2', newValue);
+                            setSelectedAdmin2(newValue || '');
+                        }}
+                        onInputChange={(_, newInputValue, reason): void => {
+                            // setInputValue(newInputValue);
+                            if (reason === 'clear') {
+                                setFieldValue('location.admin2', '');
+                                setSelectedAdmin2('');
+                            } else {
+                                setFieldValue('location.admin2', newInputValue);
+                                setSelectedAdmin2(newInputValue || '');
+                            }
+                        }}
+                        noOptionsText="No Admin 2 locations are represented on the map for the given Admin 1 and Country"
+                        renderInput={(params): JSX.Element => (
                             <Field
                                 {...params}
-                                // Setting the name properly allows any typed value
-                                // to be set in the form values, rather than only selected
-                                // dropdown values. Thus we use an unused form value here.
                                 name="location.admin2"
                                 data-testid={'location.admin2'}
-                                // Use the initial valuelocation name as a hint when untouched
-                                // otherwise just use the field name.
                                 label={'Admin 2'}
                                 component={TextField}
                                 fullWidth
@@ -477,57 +498,62 @@ export default function Location(): JSX.Element {
                                           }
                                 }
                             />
-                        </>
-                    )}
-                    renderOption={(props, option: string): React.ReactNode => {
-                        return (
-                            <li {...props} className={classes.suggestion}>
-                                <Typography variant="body2">
-                                    <Tooltip
-                                        title={
-                                            'Represented on the Admin 2 Map View'
-                                        }
-                                    >
-                                        <IconButton>
-                                            <PublicIcon
-                                                className={classes.mapIcon}
-                                            />
-                                        </IconButton>
-                                    </Tooltip>
-                                    {option}
-                                </Typography>
-                            </li>
-                        );
-                    }}
-                />
-                {/* Admin 3 */}
-                <Autocomplete
-                    className={classes.autocompleteField}
-                    itemType="string"
-                    getOptionLabel={(option: string): string => option}
-                    options={admin3Options}
-                    value={values.location.admin3}
-                    onChange={(_: unknown, newValue: string | null): void => {
-                        setFieldValue('location.admin3', newValue);
-                    }}
-                    onInputChange={(_, newInputValue, reason): void => {
-                        if (reason === 'reset') {
-                            setFieldValue('location.admin3', '');
-                        } else setFieldValue('location.admin3', newInputValue);
-                    }}
-                    noOptionsText="No Admin 3 are represented on the map for the given Admin 2, Admin 1 and Country"
-                    renderInput={(params): JSX.Element => (
-                        <>
-                            {/* Do not use FastField here */}
+                        )}
+                        renderOption={(
+                            props,
+                            option: string,
+                        ): React.ReactNode => {
+                            return (
+                                <li {...props} className={classes.suggestion}>
+                                    <Typography variant="body2">
+                                        <Tooltip
+                                            title={
+                                                'Represented on the Admin 2 Map View'
+                                            }
+                                        >
+                                            <IconButton>
+                                                <PublicIcon
+                                                    className={classes.mapIcon}
+                                                />
+                                            </IconButton>
+                                        </Tooltip>
+                                        {option}
+                                    </Typography>
+                                </li>
+                            );
+                        }}
+                    />
+                </Grid>
+                <Grid item xs={6}>
+                    {/* Admin 3 */}
+                    <Autocomplete
+                        className={classes.autocompleteField}
+                        itemType="string"
+                        getOptionLabel={(option: string): string => option}
+                        options={admin3Options}
+                        value={selectedAdmin3}
+                        onChange={(
+                            _: unknown,
+                            newValue: string | null,
+                        ): void => {
+                            setFieldValue('location.admin3', newValue);
+                            setSelectedAdmin3(newValue || '');
+                        }}
+                        onInputChange={(_, newInputValue, reason): void => {
+                            if (reason === 'clear') {
+                                setFieldValue('location.admin3', '');
+                                setSelectedAdmin3('');
+                            } else {
+                                setFieldValue('location.admin3', newInputValue);
+                                setSelectedAdmin3(newInputValue || '');
+                            }
+                        }}
+                        noOptionsText="No Admin 3 are represented on the map for the given Admin 2, Admin 1 and Country"
+                        renderInput={(params): JSX.Element => (
                             <Field
                                 {...params}
-                                // Setting the name properly allows any typed value
-                                // to be set in the form values, rather than only selected
-                                // dropdown values. Thus we use an unused form value here.
                                 name="location.admin3"
                                 data-testid={'location.admin3'}
-                                // Use the initial valuelocation name as a hint when untouched
-                                // otherwise just use the field name.
                                 label={'Admin 3'}
                                 component={TextField}
                                 fullWidth
@@ -564,65 +590,63 @@ export default function Location(): JSX.Element {
                                           }
                                 }
                             />
-                        </>
-                    )}
-                    renderOption={(props, option: string): React.ReactNode => {
-                        return (
-                            <li {...props} className={classes.suggestion}>
-                                <Typography variant="body2">
-                                    <Tooltip
-                                        title={
-                                            'Represented on the Admin 3 Map View'
-                                        }
-                                    >
-                                        <IconButton>
-                                            <PublicIcon
-                                                className={classes.mapIcon}
-                                            />
-                                        </IconButton>
-                                    </Tooltip>
-                                    {option}
-                                </Typography>
-                            </li>
-                        );
-                    }}
-                />
-                <FastField
-                    variant="outlined"
-                    className={classes.field}
-                    label="Location"
-                    name="location.location"
-                    type="text"
-                    component={TextField}
-                    sx={{ minWidth: '13rem' }}
-                />
-                <FastField
-                    variant="outlined"
-                    className={classes.field}
-                    label="Latitude"
-                    name={`location.geometry.latitude`}
-                    type="number"
-                    // Workaround for formik + MUI issue
-                    InputLabelProps={{
-                        shrink: values.location.geometry?.latitude,
-                    }}
-                    component={TextField}
-                    sx={{ minWidth: '13rem' }}
-                />
-                <Field
-                    variant="outlined"
-                    className={classes.field}
-                    label="Longitude"
-                    name={`location.geometry.longitude`}
-                    type="number"
-                    // Workaround for formik + MUI issue
-                    InputLabelProps={{
-                        shrink: values.location.geometry?.longitude,
-                    }}
-                    component={TextField}
-                    sx={{ minWidth: '13rem' }}
-                />
-            </div>
-        </>
+                        )}
+                        renderOption={(
+                            props,
+                            option: string,
+                        ): React.ReactNode => {
+                            return (
+                                <li {...props} className={classes.suggestion}>
+                                    <Typography variant="body2">
+                                        <Tooltip
+                                            title={
+                                                'Represented on the Admin 3 Map View'
+                                            }
+                                        >
+                                            <IconButton>
+                                                <PublicIcon
+                                                    className={classes.mapIcon}
+                                                />
+                                            </IconButton>
+                                        </Tooltip>
+                                        {option}
+                                    </Typography>
+                                </li>
+                            );
+                        }}
+                    />
+                </Grid>
+                <Grid item xs={6}>
+                    <FastField
+                        variant="outlined"
+                        className={classes.field}
+                        label="Latitude"
+                        name={`location.geometry.latitude`}
+                        type="number"
+                        // Workaround for formik + MUI issue
+                        InputLabelProps={{
+                            shrink: values.location.geometry?.latitude,
+                        }}
+                        component={TextField}
+                        sx={{ minWidth: '13rem' }}
+                    />
+                </Grid>
+                <Grid item xs={6}>
+                    <Field
+                        variant="outlined"
+                        className={classes.field}
+                        label="Longitude"
+                        name={`location.geometry.longitude`}
+                        type="number"
+                        // Workaround for formik + MUI issue
+                        InputLabelProps={{
+                            shrink: values.location.geometry?.longitude,
+                        }}
+                        component={TextField}
+                        sx={{ minWidth: '13rem' }}
+                    />
+                </Grid>
+            </Grid>
+        </div>
     );
 }
