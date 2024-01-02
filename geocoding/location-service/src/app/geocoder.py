@@ -48,11 +48,11 @@ class Geocoder:
         types = {c['id'].split('.')[0] for c in contexts}
         if 'poi' in types:
             return Geocoder.Point
-        elif 'Admin3' in types:
+        elif 'place' in types:
             return Geocoder.Admin3
-        elif 'Admin2' in types:
+        elif 'district' in types:
             return Geocoder.Admin2
-        elif 'Admin1' in types:
+        elif 'region' in types:
             return Geocoder.Admin1
         else:
             return Geocoder.Country
