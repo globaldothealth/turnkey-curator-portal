@@ -429,18 +429,6 @@ const LinelistTable = () => {
                                             align="left"
                                             sx={{ minWidth: 100 }}
                                         >
-                                            {row.admin3}
-                                        </TableCell>
-                                        <TableCell
-                                            align="left"
-                                            sx={{ minWidth: 100 }}
-                                        >
-                                            {row.location}
-                                        </TableCell>
-                                        <TableCell
-                                            align="left"
-                                            sx={{ minWidth: 100 }}
-                                        >
                                             {row.age}
                                         </TableCell>
                                         <TableCell align="left">

@@ -22,30 +22,26 @@ const TooltipText = () => (
                 Location form consists of four sections.
                 <ul>
                     <li>
-                        <strong>Automatic geocoding field</strong> - allows to
-                        find location based on user prompt and automatically
-                        fill in the rest of the fields.
+                        <strong>Location to geocode</strong> - allows to find
+                        location based on user prompt and automatically fill in
+                        the rest of the fields.
                     </li>
                     <li>
-                        <strong>
-                            Country, Admin1, Admin2, Admin3 autocomplete fields
-                        </strong>{' '}
-                        - allow to select location from the list of location
-                        recognized by the Mapbox API or type custom one. Only
-                        the locations from the Mapbox API are going to be
-                        visible on the map.
+                        <strong>Country, Admin1, Admin2, Admin3</strong> - allow
+                        to select location from the list of location recognized
+                        by the Mapbox API or type custom one. Only the locations
+                        from the Mapbox API are going to be visible on the map.
                     </li>
                     <li>
-                        <strong>Location, Latitude and Longitude</strong> - can
-                        be filled separately or by the autocomplete. Location is
-                        used to store whole location string, Latitude and
-                        Longitude are used to store coordinates.
+                        <strong>Latitude and Longitude</strong> - can be filled
+                        separately or by the autocomplete, used to store
+                        coordinates.
                     </li>
                     <li>
                         <strong>Location Comment</strong> - used by the curators
                         to add comments like hospital name or other details
                         about the location that cannot be represented by the
-                        address.
+                        other fields.
                     </li>
                 </ul>
             </li>

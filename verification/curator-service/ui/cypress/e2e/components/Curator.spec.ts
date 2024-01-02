@@ -59,19 +59,9 @@ describe('Curator', function () {
         cy.get('div[data-testid="comment"]').type('This case should be consulted with Supervisor.');
 
         // DATA SOURCE
-
         cy.get('div[data-testid="caseReference"]').type('www.example.com');
         cy.contains('www.example.com').click();
         cy.get('input[name="caseReference.isGovernmentSource"]').click()
-
-        // DEMOGRAPHICS
-        cy.get('div[data-testid="demographics.gender"]').click();
-        cy.get('li[data-value="female"').click();
-        // TODO UI for age entry needs redesign
-        cy.get('div[data-testid="occupation"]').click();
-        cy.contains('li', 'Accountant').click();
-        cy.get('div[data-testid="demographics.healthcareWorker"]').click();
-        cy.get('li[data-value="N"]').click();
 
         // LOCATION
         cy.get('div[data-testid="location.geocodeLocation"]').type('France', { delay: 0});
@@ -80,17 +70,16 @@ describe('Curator', function () {
         /* Change France to something else to check we can edit geocode results.
          * We need to change it to a valid country so that we can find the ISO code!
          */
-        cy.get('div[data-testid="location.geocodeLocation"]')
-            .clear()
-            .type('Germany');
-        cy.contains('Germany').click();
-        cy.get('div[data-testid="location.countryISO3"]').click()
-        cy.get('li[data-value="DEU"').click();
-        cy.get('input[name="location.region"]').type('Berlin Region');
-        cy.get('input[name="location.district"]').type('Berlin District');
-        cy.get('input[name="location.place"]').type('Berlin City');
-        cy.get('input[name="location.location"]').clear().type('Berlin Central Hospital');
-        cy.get('div[data-testid="location.comment"]').type('2nd wing, 3rd floor');
+        cy.get('div[data-testid="location.country"]').click()
+        cy.get('input[name="location.country"]').clear().type('Germany')
+        cy.get('p').contains('Germany').click();
+        cy.get('input[name="location.admin1"]').type('Berlin');
+        cy.get('p').contains('Berlin').click();
+        cy.get('input[name="location.admin2"]').type('SK Berlin');
+        cy.get('p').contains('SK Berlin').click();
+        cy.get('input[name="location.admin3"]').type('Berlin');
+        cy.get('p').contains('Berlin').click();
+        cy.get('div[data-testid="location.comment"]').type('Martin Luther Hospital');
 
         // EVENTS
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
@@ -115,6 +104,15 @@ describe('Curator', function () {
         cy.get('div[data-testid="events.outcome"]').click();
         cy.get('li[data-value="recovered"').click();
         cy.get('input[name="events.dateRecovered"]').type('2020-03-01');
+
+        // DEMOGRAPHICS
+        cy.get('div[data-testid="demographics.gender"]').click();
+        cy.get('li[data-value="female"').click();
+        // TODO UI for age entry needs redesign
+        cy.get('div[data-testid="occupation"]').click();
+        cy.contains('li', 'Accountant').click();
+        cy.get('div[data-testid="demographics.healthcareWorker"]').click();
+        cy.get('li[data-value="N"]').click();
 
         // SYMPTOMS
         cy.get('div[data-testid="symptoms"]').type('dry cough');
@@ -201,8 +199,6 @@ describe('Curator', function () {
             cy.contains('female');
             // TODO UI for demographics.age needs redesigning
             cy.contains('Germany');
-            cy.contains('Berlin City');
-            cy.contains('Berlin Central Hospital');
             cy.contains('2020-01-01');
             cy.contains('recovered');
 
@@ -239,24 +235,23 @@ describe('Curator', function () {
             });
 
             // Location.
-            cy.get('input[name="location.countryISO3"]').should(
+            cy.get('input[name="location.country"]').should(
                 'have.value',
-                'DEU',
+                'Germany',
             );
-            cy.get('input[name="location.region"]').should(
+            cy.get('input[name="location.admin1"]').should(
                 'have.value',
-                'Berlin Region',
+                'Berlin',
             );
-            cy.get('input[name="location.district"]').should(
+            cy.get('input[name="location.admin2"]').should(
                 'have.value',
-                'Berlin District',
+                'SK Berlin',
             );
-            cy.get('input[name="location.location"]').should(
+            cy.get('input[name="location.admin3"]').should(
                 'have.value',
-                'Berlin Central Hospital',
+                'Berlin',
             );
-
-            cy.get('input[value="2nd wing, 3rd floor"]').should("exist");
+            cy.get('input[value="Martin Luther Hospital"]').should("exist");
 
             // Events.
             cy.get('input[name="events.dateEntry"]').should(
@@ -417,7 +412,7 @@ describe('Curator', function () {
             });
             cy.contains('li', 'Test occupation').click();
             cy.get('div[data-testid="location.comment"]').clear()
-            cy.contains('li', '2nd wing, 3rd floor').click();
+            cy.contains('li', 'Martin Luther Hospital').click();
             // Submit the changes.
             cy.get('button[data-testid="submit"]').click();
 

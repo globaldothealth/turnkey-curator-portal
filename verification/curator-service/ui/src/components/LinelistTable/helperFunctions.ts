@@ -7,8 +7,6 @@ export const labels = [
     'Reported date',
     'Case status',
     'Country',
-    'Admin3',
-    'Location',
     'Age',
     'Gender',
     'Outcome',
