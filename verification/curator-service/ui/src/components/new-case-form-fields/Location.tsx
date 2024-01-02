@@ -37,14 +37,23 @@ const styles = makeStyles(() => ({
 export default function Location(): JSX.Element {
     const countryNames = getNames('en');
     const classes = styles();
-    const { values, setFieldValue } = useFormikContext<Day0CaseFormValues>();
+    const { values, setFieldValue, initialValues } =
+        useFormikContext<Day0CaseFormValues>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const lookupTableData: { [index: string]: any } = lookupTable;
 
-    const [selectedCountry, setSelectedCountry] = React.useState<string>('');
-    const [selectedAdmin1, setSelectedAdmin1] = React.useState<string>('');
-    const [selectedAdmin2, setSelectedAdmin2] = React.useState<string>('');
-    const [selectedAdmin3, setSelectedAdmin3] = React.useState<string>('');
+    const [selectedCountry, setSelectedCountry] = React.useState<string>(
+        initialValues?.location?.country || '',
+    );
+    const [selectedAdmin1, setSelectedAdmin1] = React.useState<string>(
+        initialValues?.location?.admin1 || '',
+    );
+    const [selectedAdmin2, setSelectedAdmin2] = React.useState<string>(
+        initialValues?.location?.admin2 || '',
+    );
+    const [selectedAdmin3, setSelectedAdmin3] = React.useState<string>(
+        initialValues?.location?.admin3 || '',
+    );
 
     const [admin1Options, setAdmin1Options] = React.useState<string[]>([]);
     const [admin1AvailableOnMap, setAdmin1AvailableOnMap] =
@@ -214,6 +223,7 @@ export default function Location(): JSX.Element {
                             .sort()}
                         value={selectedCountry}
                         disableClearable
+                        defaultValue={initialValues.location.country}
                         onChange={(
                             _: unknown,
                             newValue: string | null,

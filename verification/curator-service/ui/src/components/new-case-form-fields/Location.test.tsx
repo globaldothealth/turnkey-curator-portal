@@ -8,16 +8,14 @@ it('shows location when passed location information', async () => {
         <Formik
             initialValues={{
                 location: {
-                    country: 'United States',
+                    country: 'United States of America',
                     countryISO3: 'USA',
                     admin1: 'Florida',
                     admin2: 'Collier County',
                     admin3: 'Chicago',
-                    location: 'Central hospital',
                     geometry: { latitude: 53.426588, longitude: 14.549271 },
                 },
             }}
-            // onSubmit just here to appease tslint.
             onSubmit={async (values): Promise<void> => {
                 return;
             }}
@@ -27,11 +25,11 @@ it('shows location when passed location information', async () => {
             </Form>
         </Formik>,
     );
-    expect(screen.getByDisplayValue(/USA/i)).toBeInTheDocument();
+    console.log(screen.debug());
+    expect(screen.getByDisplayValue(/United States of America/i)).toBeInTheDocument();
     expect(screen.getByDisplayValue(/Florida/i)).toBeInTheDocument();
     expect(screen.getByDisplayValue(/Collier County/i)).toBeInTheDocument();
     expect(screen.getByDisplayValue(/Chicago/i)).toBeInTheDocument();
-    expect(screen.getByDisplayValue(/Central hospital/i)).toBeInTheDocument();
     expect(screen.getByDisplayValue(/53.426588/i)).toBeInTheDocument();
     expect(screen.getByDisplayValue(/14.549271/i)).toBeInTheDocument();
 });

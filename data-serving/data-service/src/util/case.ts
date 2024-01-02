@@ -255,6 +255,8 @@ function denormalizeLocationFields(
     denormalizedData['location.country'] = doc.country || '';
     denormalizedData['location.countryISO3'] = doc.countryISO3 || '';
     denormalizedData['location.location'] = doc.location || '';
+    denormalizedData['location.admin1'] = doc.admin1 || '';
+    denormalizedData['location.admin2'] = doc.admin2 || '';
     denormalizedData['location.admin3'] = doc.admin3 || '';
     denormalizedData['location.geoResolution'] = doc.geoResolution || '';
     denormalizedData['location.geometry.latitude'] =
