@@ -18,6 +18,7 @@ import ListIcon from '@mui/icons-material/List';
 import LinkIcon from '@mui/icons-material/Link';
 import PublishIcon from '@mui/icons-material/Publish';
 import PeopleIcon from '@mui/icons-material/People';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import { hasAnyRole } from '../util/helperFunctions';
 
 import { useStyles } from './styled';
@@ -60,6 +61,12 @@ const Sidebar = ({ drawerOpen }: SidebarProps): JSX.Element => {
         () =>
             user
                 ? [
+                      {
+                          text: 'Pivot tables',
+                          icon: <QueryStatsIcon />,
+                          to: { pathname: '/pivot-tables', search: '' },
+                          displayCheck: (): boolean => true,
+                      },
                       {
                           text: 'Line list',
                           icon: <ListIcon />,
