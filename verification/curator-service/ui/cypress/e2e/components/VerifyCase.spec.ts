@@ -36,8 +36,6 @@ describe('Verify case', function () {
         cy.get('div[data-testid="location.geocodeLocation"]').type('France');
         cy.wait('@geolocationFranceSuggest');
         cy.contains('li', 'France').click();
-        cy.get('div[data-testid="location.countryISO3"]').click()
-        cy.get('li[data-value="FRA"').click();
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
         cy.get('input[name="events.dateReported"]').type('2020-01-01');
 

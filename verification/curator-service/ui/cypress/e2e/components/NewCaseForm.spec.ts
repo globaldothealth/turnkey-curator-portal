@@ -36,11 +36,8 @@ describe('New case form', function () {
         cy.get('li[data-value="confirmed"]').click();
         cy.get('div[data-testid="caseReference"]').type('www.example.com');
         cy.contains('www.example.com').click();
-        cy.get('div[data-testid="location.geocodeLocation"]').type('France');
-        cy.wait('@geolocationFranceSuggest');
-        cy.contains('li', 'France').click();
-        cy.get('div[data-testid="location.countryISO3"]').click()
-        cy.get('li[data-value="FRA"').click();
+        cy.get('input[name="location.country"]').type('Fr')
+        cy.get('p').contains('France').click();
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
         cy.get('input[name="events.dateReported"]').type('2020-01-01');
 
@@ -67,11 +64,8 @@ describe('New case form', function () {
         cy.get('div[data-testid="caseStatus"]').click();
         cy.get('li[data-value="confirmed"]').click();
         cy.get('div[data-testid="caseReference"]').type('www.new-source.com');
-        cy.get('div[data-testid="location.geocodeLocation"]').type('France');
-        cy.wait('@geolocationFranceSuggest');
-        cy.contains('li', 'France').click();
-        cy.get('div[data-testid="location.countryISO3"]').click()
-        cy.get('li[data-value="FRA"').click();
+        cy.get('input[name="location.country"]').type('Fr')
+        cy.get('p').contains('France').click();
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
         cy.get('input[name="events.dateReported"]').type('2020-01-01');
 
@@ -105,11 +99,8 @@ describe('New case form', function () {
         cy.get('li[data-value="confirmed"]').click();
         cy.get('div[data-testid="caseReference"]').type('www.example.com');
         cy.contains('www.example.com').click();
-        cy.get('div[data-testid="location.geocodeLocation"]').type('France');
-        cy.wait('@geolocationFranceSuggest');
-        cy.contains('li', 'France').click();
-        cy.get('div[data-testid="location.countryISO3"]').click()
-        cy.get('li[data-value="FRA"').click();
+        cy.get('input[name="location.country"]').type('Fr')
+        cy.get('p').contains('France').click();
         cy.get('input[name="events.dateEntry"]').type('2020-02-01');
         cy.get('input[name="events.dateReported"]').type('2020-01-01');
         cy.get('input[name="numCases"]').clear().type('3');
@@ -139,11 +130,8 @@ describe('New case form', function () {
         cy.get('li[data-value="confirmed"]').click();
         cy.get('div[data-testid="caseReference"]').type('www.example.com');
         cy.contains('www.example.com').click();
-        cy.get('div[data-testid="location.geocodeLocation"]').type('France');
-        cy.wait('@geolocationFranceSuggest');
-        cy.contains('li', 'France').click();
-        cy.get('div[data-testid="location.countryISO3"]').click()
-        cy.get('li[data-value="FRA"').click();
+        cy.get('input[name="location.country"]').type('Fr')
+        cy.get('p').contains('France').click();
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
         cy.get('input[name="events.dateReported"]').type('2020-01-01');
         // Outcome without a date.
@@ -207,11 +195,8 @@ describe('New case form', function () {
         cy.contains('Actor');
         cy.contains('Horse trainer');
         cy.get('span:contains("Horse trainer")').click();
-        cy.get('div[data-testid="location"]').type('France');
-        cy.wait('@geolocationFranceSuggest');
-        cy.contains('li', 'France').click();
-        cy.get('div[data-testid="location.countryISO3"]').click()
-        cy.get('li[data-value="FRA"').click();
+        cy.get('input[name="location.country"]').type('Fr')
+        cy.get('p').contains('France').click();
         cy.get('input[name="confirmedDate"]').type('2020-01-01');
         cy.get('div[data-testid="symptomsStatus"]').click();
         cy.get('li[data-value="Symptomatic"').click();
@@ -262,11 +247,8 @@ describe('New case form', function () {
         cy.get('li[data-value="confirmed"]').click();
         cy.get('div[data-testid="caseReference"]').type('www.example.com');
         cy.contains('www.example.com').click();
-        cy.get('div[data-testid="location.geocodeLocation"]').type('France');
-        cy.wait('@geolocationFranceSuggest');
-        cy.contains('li', 'France').click();
-        cy.get('div[data-testid="location.countryISO3"]').click()
-        cy.get('li[data-value="FRA"').click();
+        cy.get('input[name="location.country"]').type('Fr')
+        cy.get('p').contains('France').click();
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
         cy.get('input[name="events.dateReported"]').type('2020-01-01');
 
@@ -289,7 +271,7 @@ describe('New case form', function () {
 
         cy.visit('/cases/new');
 
-        cy.get('p:contains("Required")').should('have.length', 5);
+        cy.get('p:contains("Required")').should('have.length', 4);
     });
 
     it('Shows checkbox on field completion', function () {
@@ -330,8 +312,8 @@ describe('New case form', function () {
         cy.get('li[data-value="confirmed"]').click();
         cy.get('div[data-testid="caseReference"]').type('www.example.com');
         cy.contains('www.example.com').click();
-        cy.get('div[data-testid="location.countryISO3"]').click();
-        cy.get('li[data-value="FRA"').click();
+        cy.get('input[name="location.country"]').type('Fr')
+        cy.get('p').contains('France').click();
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
         cy.get('input[name="events.dateReported"]').type('2020-01-01');
 
