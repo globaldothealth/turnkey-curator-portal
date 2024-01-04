@@ -1794,3 +1794,92 @@ describe('DELETE', () => {
         expect(await CaseRevision.collection.countDocuments()).toEqual(0);
     });
 });
+
+describe('countryData', () => {
+    it('should correctly return cardinalities for existing data 200 OK', async () => {
+        const c = new Day0Case({
+            ...minimalDay0CaseData,
+            events: {
+                dateEntry: '2019-12-03',
+                dateReported: '2019-12-03',
+                outcome: 'recovered',
+            },
+        });
+        await c.save();
+        const c1 = new Day0Case({
+            ...minimalDay0CaseData,
+            caseStatus: 'suspected',
+            events: {
+                dateEntry: '2019-12-03',
+                dateReported: '2019-12-03',
+                // outcome: 'death',
+            },
+        });
+        await c1.save();
+        const c2 = new Day0Case({
+            ...minimalDay0CaseData,
+            location: { country: 'Poland', countryISO3: 'POL' },
+            events: {
+                dateEntry: '2019-12-03',
+                dateReported: '2019-12-03',
+                outcome: 'death',
+            },
+        });
+        await c2.save();
+        const c3 = new Day0Case({
+            ...minimalDay0CaseData,
+            location: { country: 'Poland', countryISO3: 'POL' },
+            caseStatus: 'suspected',
+            events: {
+                dateEntry: '2019-12-03',
+                dateReported: '2019-12-03',
+                outcome: 'death',
+            },
+        });
+        await c3.save();
+        const res = await request(app)
+            .get('/api/cases/countryData')
+            .expect('Content-Type', /json/)
+            .expect(200);
+
+        expect(res.body).toEqual({
+            confirmed: 2,
+            countries: {
+                Canada: { confirmed: 1, recovered: 1, suspected: 1 },
+                Poland: { confirmed: 1, death: 2, suspected: 1 },
+            },
+            death: 2,
+            grandTotalCount: 4,
+            recovered: 1,
+            suspected: 2,
+        });
+    });
+
+    it('should correctly return cardinalities for one case 200 OK', async () => {
+        const c = new Day0Case({
+            ...minimalDay0CaseData,
+        });
+        await c.save();
+        const res = await request(app)
+            .get('/api/cases/countryData')
+            .expect('Content-Type', /json/)
+            .expect(200);
+
+        expect(res.body).toEqual({
+            confirmed: 1,
+            countries: {
+                Canada: { confirmed: 1 },
+            },
+            grandTotalCount: 1,
+        });
+    });
+
+    it('should correctly return empty when there is no data 200 OK', async () => {
+        const res = await request(app)
+            .get('/api/cases/countryData')
+            .expect('Content-Type', /json/)
+            .expect(200);
+
+        expect(res.body).toEqual({});
+    });
+});

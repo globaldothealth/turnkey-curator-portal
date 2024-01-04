@@ -19,7 +19,7 @@ import {
 } from '../util/case';
 import { logger } from '../util/logger';
 import stringify from 'csv-stringify/lib/sync';
-import _ from 'lodash';
+import _, { forEach } from 'lodash';
 import { AgeBucket } from '../model/age-bucket';
 import { COUNTER_DOCUMENT_ID, IdCounter } from '../model/id-counter';
 import { User } from '../model/user';
@@ -483,6 +483,217 @@ export class CasesController {
             logger.error('non-parsing error for query:');
             logger.error(req.query);
             if (e instanceof Error) logger.error(e);
+            res.status(500).json(e);
+            return;
+        }
+    };
+
+    /**
+     * Get table data for Cases by Country.
+     *
+     * Handles HTTP GET /api/cases/countryData.
+     */
+    countryData = async (req: Request, res: Response): Promise<void> => {
+        logger.info('Get cases by country method entrypoint');
+
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const countriesData: any = {};
+            // Get total case cardinality
+            const grandTotalCount = await Day0Case.countDocuments({
+                caseStatus: ['confirmed', 'suspected'],
+            });
+            if (grandTotalCount === 0) {
+                res.status(200).json({});
+                return;
+            }
+
+            // Get cardinality of case statuses by country
+            const countriesStatusCounts = await Day0Case.aggregate([
+                {
+                    $group: {
+                        _id: {
+                            country: '$location.country',
+                            caseStatus: '$caseStatus',
+                        },
+                        totalCount: { $sum: 1 },
+                    },
+                },
+                {
+                    $group: {
+                        _id: '$_id.country',
+                        caseStatus: {
+                            $push: {
+                                k: '$_id.caseStatus',
+                                v: '$totalCount',
+                            },
+                        },
+                        totalCount: { $sum: '$totalCount' },
+                    },
+                },
+                {
+                    $project: {
+                        caseStatus: { $arrayToObject: '$caseStatus' },
+                        totalCount: 1,
+                    },
+                },
+            ]);
+
+            forEach(countriesStatusCounts, (countryStatusCounts) => {
+                countriesData[countryStatusCounts._id] = {};
+                forEach(
+                    Object.keys(countryStatusCounts.caseStatus),
+                    (statusName) => {
+                        countriesData[countryStatusCounts._id][statusName] =
+                            countryStatusCounts.caseStatus[statusName];
+                    },
+                );
+            });
+
+            // Get cardinality of outcomes by country
+            const countriesOutcomeCounts = await Day0Case.aggregate([
+                {
+                    $match: {
+                        'events.outcome': {
+                            $exists: true,
+                            $ne: null,
+                        },
+                    },
+                },
+                {
+                    $group: {
+                        _id: {
+                            country: '$location.country',
+                            outcome: '$events.outcome',
+                        },
+                        totalCount: { $sum: 1 },
+                    },
+                },
+                {
+                    $group: {
+                        _id: '$_id.country',
+                        outcome: {
+                            $push: {
+                                $cond: [
+                                    { $not: ['$_id.outcome'] },
+                                    null,
+                                    {
+                                        k: '$_id.outcome',
+                                        v: '$totalCount',
+                                    },
+                                ],
+                            },
+                        },
+                    },
+                },
+                {
+                    $addFields: {
+                        outcome: {
+                            $filter: {
+                                input: '$outcome',
+                                as: 'd',
+                                cond: {
+                                    $ne: ['$$d', null],
+                                },
+                            },
+                        },
+                    },
+                },
+                {
+                    $project: {
+                        outcome: { $arrayToObject: '$outcome' },
+                        totalCount: 1,
+                    },
+                },
+            ]);
+
+            if (countriesOutcomeCounts.length > 0) {
+                forEach(countriesOutcomeCounts, (countryOutcomeCounts) => {
+                    if (countryOutcomeCounts?.outcome) {
+                        forEach(
+                            Object.keys(countryOutcomeCounts.outcome),
+                            (outcomeName) => {
+                                countriesData[countryOutcomeCounts._id][
+                                    outcomeName
+                                ] = countryOutcomeCounts.outcome[outcomeName];
+                            },
+                        );
+                    }
+                });
+            }
+
+            // Get cardinality of case statuses total
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const totalStatusCount: any = await Day0Case.aggregate([
+                {
+                    $group: {
+                        _id: '$caseStatus',
+                        count: {
+                            $sum: 1,
+                        },
+                    },
+                },
+                {
+                    $group: {
+                        _id: null,
+                        root: { $push: { k: '$_id', v: '$count' } },
+                    },
+                },
+                {
+                    $replaceRoot: { newRoot: { $arrayToObject: '$root' } },
+                },
+            ]);
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const totalCounts: any = {};
+            forEach(Object.keys(totalStatusCount[0]), (statusName) => {
+                totalCounts[statusName] = totalStatusCount[0][statusName];
+            });
+
+            // Get cardinality of outcomes total
+            const totalOutcomeCount = await Day0Case.aggregate([
+                {
+                    $match: {
+                        'events.outcome': {
+                            $exists: true,
+                            $ne: null,
+                        },
+                    },
+                },
+                {
+                    $group: {
+                        _id: '$events.outcome',
+                        count: {
+                            $sum: 1,
+                        },
+                    },
+                },
+                {
+                    $group: {
+                        _id: null,
+                        root: { $push: { k: '$_id', v: '$count' } },
+                    },
+                },
+                {
+                    $replaceRoot: { newRoot: { $arrayToObject: '$root' } },
+                },
+            ]);
+
+            if (totalOutcomeCount.length > 0) {
+                forEach(Object.keys(totalOutcomeCount[0]), (outcomeName) => {
+                    totalCounts[outcomeName] =
+                        totalOutcomeCount[0][outcomeName];
+                });
+            }
+
+            res.status(200).json({
+                countries: countriesData,
+                grandTotalCount,
+                ...totalCounts,
+            });
+        } catch (e) {
+            if (e instanceof Error) logger.error(e);
+            console.log(e);
             res.status(500).json(e);
             return;
         }

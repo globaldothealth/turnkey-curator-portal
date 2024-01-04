@@ -114,6 +114,7 @@ if (remoteGeocodingLocation) {
 const caseController = new cases.CasesController(geocoders);
 
 apiRouter.get('/cases', caseController.list);
+apiRouter.get('/cases/countryData', caseController.countryData);
 apiRouter.get('/cases/symptoms', cases.listSymptoms);
 apiRouter.get('/cases/placesOfTransmission', cases.listPlacesOfTransmission);
 apiRouter.get('/cases/occupations', cases.listOccupations);
