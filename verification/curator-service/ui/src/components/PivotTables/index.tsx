@@ -1,7 +1,11 @@
 import { Paper } from '@mui/material';
 import MaterialTable, { MTableBody, MTableHeader } from 'material-table';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
+import { useAppDispatch } from '../../hooks/redux';
+import { fetchCasesByCountryPivotData } from '../../redux/pivotTables/thunk';
+import { selectCasesByCountry } from '../../redux/pivotTables/selectors';
+import { useSelector } from 'react-redux';
 
 const pivotTableStyles = makeStyles((theme) => ({
     cell: {
@@ -75,6 +79,13 @@ const mockedData = {
 
 const PivotTables = () => {
     const classes = pivotTableStyles();
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        dispatch(fetchCasesByCountryPivotData());
+    }, [dispatch]);
+
+    const casesByCountryData = useSelector(selectCasesByCountry);
 
     const [columnCounts, setColumnCounts] = useState({
         summedConfirmedCount: mockedData.confirmedCount,
@@ -83,29 +94,36 @@ const PivotTables = () => {
         summedTotalCount: mockedData.totalCount,
     });
 
+    if (!casesByCountryData || casesByCountryData.length === 0) {
+        return <div>Loading...</div>;
+    }
+
+    const editableCasesByCountryData = casesByCountryData.map((o: any) => ({
+        ...o,
+    }));
+
     return (
         <Paper>
             <MaterialTable
                 options={{
                     search: true,
                     paging: false,
-                    // toolbarButtonAlignment: "left",
                 }}
                 columns={[
                     { title: 'Country', field: 'country', defaultSort: 'asc' },
                     {
                         title: 'Confirmed',
-                        field: 'confirmedCount',
+                        field: 'confirmed',
                         type: 'numeric',
                     },
                     {
                         title: 'Suspected',
-                        field: 'suspectedCount',
+                        field: 'suspected',
                         type: 'numeric',
                     },
                     {
                         title: 'Death',
-                        field: 'deathCount',
+                        field: 'death',
                         type: 'numeric',
                     },
                     {
@@ -114,7 +132,7 @@ const PivotTables = () => {
                         type: 'numeric',
                     },
                 ]}
-                data={mockedData.countries}
+                data={editableCasesByCountryData}
                 components={{
                     Header: (props) => <MTableHeader {...props} />,
                     Body: (props) => {

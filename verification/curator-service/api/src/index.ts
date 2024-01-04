@@ -254,6 +254,12 @@ async function makeApp() {
         casesController.list,
     );
     apiRouter.get(
+        '/cases/countryData',
+        authenticateByAPIKey,
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
+        casesController.listCasesByCountries,
+    );
+    apiRouter.get(
         '/cases/symptoms',
         authenticateByAPIKey,
         mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),

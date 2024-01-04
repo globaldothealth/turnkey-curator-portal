@@ -323,6 +323,23 @@ export default class CasesController {
     };
 
     /** listSymptoms simply forwards the request to the data service */
+    listCasesByCountries = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const response = await axios.get(
+                this.dataServerURL + '/api' + req.url,
+            );
+            res.status(response.status).json(response.data);
+        } catch (err) {
+            logger.error(err);
+            if (err.response?.status && err.response?.data) {
+                res.status(err.response.status).send(err.response.data);
+                return;
+            }
+            res.status(500).send(err);
+        }
+    };
+
+    /** listSymptoms simply forwards the request to the data service */
     listSymptoms = async (req: Request, res: Response): Promise<void> => {
         try {
             const response = await axios.get(
