@@ -9,7 +9,7 @@ interface ListResponse {
 }
 
 export const fetchCasesByCountryPivotData = createAsyncThunk<
-    { casesByCountry: any },
+    { casesByCountry: any; totalCases: any },
     string | undefined,
     { rejectValue: string }
 >('pivotTables/fetchCasesByCountry', async (query, { rejectWithValue }) => {
@@ -26,8 +26,11 @@ export const fetchCasesByCountryPivotData = createAsyncThunk<
             }),
         );
 
+        const totalCases = data.combined;
+
         return {
             casesByCountry,
+            totalCases,
         };
     } catch (error) {
         if (!error.response) throw error;

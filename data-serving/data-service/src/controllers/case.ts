@@ -528,13 +528,13 @@ export class CasesController {
                                 v: '$totalCount',
                             },
                         },
-                        totalCount: { $sum: '$totalCount' },
+                        total: { $sum: '$totalCount' },
                     },
                 },
                 {
                     $project: {
                         caseStatus: { $arrayToObject: '$caseStatus' },
-                        totalCount: 1,
+                        total: 1,
                     },
                 },
             ]);
@@ -548,6 +548,8 @@ export class CasesController {
                             countryStatusCounts.caseStatus[statusName];
                     },
                 );
+                countriesData[countryStatusCounts._id].total =
+                    countryStatusCounts.total;
             });
 
             // Get cardinality of outcomes by country
@@ -688,8 +690,10 @@ export class CasesController {
 
             res.status(200).json({
                 countries: countriesData,
-                grandTotalCount,
-                ...totalCounts,
+                combined: {
+                    total: grandTotalCount,
+                    ...totalCounts,
+                },
             });
         } catch (e) {
             if (e instanceof Error) logger.error(e);

@@ -1843,15 +1843,17 @@ describe('countryData', () => {
             .expect(200);
 
         expect(res.body).toEqual({
-            confirmed: 2,
             countries: {
-                Canada: { confirmed: 1, recovered: 1, suspected: 1 },
-                Poland: { confirmed: 1, death: 2, suspected: 1 },
+                Canada: { confirmed: 1, recovered: 1, suspected: 1, total: 2 },
+                Poland: { confirmed: 1, death: 2, suspected: 1, total: 2 },
             },
-            death: 2,
-            grandTotalCount: 4,
-            recovered: 1,
-            suspected: 2,
+            combined: {
+                confirmed: 2,
+                death: 2,
+                total: 4,
+                recovered: 1,
+                suspected: 2,
+            },
         });
     });
 
@@ -1866,11 +1868,13 @@ describe('countryData', () => {
             .expect(200);
 
         expect(res.body).toEqual({
-            confirmed: 1,
             countries: {
-                Canada: { confirmed: 1 },
+                Canada: { confirmed: 1, total: 1 },
             },
-            grandTotalCount: 1,
+            combined: {
+                confirmed: 1,
+                total: 1,
+            },
         });
     });
 

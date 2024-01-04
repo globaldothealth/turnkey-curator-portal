@@ -1,13 +1,16 @@
 import { Paper } from '@mui/material';
 import MaterialTable, { MTableBody, MTableHeader } from 'material-table';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import { useAppDispatch } from '../../hooks/redux';
 import { fetchCasesByCountryPivotData } from '../../redux/pivotTables/thunk';
-import { selectCasesByCountry } from '../../redux/pivotTables/selectors';
+import {
+    selectCasesByCountry,
+    selectTotalCases,
+} from '../../redux/pivotTables/selectors';
 import { useSelector } from 'react-redux';
 
-const pivotTableStyles = makeStyles((theme) => ({
+const pivotTableStyles = makeStyles(() => ({
     cell: {
         padding: '16px',
         fontWeight: 'bold',
@@ -19,64 +22,6 @@ const pivotTableStyles = makeStyles((theme) => ({
     },
 }));
 
-const mockedData = {
-    countries: [
-        {
-            country: 'United States of America',
-            confirmedCount: 1235,
-            suspectedCount: 933,
-            deathCount: 31,
-            totalCount: 2199,
-        },
-        {
-            country: 'France',
-            confirmedCount: 46,
-            suspectedCount: 34,
-            deathCount: 0,
-            totalCount: 80,
-        },
-        {
-            country: 'Spain',
-            confirmedCount: 76,
-            suspectedCount: 23,
-            deathCount: 1,
-            totalCount: 100,
-        },
-        {
-            country: 'Poland',
-            confirmedCount: 56,
-            suspectedCount: 34,
-            deathCount: 2,
-            totalCount: 92,
-        },
-        {
-            country: 'Germany',
-            confirmedCount: 234,
-            suspectedCount: 140,
-            deathCount: 0,
-            totalCount: 374,
-        },
-        {
-            country: 'United Kingdom',
-            confirmedCount: 453,
-            suspectedCount: 345,
-            deathCount: 4,
-            totalCount: 802,
-        },
-        {
-            country: 'Portugal',
-            confirmedCount: 32,
-            suspectedCount: 12,
-            deathCount: 2,
-            totalCount: 46,
-        },
-    ],
-    confirmedCount: 100,
-    suspectedCount: 100,
-    deathCount: 100,
-    totalCount: 300,
-};
-
 const PivotTables = () => {
     const classes = pivotTableStyles();
     const dispatch = useAppDispatch();
@@ -86,13 +31,7 @@ const PivotTables = () => {
     }, [dispatch]);
 
     const casesByCountryData = useSelector(selectCasesByCountry);
-
-    const [columnCounts, setColumnCounts] = useState({
-        summedConfirmedCount: mockedData.confirmedCount,
-        summedSuspectedCount: mockedData.suspectedCount,
-        summedDeathCount: mockedData.deathCount,
-        summedTotalCount: mockedData.totalCount,
-    });
+    const totalCasesData = useSelector(selectTotalCases);
 
     if (!casesByCountryData || casesByCountryData.length === 0) {
         return <div>Loading...</div>;
@@ -128,13 +67,12 @@ const PivotTables = () => {
                     },
                     {
                         title: 'Total',
-                        field: 'totalCount',
+                        field: 'total',
                         type: 'numeric',
                     },
                 ]}
                 data={editableCasesByCountryData}
                 components={{
-                    Header: (props) => <MTableHeader {...props} />,
                     Body: (props) => {
                         return (
                             <>
@@ -145,16 +83,16 @@ const PivotTables = () => {
                                             Grand Total
                                         </td>
                                         <td className={classes.cell}>
-                                            {mockedData.confirmedCount}
+                                            {totalCasesData?.confirmed}
                                         </td>
                                         <td className={classes.cell}>
-                                            {mockedData.suspectedCount}
+                                            {totalCasesData?.suspected}
                                         </td>
                                         <td className={classes.cell}>
-                                            {mockedData.deathCount}
+                                            {totalCasesData?.death}
                                         </td>
                                         <td className={classes.cell}>
-                                            {mockedData.totalCount}
+                                            {totalCasesData?.total}
                                         </td>
                                     </tr>
                                 </tfoot>

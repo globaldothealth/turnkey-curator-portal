@@ -1,18 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { fetchCasesByCountryPivotData } from './thunk';
-import { VerificationStatus } from '../../api/models/Case';
-import { Day0Case } from '../../api/models/Day0Case';
-import { SortBy, SortByOrder } from '../../constants/types';
 
 interface PivotTablesState {
     isLoading: boolean;
     casesByCountry: any;
+    totalCases: any;
     error: string | undefined;
 }
 
 const initialState: PivotTablesState = {
     isLoading: false,
     casesByCountry: [],
+    totalCases: {},
     error: undefined,
 };
 
@@ -31,6 +30,7 @@ const pivotTablesSlice = createSlice({
             (state, { payload }) => {
                 state.isLoading = false;
                 state.casesByCountry = payload.casesByCountry;
+                state.totalCases = payload.totalCases;
             },
         );
         builder.addCase(
