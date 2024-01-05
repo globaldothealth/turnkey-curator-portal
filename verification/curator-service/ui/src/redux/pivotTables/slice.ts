@@ -1,17 +1,34 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { fetchCasesByCountryPivotData } from './thunk';
+
+export type CasesByCountry = {
+    country: string;
+    suspected?: number;
+    confirmed?: number;
+    recovered?: number;
+    death?: number;
+    total: number;
+};
+
+export type CasesGlobally = {
+    suspected?: number;
+    confirmed?: number;
+    recovered?: number;
+    death?: number;
+    total?: number;
+};
 
 interface PivotTablesState {
     isLoading: boolean;
-    casesByCountry: any;
-    totalCases: any;
+    casesByCountries: CasesByCountry[];
+    casesGlobally: CasesGlobally;
     error: string | undefined;
 }
 
 const initialState: PivotTablesState = {
     isLoading: false,
-    casesByCountry: [],
-    totalCases: {},
+    casesByCountries: [],
+    casesGlobally: {},
     error: undefined,
 };
 
@@ -20,7 +37,7 @@ const pivotTablesSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: (builder) => {
-        // FETCH CASES BY COUNTRY
+        // FETCH CASES FOR CASES BY COUNTRY PIVOT TABLE
         builder.addCase(fetchCasesByCountryPivotData.pending, (state) => {
             state.isLoading = true;
             state.error = undefined;
@@ -29,8 +46,8 @@ const pivotTablesSlice = createSlice({
             fetchCasesByCountryPivotData.fulfilled,
             (state, { payload }) => {
                 state.isLoading = false;
-                state.casesByCountry = payload.casesByCountry;
-                state.totalCases = payload.totalCases;
+                state.casesByCountries = payload.casesByCountry;
+                state.casesGlobally = payload.casesGlobally;
             },
         );
         builder.addCase(

@@ -88,8 +88,8 @@ export const initialLoggedInState: RootState = {
     },
     pivotTables: {
         isLoading: false,
-        casesByCountry: [],
-        totalCases: {},
+        casesByCountries: [],
+        casesGlobally: {},
         error: undefined,
     },
 };

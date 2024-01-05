@@ -1,14 +1,16 @@
-import { Paper } from '@mui/material';
-import MaterialTable, { MTableBody, MTableHeader } from 'material-table';
 import React, { useEffect } from 'react';
+import MaterialTable, { MTableBody } from 'material-table';
+import { Paper } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
+import { useSelector } from 'react-redux';
+
 import { useAppDispatch } from '../../hooks/redux';
-import { fetchCasesByCountryPivotData } from '../../redux/pivotTables/thunk';
 import {
     selectCasesByCountry,
     selectTotalCases,
 } from '../../redux/pivotTables/selectors';
-import { useSelector } from 'react-redux';
+import { CasesByCountry } from '../../redux/pivotTables/slice';
+import { fetchCasesByCountryPivotData } from '../../redux/pivotTables/thunk';
 
 const pivotTableStyles = makeStyles(() => ({
     cell: {
@@ -31,15 +33,17 @@ const PivotTables = () => {
     }, [dispatch]);
 
     const casesByCountryData = useSelector(selectCasesByCountry);
-    const totalCasesData = useSelector(selectTotalCases);
+    const casesGloballyData = useSelector(selectTotalCases);
 
     if (!casesByCountryData || casesByCountryData.length === 0) {
         return <div>Loading...</div>;
     }
 
-    const editableCasesByCountryData = casesByCountryData.map((o: any) => ({
-        ...o,
-    }));
+    const editableCasesByCountryData = casesByCountryData.map(
+        (casesByCountry: CasesByCountry) => ({
+            ...casesByCountry,
+        }),
+    );
 
     return (
         <Paper>
@@ -83,16 +87,16 @@ const PivotTables = () => {
                                             Grand Total
                                         </td>
                                         <td className={classes.cell}>
-                                            {totalCasesData?.confirmed}
+                                            {casesGloballyData?.confirmed}
                                         </td>
                                         <td className={classes.cell}>
-                                            {totalCasesData?.suspected}
+                                            {casesGloballyData?.suspected}
                                         </td>
                                         <td className={classes.cell}>
-                                            {totalCasesData?.death}
+                                            {casesGloballyData?.death}
                                         </td>
                                         <td className={classes.cell}>
-                                            {totalCasesData?.total}
+                                            {casesGloballyData?.total}
                                         </td>
                                     </tr>
                                 </tfoot>

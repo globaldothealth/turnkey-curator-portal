@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { Day0Case } from '../../api/models/Day0Case';
 import axios from 'axios';
+import { CasesByCountry, CasesGlobally } from './slice';
 
 interface ListResponse {
     cases: Day0Case[];
@@ -8,8 +9,29 @@ interface ListResponse {
     total: number;
 }
 
+type dataCountry = {
+    [key: string]: {
+        confirmed?: number;
+        suspected?: number;
+        death?: number;
+        recovered?: number;
+        total: number;
+    };
+};
+
+type responseData = {
+    countries?: dataCountry;
+    globally?: {
+        confirmed?: number;
+        suspected?: number;
+        death?: number;
+        recovered?: number;
+        total: number;
+    };
+};
+
 export const fetchCasesByCountryPivotData = createAsyncThunk<
-    { casesByCountry: any; totalCases: any },
+    { casesByCountry: CasesByCountry[]; casesGlobally: CasesGlobally },
     string | undefined,
     { rejectValue: string }
 >('pivotTables/fetchCasesByCountry', async (query, { rejectWithValue }) => {
@@ -17,21 +39,19 @@ export const fetchCasesByCountryPivotData = createAsyncThunk<
         const response = await axios.get<ListResponse>(
             `/api/cases/countryData`,
         );
-        const data: any = response.data;
+        const data = response.data as responseData;
 
-        const casesByCountry = Object.keys(data.countries).map(
-            (country: any) => ({
-                country,
-                ...data.countries[country],
-            }),
-        );
+        const casesByCountry: CasesByCountry[] = Object.keys(
+            data.countries || {},
+        ).map((country: string) => ({
+            country,
+            ...(data?.countries?.[country] || {}),
+            total: 1,
+        }));
 
-        const totalCases = data.combined;
+        const casesGlobally: CasesGlobally = data.globally || {};
 
-        return {
-            casesByCountry,
-            totalCases,
-        };
+        return { casesByCountry, casesGlobally };
     } catch (error) {
         if (!error.response) throw error;
         return rejectWithValue(

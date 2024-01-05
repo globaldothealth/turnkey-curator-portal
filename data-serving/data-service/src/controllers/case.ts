@@ -690,7 +690,7 @@ export class CasesController {
 
             res.status(200).json({
                 countries: countriesData,
-                combined: {
+                globally: {
                     total: grandTotalCount,
                     ...totalCounts,
                 },

@@ -1847,7 +1847,7 @@ describe('countryData', () => {
                 Canada: { confirmed: 1, recovered: 1, suspected: 1, total: 2 },
                 Poland: { confirmed: 1, death: 2, suspected: 1, total: 2 },
             },
-            combined: {
+            globally: {
                 confirmed: 2,
                 death: 2,
                 total: 4,
@@ -1871,7 +1871,7 @@ describe('countryData', () => {
             countries: {
                 Canada: { confirmed: 1, total: 1 },
             },
-            combined: {
+            globally: {
                 confirmed: 1,
                 total: 1,
             },
