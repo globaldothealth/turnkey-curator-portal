@@ -46,7 +46,7 @@ export const fetchCasesByCountryPivotData = createAsyncThunk<
         ).map((country: string) => ({
             country,
             ...(data?.countries?.[country] || {}),
-            total: 1,
+            total: data?.countries?.[country]?.total || 0,
         }));
 
         const casesGlobally: CasesGlobally = data.globally || {};

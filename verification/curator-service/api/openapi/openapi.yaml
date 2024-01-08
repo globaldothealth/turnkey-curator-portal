@@ -1672,8 +1672,34 @@ components:
         CasesByCountryObject:
             type: object
             properties:
-                symptoms:
+                countries:
                     type: object
+                    additionalProperties:
+                        type: object
+                        properties:
+                            confirmed:
+                                type: integer
+                            suspected:
+                                type: integer
+                            death:
+                                type: integer
+                            recovered:
+                                type: integer
+                            total:
+                                type: integer
+                globally:
+                    type: object
+                    properties:
+                        confirmed:
+                            type: integer
+                        suspected:
+                            type: integer
+                        death:
+                            type: integer
+                        recovered:
+                            type: integer
+                        total:
+                            type: integer
         SymptomArray:
             type: object
             properties:

@@ -35,10 +35,6 @@ const PivotTables = () => {
     const casesByCountryData = useSelector(selectCasesByCountry);
     const casesGloballyData = useSelector(selectTotalCases);
 
-    if (!casesByCountryData || casesByCountryData.length === 0) {
-        return <div>Loading...</div>;
-    }
-
     const editableCasesByCountryData = casesByCountryData.map(
         (casesByCountry: CasesByCountry) => ({
             ...casesByCountry,
