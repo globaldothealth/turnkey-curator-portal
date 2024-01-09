@@ -1812,7 +1812,6 @@ describe('countryData', () => {
             events: {
                 dateEntry: '2019-12-03',
                 dateReported: '2019-12-03',
-                // outcome: 'death',
             },
         });
         await c1.save();

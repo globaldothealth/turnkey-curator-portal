@@ -90,7 +90,7 @@ describe('Pivot Tables', function () {
         });
     });
 
-    it.only('Allow searching for country in Cases by Country Pivot Table', function () {
+    it('Allow searching for country in Cases by Country Pivot Table', function () {
         cy.intercept('GET', '/api/cases/countryData', casesByCountryPivotDataFixture).as('getCasesByCountryPivotData');
         cy.visit('/');
         cy.wait('@getProfile');
@@ -115,5 +115,77 @@ describe('Pivot Tables', function () {
         cy.contains('tr', 'Poland').should('not.exist');
         cy.contains('tr', 'United States of America').should('exist');
         cy.contains('tr', 'Grand Total').should('exist');
+    });
+
+    it('Adding a case changes data in Cases by Country Pivot Table', function () {
+        cy.intercept('GET', '/api/cases/countryData').as('getCasesByCountryPivotData');
+        cy.visit('/');
+        cy.wait('@getProfile');
+        cy.visit('/cases');
+        cy.addCase({
+            country: 'France',
+            countryISO3: 'FRA',
+            sourceUrl: 'www.example.com',
+            confirmationMethod: 'PCR test',
+            dateEntry: '2020-01-01',
+            dateReported: '2020-01-01',
+            caseStatus: CaseStatus.Confirmed,
+        });
+        cy.visit('/pivot-tables');
+        cy.wait('@getCasesByCountryPivotData');
+
+        cy.contains('tr', 'France').within(() => {
+            cy.get('td').eq(1).contains('1');
+            cy.get('td').eq(2).should('be.empty');
+            cy.get('td').eq(2).should('be.empty');
+            cy.get('td').eq(4).contains('1');
+        });
+        cy.contains('tr', 'Poland').should('not.exist');
+        cy.contains('tr', 'Grand Total').within(() => {
+            cy.get('td').eq(1).contains('1');
+            cy.get('td').eq(2).should('be.empty');
+            cy.get('td').eq(2).should('be.empty');
+            cy.get('td').eq(4).contains('1');
+        });
+
+        cy.visit('/cases');
+        cy.addCase({
+            country: 'France',
+            countryISO3: 'FRA',
+            sourceUrl: 'www.example.com',
+            confirmationMethod: 'PCR test',
+            dateEntry: '2020-01-01',
+            dateReported: '2020-01-01',
+            caseStatus: CaseStatus.Suspected,
+        });
+        cy.addCase({
+            country: 'Poland',
+            countryISO3: 'POL',
+            sourceUrl: 'www.example.com',
+            confirmationMethod: 'PCR test',
+            dateEntry: '2020-01-01',
+            dateReported: '2020-01-01',
+            caseStatus: CaseStatus.Confirmed,
+        });
+
+        cy.visit('/pivot-tables');
+        cy.contains('tr', 'France').within(() => {
+            cy.get('td').eq(1).contains('1');
+            cy.get('td').eq(2).contains('1');
+            cy.get('td').eq(3).should('be.empty');
+            cy.get('td').eq(4).contains('2');
+        });
+        cy.contains('tr', 'Poland').within(() => {
+            cy.get('td').eq(1).contains('1');
+            cy.get('td').eq(2).should('be.empty');
+            cy.get('td').eq(3).should('be.empty');
+            cy.get('td').eq(4).contains('1');
+        });
+        cy.contains('tr', 'Grand Total').within(() => {
+            cy.get('td').eq(1).contains('2');
+            cy.get('td').eq(2).contains('1');
+            cy.get('td').eq(3).should('be.empty');
+            cy.get('td').eq(4).contains('3');
+        });
     });
 });
