@@ -500,9 +500,7 @@ export class CasesController {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const countriesData: any = {};
             // Get total case cardinality
-            const grandTotalCount = await Day0Case.countDocuments({
-                caseStatus: ['confirmed', 'suspected'],
-            });
+            const grandTotalCount = await Day0Case.countDocuments({});
             if (grandTotalCount === 0) {
                 res.status(200).json({});
                 return;
