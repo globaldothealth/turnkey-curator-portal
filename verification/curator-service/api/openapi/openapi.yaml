@@ -632,7 +632,21 @@ paths:
                 '200':
                     $ref: '#/components/responses/200FullDataSetDownload'
                 '500':
-                    $ref: '#components/responses/500'
+                    $ref: '#/components/responses/500'
+    /cases/countryData:
+      get:
+        summary: Data for cases by country table
+        operationId: listCountryData
+        tags: [ Suggest ]
+        responses:
+          '200':
+            $ref: '#/components/responses/200CasesByCountryObject'
+          '400':
+            $ref: '#/components/responses/400'
+          '403':
+            $ref: '#/components/responses/403'
+          '500':
+            $ref: '#/components/responses/500'
     /cases/symptoms:
         get:
             summary: Lists most frequently used sypmtoms
@@ -1655,6 +1669,37 @@ components:
             properties:
                 signedUrl:
                     type: string
+        CasesByCountryObject:
+            type: object
+            properties:
+                countries:
+                    type: object
+                    additionalProperties:
+                        type: object
+                        properties:
+                            confirmed:
+                                type: integer
+                            suspected:
+                                type: integer
+                            death:
+                                type: integer
+                            recovered:
+                                type: integer
+                            total:
+                                type: integer
+                globally:
+                    type: object
+                    properties:
+                        confirmed:
+                            type: integer
+                        suspected:
+                            type: integer
+                        death:
+                            type: integer
+                        recovered:
+                            type: integer
+                        total:
+                            type: integer
         SymptomArray:
             type: object
             properties:
@@ -2037,6 +2082,12 @@ components:
                 application/json:
                     schema:
                         $ref: '#/components/schemas/SignedUrl'
+        '200CasesByCountryObject':
+            description: OK
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/CasesByCountryObject'
         '200SymptomArray':
             description: OK
             content:

@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { DownloadButton } from '../DownloadButton';
 import LinelistTable from '../LinelistTable';
+import PivotTables from '../PivotTables';
 import {
     Link,
     Redirect,
@@ -446,6 +447,11 @@ export default function App(): JSX.Element {
                         from="/:url*(/+)"
                         to={location.pathname.slice(0, -1)}
                     />
+                    {user && (
+                        <Route exact path="/pivot-tables">
+                            <PivotTables />
+                        </Route>
+                    )}
                     {user && (
                         <Route exact path="/cases">
                             <LinelistTable />

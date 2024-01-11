@@ -5,6 +5,7 @@ import authReducer from './auth/slice';
 import filtersReducer from './filters/slice';
 import acknowledgmentDataReducer from './acknowledgmentData/slice';
 import linelistTableReducer from './linelistTable/slice';
+import pivotTablesReducer from './pivotTables/slice';
 import { SortBy, SortByOrder } from '../constants/types';
 import validateEnv from '../util/validate-env';
 import { Role } from '../api/models/User';
@@ -17,6 +18,7 @@ export const rootReducer = combineReducers({
     filters: filtersReducer,
     acknowledgment: acknowledgmentDataReducer,
     linelist: linelistTableReducer,
+    pivotTables: pivotTablesReducer,
 });
 
 const store = configureStore({
@@ -83,6 +85,12 @@ export const initialLoggedInState: RootState = {
         refetchData: false,
         verificationStatus: undefined,
         rowsAcrossPagesSelected: false,
+    },
+    pivotTables: {
+        isLoading: false,
+        casesByCountries: [],
+        casesGlobally: {},
+        error: undefined,
     },
 };
 
