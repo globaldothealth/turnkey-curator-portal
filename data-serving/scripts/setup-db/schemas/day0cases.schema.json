@@ -37,6 +37,301 @@
                     "emerging",
                     "unknown"
                 ]
+            },
+            "locationInformation": {
+                "bsonType": "object"
+            },
+            "age": {
+                "bsonType": "string"
+            },
+            "sexAtBirth": {
+                "bsonType": "string",
+                "enum": [
+                    "male",
+                    "female",
+                    "other"
+                ]
+            },
+            "sexAtBirthOther": {
+                "bsonType": "string"
+            },
+            "gender": {
+                "bsonType": "string",
+                "enum": [
+                    "man",
+                    "woman",
+                    "transgender",
+                    "non-binary",
+                    "other"
+                ]
+            },
+            "genderOther": {
+                "bsonType": "string"
+            },
+            "race": {
+                "bsonType": ["string"],
+                "enum": [
+                    "Native Hawaiian or Other Pacific Islander",
+                    "Asian",
+                    "American Indian or Alaska Native",
+                    "Black or African American",
+                    "White",
+                    "Other"
+                ]
+            },
+            "raceOther": {
+                "bsonType": "string"
+            },
+            "ethnicity": {
+                "bsonType": "string",
+                "enum": [
+                    "Hispanic or Latino",
+                    "Not Hispanic or Latino",
+                    "other"
+                ]
+            },
+            "ethnicityOther": {
+                "bsonType": "string"
+            },
+            "nationality": {
+                "bsonType": ["string"]
+            },
+            "nationalityOther": {
+                "bsonType": "string"
+            },
+            "occupation": {
+                "bsonType": "string"
+            },
+            "healthcareWorker": {
+                "bsonType": "string",
+                "enum": [
+                    "Y",
+                    "N",
+                    "NA"
+                ]
+            },
+            "previousInfection": {
+                "bsonType": "string",
+                "enum": [
+                    "Y",
+                    "N",
+                    "NA"
+                ]
+            },
+            "coInfection": {
+                "bsonType": "string"
+            },
+            "preExistingCondition": {
+                "bsonType": "string"
+            },
+            "pregnancyStatus": {
+                "bsonType": "string",
+                "enum": [
+                    "Y",
+                    "N",
+                    "NA"
+                ]
+            },
+            "vaccinationStatus": {
+                "bsonType": "string",
+                "enum": [
+                    "Y",
+                    "N",
+                    "NA"
+                ]
+            },
+            "vaccineName": {
+                "bsonType": "string"
+            },
+            "vaccinationDate": {
+                "bsonType": "date"
+            },
+            "vaccineSideEffects": {
+                "bsonType": ["string"]
+            },
+            "symptoms": {
+                "bsonType": ["string"]
+            },
+            "dateReport": {
+                "bsonType": "date"
+            },
+            "dateOnset": {
+                "bsonType": "date"
+            },
+            "dateConfirmation": {
+                "bsonType": "date"
+            },
+            "confirmationMethod": {
+                "bsonType": "string"
+            },
+            "dateOfFirstConsultation": {
+                "bsonType": "date"
+            },
+            "hospitalised": {
+                "bsonType": "string",
+                "enum": [
+                    "Y",
+                    "N",
+                    "NA"
+                ]
+            },
+            "reasonForHospitalisation": {
+                "bsonType": ["string"],
+                "enum": [
+                    "monitoring",
+                    "treatement"
+                ]
+            },
+            "dateHospitalisation": {
+                "bsonType": "date"
+            },
+            "dateDischargeHospital": {
+                "bsonType": "date"
+            },
+            "intensiveCare": {
+                "bsonType": "string",
+                "enum": [
+                    "Y",
+                    "N",
+                    "NA"
+                ]
+            },
+            "dateAdmissionICU": {
+                "bsonType": "date"
+            },
+            "dateDischargeICU": {
+                "bsonType": "date"
+            },
+            "homeMonitoring": {
+                "bsonType": "string",
+                "enum": [
+                    "Y",
+                    "N",
+                    "NA"
+                ]
+            },
+            "isolated": {
+                "bsonType": "string",
+                "enum": [
+                    "Y",
+                    "N",
+                    "NA"
+                ]
+            },
+            "dateIsolation": {
+                "bsonType": "date"
+            },
+            "outcome": {
+                "bsonType": "string",
+                "enum": [
+                    "recovered",
+                    "death",
+                    "ongoing post-acute condition"
+                ]
+            },
+            "dateDeath": {
+                "bsonType": "date"
+            },
+            "dateRecovered": {
+                "bsonType": "date"
+            },
+            "contactWithCase": {
+                "bsonType": "string",
+                "enum": [
+                    "Y",
+                    "N",
+                    "NA"
+                ]
+            },
+            "contactID": {
+                "bsonType": "string"
+            },
+            "contactSetting": {
+                "bsonType": "string",
+                "enum": [
+                    "HOUSE",
+                    "WORK",
+                    "SCHOOL",
+                    "HEALTH",
+                    "PARTY",
+                    "BAR",
+                    "LARGE",
+                    "LARGECONTACT",
+                    "OTHER",
+                    "UNK"
+                ]
+            },
+            "contactSettingOther": {
+                "bsonType": "string"
+            },
+            "contactAnimal": {
+                "bsonType": "string",
+                "enum": [
+                    "PET",
+                    "PETRODENTS",
+                    "WILD",
+                    "WILDRODENTS",
+                    "OTHER"
+                ]
+            },
+            "contactComment": {
+                "bsonType": "string"
+            },
+            "transmission": {
+                "bsonType": "string",
+                "enum": [
+                    "ANIMAL",
+                    "HAI",
+                    "LAB",
+                    "MTCT",
+                    "OTHER",
+                    "FOMITE",
+                    "PTP",
+                    "SEX",
+                    "TRANSFU",
+                    "UNK"
+                ]
+            },
+            "travelHistory": {
+                "bsonType": "string",
+                "enum": [
+                    "Y",
+                    "N",
+                    "NA"
+                ]
+            },
+            "travelHistoryEntry": {
+                "bsonType": "date"
+            },
+            "travelHistoryStart": {
+                "bsonType": "date"
+            },
+            "travelHistoryLocation": {
+                "bsonType": "object"
+            },
+            "genomicsMetadata": {
+                "bsonType": "string"
+            },
+            "accessionNumber": {
+                "bsonType": "string"
+            },
+            "source": {
+                "bsonType": "string"
+            },
+            "sourceII": {
+                "bsonType": "string"
+            },
+            "sourceIII": {
+                "bsonType": "string"
+            },
+            "sourceIV": {
+                "bsonType": "string"
+            },
+            "dateEntry": {
+                "bsonType": "date"
+            },
+            "dateLastModified": {
+                "bsonType": "date"
             }
         }
     }
