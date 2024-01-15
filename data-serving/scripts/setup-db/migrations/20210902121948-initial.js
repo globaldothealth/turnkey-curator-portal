@@ -10,6 +10,13 @@ module.exports = {
     );
 
     await createCollectionValidationAndIndexes(
+        db,
+        'day0cases',
+        'schemas/day0cases.schema.json',
+        'schemas/day0cases.indexes.json'
+    );
+
+    await createCollectionValidationAndIndexes(
       db,
       'sources',
       'schemas/sources.schema.json',

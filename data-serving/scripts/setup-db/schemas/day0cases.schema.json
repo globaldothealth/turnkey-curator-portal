@@ -1,0 +1,43 @@
+{
+    "$jsonSchema": {
+        "bsonType": "object",
+        "required": [
+            "_id",
+            "caseStatus",
+            "pathogen"
+        ],
+        "properties": {
+            "__v": {
+                "bsonType": "int"
+            },
+            "list": {
+                "bsonType": "bool"
+            },
+            "pathogen": {
+                "bsonType": "string"
+            },
+            "_id": {
+                "bsonType": "number",
+                "minimum": 1
+            },
+            "caseStatus": {
+                "bsonType": "string",
+                "enum": [
+                    "confirmed",
+                    "probable",
+                    "suspected",
+                    "discarded",
+                    "omit_error"
+                ]
+            },
+            "pathogenStatus": {
+                "bsonType": "string",
+                "enum": [
+                    "endemic",
+                    "emerging",
+                    "unknown"
+                ]
+            }
+        }
+    }
+}
