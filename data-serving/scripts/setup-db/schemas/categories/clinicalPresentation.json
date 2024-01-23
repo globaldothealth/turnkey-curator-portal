@@ -1,0 +1,134 @@
+{
+  "Symptoms": {
+    "category": "Clinical Presentation",
+    "type": "array",
+    "description": "List of symptoms (i.e. cough, sore throat, etc.)."
+  },
+  "Date_report": {
+    "category": "Clinical Presentation",
+    "type": "string",
+    "format": "date",
+    "description": "Date case was first reported. Suggest adding the date of first report, such as the date first included in a situation report or other official communication"
+  },
+  "Date_onset": {
+    "category": "Clinical Presentation",
+    "type": "string",
+    "format": "date",
+    "description": "Date of onset of symptoms. May be difficult to infer from aggregate date reporting"
+  },
+  "Date_confirmation": {
+    "category": "Clinical Presentation",
+    "type": "string",
+    "format": "date",
+    "description": "Date when case was confirmed"
+  },
+  "Confirmation_method": {
+    "category": "Clinical Presentation",
+    "type": "string",
+    "description": "Test used to perform diagnosis. Dependent on pathogen, and often already included in the definition"
+  },
+  "Date_of_first_consultation": {
+    "category": "Clinical Presentation",
+    "type": "string",
+    "format": "date",
+    "description": "Date that the individual received first clinical consultation"
+  },
+  "Hospitalised": {
+    "category": "Clinical Presentation",
+    "enum": [
+      "Y",
+      "N",
+      "NA"
+    ],
+    "description": "Whether individual was hospitalised"
+  },
+  "Reason_for_hospitalisation": {
+    "category": "Clinical Presentation",
+    "type": "array",
+    "items": {
+      "enum": [
+        "monitoring",
+        "treatment"
+      ]
+    },
+    "description": "Reason why the individual was hospitalised, can select multiple"
+  },
+  "Date_hospitalisation": {
+    "category": "Clinical Presentation",
+    "type": "string",
+    "format": "date",
+    "description": "Date individual was hospitalised"
+  },
+  "Date_discharge_hospital": {
+    "category": "Clinical Presentation",
+    "type": "string",
+    "format": "date",
+    "description": "Date that the individual was discharged from the hospital. Note: there is a separate field for ICU discharge"
+  },
+  "Intensive_care": {
+    "category": "Clinical Presentation",
+    "enum": [
+      "Y",
+      "N",
+      "NA"
+    ],
+    "description": "Whether individual admitted to an intensive care unit or high dependency unit at hospital"
+  },
+  "Date_admission_ICU": {
+    "category": "Clinical Presentation",
+    "type": "string",
+    "format": "date",
+    "description": "Date individual entered intensive care unit"
+  },
+  "Date_discharge_ICU": {
+    "category": "Clinical Presentation",
+    "type": "string",
+    "format": "date",
+    "description": "Date that the individual was discharged from the ICU"
+  },
+  "Home_monitoring": {
+    "category": "Clinical Presentation",
+    "enum": [
+      "Y",
+      "N",
+      "NA"
+    ],
+    "description": "Whether individual is being remotely monitored by health officials at home without hospital admission"
+  },
+  "Isolated": {
+    "category": "Clinical Presentation",
+    "enum": [
+      "Y",
+      "N",
+      "NA"
+    ],
+    "description": "Whether individual was isolated at home or in hospital. Dependent on context/pathogen"
+  },
+  "Date_isolation": {
+    "category": "Clinical Presentation",
+    "type": "string",
+    "format": "date",
+    "description": "Date individual entered isolation"
+  },
+  "Outcome": {
+    "category": "Clinical Presentation",
+    "enum": [
+      "recovered",
+      "death",
+      "ongoing post-acute condition"
+    ],
+    "description": "Outcome of the disease, recovered includes inactive case counts"
+  },
+  "Date_death": {
+    "category": "Clinical Presentation",
+    "type": "string",
+    "format": "date",
+    "description": "Date individual died"
+  },
+  "Date_recovered": {
+    "category": "Clinical Presentation",
+    "type": "string",
+    "format": "date",
+    "description": "Date individual recovered, inactive case status"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "Genomics_Metadata": {
+    "category": "Laboratory Information",
+    "type": "string",
+    "description": "Which clade the viral strain belongs to"
+  },
+  "Accession_Number": {
+    "category": "Laboratory Information",
+    "type": "string",
+    "description": "Accession number of the sequence uploaded to public database"
+  }
+}

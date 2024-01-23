@@ -17,7 +17,7 @@ describe('Search query - string to url', () => {
     it('converts filter keywords - values object to url search parameters', () => {
         const testFilters: FilterFormValues = {
             country: 'France',
-            gender: Gender.Female,
+            gender: Gender.Woman,
             outcome: Outcome.Recovered,
         };
         expect(filtersToURL(testFilters)).toEqual(
@@ -52,7 +52,7 @@ describe('Search query - url to string', () => {
     it('converts url search parameters to filters object', () => {
         const testResponse: FilterFormValues = {
             country: 'France',
-            gender: Gender.Female,
+            gender: Gender.Woman,
         };
 
         expect(URLToFilters('?country=France&gender=female')).toEqual(

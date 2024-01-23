@@ -120,14 +120,15 @@ const linelistTableSlice = createSlice({
             state.casesSelected = [];
             state.rowsAcrossPagesSelected = false;
             if (updatedIds) {
-                state.cases = state.cases.map((data) =>
+                state.cases = state.cases.map(
+                    (data) => data, // TODO change it back to what is below
                     // eslint-disable-next-line
-                    updatedIds.includes(data.caseReference.id!)
-                        ? {
-                              ...data,
-                              caseStatus: newStatus,
-                          }
-                        : data,
+                    // updatedIds.includes(data.caseReference.id!)
+                    //     ? {
+                    //           ...data,
+                    //           caseStatus: newStatus,
+                    //       }
+                    //     : data,
                 );
             } else {
                 // This acts only as a trigger, so it doesn't matter which boolean value it is

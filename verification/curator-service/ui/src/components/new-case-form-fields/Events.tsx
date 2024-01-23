@@ -129,7 +129,7 @@ export default function Events(): JSX.Element {
                         setFieldValue('events.dateEntry', newValue);
                     }
                 }}
-                errorMessage={errors.events?.dateEntry}
+                // errorMessage={errors.events?.dateEntry} TODO: unmock
             />
             <DateField
                 name="events.dateReported"
@@ -140,7 +140,7 @@ export default function Events(): JSX.Element {
                         setFieldValue('events.dateReported', newValue);
                     }
                 }}
-                errorMessage={errors.events?.dateReported}
+                // errorMessage={errors.events?.dateReported} TODO: unmock
             />
             <DateField
                 name="events.dateConfirmation"

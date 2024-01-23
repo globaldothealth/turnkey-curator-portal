@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "https://raw.githubusercontent.com/globaldothealth/outbreak-schema/main/outbreak.schema.json",
+  "title": "Global.health Day zero outbreak schema",
+  "description": "Day zero outbreak schema",
+  "required": [
+    "ID",
+    "Case_status",
+    "Pathogen"
+  ],
+  "properties": {
+    "Nationality": {
+      "category": "Case Demographics",
+      "type": "array",
+      "description": "Nationality of the individual, can select multiple"
+    },
+    "Nationality_other": {
+      "category": "Case Demographics",
+      "type": "string",
+      "description": "Free response entry for the nationality of the individual, if not covered by the Nationality field."
+    },
+    "Contact_setting_other": {
+      "category": "Exposure",
+      "type": "string",
+      "description": "Contact setting not covered by Contact_setting"
+    }
+  }
+}

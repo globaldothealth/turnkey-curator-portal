@@ -1,0 +1,95 @@
+{
+  "Contact_with_case": {
+    "category": "Exposure",
+    "enum": [
+      "Y",
+      "N",
+      "NA"
+    ],
+    "description": "Has the individual had contact with a confirmed or suspected case"
+  },
+  "Contact_ID": {
+    "category": "Exposure",
+    "type": "string",
+    "description": "If specified, the ID of the confirmed or suspected contact"
+  },
+  "Contact_setting": {
+    "category": "Exposure",
+    "enum": [
+      "HOUSE",
+      "WORK",
+      "SCHOOL",
+      "HEALTH",
+      "PARTY",
+      "BAR",
+      "LARGE",
+      "LARGECONTACT",
+      "OTHER",
+      "UNK"
+    ],
+    "description": "Setting where contact occurred. HEALTH=healthcare, including laboratory exposure, PARTY=Sexual contact at night club/private party/sauna or similar setting, BAR=bar/restaurant/other small event where there was no sexual contact, LARGE=large event with no sexual contact (e.g. festival or sports event), LARGECONTACT=large event with sexual contact, UNK=unknown"
+  },
+  "Contact_setting_other": {
+    "category": "Exposure",
+    "type": "string",
+    "description": "Contact setting not covered by Contact_setting"
+  },
+  "Contact_animal": {
+    "category": "Exposure",
+    "enum": [
+      "PET",
+      "PETRODENTS",
+      "WILD",
+      "WILDRODENTS",
+      "OTHER"
+    ],
+    "description": "Whether the individual has known contact with animals. PET=household pets excluding rodents, PETRODENTS=rodent pets, WILD=wild animals excluding rodents, WILDRODENTS=wild rodents"
+  },
+  "Contact_comment": {
+    "category": "Exposure",
+    "type": "string",
+    "description": "Free text describing any additional contact information"
+  },
+  "Transmission": {
+    "category": "Exposure",
+    "enum": [
+      "ANIMAL",
+      "HAI",
+      "LAB",
+      "MTCT",
+      "OTHER",
+      "FOMITE",
+      "PTP",
+      "SEX",
+      "TRANSFU",
+      "UNK"
+    ],
+    "description": "Most likely mode of transmission. ANIMAL = Animal to human transmission. HAI = Healthcare-associated, LAB = Transmission in a laboratory due to occupational exposure, MTCT = Transmission from mother to child during pregnancy or at birth, OTHER = Other transmission, FOMITE = Contact with contaminated material (e.g bedding, clothing, objects), PTP = Person-to-person (excluding: mother-to-child, healthcare-associated or sexual transmission), SEX = Sexual transmission, TRANSFU = parenteral transmission including intravenous drug use and transfusion, UNK = Unknown"
+  },
+  "Travel_history": {
+    "category": "Exposure",
+    "enum": [
+      "Y",
+      "N",
+      "NA"
+    ],
+    "description": "Whether individual has travel history, domestic and/or international"
+  },
+  "Travel_history_entry": {
+    "category": "Exposure",
+    "type": "string",
+    "format": "date",
+    "description": "Date when individual entered the country"
+  },
+  "Travel_history_start": {
+    "category": "Exposure",
+    "type": "string",
+    "format": "date",
+    "description": "Date when individual began travel"
+  },
+  "Travel_history_location": {
+    "category": "Exposure",
+    "type": "object",
+    "description": "(GeoJSON) Location of travel obtained from geocoding API such as Mapbox"
+  }
+}

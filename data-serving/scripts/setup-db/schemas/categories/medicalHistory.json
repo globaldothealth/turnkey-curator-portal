@@ -1,0 +1,55 @@
+{
+  "Previous_infection": {
+    "category": "Medical History",
+    "enum": [
+      "Y",
+      "N",
+      "NA"
+    ],
+    "description": "Did the individual test positive for the infection prior to the most recent diagnosis"
+  },
+  "Co_infection": {
+    "category": "Medical History",
+    "type": "array",
+    "description": "If the individual tested positive for another pathogen, can select multiple"
+  },
+  "Pre_existing_condition": {
+    "category": "Medical History",
+    "type": "array",
+    "description": "If the individual has any pre-existing conditions"
+  },
+  "Pregnancy_Status": {
+    "category": "Medical History",
+    "enum": [
+      "Y",
+      "N",
+      "NA"
+    ],
+    "description": "Is the case pregnant or post-partum?"
+  },
+  "Vaccination": {
+    "category": "Medical History",
+    "enum": [
+      "Y",
+      "N",
+      "NA"
+    ],
+    "description": "Has the individual received a dose of vaccine"
+  },
+  "Vaccine_name": {
+    "category": "Medical History",
+    "type": "string",
+    "description": "Name of the first vaccine"
+  },
+  "Vaccination_date": {
+    "category": "Medical History",
+    "type": "string",
+    "format": "date",
+    "description": "Date of first vaccination"
+  },
+  "Vaccine_side_effects": {
+    "category": "Medical History",
+    "type": "array",
+    "description": "List of symptoms experienced after receiving the vaccine"
+  }
+}

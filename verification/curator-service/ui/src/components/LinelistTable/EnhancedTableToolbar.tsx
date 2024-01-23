@@ -49,12 +49,13 @@ const EnhancedTableToolbar = () => {
             setNumSelectedCases(0);
         } else {
             dispatch(setRowsAcrossPagesSelected(cases.length < totalCases));
-            dispatch(
-                setCasesSelected(
-                    // eslint-disable-next-line
-                    cases.map((caseObj) => caseObj.caseReference.id!),
-                ),
-            );
+            // TODO unmock this
+            // dispatch(
+            //     setCasesSelected(
+            //         // eslint-disable-next-line
+            //         cases.map((caseObj) => caseObj.caseReference.id!),
+            //     ),
+            // );
             setNumSelectedCases(totalCases);
         }
     };

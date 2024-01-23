@@ -1,0 +1,38 @@
+{
+  "Source": {
+    "category": "Source Information",
+    "type": "string",
+    "format": "uri",
+    "description": "URL of news story or government source where this case was confirmed"
+  },
+  "Source_II": {
+    "category": "Source Information",
+    "type": "string",
+    "format": "uri",
+    "description": "URL of news story or government source where this case was confirmed"
+  },
+  "Source_III": {
+    "category": "Source Information",
+    "type": "string",
+    "format": "uri",
+    "description": "URL of news story or government source where this case was confirmed"
+  },
+  "Source_IV": {
+    "category": "Source Information",
+    "type": "string",
+    "format": "uri",
+    "description": "URL of news story or government source where this case was confirmed"
+  },
+  "Date_entry": {
+    "category": "Source Information",
+    "type": "string",
+    "format": "date",
+    "description": "Date case was entered into line list"
+  },
+  "Date_last_modified": {
+    "category": "Source Information",
+    "type": "string",
+    "format": "date",
+    "description": "Last date when case was modified in line list"
+  }
+}

@@ -1,13 +1,43 @@
 export enum CaseStatus {
     Confirmed = 'confirmed',
+    Probable = 'probable',
     Suspected = 'suspected',
     Discarded = 'discarded',
     OmitError = 'omit_error',
 }
 
-export enum Gender {
+export enum PathogenStatus {
+    Endemic = 'endemic',
+    Emerging = 'emerging',
+    Unknown = 'unknown',
+}
+
+export enum SexAtBirth {
     Male = 'male',
     Female = 'female',
+    Other = 'other',
+}
+
+export enum Gender {
+    Man = 'man',
+    Woman = 'woman',
+    Transgender = 'transgender',
+    NonBinary = 'non-binary',
+    Other = 'other',
+}
+
+export enum Race {
+    NaHaOrOtPaIs = 'Native Hawaiian or Other Pacific Islander',
+    Asian = 'Asian',
+    AmInOrAlNa = 'American Indian or Alaska Native',
+    BlOrAfAm = 'Black or African American',
+    White = 'White',
+    Other = 'Other',
+}
+
+export enum Ethnicity {
+    HisOrLat = 'Hispanic or Latino',
+    NotHisOrLat = 'Not Hispanic or Latino',
     Other = 'other',
 }
 
@@ -188,18 +218,32 @@ export interface RevisionMetadata {
 export interface Day0Case {
     _id?: string;
     caseStatus: CaseStatus | '';
-    comment?: string;
-    caseReference: CaseReference;
-    demographics: Demographics;
-    location: Location;
-    events: Events;
-    symptoms?: string;
-    preexistingConditions: PreexistingConditions;
-    transmission: Transmission;
-    travelHistory: TravelHistory;
-    genomeSequences: GenomeSequences;
     pathogen: string;
-    vaccination: Vaccination;
+    pathogenStatus: PathogenStatus | '';
+    age: string;
+    sexAtBirth: SexAtBirth | '';
+    sexAtBirthOther: string | '';
+    gender: Gender | '';
+    genderOther: string | '';
+    race: Race | '';
+    raceOther: string | '';
+    ethnicity: Ethnicity | '';
+    ethnicityOther: string | '';
+    nationality: string | '';
+    nationalityOther: string | '';
+    occupation: string | '';
+    healthcareWorker: YesNo | '';
+    // caseReference: CaseReference;
+    // demographics: Demographics;
+    location: Location;
+    // events: Events;
+    // symptoms?: string;
+    // preexistingConditions: PreexistingConditions;
+    // transmission: Transmission;
+    // travelHistory: TravelHistory;
+    // genomeSequences: GenomeSequences;
+    // vaccination: Vaccination;
+    comment: string | '';
     // helper values
     vaccineSideEffects?: string[];
     preexistingConditionsHelper?: string[];
@@ -251,31 +295,47 @@ interface RevisionMetadataValues {
 // contains all the fields present in manual case entry form
 export interface Day0CaseFormValues {
     caseStatus: CaseStatus | '';
-    comment?: string;
-    caseReference: {
-        sourceId: string;
-        sourceUrl: string;
-        isGovernmentSource: boolean;
-        id?: string;
-        sourceEntryId?: string;
-        uploadIds?: string[];
-        sourceName?: string;
-        sourceLicense?: string;
-        sourceProviderName?: string;
-        sourceProviderUrl?: string;
-        additionalSources?: {
-            sourceUrl: string;
-            isGovernmentSource: boolean;
-        }[];
-    };
-    demographics: {
-        minAge?: number;
-        maxAge?: number;
-        age?: number;
-        gender?: Gender | '';
-        occupation?: string;
-        healthcareWorker?: YesNo | '';
-    };
+    pathogen: string;
+    pathogenStatus: PathogenStatus | '';
+    age: string;
+    sexAtBirth: SexAtBirth | '';
+    sexAtBirthOther: string | '';
+    gender: Gender | '';
+    genderOther: string | '';
+    race: Race | '';
+    raceOther: string | '';
+    ethnicity: Ethnicity | '';
+    ethnicityOther: string | '';
+    nationality: string | '';
+    nationalityOther: string | '';
+    occupation: string | '';
+    healthcareWorker: YesNo | '';
+    comment: string | '';
+    // comment?: string;
+    // caseReference: {
+    //     sourceId: string;
+    //     sourceUrl: string;
+    //     isGovernmentSource: boolean;
+    //     id?: string;
+    //     sourceEntryId?: string;
+    //     uploadIds?: string[];
+    //     sourceName?: string;
+    //     sourceLicense?: string;
+    //     sourceProviderName?: string;
+    //     sourceProviderUrl?: string;
+    //     additionalSources?: {
+    //         sourceUrl: string;
+    //         isGovernmentSource: boolean;
+    //     }[];
+    // };
+    // demographics: {
+    //     minAge?: number;
+    //     maxAge?: number;
+    //     age?: number;
+    //     gender?: Gender | '';
+    //     occupation?: string;
+    //     healthcareWorker?: YesNo | '';
+    // };
     location: {
         geoResolution?: string;
         country: string;
@@ -289,20 +349,18 @@ export interface Day0CaseFormValues {
         geometry?: Geometry;
         comment?: string;
     };
-    events: Events;
-    symptoms?: string[];
-    preexistingConditions: PreexistingConditionsFormValues;
-    transmission: Transmission;
-    travelHistory: TravelHistory;
-    genomeSequences: GenomeSequences;
-    pathogen: string;
-    vaccination: VaccinationFormValues;
+    // events: Events;
+    // symptoms?: string[];
+    // preexistingConditions: PreexistingConditionsFormValues;
+    // transmission: Transmission;
+    // travelHistory: TravelHistory;
+    // genomeSequences: GenomeSequences;
+    // vaccination: VaccinationFormValues;
     numCases?: number;
     // helper value
     vaccineSideEffects?: string[];
     preexistingConditionsHelper?: string[];
     transmissionHelper?: string;
-    occupation?: string;
     revisionMetadata?: RevisionMetadataValues;
     // eslint-disable-next-line
     [key: string]: any;

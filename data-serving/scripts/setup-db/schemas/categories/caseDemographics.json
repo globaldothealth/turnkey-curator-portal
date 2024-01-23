@@ -1,0 +1,130 @@
+{
+  "Pathogen": {
+    "category": "Case Demographics",
+    "type": "string",
+    "description": "Constant, pathogen of interest"
+  },
+  "ID": {
+    "category": "Case Demographics",
+    "type": "string",
+    "description": "Unique string identifying the case"
+  },
+  "Case_status": {
+    "category": "Case Demographics",
+    "enum": [
+      "confirmed",
+      "probable",
+      "suspected",
+      "discarded",
+      "omit_error"
+    ],
+    "description": "Status of a case. Cases which are discarded were previously suspected but have now been confirmed negative, and should be excluded from case counts. Cases which are omit_error were incorrectly added and should be dismissed from any data interpretation."
+  },
+  "Pathogen_status": {
+    "category": "Case Demographics",
+    "enum": [
+      "endemic",
+      "emerging",
+      "unknown"
+    ],
+    "description": "Whether the infection occured in an endemic, or non-endemic region."
+  },
+  "Location_information": {
+    "category": "Case Demographics",
+    "type": "object",
+    "description": "(GeoJSON) Curators input an initial location where the case was reported from. This query results in a location structure returned from a geocoding API, such as Mapbox"
+  },
+  "Age": {
+    "category": "Case Demographics",
+    "type": "string",
+    "description": "Age of individual, specified as range, open-ended (<n, >n) or as a range delimited by a hyphen following 5 year increments (m-n)"
+  },
+  "Sex_at_birth": {
+    "category": "Case Demographics",
+    "enum": [
+      "male",
+      "female",
+      "other"
+    ],
+    "description": "Sex at birth of an individual"
+  },
+  "Sex_at_birth_other": {
+    "category": "Case Demographics",
+    "type": "string",
+    "description": "Free text entry for the sex of an individual, if not covered by 'Sex_at_birth'"
+  },
+  "Gender": {
+    "category": "Case Demographics",
+    "enum": [
+      "man",
+      "woman",
+      "transgender",
+      "non-binary",
+      "other"
+    ],
+    "description": "Gender identity of the individual"
+  },
+  "Gender_other": {
+    "category": "Case Demographics",
+    "type": "string",
+    "description": "Free text entry for Gender identity if not covered by 'Gender' field"
+  },
+  "Race": {
+    "category": "Case Demographics",
+    "type": "array",
+    "items": {
+      "enum": [
+        "Native Hawaiian or Other Pacific Islander",
+        "Asian",
+        "American Indian or Alaska Native",
+        "Black or African American",
+        "White",
+        "Other"
+      ]
+    },
+    "description": "Race of the individual, can select multiple options"
+  },
+  "Race_other": {
+    "category": "Case Demographics",
+    "type": "string",
+    "description": "Free response input for the race of the individual"
+  },
+  "Ethnicity": {
+    "category": "Case Demographics",
+    "enum": [
+      "Hispanic or Latino",
+      "Not Hispanic or Latino",
+      "other"
+    ],
+    "description": "Ethnicity of the individual, per the U.S. census definition"
+  },
+  "Ethnicity_other": {
+    "category": "Case Demographics",
+    "type": "string",
+    "description": "Free response input for the ethnicity of the individual. Input text data as provided by the original data source; do not translate."
+  },
+  "Nationality": {
+    "category": "Case Demographics",
+    "type": "array",
+    "description": "Nationality of the individual, can select multiple"
+  },
+  "Nationality_other": {
+    "category": "Case Demographics",
+    "type": "string",
+    "description": "Free response entry for the nationality of the individual, if not covered by the Nationality field."
+  },
+  "Occupation": {
+    "category": "Case Demographics",
+    "type": "string",
+    "description": "Free response entry describing the individual's occupation"
+  },
+  "Healthcare_worker": {
+    "category": "Case Demographics",
+    "enum": [
+      "Y",
+      "N",
+      "NA"
+    ],
+    "description": "Whether individual is a healthcare worker"
+  }
+}
