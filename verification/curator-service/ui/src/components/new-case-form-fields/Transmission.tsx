@@ -117,7 +117,7 @@ export default function Transmission(): JSX.Element {
                     freeSolo
                     label="Transmission"
                     multiple={false}
-                    initialValue={initialValues.transmission.transmission}
+                    initialValue={initialValues.transmission}
                     optionsLocation="https://raw.githubusercontent.com/globaldothealth/list/main/suggest/route_of_transmission.txt"
                 />
             </div>

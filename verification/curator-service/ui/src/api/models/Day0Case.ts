@@ -47,6 +47,40 @@ export enum YesNo {
     NA = 'NA',
 }
 
+export enum ContactSetting {
+    House = 'HOUSE',
+    Work = 'WORK',
+    School = 'SCHOOL',
+    Health = 'HEALTH',
+    Party = 'PARTY',
+    Bar = 'BAR',
+    Large = 'LARGE',
+    LargeContact = 'LARGECONTACT',
+    Other = 'OTHER',
+    Unknown = 'UNK',
+}
+
+export enum ContactAnimal {
+    Pet = 'PET',
+    PetRodents = 'PETRODENTS',
+    Wild = 'WILD',
+    WildRodents = 'WILDRODENTS',
+    Other = 'OTHER',
+}
+
+export enum Transmission {
+    Animal = 'ANIMAL',
+    Hai = 'HAI',
+    Lab = 'LAB',
+    MTCT = 'MTCT',
+    Other = 'OTHER',
+    Fomite = 'FOMITE',
+    PTP = 'PTP',
+    Sex = 'SEX',
+    Transfusion = 'TRANSFU',
+    Unknown = 'UNK',
+}
+
 export enum HospitalizationReason {
     Monitoring = 'monitoring',
     Treatment = 'treatment',
@@ -56,6 +90,7 @@ export enum HospitalizationReason {
 export enum Outcome {
     Recovered = 'recovered',
     Death = 'death',
+    OngoingPostAcuteCondition = 'ongoing post-acute condition',
 }
 
 export interface CaseReference {
@@ -150,7 +185,7 @@ export interface PreexistingConditions {
     pregnancyStatus?: YesNo | '';
 }
 
-export interface Transmission {
+export interface Transmission_old {
     contactWithCase?: YesNo | '';
     contactId?: string;
     contactSetting?: string;
@@ -216,6 +251,7 @@ export interface RevisionMetadata {
 }
 
 export interface Day0Case {
+    // Case Demographics
     _id?: string;
     caseStatus: CaseStatus | '';
     pathogen: string;
@@ -233,9 +269,59 @@ export interface Day0Case {
     nationalityOther: string | '';
     occupation: string | '';
     healthcareWorker: YesNo | '';
+    // Medical History
+    previousInfection: YesNo | '';
+    coInfection: string[];
+    preexistingCondition: string[];
+    pregnancyStatus: YesNo | '';
+    vaccination: YesNo | '';
+    vaccineName: string | '';
+    vaccineDate: string | null;
+    vaccineSideEffects: string[];
+    // Clinical Presentation
+    symptoms: string[];
+    dateReport: string | null;
+    dateOnset: string | null;
+    dateConfirmation: string | null;
+    confirmationMethod: string | '';
+    dateOfFirstConsultation: string | null;
+    hospitalised: YesNo | '';
+    reasonForHospitalisation: string[];
+    dateHospitalisation: string | null;
+    dateDischargeHospital: string | null;
+    intensiveCare: YesNo | '';
+    dateAdmissionICU: string | null;
+    dateDischargeICU: string | null;
+    homeMonitoring: YesNo | '';
+    isolated: YesNo | '';
+    dateIsolation: string | null;
+    outcome: Outcome | '';
+    dateDeath: string | null;
+    dateRecovery: string | null;
+    // Exposure
+    contactWithCase: YesNo | '';
+    contactID: string | '';
+    contactSetting: ContactSetting | '';
+    contactSettingOther: string | '';
+    contactAnimal: ContactAnimal | '';
+    contactComment: string | '';
+    transmission: Transmission | '';
+    travelHistory: YesNo | '';
+    travelHistoryEntry: string | null;
+    travelHistoryStart: string | null;
+    travelHistoryLocation: Location;
+    // Laboratory Information
+    genomicsMetadata: string | '';
+    accessionNumber: string | '';
+    // Source Information
+    source: string | '';
+    sourceII: string | '';
+    sourceIII: string | '';
+    sourceIV: string | '';
+    dateEntry: string | null;
+    dateLastModified: string | null;
     // caseReference: CaseReference;
     // demographics: Demographics;
-    location: Location;
     // events: Events;
     // symptoms?: string;
     // preexistingConditions: PreexistingConditions;
@@ -245,7 +331,7 @@ export interface Day0Case {
     // vaccination: Vaccination;
     comment: string | '';
     // helper values
-    vaccineSideEffects?: string[];
+    location: Location;
     preexistingConditionsHelper?: string[];
     curators?: Curators;
     revisionMetadata?: RevisionMetadata;
@@ -255,7 +341,7 @@ export interface Day0Case {
         | Location
         | Events
         | PreexistingConditions
-        | Transmission
+        | Transmission_old
         | TravelHistory
         | GenomeSequences
         | Vaccination
@@ -294,6 +380,7 @@ interface RevisionMetadataValues {
 
 // contains all the fields present in manual case entry form
 export interface Day0CaseFormValues {
+    // Case Demographics
     caseStatus: CaseStatus | '';
     pathogen: string;
     pathogenStatus: PathogenStatus | '';
@@ -311,6 +398,57 @@ export interface Day0CaseFormValues {
     occupation: string | '';
     healthcareWorker: YesNo | '';
     comment: string | '';
+    // Medical History
+    previousInfection: YesNo | '';
+    coInfection: string[];
+    preexistingCondition: string[];
+    pregnancyStatus: YesNo | '';
+    vaccination: YesNo | '';
+    vaccineName: string | '';
+    vaccineDate: string | null;
+    vaccineSideEffects: string[];
+    // Clinical Presentation
+    symptoms: string[];
+    dateReport: string | null;
+    dateOnset: string | null;
+    dateConfirmation: string | null;
+    confirmationMethod: string | '';
+    dateOfFirstConsultation: string | null;
+    hospitalised: YesNo | '';
+    reasonForHospitalisation: string[];
+    dateHospitalisation: string | null;
+    dateDischargeHospital: string | null;
+    intensiveCare: YesNo | '';
+    dateAdmissionICU: string | null;
+    dateDischargeICU: string | null;
+    homeMonitoring: YesNo | '';
+    isolated: YesNo | '';
+    dateIsolation: string | null;
+    outcome: Outcome | '';
+    dateDeath: string | null;
+    dateRecovery: string | null;
+    // Exposure
+    contactWithCase: YesNo | '';
+    contactID: string | '';
+    contactSetting: ContactSetting | '';
+    contactSettingOther: string | '';
+    contactAnimal: ContactAnimal | '';
+    contactComment: string | '';
+    transmission: Transmission | '';
+    travelHistory: YesNo | '';
+    travelHistoryEntry: string | null;
+    travelHistoryStart: string | null;
+    travelHistoryLocation: Location;
+    // Laboratory Information
+    genomicsMetadata: string | '';
+    accessionNumber: string | '';
+    // Source Information
+    source: string | '';
+    sourceII: string | '';
+    sourceIII: string | '';
+    sourceIV: string | '';
+    dateEntry: string | null;
+    dateLastModified: string | null;
     // comment?: string;
     // caseReference: {
     //     sourceId: string;
@@ -358,7 +496,7 @@ export interface Day0CaseFormValues {
     // vaccination: VaccinationFormValues;
     numCases?: number;
     // helper value
-    vaccineSideEffects?: string[];
+    // vaccineSideEffects?: string[];
     preexistingConditionsHelper?: string[];
     transmissionHelper?: string;
     revisionMetadata?: RevisionMetadataValues;

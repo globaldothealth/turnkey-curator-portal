@@ -71,7 +71,7 @@ function SymptomList(props: SymptomListProps): JSX.Element {
 
     let collectionValues: string[];
     if (props.collectionName === 'vaccination.vaccineSideEffects') {
-        collectionValues = values.vaccination.vaccineSideEffects as string[];
+        collectionValues = values.vaccineSideEffects as string[];
     } else {
         collectionValues = values[props.collectionName] as string[];
     }

@@ -301,7 +301,7 @@ const BulkCaseForm = (props: BulkCaseFormProps) => {
                 dateDeath: c.dateDeath,
                 dateRecovered: c.dateRecovered,
             },
-            symptoms: c.symptoms,
+            // symptoms: c.symptoms,
             caseCount: c.caseCount,
             // TBD whether we need those added to the CSV
             preexistingConditions: {
@@ -310,9 +310,9 @@ const BulkCaseForm = (props: BulkCaseFormProps) => {
                 preexistingCondition: c.preexistingCondition,
                 pregnancyStatus: c.pregnancyStatus,
             },
-            transmission: {},
-            travelHistory: {},
-            vaccination: {},
+            // transmission: {},
+            // travelHistory: {},
+            // vaccination: {},
             genomeSequences: {},
         };
     };

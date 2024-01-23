@@ -26,6 +26,11 @@ import NumCases from './new-case-form-fields/NumCases';
 import { toUTCDate } from './util/date';
 import CaseDemographics from './new-case-form-fields/CaseDemographics';
 import LocationForm from './new-case-form-fields/LocationForm';
+import MedicalHistory from './new-case-form-fields/MedicalHistory';
+import ClinicalPresentation from './new-case-form-fields/ClinicalPresentation';
+import Exposure from './new-case-form-fields/Exposure';
+import LaboratoryInformation from './new-case-form-fields/LaboratoryInformation';
+import SourceInformation from './new-case-form-fields/SourceInformation';
 
 const TableOfContents = styled('nav')(() => ({
     position: 'fixed',
@@ -56,6 +61,7 @@ const initialValuesFromCase = (
     if (!c) {
         // return minimal viable case
         return {
+            // Case Demographics
             pathogen,
             caseStatus: '',
             pathogenStatus: '',
@@ -72,21 +78,6 @@ const initialValuesFromCase = (
             nationalityOther: '',
             occupation: '',
             healthcareWorker: '',
-            comment: '',
-            // comment: '',
-            // caseReference: {
-            //     sourceId: '',
-            //     sourceUrl: '',
-            //     isGovernmentSource: false,
-            // },
-            // demographics: {
-            //     minAge: undefined,
-            //     maxAge: undefined,
-            //     age: undefined,
-            //     gender: '',
-            //     occupation: '',
-            //     healthcareWorker: '',
-            // },
             location: {
                 geoResolution: undefined,
                 country: '',
@@ -100,60 +91,59 @@ const initialValuesFromCase = (
                     longitude: undefined,
                 },
             },
-            // events: {
-            //     dateEntry: null,
-            //     dateReported: null,
-            //     dateLastModified: null,
-            //     dateOnset: null,
-            //     dateConfirmation: null,
-            //     dateOfFirstConsult: null,
-            //     dateHospitalization: null,
-            //     dateDischargeHospital: null,
-            //     dateAdmissionICU: null,
-            //     dateDischargeICU: null,
-            //     dateIsolation: null,
-            //     dateDeath: null,
-            //     dateRecovered: null,
-            //     confirmationMethod: '',
-            //     outcome: '',
-            //     hospitalized: '',
-            //     reasonForHospitalization: '',
-            //     intensiveCare: '',
-            //     homeMonitoring: '',
-            //     isolated: '',
-            // },
-            // symptoms: [],
-            // preexistingConditions: {
-            //     previousInfection: '',
-            //     pregnancyStatus: '',
-            //     coInfection: '',
-            //     preexistingCondition: [],
-            // },
-            // transmission: {
-            //     contactWithCase: '',
-            //     contactId: '',
-            //     contactSetting: '',
-            //     contactAnimal: '',
-            //     contactComment: '',
-            //     transmission: '',
-            // },
-            // travelHistory: {
-            //     travelHistory: '',
-            //     travelHistoryEntry: null,
-            //     travelHistoryStart: '',
-            //     travelHistoryLocation: '',
-            //     travelHistoryCountry: '',
-            // },
-            // genomeSequences: {
-            //     genomicsMetadata: '',
-            //     accessionNumber: '',
-            // },
-            // vaccination: {
-            //     vaccination: '',
-            //     vaccineName: '',
-            //     vaccineSideEffects: [],
-            //     vaccineDate: null,
-            // },
+            // Medical History
+            previousInfection: '',
+            coInfection: [],
+            preexistingCondition: [],
+            pregnancyStatus: '',
+            vaccination: '',
+            vaccineName: '',
+            vaccineDate: null,
+            vaccineSideEffects: [],
+            // Clinical Presentation
+            symptoms: [],
+            dateReport: null,
+            dateOnset: null,
+            dateConfirmation: null,
+            confirmationMethod: '',
+            dateOfFirstConsultation: null,
+            hospitalised: '',
+            reasonForHospitalisation: [],
+            dateHospitalisation: null,
+            dateDischargeHospital: null,
+            intensiveCare: '',
+            dateAdmissionICU: null,
+            dateDischargeICU: null,
+            homeMonitoring: '',
+            isolated: '',
+            dateIsolation: null,
+            outcome: '',
+            dateDeath: null,
+            dateRecovery: null,
+            // Exposure
+            contactWithCase: '',
+            contactID: '',
+            contactSetting: '',
+            contactSettingOther: '',
+            contactAnimal: '',
+            contactComment: '',
+            transmission: '',
+            travelHistory: '',
+            travelHistoryEntry: null,
+            travelHistoryStart: null,
+            travelHistoryLocation: { country: '', countryISO3: '' },
+            // Laboratory Information
+            genomicsMetadata: '',
+            accessionNumber: '',
+            // Source Information
+            source: '',
+            sourceII: '',
+            sourceIII: '',
+            sourceIV: '',
+            dateEntry: null,
+            dateLastModified: null,
+            // Other data
+            comment: '',
             numCases: 1,
         };
     }
@@ -264,69 +254,69 @@ const NewCaseValidation = Yup.object().shape(
         caseStatus: Yup.string()
             .oneOf(['confirmed', 'suspected', 'discarded', 'omit_error'])
             .required('Required'),
-        comment: Yup.string(),
-        caseReference: Yup.object().shape({
-            sourceUrl: Yup.string()
-                .required('Required')
-                .test('valid-url', 'Invalid URL', sourceURLValidation),
-        }),
-        pathogen: Yup.string().required('Required'),
-        location: Yup.object().shape({
-            countryISO3: Yup.string().required('Required'),
-        }),
-        events: Yup.object().shape({
-            dateEntry: Yup.date().typeError('Required').required('Required'),
-            dateReported: Yup.date().typeError('Required').required('Required'),
-        }),
-        demographics: Yup.object().shape({
-            minAge: Yup.number()
-                .min(0, 'Age must be between 0 and 120')
-                .max(120, 'Age must be between 0 and 120')
-                .when('demographics.maxAge', {
-                    is: (maxAge: number | string) =>
-                        maxAge !== undefined && maxAge !== '',
-                    then: Yup.number().required(
-                        'Min age required in range. Minimum value is 0.',
-                    ),
-                }),
-            maxAge: Yup.number()
-                .min(0, 'Age must be between 0 and 120')
-                .max(120, 'Age must be between 0 and 120')
-                .when('demographics.minAge', {
-                    is: (minAge: number | string) =>
-                        minAge !== undefined && minAge !== '',
-                    then: Yup.number()
-                        .min(
-                            Yup.ref('demographics.minAge'),
-                            'Max age must be greater than than min age',
-                        )
-                        .required(
-                            'Max age required in range. Maximum value is 120.',
-                        ),
-                }),
-            age: Yup.number()
-                .min(0, 'Age must be between 0 and 120')
-                .max(120, 'Age must be between 0 and 120')
-                .when('demographics.minAge', {
-                    is: (minAge: number | string) =>
-                        minAge !== undefined && minAge !== '',
-                    then: Yup.number().oneOf(
-                        [undefined],
-                        'Cannot enter age and age range',
-                    ),
-                })
-                .when('demographics.maxAge', {
-                    is: (maxAge: number | string) =>
-                        maxAge !== undefined && maxAge !== '',
-                    then: Yup.number().oneOf(
-                        [undefined],
-                        'Cannot enter age and age range',
-                    ),
-                }),
-        }),
-        numCases: Yup.number()
-            .nullable()
-            .min(1, 'Must enter one or more cases'),
+        // comment: Yup.string(),
+        // caseReference: Yup.object().shape({
+        //     sourceUrl: Yup.string()
+        //         .required('Required')
+        //         .test('valid-url', 'Invalid URL', sourceURLValidation),
+        // }),
+        // pathogen: Yup.string().required('Required'),
+        // location: Yup.object().shape({
+        //     countryISO3: Yup.string().required('Required'),
+        // }),
+        // events: Yup.object().shape({
+        //     dateEntry: Yup.date().typeError('Required').required('Required'),
+        //     dateReported: Yup.date().typeError('Required').required('Required'),
+        // }),
+        // demographics: Yup.object().shape({
+        //     minAge: Yup.number()
+        //         .min(0, 'Age must be between 0 and 120')
+        //         .max(120, 'Age must be between 0 and 120')
+        //         .when('demographics.maxAge', {
+        //             is: (maxAge: number | string) =>
+        //                 maxAge !== undefined && maxAge !== '',
+        //             then: Yup.number().required(
+        //                 'Min age required in range. Minimum value is 0.',
+        //             ),
+        //         }),
+        //     maxAge: Yup.number()
+        //         .min(0, 'Age must be between 0 and 120')
+        //         .max(120, 'Age must be between 0 and 120')
+        //         .when('demographics.minAge', {
+        //             is: (minAge: number | string) =>
+        //                 minAge !== undefined && minAge !== '',
+        //             then: Yup.number()
+        //                 .min(
+        //                     Yup.ref('demographics.minAge'),
+        //                     'Max age must be greater than than min age',
+        //                 )
+        //                 .required(
+        //                     'Max age required in range. Maximum value is 120.',
+        //                 ),
+        //         }),
+        //     age: Yup.number()
+        //         .min(0, 'Age must be between 0 and 120')
+        //         .max(120, 'Age must be between 0 and 120')
+        //         .when('demographics.minAge', {
+        //             is: (minAge: number | string) =>
+        //                 minAge !== undefined && minAge !== '',
+        //             then: Yup.number().oneOf(
+        //                 [undefined],
+        //                 'Cannot enter age and age range',
+        //             ),
+        //         })
+        //         .when('demographics.maxAge', {
+        //             is: (maxAge: number | string) =>
+        //                 maxAge !== undefined && maxAge !== '',
+        //             then: Yup.number().oneOf(
+        //                 [undefined],
+        //                 'Cannot enter age and age range',
+        //             ),
+        //         }),
+        // }),
+        // numCases: Yup.number()
+        //     .nullable()
+        //     .min(1, 'Must enter one or more cases'),
     },
     [['demographics.maxAge', 'demographics.minAge']],
 );
@@ -377,14 +367,14 @@ export default function CaseForm(props: Props): JSX.Element {
             }
         }
 
-        const ageRange = values.demographics.age
+        const ageRange = values.age
             ? {
-                  start: Number(values.demographics.age),
-                  end: Number(values.demographics.age),
+                  start: Number(values.age),
+                  end: Number(values.age),
               }
             : {
-                  start: Number(values.demographics.minAge),
-                  end: Number(values.demographics.maxAge),
+                  start: Number(values.minAge),
+                  end: Number(values.maxAge),
               };
 
         const preexistingConditions = values.preexistingConditionsHelper || [];
@@ -697,6 +687,61 @@ export default function CaseForm(props: Props): JSX.Element {
                                         })}
                                         {'Location'.toLocaleUpperCase()}
                                     </TableOfContentsRow>
+                                    <TableOfContentsRow
+                                        onClick={(): void =>
+                                            scrollTo('medicalHistory')
+                                        }
+                                    >
+                                        {tableOfContentsIcon({
+                                            isChecked: false, // TODO unmock
+                                            hasError: false,
+                                        })}
+                                        {'Medical History'.toLocaleUpperCase()}
+                                    </TableOfContentsRow>
+                                    <TableOfContentsRow
+                                        onClick={(): void =>
+                                            scrollTo('clinicalPresentation')
+                                        }
+                                    >
+                                        {tableOfContentsIcon({
+                                            isChecked: false, // TODO unmock
+                                            hasError: false,
+                                        })}
+                                        {'Clinical Presentation'.toLocaleUpperCase()}
+                                    </TableOfContentsRow>
+                                    <TableOfContentsRow
+                                        onClick={(): void =>
+                                            scrollTo('exposure')
+                                        }
+                                    >
+                                        {tableOfContentsIcon({
+                                            isChecked: false, // TODO unmock
+                                            hasError: false,
+                                        })}
+                                        {'Exposure'.toLocaleUpperCase()}
+                                    </TableOfContentsRow>
+                                    <TableOfContentsRow
+                                        onClick={(): void =>
+                                            scrollTo('laboratoryInformation')
+                                        }
+                                    >
+                                        {tableOfContentsIcon({
+                                            isChecked: false, // TODO unmock
+                                            hasError: false,
+                                        })}
+                                        {'Laboratory Information'.toLocaleUpperCase()}
+                                    </TableOfContentsRow>
+                                    <TableOfContentsRow
+                                        onClick={(): void =>
+                                            scrollTo('sourceInformation')
+                                        }
+                                    >
+                                        {tableOfContentsIcon({
+                                            isChecked: false, // TODO unmock
+                                            hasError: false,
+                                        })}
+                                        {'Source Information'.toLocaleUpperCase()}
+                                    </TableOfContentsRow>
                                     {/*<TableOfContentsRow*/}
                                     {/*    onClick={(): void => scrollTo('events')}*/}
                                     {/*>*/}
@@ -963,6 +1008,21 @@ export default function CaseForm(props: Props): JSX.Element {
                                     {/*</FormSection>*/}
                                     <FormSection>
                                         <LocationForm />
+                                    </FormSection>
+                                    <FormSection>
+                                        <MedicalHistory />
+                                    </FormSection>
+                                    <FormSection>
+                                        <ClinicalPresentation />
+                                    </FormSection>
+                                    <FormSection>
+                                        <Exposure />
+                                    </FormSection>
+                                    <FormSection>
+                                        <LaboratoryInformation />
+                                    </FormSection>
+                                    <FormSection>
+                                        <SourceInformation />
                                     </FormSection>
                                     {/*<FormSection>*/}
                                     {/*    <Events />*/}

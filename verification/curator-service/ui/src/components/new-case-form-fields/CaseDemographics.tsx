@@ -126,7 +126,6 @@ export default function CaseDemographics(): JSX.Element {
                 label="Pathogen Status"
                 values={Object.values(PathogenStatus)}
             />
-            <p>LOCATION</p>
             <div
                 className={`${globalClasses.fieldRow} ${classes.ageRow} ${globalClasses.halfWidth}`}
             >

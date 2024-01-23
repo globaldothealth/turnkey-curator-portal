@@ -61,23 +61,23 @@ export default function TravelHistory(): JSX.Element {
                 label="Travel history"
                 values={hasTravelledValues}
             />
-            {values.travelHistory.travelHistory === 'Y' && (
+            {values.travelHistory === 'Y' && (
                 <>
-                    <DateField
-                        name="travelHistory.travelHistoryEntry"
-                        label="Travel history entry"
-                        value={values.travelHistory.travelHistoryEntry}
-                        onChange={(newValue) => {
-                            setValues({
-                                ...values,
-                                travelHistory: {
-                                    ...values.travelHistory,
-                                    travelHistoryEntry:
-                                        newValue?.toDateString() || undefined,
-                                },
-                            });
-                        }}
-                    />
+                    {/*<DateField*/}
+                    {/*    name="travelHistory.travelHistoryEntry"*/}
+                    {/*    label="Travel history entry"*/}
+                    {/*    value={values.travelHistoryEntry}*/}
+                    {/*    onChange={(newValue) => {*/}
+                    {/*        setValues({*/}
+                    {/*            ...values,*/}
+                    {/*            travelHistory: {*/}
+                    {/*                ...values.travelHistory,*/}
+                    {/*                travelHistoryEntry:*/}
+                    {/*                    newValue?.toDateString() || undefined,*/}
+                    {/*            },*/}
+                    {/*        });*/}
+                    {/*    }}*/}
+                    {/*/>*/}
                     <div
                         className={clsx([
                             globalClasses.fieldRow,

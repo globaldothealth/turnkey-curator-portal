@@ -46,7 +46,7 @@ export default function Vaccines(): JSX.Element {
                 label="Vaccination"
                 values={['Y', 'N', 'NA']}
             />
-            {values.vaccination.vaccination === 'Y' && (
+            {values.vaccination === 'Y' && (
                 <>
                     <div
                         className={clsx([
@@ -62,21 +62,21 @@ export default function Vaccines(): JSX.Element {
                             fullWidth
                         />
                     </div>
-                    <DateField
-                        name="vaccination.vaccineDate"
-                        label="Vaccine date"
-                        value={values.vaccination.vaccineDate}
-                        onChange={(newValue) => {
-                            setValues({
-                                ...values,
-                                vaccination: {
-                                    ...values.vaccination,
-                                    vaccineDate:
-                                        newValue?.toDateString() || undefined,
-                                },
-                            });
-                        }}
-                    />
+                    {/*<DateField*/}
+                    {/*    name="vaccination.vaccineDate"*/}
+                    {/*    label="Vaccine date"*/}
+                    {/*    value={values.vaccination.vaccineDate}*/}
+                    {/*    onChange={(newValue) => {*/}
+                    {/*        setValues({*/}
+                    {/*            ...values,*/}
+                    {/*            vaccination: {*/}
+                    {/*                // ...values.vaccination,*/}
+                    {/*                vaccineDate:*/}
+                    {/*                    newValue?.toDateString() || undefined,*/}
+                    {/*            },*/}
+                    {/*        });*/}
+                    {/*    }}*/}
+                    {/*/>*/}
                     <VaccineSideEffects />
                 </>
             )}
