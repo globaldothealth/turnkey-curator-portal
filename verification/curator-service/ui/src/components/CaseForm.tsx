@@ -692,24 +692,6 @@ export default function CaseForm(props: Props): JSX.Element {
                                         })}
                                         {'Case Demographics'.toLocaleUpperCase()}
                                     </TableOfContentsRow>
-                                    {/*<TableOfContentsRow*/}
-                                    {/*    onClick={(): void => scrollTo('source')}*/}
-                                    {/*>*/}
-                                    {/*    {tableOfContentsIcon({*/}
-                                    {/*        isChecked: isChecked({*/}
-                                    {/*            requiredValues: [*/}
-                                    {/*                values.caseReference*/}
-                                    {/*                    ?.sourceUrl,*/}
-                                    {/*            ],*/}
-                                    {/*        }),*/}
-                                    {/*        hasError: hasErrors(*/}
-                                    {/*            ['caseReference'],*/}
-                                    {/*            errors,*/}
-                                    {/*            touched,*/}
-                                    {/*        ),*/}
-                                    {/*    })}*/}
-                                    {/*    {'Source'.toLocaleUpperCase()}*/}
-                                    {/*</TableOfContentsRow>*/}
                                     <TableOfContentsRow
                                         onClick={(): void =>
                                             scrollTo('location')

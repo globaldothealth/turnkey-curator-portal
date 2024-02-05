@@ -11,6 +11,7 @@ import {
     Typography,
 } from '@mui/material';
 import {
+    ContactSetting,
     Day0Case,
     Ethnicity,
     Gender,
@@ -37,7 +38,6 @@ import { selectFilterBreadcrumbs } from '../redux/app/selectors';
 import { selectSearchQuery } from '../redux/linelistTable/selectors';
 import Chip from '@mui/material/Chip';
 import { nameCountry } from './util/countryNames';
-import { parseAgeRange } from './util/helperFunctions';
 import CloseIcon from '@mui/icons-material/Close';
 import { selectUser } from '../redux/auth/selectors';
 import { Role } from '../api/models/User';
@@ -220,17 +220,10 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                 <nav className={classes.navMenu}>
                     <Button
                         variant="text"
-                        onClick={(): void => scrollTo('curators')}
+                        onClick={(): void => scrollTo('case-demographics')}
                     >
-                        curators
+                        case demographics
                     </Button>
-                    <Button
-                        variant="text"
-                        onClick={(): void => scrollTo('case-data')}
-                    >
-                        case data
-                    </Button>
-                    <br />
                     <Button
                         variant="text"
                         onClick={(): void => scrollTo('location')}
@@ -240,51 +233,37 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                     <br />
                     <Button
                         variant="text"
-                        onClick={(): void => scrollTo('event-history')}
+                        onClick={(): void => scrollTo('medical-history')}
                     >
-                        event history
+                        medical history
                     </Button>
                     <br />
                     <Button
                         variant="text"
-                        onClick={(): void => scrollTo('demographics')}
+                        onClick={(): void => scrollTo('clinical-presentation')}
                     >
-                        demographics
+                        clinical presentation
                     </Button>
                     <br />
                     <Button
                         variant="text"
-                        onClick={(): void => scrollTo('symptoms')}
+                        onClick={(): void => scrollTo('exposure')}
                     >
-                        symptoms
+                        exposure
                     </Button>
                     <br />
                     <Button
                         variant="text"
-                        onClick={(): void => scrollTo('transmission')}
+                        onClick={(): void => scrollTo('laboratory-information')}
                     >
-                        transmission
+                        laboratory information
                     </Button>
                     <br />
                     <Button
                         variant="text"
-                        onClick={(): void => scrollTo('travel-history')}
+                        onClick={(): void => scrollTo('source-information')}
                     >
-                        travel history
-                    </Button>
-                    <br />
-                    <Button
-                        variant="text"
-                        onClick={(): void => scrollTo('pathogens')}
-                    >
-                        pathogens
-                    </Button>
-                    <br />
-                    <Button
-                        variant="text"
-                        onClick={(): void => scrollTo('vaccines')}
-                    >
-                        vaccines
+                        source information
                     </Button>
                 </nav>
             )}
@@ -428,14 +407,14 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                 {/* CASE DEMOGRAPHICS */}
                 <Paper className={classes.paper} variant="outlined" square>
                     <Scroll.Element
-                        name="case-data"
+                        name="case-demographics"
                         className={classes.casebox}
                     >
                         <Typography
                             className={classes.sectionTitle}
                             variant="overline"
                         >
-                            Case data
+                            Case demographics
                         </Typography>
                         <Grid container className={classes.grid}>
                             <RowHeader title="Case status" />
@@ -651,393 +630,349 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                     </Scroll.Element>
                 </Paper>
 
-                {/* EVENT HISTORY */}
-                {/*<Paper className={classes.paper} variant="outlined" square>*/}
-                {/*    <Scroll.Element*/}
-                {/*        name="event-history"*/}
-                {/*        className={classes.casebox}*/}
-                {/*    >*/}
-                {/*        <Typography*/}
-                {/*            className={classes.sectionTitle}*/}
-                {/*            variant="overline"*/}
-                {/*        >*/}
-                {/*            Event history*/}
-                {/*        </Typography>*/}
-                {/*        <Grid container className={classes.grid}>*/}
-                {/*            <RowHeader title="Confirmed case date" />*/}
-                {/*            <RowContent*/}
-                {/*                content={renderDate(*/}
-                {/*                    props.c.events.dateConfirmation,*/}
-                {/*                )}*/}
-                {/*            />*/}
+                {/* MEDICAL HISTORY */}
+                <Paper className={classes.paper} variant="outlined" square>
+                    <Scroll.Element
+                        name="medical-history"
+                        className={classes.casebox}
+                    >
+                        <Typography
+                            className={classes.sectionTitle}
+                            variant="overline"
+                        >
+                            Medical history
+                        </Typography>
+                        <Grid container className={classes.grid}>
+                            <RowHeader title="Previous infection" />
+                            <RowContent content={props.c.previousInfection} />
 
-                {/*            <RowHeader title="Confirmation method" />*/}
-                {/*            <RowContent*/}
-                {/*                content={props.c.events.confirmationMethod}*/}
-                {/*            />*/}
+                            <RowHeader title="Co-Infection" />
+                            <RowContent
+                                content={(props.c.coInfection || []).join(', ')}
+                            />
 
-                {/*            <RowHeader title="Symptom onset date" />*/}
-                {/*            <RowContent*/}
-                {/*                content={renderDate(props.c.events.dateOnset)}*/}
-                {/*            />*/}
+                            <RowHeader title="Pre-Existing Conditions" />
+                            <RowContent
+                                content={(
+                                    props.c.preexistingCondition || []
+                                ).join(', ')}
+                            />
 
-                {/*            <RowHeader title="First clinical consultation" />*/}
-                {/*            <RowContent*/}
-                {/*                content={renderDate(*/}
-                {/*                    props.c.events.dateOfFirstConsult,*/}
-                {/*                )}*/}
-                {/*            />*/}
+                            <RowHeader title="Pregnacy Status" />
+                            <RowContent content={props.c.pregnancyStatus} />
 
-                {/*            <RowHeader title="Home monitoring" />*/}
-                {/*            <RowContent*/}
-                {/*                content={props.c.events.homeMonitoring}*/}
-                {/*            />*/}
+                            <RowHeader title="Vaccination" />
+                            <RowContent content={props.c.vaccination} />
 
-                {/*            <RowHeader title="Isolation" />*/}
-                {/*            <RowContent content={props.c.events.isolated} />*/}
+                            {props.c.vaccination === YesNo.Y && (
+                                <>
+                                    <RowHeader title="Vaccine Name" />
+                                    <RowContent content={props.c.vaccineName} />
 
-                {/*            {props.c.events.isolated === YesNo.Y && (*/}
-                {/*                <>*/}
-                {/*                    <RowHeader title="Date of isolation" />*/}
-                {/*                    <RowContent*/}
-                {/*                        content={renderDate(*/}
-                {/*                            props.c.events.dateIsolation,*/}
-                {/*                        )}*/}
-                {/*                    />*/}
-                {/*                </>*/}
-                {/*            )}*/}
+                                    <RowHeader title="Vaccine Date" />
+                                    <RowContent
+                                        content={renderDate(
+                                            props.c.vaccineDate,
+                                        )}
+                                    />
 
-                {/*            <RowHeader title="Hospital admission" />*/}
-                {/*            <RowContent content={props.c.events.hospitalized} />*/}
+                                    <RowHeader title="Vaccine Side Effects" />
+                                    <RowContent
+                                        content={(
+                                            props.c.vaccineSideEffects || []
+                                        ).join(', ')}
+                                    />
+                                </>
+                            )}
+                        </Grid>
+                    </Scroll.Element>
+                </Paper>
 
-                {/*            {props.c.events.hospitalized === YesNo.Y && (*/}
-                {/*                <>*/}
-                {/*                    <RowHeader title="Hospital admission date" />*/}
-                {/*                    <RowContent*/}
-                {/*                        content={renderDate(*/}
-                {/*                            props.c.events.dateHospitalization,*/}
-                {/*                        )}*/}
-                {/*                    />*/}
-                {/*                    <RowHeader title="Hospital discharge date" />*/}
-                {/*                    <RowContent*/}
-                {/*                        content={renderDate(*/}
-                {/*                            props.c.events*/}
-                {/*                                .dateDischargeHospital,*/}
-                {/*                        )}*/}
-                {/*                    />*/}
-                {/*                </>*/}
-                {/*            )}*/}
+                {/* CLINICAL PRESENTATION */}
+                <Paper className={classes.paper} variant="outlined" square>
+                    <Scroll.Element
+                        name="clinical-presentation"
+                        className={classes.casebox}
+                    >
+                        <Typography
+                            className={classes.sectionTitle}
+                            variant="overline"
+                        >
+                            Clinical Presentation
+                        </Typography>
+                        <Grid container className={classes.grid}>
+                            <RowHeader title="Symptoms" />
+                            <RowContent
+                                content={(props.c.symptoms || []).join(', ')}
+                            />
 
-                {/*            <RowHeader title="Intensive care" />*/}
-                {/*            <RowContent*/}
-                {/*                content={props.c.events.intensiveCare}*/}
-                {/*            />*/}
+                            <RowHeader title="Date Report" />
+                            <RowContent
+                                content={renderDate(props.c.dateReport)}
+                            />
 
-                {/*            {props.c.events.intensiveCare === YesNo.Y && (*/}
-                {/*                <>*/}
-                {/*                    <RowHeader title="Intensive care admission date" />*/}
-                {/*                    <RowContent*/}
-                {/*                        content={renderDate(*/}
-                {/*                            props.c.events.dateAdmissionICU,*/}
-                {/*                        )}*/}
-                {/*                    />*/}
+                            <RowHeader title="Date Onset" />
+                            <RowContent
+                                content={renderDate(props.c.dateOnset)}
+                            />
 
-                {/*                    <RowHeader title="Intensive care discharge date" />*/}
-                {/*                    <RowContent*/}
-                {/*                        content={renderDate(*/}
-                {/*                            props.c.events.dateDischargeICU,*/}
-                {/*                        )}*/}
-                {/*                    />*/}
-                {/*                </>*/}
-                {/*            )}*/}
+                            <RowHeader title="Date Confirmation" />
+                            <RowContent
+                                content={renderDate(props.c.dateConfirmation)}
+                            />
 
-                {/*            <RowHeader title="Outcome" />*/}
-                {/*            <RowContent content={props.c.events.outcome} />*/}
+                            <RowHeader title="Confirmation Method" />
+                            <RowContent content={props.c.confirmationMethod} />
 
-                {/*            {props.c.events.outcome && (*/}
-                {/*                <>*/}
-                {/*                    <RowHeader*/}
-                {/*                        title={`Date of ${*/}
-                {/*                            props.c.events.outcome ===*/}
-                {/*                            Outcome.Death*/}
-                {/*                                ? 'death'*/}
-                {/*                                : 'recovery'*/}
-                {/*                        }`}*/}
-                {/*                    />*/}
-                {/*                    <RowContent*/}
-                {/*                        content={renderDate(*/}
-                {/*                            props.c.events.outcome ===*/}
-                {/*                                Outcome.Death*/}
-                {/*                                ? props.c.events.dateDeath*/}
-                {/*                                : props.c.events.dateRecovered,*/}
-                {/*                        )}*/}
-                {/*                    />*/}
-                {/*                </>*/}
-                {/*            )}*/}
-                {/*        </Grid>*/}
-                {/*    </Scroll.Element>*/}
-                {/*</Paper>*/}
+                            <RowHeader title="Date of First Consultation" />
+                            <RowContent
+                                content={renderDate(
+                                    props.c.dateOfFirstConsultation,
+                                )}
+                            />
 
-                {/* DEMOGRAPHICS */}
-                {/*<Paper className={classes.paper} variant="outlined" square>*/}
-                {/*    <Scroll.Element*/}
-                {/*        name="demographics"*/}
-                {/*        className={classes.casebox}*/}
-                {/*    />*/}
-                {/*    <Typography*/}
-                {/*        className={classes.sectionTitle}*/}
-                {/*        variant="overline"*/}
-                {/*    >*/}
-                {/*        Demographics*/}
-                {/*    </Typography>*/}
-                {/*    <Grid container className={classes.grid}>*/}
-                {/*        <RowHeader title="Age" />*/}
-                {/*        <RowContent*/}
-                {/*            content={parseAgeRange(*/}
-                {/*                props.c.demographics.ageRange,*/}
-                {/*            )}*/}
-                {/*        />*/}
+                            <RowHeader title="Hospitalised" />
+                            <RowContent content={props.c.hospitalised} />
 
-                {/*        <RowHeader title="Gender" />*/}
-                {/*        <RowContent content={props.c.demographics.gender} />*/}
+                            {props.c.hospitalised === YesNo.Y && (
+                                <>
+                                    <RowHeader title="Reason for Hospitalisation" />
+                                    <RowContent
+                                        content={(
+                                            props.c.reasonForHospitalisation ||
+                                            []
+                                        ).join(', ')}
+                                    />
 
-                {/*        <RowHeader title="Occupation" />*/}
-                {/*        <RowContent content={props.c.demographics.occupation} />*/}
+                                    <RowHeader title="Date Hospitalisatoin" />
+                                    <RowContent
+                                        content={renderDate(
+                                            props.c.dateHospitalisation,
+                                        )}
+                                    />
 
-                {/*        <RowHeader title="Healthcare worker" />*/}
-                {/*        <RowContent*/}
-                {/*            content={props.c.demographics.healthcareWorker}*/}
-                {/*        />*/}
-                {/*    </Grid>*/}
-                {/*</Paper>*/}
+                                    <RowHeader title="Date Discharged Hospital" />
+                                    <RowContent
+                                        content={renderDate(
+                                            props.c.dateDischargeHospital,
+                                        )}
+                                    />
+                                </>
+                            )}
 
-                {/* SYMPTOMS */}
-                {/*<Paper className={classes.paper} variant="outlined" square>*/}
-                {/*    <Scroll.Element name="symptoms" className={classes.casebox}>*/}
-                {/*        <Typography*/}
-                {/*            className={classes.sectionTitle}*/}
-                {/*            variant="overline"*/}
-                {/*        >*/}
-                {/*            Symptoms*/}
-                {/*        </Typography>*/}
-                {/*        <Grid container className={classes.grid}>*/}
-                {/*            <RowHeader title="Symptoms" />*/}
-                {/*            <RowContent*/}
-                {/*                content={*/}
-                {/*                    typeof props.c.symptoms === 'string'*/}
-                {/*                        ? props.c.symptoms*/}
-                {/*                        : ''*/}
-                {/*                }*/}
-                {/*            />*/}
-                {/*        </Grid>*/}
-                {/*    </Scroll.Element>*/}
-                {/*</Paper>*/}
+                            <RowHeader title="Intensive Care" />
+                            <RowContent content={props.c.intensiveCare} />
 
-                {/* PREEXISTING CONDITIONS */}
-                {/*<Paper className={classes.paper} variant="outlined" square>*/}
-                {/*    <Typography*/}
-                {/*        className={classes.sectionTitle}*/}
-                {/*        variant="overline"*/}
-                {/*    >*/}
-                {/*        Preexisting conditions*/}
-                {/*    </Typography>*/}
-                {/*    <Grid container className={classes.grid}>*/}
-                {/*        <RowHeader title="Preexisting conditions" />*/}
-                {/*        <RowContent*/}
-                {/*            content={*/}
-                {/*                props.c.preexistingConditions*/}
-                {/*                    .preexistingCondition*/}
-                {/*            }*/}
-                {/*        />*/}
+                            {props.c.intensiveCare === YesNo.Y && (
+                                <>
+                                    <RowHeader title="Date Admission ICU" />
+                                    <RowContent
+                                        content={renderDate(
+                                            props.c.dateAdmissionICU,
+                                        )}
+                                    />
 
-                {/*        <RowHeader title="Previous infection" />*/}
-                {/*        <RowContent*/}
-                {/*            content={*/}
-                {/*                props.c.preexistingConditions.previousInfection*/}
-                {/*            }*/}
-                {/*        />*/}
+                                    <RowHeader title="Date Discharged ICU" />
+                                    <RowContent
+                                        content={renderDate(
+                                            props.c.dateDischargeICU,
+                                        )}
+                                    />
+                                </>
+                            )}
 
-                {/*        <RowHeader title="Coinfection" />*/}
-                {/*        <RowContent*/}
-                {/*            content={props.c.preexistingConditions.coInfection}*/}
-                {/*        />*/}
+                            <RowHeader title="Home Monitoring" />
+                            <RowContent content={props.c.homeMonitoring} />
 
-                {/*        <RowHeader title="Pregnancy" />*/}
-                {/*        <RowContent*/}
-                {/*            content={*/}
-                {/*                props.c.preexistingConditions.pregnancyStatus*/}
-                {/*            }*/}
-                {/*        />*/}
-                {/*    </Grid>*/}
-                {/*</Paper>*/}
+                            <RowHeader title="Isolated" />
+                            <RowContent content={props.c.isolated} />
 
-                {/* TRANSMISSION */}
-                {/*<Paper className={classes.paper} variant="outlined" square>*/}
-                {/*    <Scroll.Element*/}
-                {/*        name="transmission"*/}
-                {/*        className={classes.casebox}*/}
-                {/*    >*/}
-                {/*        <Typography*/}
-                {/*            className={classes.sectionTitle}*/}
-                {/*            variant="overline"*/}
-                {/*        >*/}
-                {/*            Transmission*/}
-                {/*        </Typography>*/}
-                {/*        <Grid container className={classes.grid}>*/}
-                {/*            <RowHeader title="Transmission" />*/}
-                {/*            <RowContent*/}
-                {/*                content={props.c.transmission.transmission}*/}
-                {/*            />*/}
+                            {props.c.isolated === YesNo.Y && (
+                                <>
+                                    <RowHeader title="Date Isolation" />
+                                    <RowContent
+                                        content={renderDate(
+                                            props.c.dateIsolation,
+                                        )}
+                                    />
+                                </>
+                            )}
 
-                {/*            <RowHeader title="Contact with case" />*/}
-                {/*            <RowContent*/}
-                {/*                content={props.c.transmission.contactWithCase}*/}
-                {/*            />*/}
+                            <RowHeader title="Outcome" />
+                            <RowContent content={props.c.outcome} />
 
-                {/*            <RowHeader title="Contact ID" />*/}
-                {/*            <RowContent*/}
-                {/*                content={props.c.transmission.contactId?.toString()}*/}
-                {/*            />*/}
+                            {props.c.outcome === Outcome.Death && (
+                                <>
+                                    <RowHeader title="Date Death" />
+                                    <RowContent
+                                        content={renderDate(props.c.dateDeath)}
+                                    />
+                                </>
+                            )}
 
-                {/*            <RowHeader title="Contact setting" />*/}
-                {/*            <RowContent*/}
-                {/*                content={props.c.transmission.contactSetting}*/}
-                {/*            />*/}
+                            {props.c.outcome === Outcome.Recovered && (
+                                <>
+                                    <RowHeader title="Date Recovery" />
+                                    <RowContent
+                                        content={renderDate(
+                                            props.c.dateRecovery,
+                                        )}
+                                    />
+                                </>
+                            )}
+                        </Grid>
+                    </Scroll.Element>
+                </Paper>
 
-                {/*            <RowHeader title="Contact animal" />*/}
-                {/*            <RowContent*/}
-                {/*                content={props.c.transmission.contactAnimal}*/}
-                {/*            />*/}
+                {/* EXPOSURE */}
+                <Paper className={classes.paper} variant="outlined" square>
+                    <Scroll.Element name="exposure" className={classes.casebox}>
+                        <Typography
+                            className={classes.sectionTitle}
+                            variant="overline"
+                        >
+                            Exposure
+                        </Typography>
+                        <Grid container className={classes.grid}>
+                            <RowHeader title="Contact with Case" />
+                            <RowContent content={props.c.contactWithCase} />
 
-                {/*            <RowHeader title="Comment" />*/}
-                {/*            <RowContent*/}
-                {/*                content={props.c.transmission.contactComment}*/}
-                {/*            />*/}
-                {/*        </Grid>*/}
-                {/*    </Scroll.Element>*/}
-                {/*</Paper>*/}
+                            {props.c.contactWithCase === YesNo.Y && (
+                                <>
+                                    <RowHeader title="Contact ID" />
+                                    <RowContent content={props.c.contactID} />
 
-                {/* TRAVEL HISTORY */}
-                {/*<Paper className={classes.paper} variant="outlined" square>*/}
-                {/*    <Scroll.Element*/}
-                {/*        name="travel-history"*/}
-                {/*        className={classes.casebox}*/}
-                {/*    >*/}
-                {/*        <Typography*/}
-                {/*            className={classes.sectionTitle}*/}
-                {/*            variant="overline"*/}
-                {/*        >*/}
-                {/*            Travel history*/}
-                {/*        </Typography>*/}
-                {/*        <Grid container className={classes.grid}>*/}
-                {/*            <RowHeader title="Has travel history" />*/}
-                {/*            <RowContent*/}
-                {/*                content={props.c.travelHistory.travelHistory}*/}
-                {/*            />*/}
+                                    <RowHeader title="Contact Setting" />
+                                    <RowContent
+                                        content={props.c.contactSetting}
+                                    />
 
-                {/*            <RowHeader title="Travel history entry" />*/}
-                {/*            <RowContent*/}
-                {/*                content={renderDate(*/}
-                {/*                    props.c.travelHistory.travelHistoryEntry,*/}
-                {/*                )}*/}
-                {/*            />*/}
+                                    {props.c.contactSetting ===
+                                        ContactSetting.Other && (
+                                        <>
+                                            <RowHeader title="Contact Setting Other" />
+                                            <RowContent
+                                                content={
+                                                    props.c.contactSettingOther
+                                                }
+                                            />
+                                        </>
+                                    )}
 
-                {/*            <RowHeader title="Has travel start" />*/}
-                {/*            <RowContent*/}
-                {/*                content={*/}
-                {/*                    props.c.travelHistory.travelHistoryStart*/}
-                {/*                }*/}
-                {/*            />*/}
+                                    <RowHeader title="Contact Animal" />
+                                    <RowContent
+                                        content={props.c.contactAnimal}
+                                    />
 
-                {/*            <RowHeader title="Last known location" />*/}
-                {/*            <RowContent*/}
-                {/*                content={*/}
-                {/*                    props.c.travelHistory.travelHistoryLocation*/}
-                {/*                }*/}
-                {/*            />*/}
+                                    <RowHeader title="Contact Comment" />
+                                    <RowContent
+                                        content={props.c.contactComment}
+                                    />
+                                </>
+                            )}
 
-                {/*            <RowHeader title="Last known country" />*/}
-                {/*            <RowContent*/}
-                {/*                content={*/}
-                {/*                    props.c.travelHistory.travelHistoryCountry*/}
-                {/*                }*/}
-                {/*            />*/}
-                {/*        </Grid>*/}
-                {/*    </Scroll.Element>*/}
-                {/*</Paper>*/}
+                            <RowHeader title="Transmission" />
+                            <RowContent content={props.c.transmission} />
 
-                {/* PATHOGENS */}
-                {/*<Paper className={classes.paper} variant="outlined" square>*/}
-                {/*    <Scroll.Element*/}
-                {/*        name="pathogens"*/}
-                {/*        className={classes.casebox}*/}
-                {/*    >*/}
-                {/*        <Typography*/}
-                {/*            className={classes.sectionTitle}*/}
-                {/*            variant="overline"*/}
-                {/*        >*/}
-                {/*            Pathogens & genome sequencing*/}
-                {/*        </Typography>*/}
-                {/*        <Grid container className={classes.grid}>*/}
-                {/*            <RowHeader title="Pathogens" />*/}
-                {/*            <RowContent content={props.c.pathogen} />*/}
+                            <RowHeader title="Travel History" />
+                            <RowContent content={props.c.travelHistory} />
 
-                {/*            <RowHeader title="Genomics metadata" />*/}
-                {/*            <RowContent*/}
-                {/*                content={*/}
-                {/*                    props.c.genomeSequences.genomicsMetadata*/}
-                {/*                }*/}
-                {/*            />*/}
+                            {props.c.travelHistory === YesNo.Y && (
+                                <>
+                                    <RowHeader title="Travel History Entry" />
+                                    <RowContent
+                                        content={renderDate(
+                                            props.c.travelHistoryEntry,
+                                        )}
+                                    />
+                                    <RowHeader title="Travel History Start" />
+                                    <RowContent
+                                        content={renderDate(
+                                            props.c.travelHistoryStart,
+                                        )}
+                                    />
+                                    {/*    TODO location*/}
+                                </>
+                            )}
+                        </Grid>
+                    </Scroll.Element>
+                </Paper>
 
-                {/*            <RowHeader title="Accession number" />*/}
-                {/*            <RowContent*/}
-                {/*                content={*/}
-                {/*                    props.c.genomeSequences.accessionNumber*/}
-                {/*                }*/}
-                {/*            />*/}
-                {/*        </Grid>*/}
-                {/*    </Scroll.Element>*/}
-                {/*</Paper>*/}
+                {/* LABORATORY INFORMATION */}
+                <Paper className={classes.paper} variant="outlined" square>
+                    <Scroll.Element
+                        name="laboratory-information"
+                        className={classes.casebox}
+                    >
+                        <Typography
+                            className={classes.sectionTitle}
+                            variant="overline"
+                        >
+                            Laboratory Information
+                        </Typography>
+                        <Grid container className={classes.grid}>
+                            <RowHeader title="Genomics Metadata" />
+                            <RowContent content={props.c.genomicsMetadata} />
 
-                {/* VACCINES */}
-                {/*<Paper className={classes.paper} variant="outlined" square>*/}
-                {/*    <Scroll.Element name="vaccines" className={classes.casebox}>*/}
-                {/*        <Typography*/}
-                {/*            className={classes.sectionTitle}*/}
-                {/*            variant="overline"*/}
-                {/*        >*/}
-                {/*            Vaccines*/}
-                {/*        </Typography>*/}
-                {/*        <Grid container className={classes.grid}>*/}
-                {/*            <RowHeader title="Vaccination" />*/}
-                {/*            <RowContent*/}
-                {/*                content={props.c.vaccination.vaccination}*/}
-                {/*            />*/}
+                            <RowHeader title="Accession Number" />
+                            <RowContent content={props.c.accessionNumber} />
+                        </Grid>
+                    </Scroll.Element>
+                </Paper>
 
-                {/*            <RowHeader title="Vaccine name" />*/}
-                {/*            <RowContent*/}
-                {/*                content={props.c.vaccination.vaccineName}*/}
-                {/*            />*/}
+                {/* SOURCE INFORMATION */}
+                <Paper className={classes.paper} variant="outlined" square>
+                    <Scroll.Element
+                        name="source-information"
+                        className={classes.casebox}
+                    >
+                        <Typography
+                            className={classes.sectionTitle}
+                            variant="overline"
+                        >
+                            Source Information
+                        </Typography>
+                        <Grid container className={classes.grid}>
+                            <RowHeader title="Source" />
+                            <RowContent content={props.c.source} />
 
-                {/*            <RowHeader title="Date of first vaccination" />*/}
-                {/*            <RowContent*/}
-                {/*                content={renderDate(*/}
-                {/*                    props.c.vaccination.vaccineDate,*/}
-                {/*                )}*/}
-                {/*            />*/}
+                            {props.c.source !== '' && (
+                                <>
+                                    <RowHeader title="Source II" />
+                                    <RowContent content={props.c.sourceII} />
+                                    {props.c.sourceII !== '' && (
+                                        <>
+                                            <RowHeader title="Source III" />
+                                            <RowContent
+                                                content={props.c.sourceIII}
+                                            />
+                                            {props.c.sourceIII !== '' && (
+                                                <>
+                                                    <RowHeader title="Source IV" />
+                                                    <RowContent
+                                                        content={
+                                                            props.c.sourceIV
+                                                        }
+                                                    />
+                                                </>
+                                            )}
+                                        </>
+                                    )}
+                                </>
+                            )}
 
-                {/*            <RowHeader title="Side effects" />*/}
-                {/*            <RowContent*/}
-                {/*                content={*/}
-                {/*                    typeof props.c.vaccination*/}
-                {/*                        .vaccineSideEffects === 'string'*/}
-                {/*                        ? props.c.vaccination.vaccineSideEffects*/}
-                {/*                        : ''*/}
-                {/*                }*/}
-                {/*            />*/}
-                {/*        </Grid>*/}
-                {/*    </Scroll.Element>*/}
-                {/*</Paper>*/}
+                            <RowHeader title="Date Entry" />
+                            <RowContent
+                                content={renderDate(props.c.dateEntry)}
+                            />
+
+                            <RowHeader title="Date Last Modified" />
+                            <RowContent
+                                content={renderDate(props.c.dateLastModified)}
+                            />
+                        </Grid>
+                    </Scroll.Element>
+                </Paper>
             </div>
         </>
     );
