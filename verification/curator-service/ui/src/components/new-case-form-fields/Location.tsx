@@ -95,7 +95,6 @@ export default function Location(): JSX.Element {
                     type="text"
                     label={<p>Country</p>}
                     component={Select}
-                    isClearable="true"
                     sx={{ minWidth: '13rem' }}
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     onChange={(e: any) => {

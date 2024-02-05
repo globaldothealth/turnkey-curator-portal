@@ -53,39 +53,34 @@ const TooltipText = () => (
     <StyledTooltip>
         <ul>
             <li>
-                <strong>Gender:</strong> Enter the Gender of the case provided.
-                If no gender is provided select Unknown.
+                <strong>Case Status:</strong>
             </li>
             <li>
-                <strong>Age:</strong> Enter the age of the case.
-                <ul>
-                    <li>
-                        To reduce the risk of identifying an individual from
-                        their case record, the age will automatically be
-                        converted into one or more bucketed groups: infants
-                        (&lt;1 year), 1-5 years, 6-10 years, and so on.
-                    </li>
-                    <li>
-                        If a range is provided enter in the min and max fields.
-                    </li>
-                    <li>
-                        If an exact age is provided enter it in the age field.
-                    </li>
-                    <li>
-                        Note: If the data source provides an age range such as
-                        65{'>'} or 65+ then set the minimum age value as 65 and
-                        the maximum age value to 120 (the maximum allowed age
-                        value).
-                    </li>
-                </ul>
+                <strong>Pathogen Status:</strong>
             </li>
             <li>
-                <strong>Occupation:</strong> Enter the Occupation of the case.
-                If no data is provided leave blank.
+                <strong>Age:</strong>
             </li>
             <li>
-                <strong>Healthcare worker:</strong> Choose whether the case is a
-                healthcare worker
+                <strong>Sex at birth:</strong>
+            </li>
+            <li>
+                <strong>Gender:</strong>
+            </li>
+            <li>
+                <strong>Race:</strong>
+            </li>
+            <li>
+                <strong>Ethnicity:</strong>
+            </li>
+            <li>
+                <strong>Nationality:</strong>
+            </li>
+            <li>
+                <strong>Occupation:</strong>
+            </li>
+            <li>
+                <strong>Healthcare worker:</strong>
             </li>
         </ul>
     </StyledTooltip>
@@ -111,7 +106,6 @@ export default function CaseDemographics(): JSX.Element {
     );
 
     nationalities.registerLocale(enLocaleNationalities);
-    console.log(Object.values(nationalities.getNames('en')));
 
     return (
         <Scroll.Element name="caseDemographics">
@@ -120,6 +114,7 @@ export default function CaseDemographics(): JSX.Element {
                 name="caseStatus"
                 label="Case Status"
                 values={Object.values(CaseStatus)}
+                defaultValue={undefined}
             />
             <SelectField
                 name="pathogenStatus"
@@ -303,7 +298,7 @@ export default function CaseDemographics(): JSX.Element {
                 />
             </div>
             <SelectField
-                name="demographics.healthcareWorker"
+                name="healthcareWorker"
                 label="Healthcare worker"
                 values={Object.values(YesNo)}
             />

@@ -153,6 +153,7 @@ interface SelectFieldProps {
     label: string;
     values: string[];
     required?: boolean;
+    defaultValue?: any;
 }
 
 export function SelectField(props: SelectFieldProps): JSX.Element {
@@ -167,6 +168,7 @@ export function SelectField(props: SelectFieldProps): JSX.Element {
                 data-testid={props.name}
                 className={classes.field}
                 component={Select}
+                defaultValue={props.defaultValue}
             >
                 {props.values.map((value) => (
                     <MenuItem key={value} value={value}>
@@ -204,7 +206,7 @@ export function DateField(props: DateFieldProps): JSX.Element {
                     mask="____/__/__"
                     minDate={new Date('2019/12/01')}
                     disableFuture
-                    value={props.value}
+                    value={props.value === undefined ? null : props.value}
                     onChange={props.onChange}
                     renderInput={(params) => (
                         <MuiTextField

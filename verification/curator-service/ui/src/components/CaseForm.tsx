@@ -19,7 +19,11 @@ import { hasKey } from './Utils';
 import { useHistory } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import { Day0Case, Day0CaseFormValues } from '../api/models/Day0Case';
+import {
+    CaseStatus,
+    Day0Case,
+    Day0CaseFormValues,
+} from '../api/models/Day0Case';
 import axios from 'axios';
 import Source, { submitSource } from './common-form-fields/Source';
 import NumCases from './new-case-form-fields/NumCases';
@@ -64,7 +68,7 @@ const initialValuesFromCase = (
             // Case Demographics
             pathogen,
             caseStatus: '',
-            pathogenStatus: undefined,
+            pathogenStatus: '',
             age: '',
             sexAtBirth: '',
             sexAtBirthOther: '',
@@ -150,6 +154,25 @@ const initialValuesFromCase = (
 
     return {
         ...c,
+        pathogenStatus: c.pathogenStatus || '',
+        sexAtBirth: c.sexAtBirth || '',
+        gender: c.gender || '',
+        race: c.race || '',
+        ethnicity: c.ethnicity || '',
+        healthcareWorker: c.healthcareWorker || '',
+        previousInfection: c.previousInfection || '',
+        pregnancyStatus: c.pregnancyStatus || '',
+        vaccination: c.vaccination || '',
+        hospitalised: c.hospitalised || '',
+        intensiveCare: c.intensiveCare || '',
+        homeMonitoring: c.homeMonitoring || '',
+        isolated: c.isolated || '',
+        outcome: c.outcome || '',
+        contactWithCase: c.contactWithCase || '',
+        contactSetting: c.contactSetting || '',
+        contactAnimal: c.contactAnimal || '',
+        transmission: c.transmission || '',
+        travelHistory: c.travelHistory || '',
         // pathogen,
         // demographics: {
         //     ...c.demographics,
@@ -252,7 +275,7 @@ const sourceURLValidation = (str: string | undefined) => {
 const NewCaseValidation = Yup.object().shape(
     {
         caseStatus: Yup.string()
-            .oneOf(['confirmed', 'suspected', 'discarded', 'omit_error'])
+            .oneOf(Object.values(CaseStatus))
             .required('Required'),
         // comment: Yup.string(),
         // caseReference: Yup.object().shape({
@@ -261,9 +284,10 @@ const NewCaseValidation = Yup.object().shape(
         //         .test('valid-url', 'Invalid URL', sourceURLValidation),
         // }),
         // pathogen: Yup.string().required('Required'),
-        // location: Yup.object().shape({
-        //     countryISO3: Yup.string().required('Required'),
-        // }),
+        location: Yup.object().shape({
+            countryISO3: Yup.string().required('Required'),
+        }),
+        dateReport: Yup.string().nullable().required('Required'),
         // events: Yup.object().shape({
         //     dateEntry: Yup.date().typeError('Required').required('Required'),
         //     dateReported: Yup.date().typeError('Required').required('Required'),
@@ -395,6 +419,25 @@ export default function CaseForm(props: Props): JSX.Element {
 
         const newCase: Day0Case = {
             ...values,
+            pathogenStatus: values.pathogenStatus || undefined,
+            sexAtBirth: values.sexAtBirth || undefined,
+            gender: values.gender || undefined,
+            race: values.race || undefined,
+            ethnicity: values.ethnicity || undefined,
+            healthcareWorker: values.healthcareWorker || undefined,
+            previousInfection: values.previousInfection || undefined,
+            pregnancyStatus: values.pregnancyStatus || undefined,
+            vaccination: values.vaccination || undefined,
+            hospitalised: values.hospitalised || undefined,
+            intensiveCare: values.intensiveCare || undefined,
+            homeMonitoring: values.homeMonitoring || undefined,
+            isolated: values.isolated || undefined,
+            outcome: values.outcome || undefined,
+            contactWithCase: values.contactWithCase || undefined,
+            contactSetting: values.contactSetting || undefined,
+            contactAnimal: values.contactAnimal || undefined,
+            transmission: values.transmission || undefined,
+            travelHistory: values.travelHistory || undefined,
             // demographics: {
             //     ...values.demographics,
             //     occupation: values.occupation,
@@ -592,9 +635,8 @@ export default function CaseForm(props: Props): JSX.Element {
 
     const initialTouched = {
         caseStatus: true,
-        caseReference: { sourceUrl: true },
         location: { countryISO3: true },
-        events: { dateEntry: true, dateReported: true },
+        dateReport: true,
     };
 
     return (
@@ -704,8 +746,16 @@ export default function CaseForm(props: Props): JSX.Element {
                                         }
                                     >
                                         {tableOfContentsIcon({
-                                            isChecked: false, // TODO unmock
-                                            hasError: false,
+                                            isChecked: isChecked({
+                                                requiredValues: [
+                                                    values.dateReport,
+                                                ],
+                                            }),
+                                            hasError: hasErrors(
+                                                ['dateReport'],
+                                                errors,
+                                                touched,
+                                            ),
                                         })}
                                         {'Clinical Presentation'.toLocaleUpperCase()}
                                     </TableOfContentsRow>

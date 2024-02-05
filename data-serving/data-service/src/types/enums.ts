@@ -1,5 +1,6 @@
 export enum CaseStatus {
     Confirmed = 'confirmed',
+    Probable = 'probable',
     Suspected = 'suspected',
     Discarded = 'discarded',
     OmitError = 'omit_error',
