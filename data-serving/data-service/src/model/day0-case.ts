@@ -21,7 +21,19 @@ import {
 import { TravelHistoryDocument, travelHistorySchema } from './travel-history';
 import { TransmissionDocument, transmissionSchema } from './transmission';
 import { VaccineDocument, vaccineSchema } from './vaccine';
-import { CaseStatus } from '../types/enums';
+import {
+    CaseStatus,
+    ContactAnimal,
+    ContactSetting,
+    Ethnicity,
+    Gender,
+    Outcome,
+    PathogenStatus,
+    Race,
+    SexAtBirth,
+    Transmission,
+    YesNo,
+} from '../types/enums';
 import { IdCounter, COUNTER_DOCUMENT_ID } from '../model/id-counter';
 import {
     RevisionMetadataDocument,
@@ -79,30 +91,77 @@ export type CuratorsDocument = mongoose.Document & {
 
 export const caseSchema = new mongoose.Schema(
     {
+        // Case Demographics
         _id: Number,
-        caseStatus: {
-            type: String,
-            enum: CaseStatus,
-            required: true,
-        },
-        comment: String,
-        pathogen: {
-            type: String,
-            required: true,
-        },
-        caseReference: {
-            type: caseReferenceSchema,
-            required: true,
-        },
-        demographics: demographicsSchema,
+        caseStatus: { type: String, enum: CaseStatus, required: true },
+        pathogen: { type: String, required: true },
+        pathogenStatus: { type: String, enum: PathogenStatus, required: false },
+        age: String,
+        sexAtBirth: { type: String, enum: SexAtBirth },
+        sexAtBirthOther: String,
+        gender: { type: String, enum: Gender },
+        genderOther: String,
+        race: { type: String, enum: Race },
+        raceOther: String,
+        ethnicity: { type: String, enum: Ethnicity },
+        ethnicityOther: String,
+        nationality: String,
+        nationalityOther: String,
+        occupation: String,
+        healthcareWorker: { type: String, enum: YesNo },
+        // Medical History
+        previousInfection: { type: String, enum: YesNo },
+        coInfection: [{ type: String }],
+        preexistingCondition: [{ type: String }],
+        pregnancyStatus: { type: String, enum: YesNo },
+        vaccination: { type: String, enum: YesNo },
+        vaccineName: String,
+        vaccineDate: Date,
+        vaccineSideEffects: [{ type: String }],
+        // Clinical Presentation
+        symptoms: [{ type: String }],
+        dateReport: Date,
+        dateOnset: Date,
+        dateConfirmation: Date,
+        confirmationMethod: String,
+        dateOfFirstConsultation: Date,
+        hospitalised: { type: String, enum: YesNo },
+        reasonForHospitalisation: [{ type: String }],
+        dateHospitalisation: Date,
+        dateDischargeHospital: Date,
+        intensiveCare: { type: String, YesNo },
+        dateAdmissionICU: Date,
+        dateDischargeICU: Date,
+        homeMonitoring: { type: String, YesNo },
+        isolated: { type: String, YesNo },
+        dateIsolation: Date,
+        outcome: { type: String, Outcome },
+        dateDeath: Date,
+        dateRecovery: Date,
+        // Exposure
+        contactWithCase: { type: String, YesNo },
+        contactID: String,
+        contactSetting: { type: String, ContactSetting },
+        contactSettingOther: String,
+        contactAnimal: { type: String, ContactAnimal },
+        contactComment: String,
+        transmission: { type: String, Transmission },
+        travelHistory: { type: String, YesNo },
+        travelHistoryEntry: Date,
+        travelHistoryStart: Date,
+        // travelHistoryLocation: locationSchema,
+        // Laboratory Information
+        genomicsMetadata: String,
+        accessionNumber: String,
+        // Source Information
+        source: String,
+        sourceII: String,
+        sourceIII: String,
+        sourceIV: String,
+        dateEntry: Date,
+        dateLastModified: Date,
         location: locationSchema,
-        events: EventsSchema,
-        symptoms: String,
-        preexistingConditions: preexistingConditionsSchema,
-        transmission: transmissionSchema,
-        travelHistory: travelHistorySchema,
-        genomeSequences: genomeSequenceSchema,
-        vaccination: vaccineSchema,
+        comment: String,
         curators: curatorsSchema,
         revisionMetadata: revisionMetadataSchema,
     },
@@ -186,19 +245,88 @@ export interface ISource {
 }
 
 export type ICase = {
+    // Case Demographics
     caseStatus: CaseStatus;
-    comment?: string;
     pathogen: string;
-    symptoms: string;
-    dateLastModified: string;
-    caseReference: CaseReferenceDocument;
-    events: EventsDocument;
-    location: LocationDocument;
-    preexistingConditions: PreexistingConditionsDocument;
-    transmission: TransmissionDocument;
-    travelHistory: TravelHistoryDocument;
-    genomeSequences: GenomeSequenceDocument;
-    vaccination: VaccineDocument;
+    pathogenStatus?: PathogenStatus;
+    age?: string;
+    sexAtBirth?: SexAtBirth;
+    sexAtBirthOther?: string;
+    gender?: Gender;
+    genderOther?: string;
+    race?: Race;
+    raceOther?: string;
+    ethnicity?: Ethnicity;
+    ethnicityOther?: string;
+    nationality?: string;
+    nationalityOther?: string;
+    occupation?: string;
+    healthcareWorker?: YesNo;
+    comment?: string;
+    // Medical History
+    previousInfection?: YesNo;
+    coInfection?: string[];
+    preexistingCondition?: string[];
+    pregnancyStatus?: YesNo;
+    vaccination?: YesNo;
+    vaccineName?: string;
+    vaccineDate?: string;
+    vaccineSideEffects?: string[];
+    // Clinical Presentation
+    symptoms?: string[];
+    dateReport?: string;
+    dateOnset?: string;
+    dateConfirmation?: string;
+    confirmationMethod?: string;
+    dateOfFirstConsultation?: string;
+    hospitalised?: YesNo;
+    reasonForHospitalisation?: string[];
+    dateHospitalisation?: string;
+    dateDischargeHospital?: string;
+    intensiveCare?: YesNo;
+    dateAdmissionICU?: string;
+    dateDischargeICU?: string;
+    homeMonitoring?: YesNo;
+    isolated?: YesNo;
+    dateIsolation?: string;
+    outcome?: Outcome;
+    dateDeath?: string;
+    dateRecovery?: string;
+    // Exposure
+    contactWithCase?: YesNo;
+    contactID?: string;
+    contactSetting?: ContactSetting;
+    contactSettingOther?: string;
+    contactAnimal?: ContactAnimal;
+    contactComment?: string;
+    transmission?: Transmission;
+    travelHistory?: YesNo;
+    travelHistoryEntry?: string;
+    travelHistoryStart?: string;
+    travelHistoryLocation?: Location;
+    // Laboratory Information
+    genomicsMetadata?: string;
+    accessionNumber?: string;
+    // Source Information
+    source?: string;
+    sourceII?: string;
+    sourceIII?: string;
+    sourceIV?: string;
+    dateEntry?: string;
+    dateLastModified?: string;
+    // caseStatus: CaseStatus;
+    // comment?: string;
+    // pathogen: string;
+    // symptoms: string;
+    // dateLastModified: string;
+    // caseReference: CaseReferenceDocument;
+    // events: EventsDocument;
+    // location: LocationDocument;
+    // preexistingConditions: PreexistingConditionsDocument;
+    // transmission: TransmissionDocument;
+    // travelHistory: TravelHistoryDocument;
+    // genomeSequences: GenomeSequenceDocument;
+    // vaccination: VaccineDocument;
     curators: CuratorsDocument;
     revisionMetadata: RevisionMetadataDocument;
 };

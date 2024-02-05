@@ -106,66 +106,68 @@ export const removeBlankHeader = (headers: string[]): string[] => {
 export const denormalizeFields = async (
     doc: CaseDocument,
 ): Promise<Partial<CaseDocument>> => {
-    const caseReferenceFields = denormalizeCaseReferenceFields(
-        doc.caseReference,
-    );
-    const demographicsFields = await denormalizeDemographicsFields(
-        doc.demographics,
-    );
-    const eventFields = denormalizeEventsFields(doc.events);
-    const locationFields = denormalizeLocationFields(doc.location);
-    const pathogenFields = denormalizePathogenField(doc.pathogen);
-    const preexistingConditionsFields = denormalizePreexistingConditionsFields(
-        doc.preexistingConditions,
-    );
-    const symptomsFields = denormalizeSymptomsFields(doc.symptoms);
-    const transmissionFields = denormalizeTransmissionFields(doc.transmission);
-    const travelHistoryFields = denormalizeTravelHistoryFields(
-        doc.travelHistory,
-    );
-    const vaccineHistory = denormalizeVaccineFields(doc.vaccination);
-    const genomeSequencesFields = denormalizeGenomeSequencesFields(
-        doc.genomeSequences,
-    );
-
-    const nestedFields = [
-        'caseReference',
-        'demographics',
-        'events',
-        'location',
-        'pathogen',
-        'preexistingConditions',
-        'symptoms',
-        'transmission',
-        'travelHistory',
-        'vaccination',
-        'genomeSequences',
-    ];
-
-    const undesiredFields = ['list', 'importedCase'];
-
-    const flatFields = [
-        caseReferenceFields,
-        demographicsFields,
-        eventFields,
-        locationFields,
-        pathogenFields,
-        preexistingConditionsFields,
-        symptomsFields,
-        transmissionFields,
-        travelHistoryFields,
-        vaccineHistory,
-        genomeSequencesFields,
-    ];
-
-    let denormalizedDocument = _.omit(doc, nestedFields);
-    denormalizedDocument = _.omit(denormalizedDocument, undesiredFields);
-    // add denormalized fields to object
-    for (const fields of flatFields) {
-        denormalizedDocument = Object.assign(denormalizedDocument, fields);
-    }
-
-    return denormalizedDocument;
+    return doc;
+    // TODO unmock this denormalization
+    // const caseReferenceFields = denormalizeCaseReferenceFields(
+    //     doc.caseReference,
+    // );
+    // const demographicsFields = await denormalizeDemographicsFields(
+    //     doc.demographics,
+    // );
+    // const eventFields = denormalizeEventsFields(doc.events);
+    // const locationFields = denormalizeLocationFields(doc.location);
+    // const pathogenFields = denormalizePathogenField(doc.pathogen);
+    // const preexistingConditionsFields = denormalizePreexistingConditionsFields(
+    //     doc.preexistingConditions,
+    // );
+    // const symptomsFields = denormalizeSymptomsFields(doc.symptoms);
+    // const transmissionFields = denormalizeTransmissionFields(doc.transmission);
+    // const travelHistoryFields = denormalizeTravelHistoryFields(
+    //     doc.travelHistory,
+    // );
+    // const vaccineHistory = denormalizeVaccineFields(doc.vaccination);
+    // const genomeSequencesFields = denormalizeGenomeSequencesFields(
+    //     doc.genomeSequences,
+    // );
+    //
+    // const nestedFields = [
+    //     'caseReference',
+    //     'demographics',
+    //     'events',
+    //     'location',
+    //     'pathogen',
+    //     'preexistingConditions',
+    //     'symptoms',
+    //     'transmission',
+    //     'travelHistory',
+    //     'vaccination',
+    //     'genomeSequences',
+    // ];
+    //
+    // const undesiredFields = ['list', 'importedCase'];
+    //
+    // const flatFields = [
+    //     caseReferenceFields,
+    //     demographicsFields,
+    //     eventFields,
+    //     locationFields,
+    //     pathogenFields,
+    //     preexistingConditionsFields,
+    //     symptomsFields,
+    //     transmissionFields,
+    //     travelHistoryFields,
+    //     vaccineHistory,
+    //     genomeSequencesFields,
+    // ];
+    //
+    // let denormalizedDocument = _.omit(doc, nestedFields);
+    // denormalizedDocument = _.omit(denormalizedDocument, undesiredFields);
+    // // add denormalized fields to object
+    // for (const fields of flatFields) {
+    //     denormalizedDocument = Object.assign(denormalizedDocument, fields);
+    // }
+    //
+    // return denormalizedDocument;
 };
 
 function denormalizeCaseReferenceFields(

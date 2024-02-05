@@ -134,40 +134,41 @@ const dtoFromCase = async (storedCase: CaseDocument) => {
 // After updating mongoose upserting and creating changed and data fields were missing
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fillEmpty = (caseData: any) => {
-    if (!caseData.vaccination) caseData.vaccination = {};
-    if (!caseData.vaccination.vaccineName)
-        caseData.vaccination.vaccineName = '';
-    if (!caseData.vaccination.vaccineSideEffects)
-        caseData.vaccination.vaccineSideEffects = '';
-
-    if (!caseData.transmission) caseData.transmission = {};
-    if (!caseData.transmission.contactId) caseData.transmission.contactId = '';
-    if (!caseData.transmission.contactSetting)
-        caseData.transmission.contactSetting = '';
-    if (!caseData.transmission.contactAnimal)
-        caseData.transmission.contactAnimal = '';
-    if (!caseData.transmission.contactComment)
-        caseData.transmission.contactComment = '';
-
-    if (!caseData.travelHistory) caseData.travelHistory = {};
-    if (!caseData.travelHistory.travelHistoryStart)
-        caseData.travelHistory.travelHistoryStart = '';
-    if (!caseData.travelHistory.travelHistoryLocation)
-        caseData.travelHistory.travelHistoryLocation = '';
-    if (!caseData.travelHistory.travelHistoryCountry)
-        caseData.travelHistory.travelHistoryCountry = '';
-
-    if (!caseData.genomeSequences) caseData.genomeSequences = {};
-    if (!caseData.genomeSequences.genomicsMetadata)
-        caseData.genomeSequences.genomicsMetadata = '';
-    if (!caseData.genomeSequences.accessionNumber)
-        caseData.genomeSequences.accessionNumber = '';
-
-    if (!caseData.preexistingConditions) caseData.preexistingConditions = {};
-    if (!caseData.preexistingConditions.coInfection)
-        caseData.preexistingConditions.coInfection = '';
-    if (!caseData.preexistingConditions.preexistingCondition)
-        caseData.preexistingConditions.preexistingCondition = '';
+    // TODO UNMOCK
+    // if (!caseData.vaccination) caseData.vaccination = {};
+    // if (!caseData.vaccination.vaccineName)
+    //     caseData.vaccination.vaccineName = '';
+    // if (!caseData.vaccination.vaccineSideEffects)
+    //     caseData.vaccination.vaccineSideEffects = '';
+    //
+    // if (!caseData.transmission) caseData.transmission = {};
+    // if (!caseData.transmission.contactId) caseData.transmission.contactId = '';
+    // if (!caseData.transmission.contactSetting)
+    //     caseData.transmission.contactSetting = '';
+    // if (!caseData.transmission.contactAnimal)
+    //     caseData.transmission.contactAnimal = '';
+    // if (!caseData.transmission.contactComment)
+    //     caseData.transmission.contactComment = '';
+    //
+    // if (!caseData.travelHistory) caseData.travelHistory = {};
+    // if (!caseData.travelHistory.travelHistoryStart)
+    //     caseData.travelHistory.travelHistoryStart = '';
+    // if (!caseData.travelHistory.travelHistoryLocation)
+    //     caseData.travelHistory.travelHistoryLocation = '';
+    // if (!caseData.travelHistory.travelHistoryCountry)
+    //     caseData.travelHistory.travelHistoryCountry = '';
+    //
+    // if (!caseData.genomeSequences) caseData.genomeSequences = {};
+    // if (!caseData.genomeSequences.genomicsMetadata)
+    //     caseData.genomeSequences.genomicsMetadata = '';
+    // if (!caseData.genomeSequences.accessionNumber)
+    //     caseData.genomeSequences.accessionNumber = '';
+    //
+    // if (!caseData.preexistingConditions) caseData.preexistingConditions = {};
+    // if (!caseData.preexistingConditions.coInfection)
+    //     caseData.preexistingConditions.coInfection = '';
+    // if (!caseData.preexistingConditions.preexistingCondition)
+    //     caseData.preexistingConditions.preexistingCondition = '';
     return caseData;
 };
 
@@ -222,9 +223,9 @@ export class CasesController {
             return;
         }
 
-        c.forEach((aCase: CaseDocument) => {
-            delete aCase.caseReference.sourceEntryId;
-        });
+        // c.forEach((aCase: CaseDocument) => { // TODO UNMOCK
+        //     delete aCase.caseReference.sourceEntryId;
+        // });
 
         res.json(await Promise.all(c.map((aCase) => dtoFromCase(aCase))));
     };
@@ -331,7 +332,7 @@ export class CasesController {
 
                 doc = await cursor.next();
                 while (doc != null) {
-                    delete doc.caseReference.sourceEntryId;
+                    // delete doc.caseReference.sourceEntryId; TODO unmock
                     const caseDTO = await dtoFromCase(doc);
                     delete caseDTO.comment;
                     const stringifiedCase = stringify([caseDTO], {
@@ -352,7 +353,7 @@ export class CasesController {
                 res.write('[');
                 doc = await cursor.next();
                 while (doc != null) {
-                    delete doc.caseReference.sourceEntryId;
+                    // delete doc.caseReference.sourceEntryId; TODO unmock
                     const normalizedDoc = await denormalizeFields(doc);
                     res.write(JSON.stringify(normalizedDoc));
                     doc = await cursor.next();

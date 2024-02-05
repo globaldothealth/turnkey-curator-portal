@@ -442,7 +442,9 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             <RowContent content={props.c.caseStatus} />
 
                             <RowHeader title="Pathogen status" />
-                            <RowContent content={props.c.pathogenStatus} />
+                            <RowContent
+                                content={props.c.pathogenStatus || undefined}
+                            />
 
                             <RowHeader title="Age" />
                             <RowContent content={props.c.age} />

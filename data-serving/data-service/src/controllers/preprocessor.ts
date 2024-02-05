@@ -44,27 +44,27 @@ export const batchUpsertDropUnchangedCases = async (
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
-    const existingCasesByCaseRefCombo = new Map(
-        (await findCasesWithCaseReferenceData(request))
-            .filter((c) => c && c.caseReference)
-            .map((c) => [
-                c.caseReference.sourceId + ':' + c.caseReference.sourceEntryId,
-                c,
-            ]),
-    );
-
-    for (let i = 0; i < request.body.cases.length; i++) {
-        const c = request.body.cases[i];
-        if (c.caseReference?.sourceId && c.caseReference?.sourceEntryId) {
-            const existingCase = existingCasesByCaseRefCombo.get(
-                c.caseReference.sourceId + ':' + c.caseReference.sourceEntryId,
-            );
-            if (existingCase !== undefined && existingCase.equalsJSON(c)) {
-                request.body.cases.splice(i, 1);
-                i--;
-            }
-        }
-    }
+    // const existingCasesByCaseRefCombo = new Map(
+    //     (await findCasesWithCaseReferenceData(request))
+    //         .filter((c) => c && c.caseReference)
+    //         .map((c) => [
+    //             c.caseReference.sourceId + ':' + c.caseReference.sourceEntryId,
+    //             c,
+    //         ]),
+    // );
+    //
+    // for (let i = 0; i < request.body.cases.length; i++) {
+    //     const c = request.body.cases[i];
+    //     if (c.caseReference?.sourceId && c.caseReference?.sourceEntryId) {
+    //         const existingCase = existingCasesByCaseRefCombo.get(
+    //             c.caseReference.sourceId + ':' + c.caseReference.sourceEntryId,
+    //         );
+    //         if (existingCase !== undefined && existingCase.equalsJSON(c)) {
+    //             request.body.cases.splice(i, 1);
+    //             i--;
+    //         }
+    //     }
+    // } TODO unmock
 
     next();
 };
@@ -75,38 +75,38 @@ export const setBatchUpsertFields = async (
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
-    // Find and map existing cases by sourceId:sourceEntryId.
-    const existingCasesByCaseRefCombo = new Map(
-        (await findCasesWithCaseReferenceData(request))
-            .filter((c) => c && c.caseReference)
-            .map((c) => [
-                c.caseReference.sourceId + ':' + c.caseReference.sourceEntryId,
-                c,
-            ]),
-    );
-
-    // TODO: Type request Cases.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    request.body.cases.forEach((c: any) => {
-        // If case is present, add uploadIds to existing list of uploadIds
-        if (
-            c.caseReference.uploadIds &&
-            c.caseReference.sourceId &&
-            c.caseReference.sourceEntryId
-        ) {
-            const existingCaseUploadIds = existingCasesByCaseRefCombo.get(
-                c.caseReference.sourceId + ':' + c.caseReference.sourceEntryId,
-            )?.caseReference?.uploadIds;
-            if (existingCaseUploadIds) {
-                c.caseReference.uploadIds = _.union(
-                    c.caseReference.uploadIds,
-                    existingCaseUploadIds,
-                );
-            }
-        }
-    });
-    // Clean up the additional metadata that falls outside the `case` entity.
-    delete request.body.curator;
+    // // Find and map existing cases by sourceId:sourceEntryId. TODO unmock
+    // const existingCasesByCaseRefCombo = new Map(
+    //     (await findCasesWithCaseReferenceData(request))
+    //         .filter((c) => c && c.caseReference)
+    //         .map((c) => [
+    //             c.caseReference.sourceId + ':' + c.caseReference.sourceEntryId,
+    //             c,
+    //         ]),
+    // );
+    //
+    // // TODO: Type request Cases.
+    // // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // request.body.cases.forEach((c: any) => {
+    //     // If case is present, add uploadIds to existing list of uploadIds
+    //     if (
+    //         c.caseReference.uploadIds &&
+    //         c.caseReference.sourceId &&
+    //         c.caseReference.sourceEntryId
+    //     ) {
+    //         const existingCaseUploadIds = existingCasesByCaseRefCombo.get(
+    //             c.caseReference.sourceId + ':' + c.caseReference.sourceEntryId,
+    //         )?.caseReference?.uploadIds;
+    //         if (existingCaseUploadIds) {
+    //             c.caseReference.uploadIds = _.union(
+    //                 c.caseReference.uploadIds,
+    //                 existingCaseUploadIds,
+    //             );
+    //         }
+    //     }
+    // });
+    // // Clean up the additional metadata that falls outside the `case` entity.
+    // delete request.body.curator;
 
     next();
 };

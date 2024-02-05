@@ -720,173 +720,174 @@ components:
                     type: string
                     enum:
                         - confirmed
+                        - probable
                         - suspected
                         - discarded
                         - omit_error
-                comment:
-                    type: string
-                caseReference:
-                    type: object
-                    properties:
-                        sourceId:
-                            type: string
-                            pattern: '^[a-f\d]{24}$'
-                        sourceUrl:
-                            type: string
-                        isGovernmentSource:
-                            type: boolean
-                        uploadIds:
-                            description: >
-                                An array of UUIDs of uploads where this case was created or updated
-                                through bulk upload or automated ingestion.
-                            type: array
-                            items:
-                                type: string
-                                pattern: '^[a-f\d]{24}$'
-                        additionalSources:
-                            type: array
-                            items:
-                                type: object
-                                properties:
-                                    sourceUrl:
-                                        type: string
-                                    isGovernmentSource:
-                                        type: boolean
-                demographics:
-                    type: object
-                    properties:
-                        gender:
-                            type: string
-                            enum: [null, male, female, other]
-                        ageRange:
-                            type: object
-                            properties:
-                                start:
-                                    type: number
-                                end:
-                                    type: number
-                        occupation:
-                            type: string
-                        healthcareWorker:
-                            type: string
-                            enum: ['Y', 'N', 'NA']
-                location:
-                    $ref: '#/components/schemas/Location'
-                events:
-                    description: >
-                        Events connected with the case
-                    type: object
-                    properties:
-                        dateEntry:
-                            $ref: '#/components/schemas/Date'
-                        dateReported:
-                            $ref: '#/components/schemas/Date'
-                        dateOnset:
-                            $ref: '#/components/schemas/Date'
-                        dateConfirmation:
-                            $ref: '#/components/schemas/Date'
-                        confirmationMethod:
-                            type: string
-                        dateOfFirstConsult:
-                            $ref: '#/components/schemas/Date'
-                        hospitalized:
-                            type: string
-                            enum: ['Y', 'N', 'NA']
-                        reasonForHospitalization:
-                            type: string
-                            enum: [monitoring, treatment, unknown]
-                        dateHospitalization:
-                            $ref: '#/components/schemas/Date'
-                        dateDischargeHospital:
-                            $ref: '#/components/schemas/Date'
-                        intensiveCare:
-                            type: string
-                            enum: ['Y', 'N', 'NA']
-                        dateAdmissionICU:
-                            $ref: '#/components/schemas/Date'
-                        dateDischargeICU:
-                            $ref: '#/components/schemas/Date'
-                        homeMonitoring:
-                            type: string
-                            enum: ['Y', 'N', 'NA']
-                        isolated:
-                            type: string
-                            enum: ['Y', 'N', 'NA']
-                        dateIsolation:
-                            $ref: '#/components/schemas/Date'
-                        outcome:
-                            type: string
-                            enum: [recovered, death]
-                        dateDeath:
-                            $ref: '#/components/schemas/Date'
-                        dateRecovered:
-                            $ref: '#/components/schemas/Date'
-                symptoms:
-                    type: string
-                preexistingConditions:
-                    type: object
-                    properties:
-                        previousInfection:
-                            type: string
-                            enum: ['Y', 'N', 'NA']
-                        coInfection:
-                            type: string
-                        preexistingCondition:
-                            type: string
-                        pregnancyStatus:
-                            type: string
-                            enum: ['Y', 'N', 'NA']
-                transmission:
-                    type: object
-                    properties:
-                        contactWithCase:
-                            type: string
-                            enum: ['Y', 'N', 'NA']
-                        contactId:
-                            type: string
-                        contactSetting:
-                            type: string
-                        contactAnimal:
-                            type: string
-                        contactComment:
-                            type: string
-                        transmission:
-                            type: string
-                travelHistory:
-                    type: object
-                    properties:
-                        travelHistory:
-                            type: string
-                            enum: ['Y', 'N', 'NA']
-                        travelHistoryEntry:
-                            $ref: '#/components/schemas/Date'
-                        travelHistoryStart:
-                            type: string
-                        travelHistoryLocation:
-                            type: string
-                        travelHistoryCountry:
-                            type: string
-                genomeSequences:
-                    type: object
-                    properties:
-                        genomicsMetadata:
-                            type: string
-                        accessionNumber:
-                            type: string
-                vaccination:
-                    type: object
-                    properties:
-                        vaccination:
-                            type: string
-                            enum: ['Y', 'N', 'NA']
-                        vaccineName:
-                            type: string
-                        vaccineDate:
-                            $ref: '#/components/schemas/Date'
-                        vaccineSideEffects:
-                            type: string
-                pathogen:
-                    type: string
+#                comment:
+#                    type: string
+#                caseReference:
+#                    type: object
+#                    properties:
+#                        sourceId:
+#                            type: string
+#                            pattern: '^[a-f\d]{24}$'
+#                        sourceUrl:
+#                            type: string
+#                        isGovernmentSource:
+#                            type: boolean
+#                        uploadIds:
+#                            description: >
+#                                An array of UUIDs of uploads where this case was created or updated
+#                                through bulk upload or automated ingestion.
+#                            type: array
+#                            items:
+#                                type: string
+#                                pattern: '^[a-f\d]{24}$'
+#                        additionalSources:
+#                            type: array
+#                            items:
+#                                type: object
+#                                properties:
+#                                    sourceUrl:
+#                                        type: string
+#                                    isGovernmentSource:
+#                                        type: boolean
+#                demographics:
+#                    type: object
+#                    properties:
+#                        gender:
+#                            type: string
+#                            enum: [null, male, female, other]
+#                        ageRange:
+#                            type: object
+#                            properties:
+#                                start:
+#                                    type: number
+#                                end:
+#                                    type: number
+#                        occupation:
+#                            type: string
+#                        healthcareWorker:
+#                            type: string
+#                            enum: ['Y', 'N', 'NA']
+#                location:
+#                    $ref: '#/components/schemas/Location'
+#                events:
+#                    description: >
+#                        Events connected with the case
+#                    type: object
+#                    properties:
+#                        dateEntry:
+#                            $ref: '#/components/schemas/Date'
+#                        dateReported:
+#                            $ref: '#/components/schemas/Date'
+#                        dateOnset:
+#                            $ref: '#/components/schemas/Date'
+#                        dateConfirmation:
+#                            $ref: '#/components/schemas/Date'
+#                        confirmationMethod:
+#                            type: string
+#                        dateOfFirstConsult:
+#                            $ref: '#/components/schemas/Date'
+#                        hospitalized:
+#                            type: string
+#                            enum: ['Y', 'N', 'NA']
+#                        reasonForHospitalization:
+#                            type: string
+#                            enum: [monitoring, treatment, unknown]
+#                        dateHospitalization:
+#                            $ref: '#/components/schemas/Date'
+#                        dateDischargeHospital:
+#                            $ref: '#/components/schemas/Date'
+#                        intensiveCare:
+#                            type: string
+#                            enum: ['Y', 'N', 'NA']
+#                        dateAdmissionICU:
+#                            $ref: '#/components/schemas/Date'
+#                        dateDischargeICU:
+#                            $ref: '#/components/schemas/Date'
+#                        homeMonitoring:
+#                            type: string
+#                            enum: ['Y', 'N', 'NA']
+#                        isolated:
+#                            type: string
+#                            enum: ['Y', 'N', 'NA']
+#                        dateIsolation:
+#                            $ref: '#/components/schemas/Date'
+#                        outcome:
+#                            type: string
+#                            enum: [recovered, death]
+#                        dateDeath:
+#                            $ref: '#/components/schemas/Date'
+#                        dateRecovered:
+#                            $ref: '#/components/schemas/Date'
+#                symptoms:
+#                    type: string
+#                preexistingConditions:
+#                    type: object
+#                    properties:
+#                        previousInfection:
+#                            type: string
+#                            enum: ['Y', 'N', 'NA']
+#                        coInfection:
+#                            type: string
+#                        preexistingCondition:
+#                            type: string
+#                        pregnancyStatus:
+#                            type: string
+#                            enum: ['Y', 'N', 'NA']
+#                transmission:
+#                    type: object
+#                    properties:
+#                        contactWithCase:
+#                            type: string
+#                            enum: ['Y', 'N', 'NA']
+#                        contactId:
+#                            type: string
+#                        contactSetting:
+#                            type: string
+#                        contactAnimal:
+#                            type: string
+#                        contactComment:
+#                            type: string
+#                        transmission:
+#                            type: string
+#                travelHistory:
+#                    type: object
+#                    properties:
+#                        travelHistory:
+#                            type: string
+#                            enum: ['Y', 'N', 'NA']
+#                        travelHistoryEntry:
+#                            $ref: '#/components/schemas/Date'
+#                        travelHistoryStart:
+#                            type: string
+#                        travelHistoryLocation:
+#                            type: string
+#                        travelHistoryCountry:
+#                            type: string
+#                genomeSequences:
+#                    type: object
+#                    properties:
+#                        genomicsMetadata:
+#                            type: string
+#                        accessionNumber:
+#                            type: string
+#                vaccination:
+#                    type: object
+#                    properties:
+#                        vaccination:
+#                            type: string
+#                            enum: ['Y', 'N', 'NA']
+#                        vaccineName:
+#                            type: string
+#                        vaccineDate:
+#                            $ref: '#/components/schemas/Date'
+#                        vaccineSideEffects:
+#                            type: string
+#                pathogen:
+#                    type: string
         CaseArray:
             type: object
             properties:
@@ -1089,18 +1090,18 @@ components:
             allOf:
                 - $ref: '#/components/schemas/Case'
             properties:
-                caseReference:
-                    required:
-                        - sourceId
-                        - sourceUrl
-                        - isGovernmentSource
+#                caseReference:
+#                    required:
+#                        - sourceId
+#                        - sourceUrl
+#                        - isGovernmentSource
                 curator:
                     $ref: '#/components/schemas/Curator'
-            required:
-                - caseReference
-                - location
-                - events
-                - curator
+#            required:
+#                - caseReference
+#                - location
+#                - events
+#                - curator
         LocationArray:
             description: A list of geo locations
             type: array

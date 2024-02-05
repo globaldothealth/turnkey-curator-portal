@@ -255,7 +255,7 @@ export interface Day0Case {
     _id?: string;
     caseStatus: CaseStatus | '';
     pathogen: string;
-    pathogenStatus: PathogenStatus | '';
+    pathogenStatus: PathogenStatus | undefined;
     age: string;
     sexAtBirth: SexAtBirth | '';
     sexAtBirthOther: string | '';
@@ -383,7 +383,7 @@ export interface Day0CaseFormValues {
     // Case Demographics
     caseStatus: CaseStatus | '';
     pathogen: string;
-    pathogenStatus: PathogenStatus | '';
+    pathogenStatus: PathogenStatus | undefined;
     age: string;
     sexAtBirth: SexAtBirth | '';
     sexAtBirthOther: string | '';

@@ -64,7 +64,7 @@ const initialValuesFromCase = (
             // Case Demographics
             pathogen,
             caseStatus: '',
-            pathogenStatus: '',
+            pathogenStatus: undefined,
             age: '',
             sexAtBirth: '',
             sexAtBirthOther: '',
