@@ -225,7 +225,7 @@ class SuggestionsTest(unittest.TestCase):
         assert response.json == self.Q3040071
 
     def test_admin2BadAdmin1ResultsInError(self):
-        response = self.client.get('/geocode/admin2?admin1WikiId=completelyWrongId`)
+        response = self.client.get('/geocode/admin2?admin1WikiId=completelyWrongId')
         assert response.status == '404 NOT FOUND'
 
     def test_admin2NoAdmin1ResultsInError(self):
@@ -238,7 +238,7 @@ class SuggestionsTest(unittest.TestCase):
         assert response.json == self.Q6142
 
     def test_admin3BadAdmin2ResultsInError(self):
-        response = self.client.get('/geocode/admin3?admin2WikiId=completelyWrongId`)
+        response = self.client.get('/geocode/admin3?admin2WikiId=completelyWrongId')
         assert response.status == '404 NOT FOUND'
 
     def test_admin3NoAdmin2ResultsInError(self):
