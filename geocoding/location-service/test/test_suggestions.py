@@ -45,4 +45,4 @@ class SuggestionsTest(unittest.TestCase):
 
     def test_seededGeocodesAreSuggested(self):
         response = self.client.get('/geocode/admin1')
-        assert response.status == '400 BAD REQUEST'
+        assert response.status == '200 OK'
