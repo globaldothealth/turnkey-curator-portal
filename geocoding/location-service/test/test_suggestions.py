@@ -16,6 +16,16 @@ class SuggestionsTest(unittest.TestCase):
             },
             'name': 'Lyon',
         }
+        self.gnq = [
+            {
+                "name": "Insular",
+                "wiki": "Q3040071"
+            },
+            {
+                "name": "Continental",
+                "wiki": "Q845368"
+            }
+       ]
 
     def test_seededGeocodesAreSuggested(self):
         self.client.post('/geocode/seed', json=self.lyon)
@@ -27,3 +37,12 @@ class SuggestionsTest(unittest.TestCase):
         response = self.client.get('/geocode/suggest?q=Lyon&limitToResolution=nopenope')
         assert response.status == '422 UNPROCESSABLE ENTITY'
         assert response.data.find(b'nopenope') != -1
+
+    def test_seededGeocodesAreSuggested(self):
+        response = self.client.get('/geocode/admin1?admin0=GNQ')
+        assert response.status == '200 OK'
+        assert response.json == self.gnq
+
+    def test_seededGeocodesAreSuggested(self):
+        response = self.client.get('/geocode/admin1')
+        assert response.status == '400 BAD REQUEST'

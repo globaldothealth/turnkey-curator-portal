@@ -1,5 +1,6 @@
 import logging
 import sys
+import json
 
 from src.app.geocoder import Geocoder
 
@@ -7,6 +8,9 @@ h = logging.StreamHandler(sys.stdout)
 logger = logging.getLogger(__name__)
 logger.addHandler(h)
 logger.setLevel(logging.INFO)
+adm1ParsedData = json.load(open('data/adm1_parsed_data.json'))
+adm2ParsedData = json.load(open('data/adm2_parsed_data.json'))
+adm3ParsedData = json.load(open('data/adm3_parsed_data.json'))
 
 class GeocodeSuggester:
     """Suggest geocoding by asking a cohort of geocoders to locate the query."""
@@ -44,3 +48,18 @@ class GeocodeSuggester:
                 return filtered_suggestions
         logger.debug(f"No suggestions for query {request['q']}")
         return []
+
+    def suggest_admin1(self, admin0):
+        if admin0 not in adm1ParsedData:
+            return None
+        return adm1ParsedData[admin0]
+
+    def suggest_admin2(self, admin1WikiId):
+        if admin1WikiId not in adm2ParsedData:
+            return None
+        return adm2ParsedData[admin1WikiId]
+
+    def suggest_admin3(self, admin2WikiId):
+        if admin2WikiId not in adm3ParsedData:
+            return None
+        return adm3ParsedData[admin2WikiId]
