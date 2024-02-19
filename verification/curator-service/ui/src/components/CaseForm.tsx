@@ -85,8 +85,11 @@ const initialValuesFromCase = (
                 countryISO3: '',
                 location: '',
                 admin1: '',
+                admin1WikiId: '',
                 admin2: '',
+                admin2WikiId: '',
                 admin3: '',
+                admin3WikiId: '',
                 geometry: {
                     latitude: undefined,
                     longitude: undefined,

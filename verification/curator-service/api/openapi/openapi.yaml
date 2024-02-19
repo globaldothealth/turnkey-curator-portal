@@ -1890,10 +1890,16 @@ components:
                     description: Name of a country
                 admin1:
                   type: string
+                admin1WikiID:
+                  type: string
                 admin2:
+                  type: string
+                admin2WikiId:
                   type: string
                 admin3:
                     type: string
+                admin3WikiId:
+                  type: string
                 location:
                     type: string
                     description: Exact location
@@ -1942,14 +1948,23 @@ components:
                   type: string
                   description: Name of the area in admin1 resolution
                   example: Lodz Voivodeship
+                admin1WikiId:
+                  type: string
+                  description: Wiki identifier of the area in admin1 resolution
                 admin2:
                   type: string
                   description: Name of the area in admin2 resolution
                   example: Lodz County
+                admin2WikiId:
+                  type: string
+                  description: Wiki identifier of the area in admin2 resolution
                 admin3:
                     type: string
                     description: Name of the area in admin3 resolution
                     example: Lodz
+                admin3WikiId:
+                  type: string
+                  description: Wiki identifier of the area in admin3 resolution
                 name:
                     type: string
                     description: >

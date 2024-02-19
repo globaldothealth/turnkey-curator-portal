@@ -81,8 +81,11 @@ export interface Location {
     countryISO3: string;
     location?: string;
     admin1?: string;
+    admin1WikiId?: string;
     admin2?: string;
+    admin2WikiId?: string;
     admin3?: string;
+    admin3WikiId?: string;
     // this variable is needed in the API in order to geocode properly
     query?: string;
     name?: string;
