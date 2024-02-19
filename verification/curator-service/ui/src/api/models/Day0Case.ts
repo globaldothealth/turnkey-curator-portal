@@ -282,8 +282,11 @@ export interface Day0CaseFormValues {
         countryISO3: string;
         location?: string;
         admin1?: string;
+        admin1WikiId?: string;
         admin2?: string;
+        admin2WikiId?: string;
         admin3?: string;
+        admin3WikiId?: string;
         geocodeLocation?: GeocodeLocation;
         query?: string;
         geometry?: Geometry;

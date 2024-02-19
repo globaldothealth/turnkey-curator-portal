@@ -408,6 +408,24 @@ async function makeApp() {
     );
     apiRouter.post('/geocode/seed', geocodeProxy.seed);
     apiRouter.post('/geocode/clear', geocodeProxy.clear);
+    apiRouter.get(
+        '/geocode/admin1',
+        authenticateByAPIKey,
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
+        geocodeProxy.admin1,
+    );
+    apiRouter.get(
+        '/geocode/admin2',
+        authenticateByAPIKey,
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
+        geocodeProxy.admin2,
+    );
+    apiRouter.get(
+        '/geocode/admin3',
+        authenticateByAPIKey,
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
+        geocodeProxy.admin3,
+    );
 
     // Forward excluded case IDs fetching to data service
     apiRouter.get('/excludedCaseIds', casesController.listExcludedCaseIds);

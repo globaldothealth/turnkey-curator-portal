@@ -1037,6 +1037,80 @@ paths:
                     $ref: '#/components/responses/200CountryNames'
                 '500':
                     $ref: '#/components/responses/500'
+    /geocode/admin1:
+        get:
+            tags: [ Suggest ]
+            summary: Suggest list of Admin1 locations for ISO-3166-1 3-letter country code.
+            operationId: countryName
+            parameters:
+                - name: admin0
+                  in: query
+                  required: true
+                  description: The ISO-3166-1 alpha 3 country code
+                  example: USA
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    $ref: '#/components/responses/200LocationAdminArray'
+                '400':
+                    $ref: '#/components/responses/400'
+                '403':
+                    $ref: '#/components/responses/403'
+                '404':
+                    $ref: '#/components/responses/404'
+                '500':
+                    $ref: '#/components/responses/500'
+
+    /geocode/admin2:
+        get:
+            tags: [ Suggest ]
+            summary: Suggest list of Admin2 locations for Admin1 location.
+            operationId: countryName
+            parameters:
+                - name: admin1WikiId
+                  in: query
+                  required: true
+                  description: The wikidata id for Admin1 location.
+                  example: CR
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    $ref: '#/components/responses/200LocationAdminArray'
+                '400':
+                    $ref: '#/components/responses/400'
+                '403':
+                    $ref: '#/components/responses/403'
+                '404':
+                    $ref: '#/components/responses/404'
+                '500':
+                    $ref: '#/components/responses/500'
+
+    /geocode/admin3:
+        get:
+            tags: [ Suggest ]
+            summary: Suggest list of Admin3 locations for Admin2 location.
+            operationId: countryName
+            parameters:
+                - name: admin2WikiId
+                  in: query
+                  required: true
+                  description: The wikidata id for Admin2 location.
+                  example: CR
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    $ref: '#/components/responses/200LocationAdminArray'
+                '400':
+                    $ref: '#/components/responses/400'
+                '403':
+                    $ref: '#/components/responses/403'
+                '404':
+                    $ref: '#/components/responses/404'
+                '500':
+                    $ref: '#/components/responses/500'
     /users:
         get:
             tags: [User]
@@ -1834,6 +1908,14 @@ components:
                         - Country
                 comment:
                     type: string
+        LocationAdmin:
+            description: Admin location with name and wiki identifier
+            type: object
+            properties:
+                name:
+                    type: string
+                wikiId:
+                    type: string
         FuzzyLocation:
             description: A geo location that can be unspecific.
             type: object
@@ -1899,6 +1981,11 @@ components:
             type: array
             items:
                 $ref: '#/components/schemas/Location'
+        LocationAdminArray:
+            description: A list of admin locations
+            type: array
+            items:
+                $ref: '#/components/schemas/LocationAdmin'
         CountryNames:
             description: A dictionary where the keys are ISO-3166-1 country codes and the values names used in Global.health for those countries
             type: object
@@ -2073,6 +2160,12 @@ components:
                 application/json:
                     schema:
                         $ref: '#/components/schemas/CountryNames'
+        '200LocationAdminArray':
+            description: OK
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/LocationAdminArray'
         '201Case':
             description: Created
             content:

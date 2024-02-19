@@ -14,7 +14,7 @@ import { makeStyles } from '@mui/styles';
 import React, { useEffect } from 'react';
 
 import { Day0CaseFormValues } from '../../api/models/Day0Case';
-import lookupTable from '../../data/lookup_table.json';
+import axios from 'axios';
 
 const styles = makeStyles(() => ({
     autocompleteField: { width: '100%' },
@@ -34,110 +34,105 @@ const styles = makeStyles(() => ({
     },
 }));
 
+type adminEntry = {
+    name: string;
+    wiki: string;
+};
+
 export default function Location(): JSX.Element {
     const countryNames = getNames('en');
     const classes = styles();
     const { values, setFieldValue, initialValues } =
         useFormikContext<Day0CaseFormValues>();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const lookupTableData: { [index: string]: any } = lookupTable;
 
     const [selectedCountry, setSelectedCountry] = React.useState<string>(
         initialValues?.location?.country || '',
     );
-    const [selectedAdmin1, setSelectedAdmin1] = React.useState<string>(
-        initialValues?.location?.admin1 || '',
+    const [admin1Entries, setAdmin1Entries] = React.useState(
+        [] as adminEntry[],
     );
-    const [selectedAdmin2, setSelectedAdmin2] = React.useState<string>(
-        initialValues?.location?.admin2 || '',
+    const [admin2Entries, setAdmin2Entries] = React.useState(
+        [] as adminEntry[],
     );
-    const [selectedAdmin3, setSelectedAdmin3] = React.useState<string>(
-        initialValues?.location?.admin3 || '',
+    const [admin3Entries, setAdmin3Entries] = React.useState(
+        [] as adminEntry[],
+    );
+    const [selectedAdmin1, setSelectedAdmin1] = React.useState<adminEntry>(
+        (initialValues?.location?.admin1 &&
+            initialValues?.location?.admin1WikiId && {
+                name: initialValues?.location?.admin1,
+                wiki: initialValues?.location?.admin1WikiId,
+            }) || { name: '', wiki: '' },
+    );
+    const [selectedAdmin2, setSelectedAdmin2] = React.useState<adminEntry>(
+        (initialValues?.location?.admin2 &&
+            initialValues?.location?.admin2WikiId && {
+                name: initialValues?.location?.admin2,
+                wiki: initialValues?.location?.admin2WikiId,
+            }) || { name: '', wiki: '' },
+    );
+    const [selectedAdmin3, setSelectedAdmin3] = React.useState<adminEntry>(
+        (initialValues?.location?.admin3 &&
+            initialValues?.location?.admin3WikiId && {
+                name: initialValues?.location?.admin3,
+                wiki: initialValues?.location?.admin3WikiId,
+            }) || { name: '', wiki: '' },
     );
 
-    const [admin1Options, setAdmin1Options] = React.useState<string[]>([]);
     const [admin1AvailableOnMap, setAdmin1AvailableOnMap] =
         React.useState<boolean>(false);
-    const [admin2Options, setAdmin2Options] = React.useState<string[]>([]);
     const [admin2AvailableOnMap, setAdmin2AvailableOnMap] =
         React.useState<boolean>(false);
-    const [admin3Options, setAdmin3Options] = React.useState<string[]>([]);
     const [admin3AvailableOnMap, setAdmin3AvailableOnMap] =
         React.useState<boolean>(false);
 
     // Update options for admin1
     useEffect(() => {
-        setAdmin1Options(
-            Object.keys(lookupTableData[values.location.countryISO3] || {}) ||
-                [],
-        );
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [values.location.countryISO3]);
-
-    // Update mapbox indicator for admin1
-    useEffect(() => {
-        if (
-            values.location.admin1 &&
-            admin1Options &&
-            admin1Options.includes(values.location.admin1)
-        ) {
-            setAdmin1AvailableOnMap(true);
-        } else {
-            setAdmin1AvailableOnMap(false);
+        if (values.location.countryISO3) {
+            axios
+                .get('/api/geocode/admin1', {
+                    params: { admin0: values.location.countryISO3 },
+                })
+                .then((response) => setAdmin1Entries(response.data));
         }
-    }, [admin1Options, values.location.admin1]);
+    }, [values.location.countryISO3]);
 
     // Update options for admin2
     useEffect(() => {
-        setAdmin2Options(
-            Object.keys(
-                lookupTableData[values.location.countryISO3]?.[
-                    values.location.admin1 || ''
-                ] || {},
-            ) || [],
-        );
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [values.location.countryISO3, values.location.admin1]);
-
-    // Update mapbox indicator for admin2
-    useEffect(() => {
-        if (
-            values.location.admin2 &&
-            admin2Options &&
-            admin2Options.includes(values.location.admin2)
-        ) {
-            setAdmin2AvailableOnMap(true);
-        } else {
-            setAdmin2AvailableOnMap(false);
+        if (values.location.admin1WikiId) {
+            axios
+                .get('/api/geocode/admin2', {
+                    params: { admin1WikiId: values.location.admin1WikiId },
+                })
+                .then((response) => setAdmin2Entries(response.data));
         }
-    }, [admin2Options, values.location.admin2]);
+    }, [values.location.admin1WikiId]);
 
     // Update options for admin3
     useEffect(() => {
-        setAdmin3Options(
-            lookupTableData[values.location.countryISO3]?.[
-                values.location.admin1 || ''
-            ]?.[values.location.admin2 || ''] || [],
-        );
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [
-        values.location.countryISO3,
-        values.location.admin1,
-        values.location.admin2,
-    ]);
+        if (values.location.admin2WikiId) {
+            axios
+                .get('/api/geocode/admin3', {
+                    params: { admin2WikiId: values.location.admin2WikiId },
+                })
+                .then((response) => setAdmin3Entries(response.data));
+        }
+    }, [values.location.admin2WikiId]);
+
+    // Update mapbox indicator for admin1
+    useEffect(() => {
+        setAdmin1AvailableOnMap(!!values.location.admin1WikiId);
+    }, [values.location.admin1WikiId]);
+
+    // Update mapbox indicator for admin2
+    useEffect(() => {
+        setAdmin2AvailableOnMap(!!values.location.admin2WikiId);
+    }, [values.location.admin2WikiId]);
 
     // Update mapbox indicator for admin3
     useEffect(() => {
-        if (
-            values.location.admin3 &&
-            admin3Options &&
-            admin3Options.includes(values.location.admin3)
-        ) {
-            setAdmin3AvailableOnMap(true);
-        } else {
-            setAdmin3AvailableOnMap(false);
-        }
-    }, [admin3Options, values.location.admin3]);
+        setAdmin3AvailableOnMap(!!values.location.admin3WikiId);
+    }, [values.location.admin3WikiId]);
 
     useEffect(() => {
         if (!values.location.geocodeLocation) return;
@@ -161,33 +156,33 @@ export default function Location(): JSX.Element {
                 values.location.admin1 ||
                 '',
         );
-        setSelectedAdmin1(
-            values.location.geocodeLocation.admin1 ||
-                values.location.admin1 ||
-                '',
-        );
+        // setSelectedAdmin1(
+        //     values.location.geocodeLocation.admin1 ||
+        //         values.location.admin1 ||
+        //         '',
+        // ); TODO unmock
         setFieldValue(
             'location.admin2',
             values.location.geocodeLocation.admin2 ||
                 values.location.admin2 ||
                 '',
         );
-        setSelectedAdmin2(
-            values.location.geocodeLocation.admin2 ||
-                values.location.admin2 ||
-                '',
-        );
+        // setSelectedAdmin2(
+        //     values.location.geocodeLocation.admin2 ||
+        //         values.location.admin2 ||
+        //         '',
+        // );
         setFieldValue(
             'location.admin3',
             values.location.geocodeLocation.admin3 ||
                 values.location.admin3 ||
                 '',
         );
-        setSelectedAdmin3(
-            values.location.geocodeLocation.admin3 ||
-                values.location.admin3 ||
-                '',
-        );
+        // setSelectedAdmin3(
+        //     values.location.geocodeLocation.admin3 ||
+        //         values.location.admin3 ||
+        //         '',
+        // );
         setFieldValue(
             'location.location',
             values.location.geocodeLocation.name ||
@@ -345,23 +340,31 @@ export default function Location(): JSX.Element {
                     <Autocomplete
                         className={classes.autocompleteField}
                         itemType="string"
-                        getOptionLabel={(option: string): string => option}
-                        options={admin1Options}
+                        getOptionLabel={(option: adminEntry): string =>
+                            option.name
+                        }
+                        options={admin1Entries}
                         value={selectedAdmin1}
                         onChange={(
                             _: unknown,
-                            newValue: string | null,
+                            newValue: adminEntry | null,
                         ): void => {
-                            setFieldValue('location.admin1', newValue);
-                            setSelectedAdmin1(newValue || '');
+                            setFieldValue('location.admin1', newValue?.name);
+                            setFieldValue(
+                                'location.admin1WikiId',
+                                newValue?.wiki,
+                            );
+                            setSelectedAdmin1(
+                                newValue || { name: '', wiki: '' },
+                            );
                         }}
                         onInputChange={(_, newInputValue, reason): void => {
                             if (reason === 'clear') {
                                 setFieldValue('location.admin1', '');
-                                setSelectedAdmin1('');
+                                // setSelectedAdmin1('');
                             } else {
                                 setFieldValue('location.admin1', newInputValue);
-                                setSelectedAdmin1(newInputValue || '');
+                                // setSelectedAdmin1(newInputValue || '');
                             }
                         }}
                         noOptionsText="No Admin 1 locations are represented on the map for the given Country"
@@ -409,7 +412,7 @@ export default function Location(): JSX.Element {
                         )}
                         renderOption={(
                             props,
-                            option: string,
+                            option: adminEntry,
                         ): React.ReactNode => {
                             return (
                                 <li {...props} className={classes.suggestion}>
@@ -425,7 +428,7 @@ export default function Location(): JSX.Element {
                                                 />
                                             </IconButton>
                                         </Tooltip>
-                                        {option}
+                                        {option.name}
                                     </Typography>
                                 </li>
                             );
@@ -437,33 +440,33 @@ export default function Location(): JSX.Element {
                     <Autocomplete
                         className={classes.autocompleteField}
                         itemType="string"
-                        getOptionLabel={(option: string): string => option}
-                        options={
-                            (values.location.countryISO3 &&
-                                Object.keys(
-                                    lookupTableData[
-                                        values.location.countryISO3
-                                    ]?.[values.location.admin1 || ''] || {},
-                                )) ||
-                            []
+                        getOptionLabel={(option: adminEntry): string =>
+                            option.name
                         }
+                        options={admin2Entries}
                         value={selectedAdmin2}
                         sx={{ width: '50%' }}
                         onChange={(
                             _: unknown,
-                            newValue: string | null,
+                            newValue: adminEntry | null,
                         ): void => {
-                            setFieldValue('location.admin2', newValue);
-                            setSelectedAdmin2(newValue || '');
+                            setFieldValue('location.admin2', newValue?.name);
+                            setFieldValue(
+                                'location.admin2WikiId',
+                                newValue?.wiki,
+                            );
+                            setSelectedAdmin2(
+                                newValue || { name: '', wiki: '' },
+                            );
                         }}
                         onInputChange={(_, newInputValue, reason): void => {
                             // setInputValue(newInputValue);
                             if (reason === 'clear') {
                                 setFieldValue('location.admin2', '');
-                                setSelectedAdmin2('');
+                                // setSelectedAdmin2('');
                             } else {
                                 setFieldValue('location.admin2', newInputValue);
-                                setSelectedAdmin2(newInputValue || '');
+                                // setSelectedAdmin2(newInputValue || '');
                             }
                         }}
                         noOptionsText="No Admin 2 locations are represented on the map for the given Admin 1 and Country"
@@ -511,7 +514,7 @@ export default function Location(): JSX.Element {
                         )}
                         renderOption={(
                             props,
-                            option: string,
+                            option: adminEntry,
                         ): React.ReactNode => {
                             return (
                                 <li {...props} className={classes.suggestion}>
@@ -527,7 +530,7 @@ export default function Location(): JSX.Element {
                                                 />
                                             </IconButton>
                                         </Tooltip>
-                                        {option}
+                                        {option.name}
                                     </Typography>
                                 </li>
                             );
@@ -538,24 +541,32 @@ export default function Location(): JSX.Element {
                     {/* Admin 3 */}
                     <Autocomplete
                         className={classes.autocompleteField}
-                        itemType="string"
-                        getOptionLabel={(option: string): string => option}
-                        options={admin3Options}
+                        // itemType="any"
+                        options={admin3Entries}
                         value={selectedAdmin3}
+                        getOptionLabel={(option: adminEntry): string =>
+                            option ? option.name : ''
+                        }
                         onChange={(
                             _: unknown,
-                            newValue: string | null,
+                            newValue: adminEntry | null,
                         ): void => {
-                            setFieldValue('location.admin3', newValue);
-                            setSelectedAdmin3(newValue || '');
+                            setFieldValue('location.admin3', newValue?.name);
+                            setFieldValue(
+                                'location.admin3WikiId',
+                                newValue?.wiki,
+                            );
+                            setSelectedAdmin3(
+                                newValue || { name: '', wiki: '' },
+                            );
                         }}
                         onInputChange={(_, newInputValue, reason): void => {
                             if (reason === 'clear') {
                                 setFieldValue('location.admin3', '');
-                                setSelectedAdmin3('');
+                                // setSelectedAdmin3('');
                             } else {
                                 setFieldValue('location.admin3', newInputValue);
-                                setSelectedAdmin3(newInputValue || '');
+                                // setSelectedAdmin3(newInputValue || '');
                             }
                         }}
                         noOptionsText="No Admin 3 are represented on the map for the given Admin 2, Admin 1 and Country"
@@ -603,7 +614,7 @@ export default function Location(): JSX.Element {
                         )}
                         renderOption={(
                             props,
-                            option: string,
+                            option: adminEntry,
                         ): React.ReactNode => {
                             return (
                                 <li {...props} className={classes.suggestion}>
@@ -619,7 +630,7 @@ export default function Location(): JSX.Element {
                                                 />
                                             </IconButton>
                                         </Tooltip>
-                                        {option}
+                                        {option.name}
                                     </Typography>
                                 </li>
                             );
