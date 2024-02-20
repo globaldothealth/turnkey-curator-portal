@@ -212,7 +212,7 @@ class SuggestionsTest(unittest.TestCase):
         assert response.json == self.gnq
 
     def test_admin1BadAdmin0ResultsInError(self):
-        response = self.client.get('/geocode/admin1?admin0=completelyWrongId')
+        response = self.client.get('/geocode/admin1?admin0=YYY')
         assert response.status == '404 NOT FOUND'
 
     def test_admin1NoAdmin0ResultsInError(self):
@@ -220,7 +220,7 @@ class SuggestionsTest(unittest.TestCase):
         assert response.status == '400 BAD REQUEST'
 
     def test_admin2AreSuggested(self):
-        response = self.client.get('/geocode/admin1?admin1WikiId=Q3040071')
+        response = self.client.get('/geocode/admin2?admin1WikiId=Q3040071')
         assert response.status == '200 OK'
         assert response.json == self.Q3040071
 
