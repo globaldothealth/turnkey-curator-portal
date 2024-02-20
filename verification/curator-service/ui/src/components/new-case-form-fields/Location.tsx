@@ -121,6 +121,7 @@ export default function Location(): JSX.Element {
                 setSelectedAdmin1(foundAdmin1Entry);
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [values.location.countryISO3, admin1Entries]);
 
     useEffect(() => {
@@ -177,6 +178,7 @@ export default function Location(): JSX.Element {
                 wiki: '',
             });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [values.location.admin1WikiId, values.location.admin1, admin2Entries]);
 
     useEffect(() => {
@@ -233,6 +235,7 @@ export default function Location(): JSX.Element {
                 wiki: '',
             });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [values.location.admin2WikiId, values.location.admin2, admin3Entries]);
 
     useEffect(() => {
@@ -254,6 +257,7 @@ export default function Location(): JSX.Element {
                 wiki: '',
             });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [values.location.admin3WikiId, values.location.admin3]);
 
     useEffect(() => {
