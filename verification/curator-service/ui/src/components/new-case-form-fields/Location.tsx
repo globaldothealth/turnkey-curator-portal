@@ -107,8 +107,7 @@ export default function Location(): JSX.Element {
         } else {
             if (admin1Entries === null) return;
             const foundAdmin1Entry = admin1Entries?.find(
-                (admin1Entry) =>
-                    admin1Entry.wiki === values.location.admin1WikiId,
+                (admin1Entry) => admin1Entry.name === values.location.admin1,
             );
             if (!foundAdmin1Entry) {
                 setFieldValue('location.admin1WikiId', '');
@@ -135,9 +134,6 @@ export default function Location(): JSX.Element {
         } else {
             setAdmin2Entries(null);
         }
-
-        // Update mapbox indicator for admin1
-        setAdmin1AvailableOnMap(!!values.location.admin1WikiId);
     }, [values.location.admin1WikiId]);
 
     useEffect(() => {
@@ -178,6 +174,10 @@ export default function Location(): JSX.Element {
                 wiki: '',
             });
         }
+
+        // Update mapbox indicator for admin1
+        setAdmin1AvailableOnMap(!!values.location.admin1WikiId);
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [values.location.admin1WikiId, values.location.admin1, admin2Entries]);
 
@@ -192,9 +192,6 @@ export default function Location(): JSX.Element {
         } else {
             setAdmin3Entries(null);
         }
-
-        // Update mapbox indicator for admin2
-        setAdmin2AvailableOnMap(!!values.location.admin2WikiId);
     }, [values.location.admin2WikiId]);
 
     useEffect(() => {
@@ -235,13 +232,14 @@ export default function Location(): JSX.Element {
                 wiki: '',
             });
         }
+
+        // Update mapbox indicator for admin2
+        setAdmin2AvailableOnMap(!!values.location.admin2WikiId);
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [values.location.admin2WikiId, values.location.admin2, admin3Entries]);
 
     useEffect(() => {
-        // Update mapbox indicator for admin3
-        setAdmin3AvailableOnMap(!!values.location.admin3WikiId);
-
         // Update mapbox wiki for admin3
         const matchingAdmin3Entry: adminEntry | undefined = admin3Entries?.find(
             (admin3Entry: adminEntry) =>
@@ -257,6 +255,10 @@ export default function Location(): JSX.Element {
                 wiki: '',
             });
         }
+
+        // Update mapbox indicator for admin3
+        setAdmin3AvailableOnMap(!!values.location.admin3WikiId);
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [values.location.admin3WikiId, values.location.admin3]);
 
