@@ -140,6 +140,7 @@ export default function Location(): JSX.Element {
     }, [values.location.admin1WikiId]);
 
     useEffect(() => {
+        // Update mapbox wiki for admin2
         if (!values.location.admin1WikiId) {
             setAdmin2Entries(null);
             setSelectedAdmin2({ name: values.location.admin2 || '', wiki: '' });
@@ -160,7 +161,23 @@ export default function Location(): JSX.Element {
                 setSelectedAdmin2(foundAdmin2Entry);
             }
         }
-    }, [values.location.admin1WikiId, admin2Entries]);
+
+        // Update mapbox wiki for admin1
+        const matchingAdmin1Entry: adminEntry | undefined = admin1Entries?.find(
+            (admin1Entry: adminEntry) =>
+                admin1Entry.name === values.location.admin1,
+        );
+        if (matchingAdmin1Entry) {
+            setFieldValue('location.admin1WikiId', matchingAdmin1Entry.wiki);
+            setSelectedAdmin1(matchingAdmin1Entry);
+        } else {
+            setFieldValue('location.admin1WikiId', '');
+            setSelectedAdmin1({
+                name: values.location.admin1 || '',
+                wiki: '',
+            });
+        }
+    }, [values.location.admin1WikiId, values.location.admin1, admin2Entries]);
 
     useEffect(() => {
         // Update options for admin3
@@ -179,6 +196,7 @@ export default function Location(): JSX.Element {
     }, [values.location.admin2WikiId]);
 
     useEffect(() => {
+        // Update mapbox wiki for admin3
         if (!values.location.admin2WikiId) {
             setAdmin3Entries(null);
             setSelectedAdmin3({ name: values.location.admin3 || '', wiki: '' });
@@ -199,12 +217,44 @@ export default function Location(): JSX.Element {
                 setSelectedAdmin3(foundAdmin3Entry);
             }
         }
-    }, [values.location.admin2WikiId, admin3Entries]);
 
-    // Update mapbox indicator for admin3
+        // Update mapbox wiki for admin2
+        const matchingAdmin2Entry: adminEntry | undefined = admin2Entries?.find(
+            (admin2Entry: adminEntry) =>
+                admin2Entry.name === values.location.admin2,
+        );
+        if (matchingAdmin2Entry) {
+            setFieldValue('location.admin2WikiId', matchingAdmin2Entry.wiki);
+            setSelectedAdmin2(matchingAdmin2Entry);
+        } else {
+            setFieldValue('location.admin2WikiId', '');
+            setSelectedAdmin2({
+                name: values.location.admin2 || '',
+                wiki: '',
+            });
+        }
+    }, [values.location.admin2WikiId, values.location.admin2, admin3Entries]);
+
     useEffect(() => {
+        // Update mapbox indicator for admin3
         setAdmin3AvailableOnMap(!!values.location.admin3WikiId);
-    }, [values.location.admin3WikiId]);
+
+        // Update mapbox wiki for admin3
+        const matchingAdmin3Entry: adminEntry | undefined = admin3Entries?.find(
+            (admin3Entry: adminEntry) =>
+                admin3Entry.name === values.location.admin3,
+        );
+        if (matchingAdmin3Entry) {
+            setFieldValue('location.admin3WikiId', matchingAdmin3Entry.wiki);
+            setSelectedAdmin3(matchingAdmin3Entry);
+        } else {
+            setFieldValue('location.admin3WikiId', '');
+            setSelectedAdmin3({
+                name: values.location.admin3 || '',
+                wiki: '',
+            });
+        }
+    }, [values.location.admin3WikiId, values.location.admin3]);
 
     useEffect(() => {
         if (!values.location.geocodeLocation) return;
@@ -227,33 +277,39 @@ export default function Location(): JSX.Element {
                 values.location.admin1 ||
                 '',
         );
-        // setSelectedAdmin1(
-        //     values.location.geocodeLocation.admin1 ||
-        //         values.location.admin1 ||
-        //         '',
-        // ); TODO unmock
+        setSelectedAdmin1({
+            name:
+                values.location.geocodeLocation.admin1 ||
+                values.location.admin1 ||
+                '',
+            wiki: '',
+        });
         setFieldValue(
             'location.admin2',
             values.location.geocodeLocation.admin2 ||
                 values.location.admin2 ||
                 '',
         );
-        // setSelectedAdmin2(
-        //     values.location.geocodeLocation.admin2 ||
-        //         values.location.admin2 ||
-        //         '',
-        // );
+        setSelectedAdmin2({
+            name:
+                values.location.geocodeLocation.admin2 ||
+                values.location.admin2 ||
+                '',
+            wiki: '',
+        });
         setFieldValue(
             'location.admin3',
             values.location.geocodeLocation.admin3 ||
                 values.location.admin3 ||
                 '',
         );
-        // setSelectedAdmin3(
-        //     values.location.geocodeLocation.admin3 ||
-        //         values.location.admin3 ||
-        //         '',
-        // );
+        setSelectedAdmin3({
+            name:
+                values.location.geocodeLocation.admin3 ||
+                values.location.admin3 ||
+                '',
+            wiki: '',
+        });
         setFieldValue(
             'location.location',
             values.location.geocodeLocation.name ||
@@ -441,25 +497,6 @@ export default function Location(): JSX.Element {
                                 setSelectedAdmin1({ name: '', wiki: '' });
                             } else {
                                 setFieldValue('location.admin1', newInputValue);
-                                const matchingAdmin1Entry:
-                                    | adminEntry
-                                    | undefined = admin1Entries?.find(
-                                    (admin1Entry: adminEntry) =>
-                                        admin1Entry.name === newInputValue,
-                                );
-                                if (matchingAdmin1Entry) {
-                                    setFieldValue(
-                                        'location.admin1WikiId',
-                                        matchingAdmin1Entry.wiki,
-                                    );
-                                    setSelectedAdmin1(matchingAdmin1Entry);
-                                } else {
-                                    setFieldValue('location.admin1WikiId', '');
-                                    setSelectedAdmin1({
-                                        name: newInputValue || '',
-                                        wiki: '',
-                                    });
-                                }
                             }
                         }}
                         noOptionsText="No Admin 1 locations are represented on the map for the given Country"
@@ -563,25 +600,6 @@ export default function Location(): JSX.Element {
                                 setSelectedAdmin2({ name: '', wiki: '' });
                             } else {
                                 setFieldValue('location.admin2', newInputValue);
-                                const matchingAdmin2Entry:
-                                    | adminEntry
-                                    | undefined = admin2Entries?.find(
-                                    (admin2Entry: adminEntry) =>
-                                        admin2Entry.name === newInputValue,
-                                );
-                                if (matchingAdmin2Entry) {
-                                    setFieldValue(
-                                        'location.admin2WikiId',
-                                        matchingAdmin2Entry.wiki,
-                                    );
-                                    setSelectedAdmin2(matchingAdmin2Entry);
-                                } else {
-                                    setFieldValue('location.admin2WikiId', '');
-                                    setSelectedAdmin2({
-                                        name: newInputValue || '',
-                                        wiki: '',
-                                    });
-                                }
                             }
                         }}
                         noOptionsText="No Admin 2 locations are represented on the map for the given Admin 1 and Country"
@@ -683,25 +701,6 @@ export default function Location(): JSX.Element {
                                 setSelectedAdmin3({ name: '', wiki: '' });
                             } else {
                                 setFieldValue('location.admin3', newInputValue);
-                                const matchingAdmin3Entry:
-                                    | adminEntry
-                                    | undefined = admin3Entries?.find(
-                                    (admin3Entry: adminEntry) =>
-                                        admin3Entry.name === newInputValue,
-                                );
-                                if (matchingAdmin3Entry) {
-                                    setFieldValue(
-                                        'location.admin3WikiId',
-                                        matchingAdmin3Entry.wiki,
-                                    );
-                                    setSelectedAdmin3(matchingAdmin3Entry);
-                                } else {
-                                    setFieldValue('location.admin3WikiId', '');
-                                    setSelectedAdmin3({
-                                        name: newInputValue || '',
-                                        wiki: '',
-                                    });
-                                }
                             }
                         }}
                         noOptionsText="No Admin 3 are represented on the map for the given Admin 2, Admin 1 and Country"
