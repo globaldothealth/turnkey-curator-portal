@@ -209,39 +209,39 @@ class SuggestionsTest(unittest.TestCase):
 
     def test_admin1AreSuggested(self):
         response = self.client.get('/geocode/admin1?admin0=GNQ')
-        assert response.status == '200 OK'
+        assert response.status == status.HTTP_200_OK
         assert response.json == self.gnq
 
     def test_admin1BadAdmin0ResultsInError(self):
         response = self.client.get('/geocode/admin1?admin0=YYY')
-        assert response.status == '404 NOT FOUND'
+        assert response.status == status.HTTP_404_NOT_FOUND
 
     def test_admin1NoAdmin0ResultsInError(self):
         response = self.client.get('/geocode/admin1')
-        assert response.status == '400 BAD REQUEST'
+        assert response.status == status.HTTP_400_BAD_REQUEST
 
     def test_admin2AreSuggested(self):
         response = self.client.get('/geocode/admin2?admin1WikiId=Q3040071')
-        assert response.status == '200 OK'
+        assert response.status == status.HTTP_200_OK
         assert response.json == self.Q3040071
 
     def test_admin2BadAdmin1ResultsInError(self):
         response = self.client.get('/geocode/admin2?admin1WikiId=completelyWrongId')
-        assert response.status == '404 NOT FOUND'
+        assert response.status == status.HTTP_404_NOT_FOUND
 
     def test_admin2NoAdmin1ResultsInError(self):
         response = self.client.get('/geocode/admin2')
-        assert response.status == '400 BAD REQUEST'
+        assert response.status == status.HTTP_400_BAD_REQUEST
 
     def test_admin3AreSuggested(self):
         response = self.client.get('/geocode/admin3?admin2WikiId=Q6142')
-        assert response.status == '200 OK'
+        assert response.status == status.HTTP_200_OK
         assert response.json == self.Q6142
 
     def test_admin3BadAdmin2ResultsInError(self):
         response = self.client.get('/geocode/admin3?admin2WikiId=completelyWrongId')
-        assert response.status == '404 NOT FOUND'
+        assert response.status == status.HTTP_404_NOT_FOUND
 
     def test_admin3NoAdmin2ResultsInError(self):
         response = self.client.get('/geocode/admin3')
-        assert response.status == '400 BAD REQUEST'
+        assert response.status == status.HTTP_400_BAD_REQUEST

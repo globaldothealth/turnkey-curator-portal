@@ -4,6 +4,7 @@ import iso3166
 import logging
 import pymongo
 from flask import Blueprint, Flask, jsonify, request
+from flask_api import status
 from os import environ
 
 from src.app.admins_fetcher import AdminsFetcher
@@ -131,53 +132,53 @@ def country_name():
     code = request.args.get('c', type=str)
     if not code:
         logger.warning(f"No country code in request {request}")
-        return "No country code", 400
+        return "No country code", status.HTTP_400_BAD_REQUEST
     if len(code) != 2:
         logger.warning(f"Country code {code} is not two characters long in request {request}")
-        return "Bad ISO-3166-1 country code", 400
+        return "Bad ISO-3166-1 country code", status.HTTP_400_BAD_REQUEST
     country = iso3166.countries_by_alpha2.get(code)
     if country is None:
-        return "Unknown country code", 404
-    return country.name, 200
+        return "Unknown country code", status.HTTP_404_NOT_FOUND
+    return country.name, status.HTTP_200_OK
 
 @app.route("/geocode/admin1")
 def suggest_admin1():
     admin0 = request.args.get('admin0', type=str)
     if not admin0:
         logger.warning(f"No country code in request args {request.args}")
-        return "No country code", 400
+        return "No country code", status.HTTP_400_BAD_REQUEST
     if len(admin0) != 3:
         logger.warning(f"Country code {admin0} is not three characters long in request {request}")
-        return "Bad ISO-3166-1 alpha-3 country code", 400
+        return "Bad ISO-3166-1 alpha-3 country code", status.HTTP_400_BAD_REQUEST
     admin1Suggestions = suggester.suggest_admin1(admin0)
     if admin1Suggestions is None:
         logger.warning(f"Unknown ISO-3166-1 alpha-3 country code {admin0} from request {request}")
-        return f"Unknown ISO-3166-1 alpha-3 country code {admin0}", 404
-    return jsonify(admin1Suggestions), 200
+        return f"Unknown ISO-3166-1 alpha-3 country code {admin0}", status.HTTP_404_NOT_FOUND
+    return jsonify(admin1Suggestions), status.HTTP_200_OK
 
 @app.route("/geocode/admin2")
 def suggest_admin2():
     admin1WikiId = request.args.get('admin1WikiId', type=str)
     if not admin1WikiId:
         logger.warning(f"No admin1WikiId in request {request}")
-        return "No admin1WikiId in request", 400
+        return "No admin1WikiId in request", status.HTTP_400_BAD_REQUEST
     admin2Suggestions = suggester.suggest_admin2(admin1WikiId)
     if admin2Suggestions is None:
         logger.warning(f"Unknown admin1WikiId {admin1WikiId} from request {request}")
-        return f"Unknown admin1WikiId {admin1WikiId}", 404
-    return jsonify(admin2Suggestions), 200
+        return f"Unknown admin1WikiId {admin1WikiId}", status.HTTP_404_NOT_FOUND
+    return jsonify(admin2Suggestions), status.HTTP_200_OK
 
 @app.route("/geocode/admin3")
 def suggest_admin3():
     admin2WikiId = request.args.get('admin2WikiId', type=str)
     if not admin2WikiId:
         logger.warning(f"No admin2WikiId in request {request}")
-        return "No admin2WikiId in request", 400
+        return "No admin2WikiId in request", status.HTTP_400_BAD_REQUEST
     admin3Suggestions = suggester.suggest_admin3(admin2WikiId)
     if admin3Suggestions is None:
         logger.warning(f"Unknown admin2WikiId {admin2WikiId} from request {request}")
-        return f"Unknown admin2WikiId {admin2WikiId}", 404
-    return jsonify(admin3Suggestions), 200
+        return f"Unknown admin2WikiId {admin2WikiId}", status.HTTP_404_NOT_FOUND
+    return jsonify(admin3Suggestions), status.HTTP_200_OK
 
 
 if __name__ == '__main__':
