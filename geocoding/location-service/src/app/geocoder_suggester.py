@@ -50,16 +50,10 @@ class GeocodeSuggester:
         return []
 
     def suggest_admin1(self, admin0):
-        if admin0 not in adm1ParsedData:
-            return None
-        return adm1ParsedData[admin0]
+        return adm1ParsedData.get(admin0)
 
     def suggest_admin2(self, admin1WikiId):
-        if admin1WikiId not in adm2ParsedData:
-            return None
-        return adm2ParsedData[admin1WikiId]
+        return adm2ParsedData.get(admin1WikiId)
 
     def suggest_admin3(self, admin2WikiId):
-        if admin2WikiId not in adm3ParsedData:
-            return None
-        return adm3ParsedData[admin2WikiId]
+        return adm3ParsedData.get(admin2WikiId)

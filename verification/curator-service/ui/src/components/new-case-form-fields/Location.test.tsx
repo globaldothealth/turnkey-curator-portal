@@ -25,8 +25,9 @@ it('shows location when passed location information', async () => {
             </Form>
         </Formik>,
     );
-    console.log(screen.debug());
-    expect(screen.getByDisplayValue(/United States of America/i)).toBeInTheDocument();
+    expect(
+        screen.getByDisplayValue(/United States of America/i),
+    ).toBeInTheDocument();
     expect(screen.getByDisplayValue(/Florida/i)).toBeInTheDocument();
     expect(screen.getByDisplayValue(/Collier County/i)).toBeInTheDocument();
     expect(screen.getByDisplayValue(/Chicago/i)).toBeInTheDocument();
