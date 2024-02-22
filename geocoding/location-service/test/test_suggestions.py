@@ -1,5 +1,6 @@
 import unittest
 from src.app import main
+from flask_api import status
 
 
 class SuggestionsTest(unittest.TestCase):
@@ -198,7 +199,7 @@ class SuggestionsTest(unittest.TestCase):
     def test_seededGeocodesAreSuggested(self):
         self.client.post('/geocode/seed', json=self.lyon)
         response = self.client.get('/geocode/suggest?q=Lyon&limitToResolution=Country,Admin1')
-        assert response.status == '200 OK'
+        assert response.status == status.HTTP_200_OK
         assert response.json == [self.lyon]
 
     def test_badResolutionLimitsResultInError(self):
