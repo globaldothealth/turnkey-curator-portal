@@ -4,7 +4,6 @@ import iso3166
 import logging
 import pymongo
 from flask import Blueprint, Flask, jsonify, request
-from flask_api import status
 from os import environ
 
 from src.app.admins_fetcher import AdminsFetcher

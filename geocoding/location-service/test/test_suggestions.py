@@ -199,49 +199,49 @@ class SuggestionsTest(unittest.TestCase):
     def test_seededGeocodesAreSuggested(self):
         self.client.post('/geocode/seed', json=self.lyon)
         response = self.client.get('/geocode/suggest?q=Lyon&limitToResolution=Country,Admin1')
-        assert response.status == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_200_OK
         assert response.json == [self.lyon]
 
     def test_badResolutionLimitsResultInError(self):
         response = self.client.get('/geocode/suggest?q=Lyon&limitToResolution=nopenope')
-        assert response.status == '422 UNPROCESSABLE ENTITY'
+        assert response.status == '422 UNPROCESSABLE ENTITY' # flask_api does not have a status code 422
         assert response.data.find(b'nopenope') != -1
 
     def test_admin1AreSuggested(self):
         response = self.client.get('/geocode/admin1?admin0=GNQ')
-        assert response.status == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_200_OK
         assert response.json == self.gnq
 
     def test_admin1BadAdmin0ResultsInError(self):
         response = self.client.get('/geocode/admin1?admin0=YYY')
-        assert response.status == status.HTTP_404_NOT_FOUND
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_admin1NoAdmin0ResultsInError(self):
         response = self.client.get('/geocode/admin1')
-        assert response.status == status.HTTP_400_BAD_REQUEST
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_admin2AreSuggested(self):
         response = self.client.get('/geocode/admin2?admin1WikiId=Q3040071')
-        assert response.status == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_200_OK
         assert response.json == self.Q3040071
 
     def test_admin2BadAdmin1ResultsInError(self):
         response = self.client.get('/geocode/admin2?admin1WikiId=completelyWrongId')
-        assert response.status == status.HTTP_404_NOT_FOUND
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_admin2NoAdmin1ResultsInError(self):
         response = self.client.get('/geocode/admin2')
-        assert response.status == status.HTTP_400_BAD_REQUEST
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_admin3AreSuggested(self):
         response = self.client.get('/geocode/admin3?admin2WikiId=Q6142')
-        assert response.status == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_200_OK
         assert response.json == self.Q6142
 
     def test_admin3BadAdmin2ResultsInError(self):
         response = self.client.get('/geocode/admin3?admin2WikiId=completelyWrongId')
-        assert response.status == status.HTTP_404_NOT_FOUND
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_admin3NoAdmin2ResultsInError(self):
         response = self.client.get('/geocode/admin3')
-        assert response.status == status.HTTP_400_BAD_REQUEST
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
