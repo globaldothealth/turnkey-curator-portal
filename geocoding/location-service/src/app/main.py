@@ -144,7 +144,7 @@ def country_name():
 def suggest_admin1():
     admin0 = request.args.get('admin0', type=str)
     if not admin0:
-        logger.warning(f"No country code in request args {args}")
+        logger.warning(f"No country code in request args {request.args}")
         return "No country code", 400
     if len(admin0) != 3:
         logger.warning(f"Country code {admin0} is not three characters long in request {request}")
