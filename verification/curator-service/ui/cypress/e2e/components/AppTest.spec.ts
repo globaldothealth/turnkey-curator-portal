@@ -230,7 +230,7 @@ describe('App', function () {
         cy.contains('Germany').should('not.exist');
     });
 
-    it.only('allows the user to search by last modified by', function () {
+    it('allows the user to search by last modified by', function () {
         cy.login({
             roles: ['curator'],
             name: 'testName',

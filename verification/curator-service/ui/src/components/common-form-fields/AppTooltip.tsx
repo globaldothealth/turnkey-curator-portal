@@ -2,10 +2,6 @@ import Tooltip from '@mui/material/Tooltip';
 import { Theme } from '@mui/material/styles';
 import { withStyles } from '@mui/styles';
 
-interface Widetooltip {
-    maxwidth: 'auto' | '40vw';
-}
-
 export const AppTooltip = withStyles((theme: Theme) => ({
     arrow: {
         color: theme.palette.primary.main,
@@ -18,7 +14,7 @@ export const AppTooltip = withStyles((theme: Theme) => ({
         fontWeight: 'normal',
         padding: '1rem',
 
-        maxWidth: (props: Widetooltip) => props.maxwidth,
+        maxWidth: 'fit-content',
         '& button': {
             background: 'unset',
             border: 'none',

@@ -48,7 +48,7 @@ interface FiltersModalProps {
 export interface FilterFormValues {
     gender?: Gender;
     country?: string;
-    place?: string;
+    admin3?: string;
     location?: string;
     occupation?: string;
     outcome?: Outcome;
@@ -59,8 +59,8 @@ export interface FilterFormValues {
     dateModifiedFrom?: string;
     dateModifiedTo?: string;
     sourceUrl?: string;
-    region?: string;
-    district?: string;
+    admin1?: string;
+    admin2?: string;
 }
 
 interface FilterFormErrors {
@@ -295,14 +295,14 @@ export default function FiltersDialog({
                             className={classes.textField}
                             size={inputSize}
                         >
-                            <InputLabel htmlFor="place">Place</InputLabel>
+                            <InputLabel htmlFor="admin3">Admin3</InputLabel>
                             <OutlinedInput
-                                autoFocus={activeFilterInput === 'place'}
-                                id="place"
+                                autoFocus={activeFilterInput === 'admin3'}
+                                id="admin3"
                                 type="text"
-                                label={FilterLabels['place']}
-                                name="place"
-                                value={formik.values.place || ''}
+                                label={FilterLabels['admin3']}
+                                name="admin3"
+                                value={formik.values.admin3 || ''}
                                 onChange={formik.handleChange}
                             />
                         </FormControl>

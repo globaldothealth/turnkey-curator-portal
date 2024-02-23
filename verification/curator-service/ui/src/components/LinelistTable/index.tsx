@@ -120,9 +120,9 @@ const LinelistTable = () => {
                     '',
                 nameCountry(data.location.countryISO3, data.location.country) ||
                     '-',
-                data.location.region || '-',
-                data.location.district || '-',
-                data.location.place || '-',
+                data.location.admin1 || '-',
+                data.location.admin2 || '-',
+                data.location.admin3 || '-',
                 data.location.location || '-',
                 renderDate(data.events.dateEntry) || '-',
                 renderDate(data.events.dateReported) || '-',
@@ -424,18 +424,6 @@ const LinelistTable = () => {
                                             sx={{ minWidth: 100 }}
                                         >
                                             {row.country}
-                                        </TableCell>
-                                        <TableCell
-                                            align="left"
-                                            sx={{ minWidth: 100 }}
-                                        >
-                                            {row.place}
-                                        </TableCell>
-                                        <TableCell
-                                            align="left"
-                                            sx={{ minWidth: 100 }}
-                                        >
-                                            {row.location}
                                         </TableCell>
                                         <TableCell
                                             align="left"

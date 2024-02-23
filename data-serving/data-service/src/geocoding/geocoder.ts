@@ -11,13 +11,13 @@ export interface GeocodeResult {
     administrativeAreaLevel2?: string;
     // Third administrative division (cities usually).
     administrativeAreaLevel3?: string;
-    // Region, equivalent to mapbox admin1.
-    region: string | undefined;
-    // District, equivalent to mapbox admin2.
-    district: string | undefined;
-    // A precise location, such as an establishment or POI, equivalent to mapbox admin3.
-    place: string | undefined;
-    // Human readable place name.
+    // Area in admin1 resolution.
+    admin1: string | undefined;
+    // Area in admin2 resolution.
+    admin2: string | undefined;
+    // Area in admin3 resolution.
+    admin3: string | undefined;
+    // Human-readable place name.
     name: string;
     // How granular the geocode is.
     geoResolution: Resolution;

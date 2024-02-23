@@ -83,7 +83,9 @@ describe('Case', () => {
             'location.geometry.latitude',
             'location.geometry.longitude',
             'location.name',
-            'location.place',
+            'location.admin1',
+            'location.admin2',
+            'location.admin3',
             'location.query',
             'pathogens',
             'preexistingConditions.hasPreexistingConditions',
@@ -159,7 +161,9 @@ describe('Case', () => {
             'location.geometry.latitude',
             'location.geometry.longitude',
             'location.name',
-            'location.place',
+            'location.admin1',
+            'location.admin2',
+            'location.admin3',
             'location.query',
             'pathogens',
             'preexistingConditions.hasPreexistingConditions',
@@ -252,9 +256,9 @@ describe('Case', () => {
         expect(denormalizedCase['events.dateRecovered']).toEqual('');
 
         expect(denormalizedCase['location.country']).toEqual('');
-        expect(denormalizedCase['location.countryISO3']).toEqual('');
-        expect(denormalizedCase['location.location']).toEqual('');
-        expect(denormalizedCase['location.place']).toEqual('');
+        expect(denormalizedCase['location.admin1']).toEqual('');
+        expect(denormalizedCase['location.admin2']).toEqual('');
+        expect(denormalizedCase['location.admin3']).toEqual('');
         expect(denormalizedCase['location.geoResolution']).toEqual('');
         expect(denormalizedCase['location.geometry.latitude']).toEqual('');
         expect(denormalizedCase['location.geometry.longitude']).toEqual('');
@@ -446,14 +450,16 @@ describe('Case', () => {
     });
     it('denormalizes location fields', async () => {
         const locationDoc = {
-            country: 'Georgia',
-            countryISO3: 'GEO',
-            name: 'Tbilisi',
-            place: 'Tibilisi',
+            country: 'Germany',
+            countryISO3: 'DEU',
+            name: 'Berlin',
+            admin1: 'Berlin',
+            admin2: 'SK Berlin',
+            admin3: 'Berlin',
             geoResolution: 'Point',
             geometry: {
-                latitude: 41.7151,
-                longitude: 44.8271,
+                latitude: 52.52,
+                longitude: 13.405,
             },
         } as LocationDocument;
 
@@ -479,8 +485,12 @@ describe('Case', () => {
         expect(denormalizedCase['location.country']).toEqual(
             locationDoc.country,
         );
-        expect(denormalizedCase['location.countryISO3']).toEqual('GEO');
-        expect(denormalizedCase['location.place']).toEqual(locationDoc.place);
+        expect(denormalizedCase['location.countryISO3']).toEqual(
+            locationDoc.countryISO3,
+        );
+        expect(denormalizedCase['location.admin1']).toEqual(locationDoc.admin1);
+        expect(denormalizedCase['location.admin2']).toEqual(locationDoc.admin2);
+        expect(denormalizedCase['location.admin3']).toEqual(locationDoc.admin3);
         expect(denormalizedCase['location.geoResolution']).toEqual(
             locationDoc.geoResolution,
         );

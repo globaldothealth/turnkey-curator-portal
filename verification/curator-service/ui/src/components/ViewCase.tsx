@@ -522,14 +522,14 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                                 }
                             />
 
-                            <RowHeader title="Region" />
-                            <RowContent content={props.c.location.region} />
+                            <RowHeader title="Admin1" />
+                            <RowContent content={props.c.location.admin1} />
 
-                            <RowHeader title="District" />
-                            <RowContent content={props.c.location.district} />
+                            <RowHeader title="Admin2" />
+                            <RowContent content={props.c.location.admin2} />
 
-                            <RowHeader title="Place" />
-                            <RowContent content={props.c.location.place} />
+                            <RowHeader title="Admin3" />
+                            <RowContent content={props.c.location.admin3} />
 
                             <RowHeader title="Location" />
                             <RowContent content={props.c.location.location} />
