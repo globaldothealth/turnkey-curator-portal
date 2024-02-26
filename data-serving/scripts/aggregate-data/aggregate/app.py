@@ -14,13 +14,10 @@ import pymongo
 import iso3166
 
 
-# S3 endpoint is allowed to be None (i.e. connect to default S3 endpoint),
-# it's also allowed to be not-None (to use localstack or another test double).
-S3 = boto3.client("s3", endpoint_url=os.environ.get("S3_ENDPOINT"))
-today = datetime.datetime.now().date()
 
 
-def upload(data: str, bucket: str, keys: list[str]):
+
+def upload(S3, data: str, bucket: str, keys: list[str]):
     """Upload data to S3
 
     data -- Data to upload as a string
@@ -99,8 +96,12 @@ def aggregate_adm_3(cases, adm3_map_data):
     adm3_counts = list(cases.aggregate([{"$match": {"caseStatus": "confirmed"}},{"$group": {"_id": "$location.admin3WikiId", "count": {"$sum": 1}}}]))
     return list(map(lambda e: map_adm_3(e, adm3_map_data), adm3_counts))
 
+def main():
+    # S3 endpoint is allowed to be None (i.e. connect to default S3 endpoint),
+    # it's also allowed to be not-None (to use localstack or another test double).
+    S3 = boto3.client("s3", endpoint_url=os.environ.get("S3_ENDPOINT"))
+    today = datetime.datetime.now().date()
 
-if __name__ == "__main__":
     setup_logger()
     logging.info("WORKING PYTHON")
     if envs := {"CONN", "S3_BUCKET"} - set(os.environ):
@@ -122,6 +123,7 @@ if __name__ == "__main__":
     except Exception as e:
         logging.error(f"Failed to fetch map data from S3: {e}")
         sys.exit(1)
+
     logging.info("Finished fetching map data from S3")
 
     logging.info("Getting day0cases from MongoDB")
@@ -144,28 +146,36 @@ if __name__ == "__main__":
     adm3_counts = aggregate_adm_3(cases, adm3_map_data)
     logging.info(f"Finished admin 3 aggregation with {len(adm3_counts)} entries")
 
+
     logging.info("Finished aggregation")
 
     upload(
+        S3,
         json.dumps(adm0_counts),
         bucket,
         ["admin0/latest.json", f"admin0/{today.strftime('%m-%d-%Y')}.json"],
     )
 
     upload(
+        S3,
         json.dumps(adm1_counts),
         bucket,
         ["admin1/latest.json", f"admin1/{today.strftime('%m-%d-%Y')}.json"],
     )
 
     upload(
+        S3,
         json.dumps(adm2_counts),
         bucket,
         ["admin2/latest.json", f"admin2/{today.strftime('%m-%d-%Y')}.json"],
     )
 
     upload(
+        S3,
         json.dumps(adm3_counts),
         bucket,
         ["admin3/latest.json", f"admin3/{today.strftime('%m-%d-%Y')}.json"],
     )
+
+if __name__ == "__main__":
+    main()
