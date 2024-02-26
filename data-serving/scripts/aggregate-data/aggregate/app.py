@@ -14,9 +14,6 @@ import pymongo
 import iso3166
 
 
-
-
-
 def upload(S3, data: str, bucket: str, keys: list[str]):
     """Upload data to S3
 
@@ -54,7 +51,8 @@ def map_adm_0(adm_0_entry, adm0_map_data):
 
 
 def aggregate_adm_0(cases, adm0_map_data):
-    adm0_counts = list(cases.aggregate([{"$match": {"caseStatus": "confirmed"}},{"$group": {"_id": "$location.countryISO3", "count": {"$sum": 1}}}]))
+    adm0_counts = list(cases.aggregate(
+        [{"$match": {"caseStatus": "confirmed"}}, {"$group": {"_id": "$location.countryISO3", "count": {"$sum": 1}}}]))
     return list(map(lambda e: map_adm_0(e, adm0_map_data), adm0_counts))
 
 
@@ -67,7 +65,8 @@ def map_adm_1(adm1_entry, adm1_map_data):
 
 
 def aggregate_adm_1(cases, adm1_map_data):
-    adm1_counts = list(cases.aggregate([{"$match": {"caseStatus": "confirmed"}},{"$group": {"_id": "$location.admin1WikiId", "count": {"$sum": 1}}}]))
+    adm1_counts = list(cases.aggregate(
+        [{"$match": {"caseStatus": "confirmed"}}, {"$group": {"_id": "$location.admin1WikiId", "count": {"$sum": 1}}}]))
     return list(map(lambda e: map_adm_1(e, adm1_map_data), adm1_counts))
 
 
@@ -80,7 +79,8 @@ def map_adm_2(adm2_entry, adm2_map_data):
 
 
 def aggregate_adm_2(cases, adm2_map_data):
-    adm2_counts = list(cases.aggregate([{"$match": {"caseStatus": "confirmed"}},{"$group": {"_id": "$location.admin2WikiId", "count": {"$sum": 1}}}]))
+    adm2_counts = list(cases.aggregate(
+        [{"$match": {"caseStatus": "confirmed"}}, {"$group": {"_id": "$location.admin2WikiId", "count": {"$sum": 1}}}]))
     return list(map(lambda e: map_adm_2(e, adm2_map_data), adm2_counts))
 
 
@@ -93,8 +93,10 @@ def map_adm_3(adm3_entry, adm3_map_data):
 
 
 def aggregate_adm_3(cases, adm3_map_data):
-    adm3_counts = list(cases.aggregate([{"$match": {"caseStatus": "confirmed"}},{"$group": {"_id": "$location.admin3WikiId", "count": {"$sum": 1}}}]))
+    adm3_counts = list(cases.aggregate(
+        [{"$match": {"caseStatus": "confirmed"}}, {"$group": {"_id": "$location.admin3WikiId", "count": {"$sum": 1}}}]))
     return list(map(lambda e: map_adm_3(e, adm3_map_data), adm3_counts))
+
 
 def main():
     # S3 endpoint is allowed to be None (i.e. connect to default S3 endpoint),
@@ -146,7 +148,6 @@ def main():
     adm3_counts = aggregate_adm_3(cases, adm3_map_data)
     logging.info(f"Finished admin 3 aggregation with {len(adm3_counts)} entries")
 
-
     logging.info("Finished aggregation")
 
     upload(
@@ -176,6 +177,7 @@ def main():
         bucket,
         ["admin3/latest.json", f"admin3/{today.strftime('%m-%d-%Y')}.json"],
     )
+
 
 if __name__ == "__main__":
     main()
