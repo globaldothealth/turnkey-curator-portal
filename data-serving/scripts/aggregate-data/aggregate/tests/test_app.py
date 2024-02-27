@@ -8,6 +8,7 @@ import mongomock
 import pymongo
 from botocore.exceptions import ClientError
 from freezegun import freeze_time
+import datetime
 
 
 S3_BUCKET = os.environ['S3_BUCKET']
@@ -28,6 +29,11 @@ CASES = [
             "admin3": "Brück",
             "admin3WikiId": "Q622858",
             "query": "Brück,LK Potsdam-Mittelmark,Brandenburg,Germany"
+        },
+        "revisionMetadata": {
+            "updateMetadata": {
+                "date": datetime.datetime(2024, 1, 21)
+            }
         }
     },
     {
@@ -44,7 +50,13 @@ CASES = [
             "admin3": "Borkwalde",
             "admin3WikiId": "Q623947",
             "query": "Borkwalde,LK Potsdam-Mittelmark,Brandenburg,Germany"
+        },
+        "revisionMetadata": {
+            "updateMetadata": {
+                "date": datetime.datetime(2024, 1, 22)
+            }
         }
+
     },
     {
         "caseStatus": "confirmed",
@@ -61,6 +73,11 @@ CASES = [
             "admin3WikiId": "Q1711",
             "query": "Potsdam,SK Potsdam,Brandenburg,Germany"
         },
+        "revisionMetadata": {
+            "updateMetadata": {
+                "date": datetime.datetime(2024, 1, 23)
+            }
+        }
     },
     {
         "caseStatus": "confirmed",
@@ -76,6 +93,11 @@ CASES = [
             "admin3": "Eberstadt",
             "admin3WikiId": "Q507455",
             "query": "Eberstadt,LK Heilbronn,Baden-Württemberg,Germany"
+        },
+        "revisionMetadata": {
+            "updateMetadata": {
+                "date": datetime.datetime(2024, 1, 24)
+            }
         }
     }
 ]
@@ -85,7 +107,8 @@ mocked_adm0_map_data = {
         "featureId": 5574713,
         "lat": 51.3283,
         "long": 10.5807,
-        "label": "Germany"
+        "label": "Germany",
+        "bounds": [5.8663, 47.2702, 15.0418, 55.0568]
     }
 }
 
@@ -94,13 +117,15 @@ mocked_adm1_map_data = {
         'featureId': 791097,
         'lat': 52.4725,
         'long': 14.1414,
-        'label': 'Brandenburg'
+        'label': 'Brandenburg',
+        "bounds": [11.2658,51.359,14.7657,53.5591]
     },
     "Q985": {
         'featureId': 528953,
         'lat': 48.6746,
         'long': 9.0825,
-        'label': 'Baden-Württemberg'
+        'label': 'Baden-Württemberg',
+        'bounds': [50.5021,26.124,50.6618,26.2586]
     }
 }
 
@@ -109,19 +134,22 @@ mocked_adm2_map_data = {
         'featureId': 22221881,
         'lat': 52.2692,
         'long': 12.7022,
-        'label': 'LK Potsdam-Mittelmark'
+        'label': 'LK Potsdam-Mittelmark',
+        'bounds': [12.2158, 51.9794, 13.3123, 52.5572]
     },
     "Q1711": {
         'featureId': 21566521,
         'lat': 52.4285,
         'long': 13.0244,
-        'label': 'SK Potsdam'
+        'label': 'SK Potsdam',
+        'bounds': [12.8872, 52.3419, 13.168, 52.5146]
     },
     "Q7166": {
         'featureId': 12194873,
         'lat': 49.2044,
         'long': 9.2936,
-        'label': 'LK Heilbronn'
+        'label': 'LK Heilbronn',
+        'bounds': [8.8161, 49.0203, 9.5276, 49.3876]
     }
 }
 
@@ -130,25 +158,29 @@ mocked_adm3_map_data = {
         'featureId': 700519993,
         'lat': 52.1979,
         'long': 12.7618,
-        'label': 'Brück'
+        'label': 'Brück',
+        'bounds': [12.6323, 52.1483, 12.8563, 52.2476]
     },
     "Q623947": {
         'featureId': 459871801,
         'lat': 52.2617,
         'long': 12.8176,
-        'label': 'Borkwalde'
+        'label': 'Borkwalde',
+        'bounds': [12.8083, 52.2465, 12.8503, 52.2764]
     },
     "Q1711": {
         'featureId': 42473017,
         'lat': 52.4285,
         'long': 13.0244,
-        'label': 'Potsdam'
+        'label': 'Potsdam',
+        'bounds': [12.8872, 52.3419, 13.168, 52.5146]
     },
     "Q507455": {
         'featureId': 388503097,
         'lat': 49.1827,
         'long': 9.3354,
-        'label': 'Eberstadt'
+        'label': 'Eberstadt',
+        'bounds': [9.2931, 49.1648, 9.3699, 49.1999]
     }
 }
 
@@ -158,7 +190,10 @@ expected_adm0_json = [
         'lat': 51.3283,
         'long': 10.5807,
         'label': 'Germany',
-        'count': 4
+        'caseCount': 4,
+        'lastUpdated': '2024-01-24',
+        'countryCode': 'DEU',
+        'bounds': [5.8663, 47.2702, 15.0418, 55.0568]
     }
 ]
 
@@ -168,14 +203,20 @@ expected_adm1_json = [
         'lat': 52.4725,
         'long': 14.1414,
         'label': 'Brandenburg',
-        'count': 3
+        'caseCount': 3,
+        'lastUpdated': '2024-01-23',
+        'countryCode': 'DEU',
+        'bounds': [11.2658, 51.359, 14.7657, 53.5591]
     },
     {
         'featureId': 528953,
         'lat': 48.6746,
         'long': 9.0825,
         'label': 'Baden-Württemberg',
-        'count': 1
+        'caseCount': 1,
+        'lastUpdated': '2024-01-24',
+        'countryCode': 'DEU',
+        'bounds': [50.5021, 26.124, 50.6618, 26.2586]
     }
 ]
 
@@ -184,20 +225,31 @@ expected_adm2_json = [
         'featureId': 21566521,
         'lat': 52.4285,
         'long': 13.0244,
-        'label': 'SK Potsdam', 'count': 1},
+        'label': 'SK Potsdam',
+        'caseCount': 1,
+        'lastUpdated': '2024-01-23',
+        'countryCode': 'DEU',
+        'bounds': [12.8872, 52.3419, 13.168, 52.5146]
+    },
     {
         'featureId': 22221881,
         'lat': 52.2692,
         'long': 12.7022,
         'label': 'LK Potsdam-Mittelmark',
-        'count': 2
+        'caseCount': 2,
+        'lastUpdated': '2024-01-22',
+        'countryCode': 'DEU',
+        'bounds': [12.2158, 51.9794, 13.3123, 52.5572]
     },
     {
         'featureId': 12194873,
         'lat': 49.2044,
         'long': 9.2936,
         'label': 'LK Heilbronn',
-        'count': 1
+        'caseCount': 1,
+        'lastUpdated': '2024-01-24',
+        'countryCode': 'DEU',
+        'bounds': [8.8161, 49.0203, 9.5276, 49.3876]
     }
 ]
 
@@ -207,28 +259,40 @@ expected_adm3_json = [
         "lat": 52.4285,
         "long": 13.0244,
         "label": "Potsdam",
-        "count": 1
+        "caseCount": 1,
+        "lastUpdated": "2024-01-23",
+        "countryCode": "DEU",
+        "bounds": [12.8872, 52.3419, 13.168, 52.5146]
     },
     {
         "featureId": 388503097,
         "lat": 49.1827,
         "long": 9.3354,
         "label": "Eberstadt",
-        "count": 1
+        "caseCount": 1,
+        "lastUpdated": "2024-01-24",
+        "countryCode": "DEU",
+        "bounds": [9.2931, 49.1648, 9.3699, 49.1999]
     },
     {
         "featureId": 700519993,
         "lat": 52.1979,
         "long": 12.7618,
         "label": "Brück",
-        "count": 1
+        "caseCount": 1,
+        "lastUpdated": "2024-01-21",
+        "countryCode": "DEU",
+        "bounds": [12.6323, 52.1483, 12.8563, 52.2476]
     },
     {
         "featureId": 459871801,
         "lat": 52.2617,
         "long": 12.8176,
         "label": "Borkwalde",
-        "count": 1
+        "caseCount": 1,
+        "lastUpdated": "2024-01-22",
+        "countryCode": "DEU",
+        "bounds": [12.8083, 52.2465, 12.8503, 52.2764]
     }
 ]
 

@@ -41,60 +41,76 @@ def setup_logger():
     rootLogger.setLevel(logging.INFO)
 
 
-def map_adm_0(adm_0_entry, adm0_map_data):
-    id = adm_0_entry.get('_id', '')
-    count = adm_0_entry.get('count', 0)
+def map_adm0(adm0_entry, adm0_map_data):
+    id = adm0_entry.get('_id', '')
+    caseCount = adm0_entry.get('caseCount', 0)
+    countryCode = adm0_entry.get('countryCode', 0)
+    lastUpdated = adm0_entry.get('lastUpdated', '')
+    if lastUpdated != '':
+        lastUpdated = lastUpdated.strftime("%Y-%m-%d")
     if id == '':
-        return {"name": "", "count": count}
-    return {**adm0_map_data[id], "count": count}
+        return {"name": "", "caseCount": caseCount, "lastUpdated": lastUpdated, "countryCode": ''}
+    return {**adm0_map_data[id], "caseCount": caseCount, "lastUpdated": lastUpdated, "countryCode": countryCode}
 
 
-def aggregate_adm_0(cases, adm0_map_data):
+def aggregate_adm0(cases, adm0_map_data):
     adm0_counts = list(cases.aggregate(
-        [{"$match": {"caseStatus": "confirmed"}}, {"$group": {"_id": "$location.countryISO3", "count": {"$sum": 1}}}]))
-    return list(map(lambda e: map_adm_0(e, adm0_map_data), adm0_counts))
+        [{"$match": {"caseStatus": "confirmed"}}, {"$group": {"_id": "$location.countryISO3", "caseCount": {"$sum": 1}, "lastUpdated": {"$max": "$revisionMetadata.updateMetadata.date"}, "countryCode": {"$first": "$location.countryISO3"}}}]))
+    return list(map(lambda e: map_adm0(e, adm0_map_data), adm0_counts))
 
 
-def map_adm_1(adm1_entry, adm1_map_data):
+def map_adm1(adm1_entry, adm1_map_data):
     id = adm1_entry.get('_id', '')
-    count = adm1_entry.get('count', 0)
+    caseCount = adm1_entry.get('caseCount', 0)
+    countryCode = adm1_entry.get('countryCode', 0)
+    lastUpdated = adm1_entry.get('lastUpdated', '')
+    if lastUpdated != '':
+        lastUpdated = lastUpdated.strftime("%Y-%m-%d")
     if id == '':
-        return {"name": "", "count": count}
-    return {**adm1_map_data[id], "count": count}
+        return {"name": "", "caseCount": caseCount, "lastUpdated": lastUpdated, "countryCode": ''}
+    return {**adm1_map_data[id], "caseCount": caseCount, "lastUpdated": lastUpdated, "countryCode": countryCode}
 
 
-def aggregate_adm_1(cases, adm1_map_data):
+def aggregate_adm1(cases, adm1_map_data):
     adm1_counts = list(cases.aggregate(
-        [{"$match": {"caseStatus": "confirmed"}}, {"$group": {"_id": "$location.admin1WikiId", "count": {"$sum": 1}}}]))
-    return list(map(lambda e: map_adm_1(e, adm1_map_data), adm1_counts))
+        [{"$match": {"caseStatus": "confirmed"}}, {"$group": {"_id": "$location.admin1WikiId", "caseCount": {"$sum": 1}, "lastUpdated": {"$max": "$revisionMetadata.updateMetadata.date"}, "countryCode": {"$first": "$location.countryISO3"}}}]))
+    return list(map(lambda e: map_adm1(e, adm1_map_data), adm1_counts))
 
 
-def map_adm_2(adm2_entry, adm2_map_data):
+def map_adm2(adm2_entry, adm2_map_data):
     id = adm2_entry.get('_id', '')
-    count = adm2_entry.get('count', 0)
+    caseCount = adm2_entry.get('caseCount', 0)
+    countryCode = adm2_entry.get('countryCode', 0)
+    lastUpdated = adm2_entry.get('lastUpdated', '')
+    if lastUpdated != '':
+        lastUpdated = lastUpdated.strftime("%Y-%m-%d")
     if id == '':
-        return {"name": "", "count": count}
-    return {**adm2_map_data[id], "count": count}
+        return {"name": "", "caseCount": caseCount, "lastUpdated": lastUpdated, "countryCode": ''}
+    return {**adm2_map_data[id], "caseCount": caseCount, "lastUpdated": lastUpdated, "countryCode": countryCode}
 
 
-def aggregate_adm_2(cases, adm2_map_data):
+def aggregate_adm2(cases, adm2_map_data):
     adm2_counts = list(cases.aggregate(
-        [{"$match": {"caseStatus": "confirmed"}}, {"$group": {"_id": "$location.admin2WikiId", "count": {"$sum": 1}}}]))
-    return list(map(lambda e: map_adm_2(e, adm2_map_data), adm2_counts))
+        [{"$match": {"caseStatus": "confirmed"}}, {"$group": {"_id": "$location.admin2WikiId", "caseCount": {"$sum": 1}, "lastUpdated": {"$max": "$revisionMetadata.updateMetadata.date"}, "countryCode": {"$first": "$location.countryISO3"}}}]))
+    return list(map(lambda e: map_adm2(e, adm2_map_data), adm2_counts))
 
 
-def map_adm_3(adm3_entry, adm3_map_data):
+def map_adm3(adm3_entry, adm3_map_data):
     id = adm3_entry.get('_id', '')
-    count = adm3_entry.get('count', 0)
+    caseCount = adm3_entry.get('caseCount', 0)
+    countryCode = adm3_entry.get('countryCode', 0)
+    lastUpdated = adm3_entry.get('lastUpdated', '')
+    if lastUpdated != '':
+        lastUpdated = lastUpdated.strftime("%Y-%m-%d")
     if id == '':
-        return {"name": "", "count": count}
-    return {**adm3_map_data[id], "count": count}
+        return {"name": "", "caseCount": caseCount, "lastUpdated": lastUpdated, "countryCode": ''}
+    return {**adm3_map_data[id], "caseCount": caseCount, "lastUpdated": lastUpdated, "countryCode": countryCode}
 
 
-def aggregate_adm_3(cases, adm3_map_data):
+def aggregate_adm3(cases, adm3_map_data):
     adm3_counts = list(cases.aggregate(
-        [{"$match": {"caseStatus": "confirmed"}}, {"$group": {"_id": "$location.admin3WikiId", "count": {"$sum": 1}}}]))
-    return list(map(lambda e: map_adm_3(e, adm3_map_data), adm3_counts))
+        [{"$match": {"caseStatus": "confirmed"}}, {"$group": {"_id": "$location.admin3WikiId", "caseCount": {"$sum": 1}, "lastUpdated": {"$max": "$revisionMetadata.updateMetadata.date"}, "countryCode": {"$first": "$location.countryISO3"}}}]))
+    return list(map(lambda e: map_adm3(e, adm3_map_data), adm3_counts))
 
 
 def main():
@@ -135,16 +151,16 @@ def main():
 
     logging.info("Starting aggregation")
 
-    adm0_counts = aggregate_adm_0(cases, adm0_map_data)
+    adm0_counts = aggregate_adm0(cases, adm0_map_data)
     logging.info(f"Finished admin 0 aggregation with {len(adm0_counts)} entries")
 
-    adm1_counts = aggregate_adm_1(cases, adm1_map_data)
+    adm1_counts = aggregate_adm1(cases, adm1_map_data)
     logging.info(f"Finished admin 1 aggregation with {len(adm1_counts)} entries")
 
-    adm2_counts = aggregate_adm_2(cases, adm2_map_data)
+    adm2_counts = aggregate_adm2(cases, adm2_map_data)
     logging.info(f"Finished admin 2 aggregation with {len(adm2_counts)} entries")
 
-    adm3_counts = aggregate_adm_3(cases, adm3_map_data)
+    adm3_counts = aggregate_adm3(cases, adm3_map_data)
     logging.info(f"Finished admin 3 aggregation with {len(adm3_counts)} entries")
 
     logging.info("Finished aggregation")
