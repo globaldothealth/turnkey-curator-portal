@@ -21,18 +21,17 @@ def upload(S3, data: str, bucket: str, keys: list[str]):
     bucket -- S3 bucket to upload to
     keys -- List of S3 paths to upload to
     """
-    try:
-        logging.info(f"Uploading data to {keys} in {bucket}")
-        for key in keys:
+    for key in keys:
+        logging.info(f"Uploading data to {key} in {bucket}")
+        try:
             S3.put_object(
                 ACL="public-read",
                 Body=data,
                 Bucket=bucket,
                 Key=key,
             )
-    except Exception as e:
-        logging.error(e)
-        logging.error(f"Failed to upload data to s3://{bucket}/{key}")
+        except Exception as e:
+            logging.exception(f"Failed to upload data to s3://{bucket}/{key}")
 
 
 def setup_logger():
@@ -43,8 +42,8 @@ def setup_logger():
 
 
 def map_adm_0(adm_0_entry, adm0_map_data):
-    id = adm_0_entry['_id']
-    count = adm_0_entry['count']
+    id = adm_0_entry.get('_id', '')
+    count = adm_0_entry.get('count', 0)
     if id == '':
         return {"name": "", "count": count}
     return {**adm0_map_data[id], "count": count}
@@ -57,8 +56,8 @@ def aggregate_adm_0(cases, adm0_map_data):
 
 
 def map_adm_1(adm1_entry, adm1_map_data):
-    id = adm1_entry['_id']
-    count = adm1_entry['count']
+    id = adm1_entry.get('_id', '')
+    count = adm1_entry.get('count', 0)
     if id == '':
         return {"name": "", "count": count}
     return {**adm1_map_data[id], "count": count}
@@ -71,8 +70,8 @@ def aggregate_adm_1(cases, adm1_map_data):
 
 
 def map_adm_2(adm2_entry, adm2_map_data):
-    id = adm2_entry['_id']
-    count = adm2_entry['count']
+    id = adm2_entry.get('_id', '')
+    count = adm2_entry.get('count', 0)
     if id == '':
         return {"name": "", "count": count}
     return {**adm2_map_data[id], "count": count}
@@ -85,8 +84,8 @@ def aggregate_adm_2(cases, adm2_map_data):
 
 
 def map_adm_3(adm3_entry, adm3_map_data):
-    id = adm3_entry['_id']
-    count = adm3_entry['count']
+    id = adm3_entry.get('_id', '')
+    count = adm3_entry.get('count', 0)
     if id == '':
         return {"name": "", "count": count}
     return {**adm3_map_data[id], "count": count}
@@ -106,7 +105,7 @@ def main():
 
     setup_logger()
     logging.info("WORKING PYTHON")
-    if envs := {"CONN", "S3_BUCKET"} - set(os.environ):
+    if envs := {"CONN", "S3_BUCKET", "S3_MAP_DATA_BUCKET", "DATABASE_NAME"} - set(os.environ):
         logging.info(f"Required {envs} not set in the environment, exiting")
         sys.exit(1)
 
