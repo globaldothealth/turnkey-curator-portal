@@ -120,7 +120,6 @@ def main():
     today = datetime.datetime.now().date()
 
     setup_logger()
-    logging.info("WORKING PYTHON")
     if envs := {"CONN", "S3_BUCKET", "S3_MAP_DATA_BUCKET", "DATABASE_NAME"} - set(os.environ):
         logging.info(f"Required {envs} not set in the environment, exiting")
         sys.exit(1)
@@ -165,33 +164,20 @@ def main():
 
     logging.info("Finished aggregation")
 
-    upload(
-        S3,
-        json.dumps(adm0_counts),
-        bucket,
-        ["admin0/latest.json", f"admin0/{today.strftime('%m-%d-%Y')}.json"],
-    )
+    counts_to_upload = [
+        {"data": adm0_counts, "key": "admin0"},
+        {"data": adm1_counts, "key": "admin1"},
+        {"data": adm2_counts, "key": "admin2"},
+        {"data": adm3_counts, "key": "admin3"},
+    ]
 
-    upload(
-        S3,
-        json.dumps(adm1_counts),
-        bucket,
-        ["admin1/latest.json", f"admin1/{today.strftime('%m-%d-%Y')}.json"],
-    )
-
-    upload(
-        S3,
-        json.dumps(adm2_counts),
-        bucket,
-        ["admin2/latest.json", f"admin2/{today.strftime('%m-%d-%Y')}.json"],
-    )
-
-    upload(
-        S3,
-        json.dumps(adm3_counts),
-        bucket,
-        ["admin3/latest.json", f"admin3/{today.strftime('%m-%d-%Y')}.json"],
-    )
+    for count_to_upload in counts_to_upload:
+        upload(
+            S3,
+            json.dumps(count_to_upload["data"]),
+            bucket,
+            [f"{count_to_upload['key']}/latest.json", f"{count_to_upload['key']}/{today.strftime('%m-%d-%Y')}.json"],
+        )
 
 
 if __name__ == "__main__":
