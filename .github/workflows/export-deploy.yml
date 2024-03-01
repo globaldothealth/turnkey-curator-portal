@@ -29,8 +29,8 @@ jobs:
       working-directory: data-serving/scripts/export-data
       env:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        REPO_COUNTRY: gdh-country-exporter
-        REPO_FULL: gdh-full-exporter
+        REPO_COUNTRY: gdh-tcp-country-exporter
+        REPO_FULL: gdh-tcp-full-exporter
         IMAGE_TAG: ${{ github.sha }}
       run: |
         docker build -t $REGISTRY/$REPO_COUNTRY:$IMAGE_TAG -t $REGISTRY/$REPO_COUNTRY .
