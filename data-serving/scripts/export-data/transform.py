@@ -83,15 +83,32 @@ def convert_event(event: dict[str, Any]) -> dict[str, Any]:
 
     Returns an unnested dictionary.
     """
-    suffix = event["name"]
-    col_name = f"events.{suffix}"
 
-    flattened_event = {
-        f"{col_name}.date": convert_date(deep_get(event, "dateRange.end.$date")),
+    events = json.loads(event)
+    flattened_events = {
+        "events.dateEntry": convert_date(deep_get(events,"dateEntry.$date")),
+        "events.dateReported": convert_date(deep_get(events, "dateReported.$date")),
+        "events.dateLastModified": convert_date(deep_get(events, "dateLastModified.$date")),
+        "events.dateOnset": convert_date(deep_get(events, "dateOnset.$date")),
+        "events.dateConfirmation": convert_date(deep_get(events, "dateConfirmation.$date")),
+        "events.confirmationMethod": deep_get(events, "confirmationMethod"),
+        "events.dateOfFirstConsult": convert_date(deep_get(events, "dateOfFirstConsult.$date")),
+        "events.hospitalized": deep_get(events, "hospitalized"),
+        "events.reasonForHospitalization": deep_get(events, "reasonForHospitalization"),
+        "events.dateHospitalization": convert_date(deep_get(events, "dateHospitalization.$date")),
+        "events.dateDischargeHospital": convert_date(deep_get(events, "dateDischargeHospital.$date")),
+        "events.intensiveCare": deep_get(events, "intensiveCare"),
+        "events.dateAdmissionICU": convert_date(deep_get(events, "dateAdmissionICU.$date")),
+        "events.dateDischargeICU": convert_date(deep_get(events, "dateDischargeICU.$date")),
+        "events.homeMonitoring": deep_get(events, "homeMonitoring"),
+        "events.isolated": deep_get(events, "isolated"),
+        "events.dateIsolation": convert_date(deep_get(events, "dateIsolation.$date")),
+        "events.outcome": deep_get(events, "outcome"),
+        "events.dateDeath": convert_date(deep_get(events, "dateDeath.$date")),
+        "events.dateRecovered": convert_date(deep_get(events, "dateRecovered.$date")),
     }
-    if suffix not in ["selfIsolation", "onsetSymptoms", "firstClinicalConsultation"]:
-        flattened_event[f"{col_name}.value"] = event.get("value")
-    return flattened_event
+
+    return flattened_events
 
 
 def convert_addl_sources(sources_string: str) -> str:
@@ -281,7 +298,7 @@ def convert_age(row: dict[str, Any], buckets: list[dict[str, Any]]) -> Optional[
 def convert_row(row: dict[str, Any], buckets: list[dict[str, Any]]) -> Optional[dict[str, Any]]:
     "Converts row for export using age buckets"
 
-    if "ObjectId" not in row["_id"]:
+    if not row["_id"].isdigit():
         return None
     for arr_field in __ARRAYS:
         if row.get(arr_field):
@@ -293,8 +310,8 @@ def convert_row(row: dict[str, Any], buckets: list[dict[str, Any]]) -> Optional[
     if not row.get("SGTF"):
         row["SGTF"] = "NA"
     if row.get("events", None):
-        for e in json.loads(row["events"]):
-            row.update(convert_event(e))
+        row.update(convert_event(row['events']))
+        del row['events']
     if row["travelHistory.traveledPrior30Days"] == "true":
         if "travelHistory.travel" in row:
             row.update(convert_travel(row["travelHistory.travel"]))
