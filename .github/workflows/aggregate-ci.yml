@@ -21,6 +21,8 @@ jobs:
     env:
       S3_AGGREGATE_BUCKET: 'mock-aggregate-bucket'
       S3_MAP_DATA_BUCKET: 'mock-map-data-bucket'
+      CONN: 'mock-conn'
+      DATABASE_NAME: 'mock-database-name'
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python 3.10
