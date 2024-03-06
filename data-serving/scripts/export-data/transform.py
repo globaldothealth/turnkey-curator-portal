@@ -77,40 +77,6 @@ def convert_date(date_string: str) -> Optional[str]:
         return date_string[:10]
 
 
-def convert_event(event: dict[str, Any]) -> dict[str, Any]:
-    """
-    Process individual events in the events array.
-
-    Returns an unnested dictionary.
-    """
-
-    events = json.loads(event)
-    flattened_events = {
-        "events.dateEntry": convert_date(deep_get(events,"dateEntry.$date")),
-        "events.dateReported": convert_date(deep_get(events, "dateReported.$date")),
-        "events.dateLastModified": convert_date(deep_get(events, "dateLastModified.$date")),
-        "events.dateOnset": convert_date(deep_get(events, "dateOnset.$date")),
-        "events.dateConfirmation": convert_date(deep_get(events, "dateConfirmation.$date")),
-        "events.confirmationMethod": deep_get(events, "confirmationMethod"),
-        "events.dateOfFirstConsult": convert_date(deep_get(events, "dateOfFirstConsult.$date")),
-        "events.hospitalized": deep_get(events, "hospitalized"),
-        "events.reasonForHospitalization": deep_get(events, "reasonForHospitalization"),
-        "events.dateHospitalization": convert_date(deep_get(events, "dateHospitalization.$date")),
-        "events.dateDischargeHospital": convert_date(deep_get(events, "dateDischargeHospital.$date")),
-        "events.intensiveCare": deep_get(events, "intensiveCare"),
-        "events.dateAdmissionICU": convert_date(deep_get(events, "dateAdmissionICU.$date")),
-        "events.dateDischargeICU": convert_date(deep_get(events, "dateDischargeICU.$date")),
-        "events.homeMonitoring": deep_get(events, "homeMonitoring"),
-        "events.isolated": deep_get(events, "isolated"),
-        "events.dateIsolation": convert_date(deep_get(events, "dateIsolation.$date")),
-        "events.outcome": deep_get(events, "outcome"),
-        "events.dateDeath": convert_date(deep_get(events, "dateDeath.$date")),
-        "events.dateRecovered": convert_date(deep_get(events, "dateRecovered.$date")),
-    }
-
-    return flattened_events
-
-
 def convert_addl_sources(sources_string: str) -> str:
     if sources_string == "[]":
         return None
@@ -206,17 +172,6 @@ def get_headers_and_fields(fileobject) -> list[str]:
     cols_to_add = [
         "demographics.ageRange.start",
         "demographics.ageRange.end",
-        "events.confirmed.value",
-        "events.confirmed.date",
-        "events.firstClinicalConsultation.date",
-        "events.hospitalAdmission.date",
-        "events.hospitalAdmission.value",
-        "events.icuAdmission.date",
-        "events.icuAdmission.value",
-        "events.onsetSymptoms.date",
-        "events.outcome.date",
-        "events.outcome.value",
-        "events.selfIsolation.date",
     ]
     cols_to_remove = [
         "demographics.ageBuckets",
@@ -309,9 +264,6 @@ def convert_row(row: dict[str, Any], buckets: list[dict[str, Any]]) -> Optional[
         )
     if not row.get("SGTF"):
         row["SGTF"] = "NA"
-    if row.get("events", None):
-        row.update(convert_event(row['events']))
-        del row['events']
     if row["travelHistory.traveledPrior30Days"] == "true":
         if "travelHistory.travel" in row:
             row.update(convert_travel(row["travelHistory.travel"]))

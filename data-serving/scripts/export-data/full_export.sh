@@ -28,4 +28,5 @@ python3 transform.py -f "$FORMAT" -b "${BUCKETS}" -i "${ALL_DATA}" "full"
 for fmt in ${FORMAT//,/ }
 do
    test -f "full.${fmt}.gz" && aws s3 cp "full.${fmt}.gz" "s3://${FULL_EXPORT_BUCKET}/${fmt}/"
+   rm "full.${fmt}.gz"
 done
