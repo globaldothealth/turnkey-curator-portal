@@ -16,7 +16,7 @@ ALL_DATA="${SCRATCH}/all_data.csv"
 trap 'rm -rf "$SCRATCH"' EXIT  # Cleanup before exit
 
 FORMAT="${FORMAT:-csv,tsv,json}"
-QUERY='{"curators.verifiedBy": { "$exists": "true"}}'
+QUERY="{\"curators.verifiedBy\": { \"\$exists\": \"true\"}}"
 
 mongoexport --uri="$CONN" --collection=ageBuckets --type=json --jsonArray -o "${BUCKETS}"
 mongoexport --query="$QUERY" --uri="$CONN" --collection=day0cases \
