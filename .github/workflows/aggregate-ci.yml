@@ -18,6 +18,8 @@ jobs:
     defaults:
       run:
         working-directory: data-serving/scripts/aggregate-data/aggregate
+    env:
+      S3_AGGREGATE_BUCKET: 'mock-aggregate-bucket'
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python 3.10
