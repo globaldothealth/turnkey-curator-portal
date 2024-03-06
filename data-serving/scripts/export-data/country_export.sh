@@ -12,7 +12,7 @@ BUCKETS="${SCRATCH}/buckets.json"
 trap 'rm -rf "$SCRATCH"' EXIT  # Cleanup before exit
 
 FORMAT="${FORMAT:-csv,tsv,json}"
-QUERY="{\"location.countryISO3\": \"$COUNTRY\"}"
+QUERY="{\"location.countryISO3\": \"${COUNTRY}\", \"curators.verifiedBy\": { \"\$exists\": \"true\"}}"
 
 mongoexport --uri="$CONN" --collection=ageBuckets --type=json --jsonArray -o "${BUCKETS}"
 mongoexport --query="$QUERY" --uri="$CONN" --collection=day0cases \
