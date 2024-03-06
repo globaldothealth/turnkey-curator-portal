@@ -21,9 +21,9 @@ location.geoResolution
 location.geometry.latitude
 location.geometry.longitude
 location.name
-location.region
-location.district
-location.place
+location.admin1
+location.admin2
+location.admin3
 location.query
 notes
 pathogens

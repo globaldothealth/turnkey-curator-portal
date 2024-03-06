@@ -38,7 +38,6 @@ function FieldTitle(props: FieldTitleProps): JSX.Element {
                     arrow
                     disableInteractive={props.interactive === false}
                     title={props.tooltip || ''}
-                    maxwidth={props.widetooltip ? '40vw' : 'auto'}
                 >
                     <HelpOutlineIcon fontSize="small" />
                 </AppTooltip>

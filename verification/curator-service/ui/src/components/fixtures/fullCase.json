@@ -31,8 +31,8 @@
     "location": {
         "country": "France",
         "countryISO3": "FRA",
-        "location": "Île-de-F",
-        "place": "Paris"
+        "admin1": "Île-de-France",
+        "admin2": "Paris"
     },
     "symptoms": "Severe pneumonia, Dyspnea, Weakness",
     "preexistingConditions": {

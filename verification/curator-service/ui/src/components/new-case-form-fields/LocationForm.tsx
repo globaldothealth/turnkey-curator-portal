@@ -16,37 +16,32 @@ import Location from './Location';
 import { StyledTooltip } from './StyledTooltip';
 
 const TooltipText = () => (
-    <StyledTooltip>
+    <StyledTooltip wide>
         <ul>
             <li>
-                Enter the location for the case.
+                Location form consists of four sections.
                 <ul>
                     <li>
-                        Start typing the location and the field will be auto
-                        completed with supported locations.
+                        <strong>Location to geocode</strong> - allows to find
+                        location based on user prompt and automatically fill in
+                        the rest of the fields.
                     </li>
                     <li>
-                        You can enter a location up to Admin level 3; as an
-                        example this corresponds to country level location data
-                        in the USA. Specific locations are not supported
-                    </li>
-                </ul>
-            </li>
-            <li>
-                <strong>Example:</strong> If your case has 'Location = USA,
-                California, Santa Clara' type 'Santa Clara' and select that
-                option from the drop down list. On selection the rest of the
-                location fields would be prepopulated.
-                <ul>
-                    <li>
-                        If you need to change the location you can press X in
-                        the location field and then retype the location and
-                        select the desidered one. This will change the
-                        prepoulated fields to the new location.
+                        <strong>Country, Admin1, Admin2, Admin3</strong> - allow
+                        to select location from the list of location recognized
+                        by the Mapbox API or type custom one. Only the locations
+                        from the Mapbox API are going to be visible on the map.
                     </li>
                     <li>
-                        If you cannot find a specific location please provide
-                        details to your Global.health contact.
+                        <strong>Latitude and Longitude</strong> - can be filled
+                        separately or by the autocomplete, used to store
+                        coordinates.
+                    </li>
+                    <li>
+                        <strong>Location Comment</strong> - used by the curators
+                        to add comments like hospital name or other details
+                        about the location that cannot be represented by the
+                        other fields.
                     </li>
                 </ul>
             </li>
@@ -59,7 +54,11 @@ function LocationForm(): JSX.Element {
 
     return (
         <Scroll.Element name="location">
-            <FieldTitle title="Location" tooltip={<TooltipText />} />
+            <FieldTitle
+                title="Location"
+                tooltip={<TooltipText />}
+                widetooltip
+            />
             <PlacesAutocomplete
                 initialValue={initialValues.location.geocodeLocation?.name}
                 name="location.geocodeLocation"
@@ -215,10 +214,10 @@ export function PlacesAutocomplete(
                         {...params}
                         // Setting the name properly allows any typed value
                         // to be set in the form values, rather than only selected
-                        // dropdown values. Thus we use an unused form value here.
+                        // dropdown values. Thus, we use an unused form value here.
                         name="unused"
                         data-testid={props.name}
-                        // Use the initial valuelocation name as a hint when untouched
+                        // Use the initialValue location name as a hint when untouched
                         // otherwise just use the field name.
                         label={props.initialValue || 'Location to geocode'}
                         component={TextField}

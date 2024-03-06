@@ -61,7 +61,7 @@ it('loads and displays case', async () => {
     expect(screen.getByText('Horse breeder')).toBeInTheDocument();
     // Location.
     expect(screen.getByText('France')).toBeInTheDocument();
-    expect(screen.getByText('Île-de-F')).toBeInTheDocument();
+    expect(screen.getByText('Île-de-France')).toBeInTheDocument();
     expect(screen.getByText('Paris')).toBeInTheDocument();
     // Events.
     expect(screen.getByText('2020-01-01')).toBeInTheDocument();

@@ -36,7 +36,7 @@ export enum SortBy {
     Default = 'default',
     ConfirmationDate = 'confirmationDate',
     Country = 'country',
-    Place = 'place',
+    Admin3 = 'admin3',
     Location = 'location',
     Age = 'age',
     Occupation = 'occupation',
@@ -65,8 +65,8 @@ export const getSortByKeyword = (sortBy: SortBy): string => {
         case SortBy.Country:
             keyword = 'location.countryISO3';
             break;
-        case SortBy.Place:
-            keyword = 'location.place';
+        case SortBy.Admin3:
+            keyword = 'location.admin3';
             break;
         case SortBy.Location:
             keyword = 'location.location';
@@ -255,7 +255,9 @@ function denormalizeLocationFields(
     denormalizedData['location.country'] = doc.country || '';
     denormalizedData['location.countryISO3'] = doc.countryISO3 || '';
     denormalizedData['location.location'] = doc.location || '';
-    denormalizedData['location.place'] = doc.place || '';
+    denormalizedData['location.admin1'] = doc.admin1 || '';
+    denormalizedData['location.admin2'] = doc.admin2 || '';
+    denormalizedData['location.admin3'] = doc.admin3 || '';
     denormalizedData['location.geoResolution'] = doc.geoResolution || '';
     denormalizedData['location.geometry.latitude'] =
         doc.geometry?.latitude || '';

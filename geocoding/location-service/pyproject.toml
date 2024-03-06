@@ -47,6 +47,7 @@ Werkzeug = "1.0.1"
 WTForms = "2.3.3"
 ratelimiter = "1.2.0"
 dnspython = "2.1.0"
+flask-api = "2.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "7.1.3"

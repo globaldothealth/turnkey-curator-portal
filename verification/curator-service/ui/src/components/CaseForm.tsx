@@ -84,9 +84,12 @@ const initialValuesFromCase = (
                 country: '',
                 countryISO3: '',
                 location: '',
-                region: '',
-                district: '',
-                place: '',
+                admin1: '',
+                admin1WikiId: '',
+                admin2: '',
+                admin2WikiId: '',
+                admin3: '',
+                admin3WikiId: '',
                 geometry: {
                     latitude: undefined,
                     longitude: undefined,
@@ -178,9 +181,9 @@ const initialValuesFromCase = (
                 countryISO3: c.location.countryISO3,
                 name: c.location.name || '',
                 geoResolution: c.location.geoResolution || '',
-                region: c.location.region || '',
-                district: c.location.district || '',
-                place: c.location.place || '',
+                admin1: c.location.admin1 || '',
+                admin2: c.location.admin2 || '',
+                admin3: c.location.admin3 || '',
                 location: c.location.location || '',
             },
         },
@@ -382,17 +385,15 @@ export default function CaseForm(props: Props): JSX.Element {
         const preexistingConditions = values.preexistingConditionsHelper || [];
         const vaccineSideEffects = values.vaccineSideEffects || [];
         const symptoms = values.symptoms || [];
-        const region = values.location.region;
-        const district = values.location.district;
-        const place = values.location.place;
+        const admin1 = values.location.admin1;
+        const admin2 = values.location.admin2;
+        const admin3 = values.location.admin3;
         const country = values.location.country;
         let query;
         if (values.location.geocodeLocation?.query) {
             query = values.location.geocodeLocation.query;
         } else {
-            query = [place, district, region, country]
-                .filter(Boolean)
-                .join(',');
+            query = [admin3, admin2, admin1, country].filter(Boolean).join(',');
         }
 
         const newCase: Day0Case = {

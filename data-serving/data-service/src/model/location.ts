@@ -15,9 +15,12 @@ export const locationSchema = new mongoose.Schema(
         geoResolution: String,
         // Location represents a precise location, such as an establishment or POI.
         location: String,
-        region: String,
-        district: String,
-        place: String,
+        admin1: String,
+        admin1WikiId: String,
+        admin2: String,
+        admin2WikiId: String,
+        admin3: String,
+        admin3WikiId: String,
         query: String,
         name: String,
         geometry: {
@@ -34,9 +37,12 @@ export type LocationDocument = mongoose.Document & {
     countryISO3: string;
     geoResolution: string;
     location?: string;
-    region?: string;
-    district?: string;
-    place?: string;
+    admin1?: string;
+    admin1WikiId?: string;
+    admin2?: string;
+    admin2WikiId?: string;
+    admin3?: string;
+    admin3WikiId?: string;
     query?: string;
     name?: string;
     geometry?: {

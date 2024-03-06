@@ -140,6 +140,45 @@ def country_name():
         return "Unknown country code", 404
     return country.name, 200
 
+@app.route("/geocode/admin1")
+def suggest_admin1():
+    admin0 = request.args.get('admin0', type=str)
+    if not admin0:
+        logger.warning(f"No country code in request args {request.args}")
+        return "No country code", 400
+    if len(admin0) != 3:
+        logger.warning(f"Country code {admin0} is not three characters long in request {request}")
+        return "Bad ISO-3166-1 alpha-3 country code", 400
+    admin1Suggestions = suggester.suggest_admin1(admin0)
+    if admin1Suggestions is None:
+        logger.warning(f"Unknown ISO-3166-1 alpha-3 country code {admin0} from request {request}")
+        return f"Unknown ISO-3166-1 alpha-3 country code {admin0}", 404
+    return jsonify(admin1Suggestions), 200
+
+@app.route("/geocode/admin2")
+def suggest_admin2():
+    admin1WikiId = request.args.get('admin1WikiId', type=str)
+    if not admin1WikiId:
+        logger.warning(f"No admin1WikiId in request {request}")
+        return "No admin1WikiId in request", 400
+    admin2Suggestions = suggester.suggest_admin2(admin1WikiId)
+    if admin2Suggestions is None:
+        logger.warning(f"Unknown admin1WikiId {admin1WikiId} from request {request}")
+        return f"Unknown admin1WikiId {admin1WikiId}", 404
+    return jsonify(admin2Suggestions), 200
+
+@app.route("/geocode/admin3")
+def suggest_admin3():
+    admin2WikiId = request.args.get('admin2WikiId', type=str)
+    if not admin2WikiId:
+        logger.warning(f"No admin2WikiId in request {request}")
+        return "No admin2WikiId in request", 400
+    admin3Suggestions = suggester.suggest_admin3(admin2WikiId)
+    if admin3Suggestions is None:
+        logger.warning(f"Unknown admin2WikiId {admin2WikiId} from request {request}")
+        return f"Unknown admin2WikiId {admin2WikiId}", 404
+    return jsonify(admin3Suggestions), 200
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080)
