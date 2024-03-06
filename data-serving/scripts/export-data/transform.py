@@ -262,8 +262,6 @@ def convert_row(row: dict[str, Any], buckets: list[dict[str, Any]]) -> Optional[
         row["caseReference.additionalSources"] = convert_addl_sources(
             row["caseReference.additionalSources"]
         )
-    if not row.get("SGTF"):
-        row["SGTF"] = "NA"
     if row["travelHistory.traveledPrior30Days"] == "true":
         if "travelHistory.travel" in row:
             row.update(convert_travel(row["travelHistory.travel"]))

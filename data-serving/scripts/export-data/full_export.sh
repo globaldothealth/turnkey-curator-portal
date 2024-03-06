@@ -12,7 +12,7 @@ require_env "${CONN:-}" "Specify MongoDB connection string in CONN"
 
 SCRATCH="$(mktemp -d)"
 BUCKETS="${SCRATCH}/buckets.json"
-ALL_DATA="${SCRATCH}/all_data.json"
+ALL_DATA="${SCRATCH}/all_data.csv"
 trap 'rm -rf "$SCRATCH"' EXIT  # Cleanup before exit
 
 FORMAT="${FORMAT:-csv,tsv,json}"
