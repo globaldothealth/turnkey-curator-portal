@@ -5,11 +5,11 @@ on:
     branches: [main]
     paths:
     - '.github/workflows/aggregate-ci.yml'
-    - 'data-serving/scripts/aggregate-covid19/aggregate/**'
+    - 'data-serving/scripts/aggregate-data/aggregate/**'
   pull_request:
     paths:
     - '.github/workflows/aggregate-ci.yml'
-    - 'data-serving/scripts/aggregate-covid19/aggregate/**'
+    - 'data-serving/scripts/aggregate-data/aggregate/**'
   workflow_dispatch:
 
 jobs:
@@ -17,7 +17,12 @@ jobs:
     runs-on: ubuntu-20.04
     defaults:
       run:
-        working-directory: data-serving/scripts/aggregate-covid19/aggregate
+        working-directory: data-serving/scripts/aggregate-data/aggregate
+    env:
+      S3_AGGREGATE_BUCKET: 'mock-aggregate-bucket'
+      S3_MAP_DATA_BUCKET: 'mock-map-data-bucket'
+      CONN: 'mock-conn'
+      DATABASE_NAME: 'mock-database-name'
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python 3.10

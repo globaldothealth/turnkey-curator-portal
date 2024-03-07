@@ -12,10 +12,10 @@ BUCKETS="${SCRATCH}/buckets.json"
 trap 'rm -rf "$SCRATCH"' EXIT  # Cleanup before exit
 
 FORMAT="${FORMAT:-csv,tsv,json}"
-QUERY="{\"list\": true, \"location.country\": \"$COUNTRY\"}"
+QUERY="{\"location.countryISO3\": \"${COUNTRY}\", \"curators.verifiedBy\": { \"\$exists\": \"true\"}}"
 
 mongoexport --uri="$CONN" --collection=ageBuckets --type=json --jsonArray -o "${BUCKETS}"
-mongoexport --query="$QUERY" --uri="$CONN" --collection=cases \
+mongoexport --query="$QUERY" --uri="$CONN" --collection=day0cases \
     --fieldFile=fields.txt --type=csv | python3 transform.py -f "$FORMAT" -b "${BUCKETS}" "$COUNTRY"
 
 # ignore shellcheck warning on word splitting, as it's actually needed here

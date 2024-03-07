@@ -77,23 +77,6 @@ def convert_date(date_string: str) -> Optional[str]:
         return date_string[:10]
 
 
-def convert_event(event: dict[str, Any]) -> dict[str, Any]:
-    """
-    Process individual events in the events array.
-
-    Returns an unnested dictionary.
-    """
-    suffix = event["name"]
-    col_name = f"events.{suffix}"
-
-    flattened_event = {
-        f"{col_name}.date": convert_date(deep_get(event, "dateRange.end.$date")),
-    }
-    if suffix not in ["selfIsolation", "onsetSymptoms", "firstClinicalConsultation"]:
-        flattened_event[f"{col_name}.value"] = event.get("value")
-    return flattened_event
-
-
 def convert_addl_sources(sources_string: str) -> str:
     if sources_string == "[]":
         return None
@@ -189,17 +172,6 @@ def get_headers_and_fields(fileobject) -> list[str]:
     cols_to_add = [
         "demographics.ageRange.start",
         "demographics.ageRange.end",
-        "events.confirmed.value",
-        "events.confirmed.date",
-        "events.firstClinicalConsultation.date",
-        "events.hospitalAdmission.date",
-        "events.hospitalAdmission.value",
-        "events.icuAdmission.date",
-        "events.icuAdmission.value",
-        "events.onsetSymptoms.date",
-        "events.outcome.date",
-        "events.outcome.value",
-        "events.selfIsolation.date",
     ]
     cols_to_remove = [
         "demographics.ageBuckets",
@@ -281,7 +253,7 @@ def convert_age(row: dict[str, Any], buckets: list[dict[str, Any]]) -> Optional[
 def convert_row(row: dict[str, Any], buckets: list[dict[str, Any]]) -> Optional[dict[str, Any]]:
     "Converts row for export using age buckets"
 
-    if "ObjectId" not in row["_id"]:
+    if not row["_id"].isdigit():
         return None
     for arr_field in __ARRAYS:
         if row.get(arr_field):
@@ -290,11 +262,6 @@ def convert_row(row: dict[str, Any], buckets: list[dict[str, Any]]) -> Optional[
         row["caseReference.additionalSources"] = convert_addl_sources(
             row["caseReference.additionalSources"]
         )
-    if not row.get("SGTF"):
-        row["SGTF"] = "NA"
-    if row.get("events", None):
-        for e in json.loads(row["events"]):
-            row.update(convert_event(e))
     if row["travelHistory.traveledPrior30Days"] == "true":
         if "travelHistory.travel" in row:
             row.update(convert_travel(row["travelHistory.travel"]))

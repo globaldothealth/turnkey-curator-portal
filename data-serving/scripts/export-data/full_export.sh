@@ -4,39 +4,29 @@
 
 set -xeuo pipefail
 source ./common.sh
-require_env "${COUNTRY_EXPORT_BUCKET:-}" "Specify COUNTRY_EXPORT_BUCKET"
 require_env "${FULL_EXPORT_BUCKET:-}" "Specify FULL_EXPORT_BUCKET"
 require_env "${GDOTH_API_BASEURL:-}" "Specify GDOTH_API_BASEURL"
 require_env "${GDOTH_API_KEY:-}" "Specify GDOTH_API_KEY"
+require_env "${CONN:-}" "Specify MongoDB connection string in CONN"
 
-# https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-retries.html#cli-usage-retries-configure
-export AWS_MAX_ATTEMPTS=10
 
-COUNTRY_EXPORT_BUCKET="s3://${COUNTRY_EXPORT_BUCKET}"
-FULL_EXPORT_BUCKET="s3://${FULL_EXPORT_BUCKET}"
+SCRATCH="$(mktemp -d)"
+BUCKETS="${SCRATCH}/buckets.json"
+ALL_DATA="${SCRATCH}/all_data.csv"
+trap 'rm -rf "$SCRATCH"' EXIT  # Cleanup before exit
 
-# Unlike country_export.sh, here FORMAT only takes one value
-# Multiple formats are exported using separate AWS Batch job definitions
-FORMAT="${FORMAT:-csv}"
-FILE="latestdata-${FORMAT}.tar"
-FILE_DATE="$(date '+%Y-%m-%d')-${FORMAT}.tar"
+FORMAT="${FORMAT:-csv,tsv,json}"
+QUERY="{\"curators.verifiedBy\": { \"\$exists\": \"true\"}}"
 
-DIR="$(mktemp -d)"
-echo "Starting full export for format: $FORMAT"
-echo "Made temporary directory $DIR"
-trap 'rm -rf "$DIR"' EXIT  # Cleanup before exit
+mongoexport --uri="$CONN" --collection=ageBuckets --type=json --jsonArray -o "${BUCKETS}"
+mongoexport --query="$QUERY" --uri="$CONN" --collection=day0cases \
+    --fieldFile=fields.txt --type=csv -o "${ALL_DATA}"
+python3 transform.py -f "$FORMAT" -b "${BUCKETS}" -i "${ALL_DATA}" "full"
 
-cp data_dictionary.txt citation.txt "$DIR"
-
-echo "Getting country list from ${GDOTH_API_BASEURL}..."
-curl -H "X-API-Key: ${GDOTH_API_KEY}" "${GDOTH_API_BASEURL}/api/geocode/countryNames" > "${DIR}/countries.json"
-
-mkdir "${DIR}/country"
-echo "Downloading files from ${COUNTRY_EXPORT_BUCKET}..."
-aws s3 sync "${COUNTRY_EXPORT_BUCKET}/${FORMAT}/" "${DIR}/country"
-echo "Preparing tarball..."
-tar cf "$FILE" -C "$DIR" .
-echo "Uploading to ${FULL_EXPORT_BUCKET}..."
-aws s3 cp "$FILE" "${FULL_EXPORT_BUCKET}/latest/${FILE}"
-aws s3 cp "${FULL_EXPORT_BUCKET}/latest/${FILE}" "${FULL_EXPORT_BUCKET}/archive/${FILE_DATE}"
-echo "Done!"
+# ignore shellcheck warning on word splitting, as it's actually needed here
+# shellcheck disable=SC2086
+for fmt in ${FORMAT//,/ }
+do
+   test -f "full.${fmt}.gz" && aws s3 cp "full.${fmt}.gz" "s3://${FULL_EXPORT_BUCKET}/${fmt}/"
+   rm "full.${fmt}.gz"
+done

@@ -120,11 +120,11 @@ def main():
     today = datetime.datetime.now().date()
 
     setup_logger()
-    if envs := {"CONN", "S3_BUCKET", "S3_MAP_DATA_BUCKET", "DATABASE_NAME"} - set(os.environ):
+    if envs := {"CONN", "S3_AGGREGATE_BUCKET", "S3_MAP_DATA_BUCKET", "DATABASE_NAME"} - set(os.environ):
         logging.info(f"Required {envs} not set in the environment, exiting")
         sys.exit(1)
 
-    bucket = os.environ.get("S3_BUCKET")
+    bucket = os.environ.get("S3_AGGREGATE_BUCKET")
     map_data_bucket = os.environ.get("S3_MAP_DATA_BUCKET")
     logging.info("Starting fetching map data from S3")
     try:

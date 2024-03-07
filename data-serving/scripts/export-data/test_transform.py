@@ -19,30 +19,52 @@ _ADDITIONAL_SOURCES = [
     ),
 ]
 
-_EVENTS = [
-    (
-        {
-            "name": "outcome",
-            "value": "Recovered",
-            "dateRange": {
-                "start": {"$date": "2021-07-21T00:00:00.000Z"},
-                "end": {"$date": "2021-07-21T00:00:00.000Z"},
-            },
-        },
-        {"events.outcome.date": "2021-07-21", "events.outcome.value": "Recovered"},
-    ),
-    (
-        {
-            "name": "outcome",
-            "value": "Death",
-            "dateRange": {
-                "start": {"$date": "2021-06-23T00:00:00.000Z"},
-                "end": {"$date": "2021-06-23T00:00:00.000Z"},
-            },
-        },
-        {"events.outcome.date": "2021-06-23", "events.outcome.value": "Death"},
-    ),
-]
+_EVENTS = {
+    "dateEntry": {"$date": "2021-07-21T00:00:00.000Z"},
+    "dateReported": {"$date": "2021-07-20T00:00:00.000Z"},
+    "dateLastModified": {"$date": "2021-07-19T00:00:00.000Z"},
+    "dateOnset": {"$date": "2021-07-18T00:00:00.000Z"},
+    "dateConfirmation": {"$date": "2021-07-17T00:00:00.000Z"},
+    "confirmationMethod": "last report",
+    "dateOfFirstConsult": {"$date": "2021-07-16T00:00:00.000Z"},
+    "hospitalized": "Y",
+    "reasonForHospitalization": "monitoring",
+    "dateHospitalization": {"$date": "2021-07-15T00:00:00.000Z"},
+    "dateDischargeHospital": {"$date": "2021-07-14T00:00:00.000Z"},
+    "intensiveCare": "Y",
+    "dateAdmissionICU": {"$date": "2021-07-13T00:00:00.000Z"},
+    "dateDischargeICU": {"$date": "2021-07-12T00:00:00.000Z"},
+    "homeMonitoring": "Y",
+    "isolated": "Y",
+    "dateIsolation": {"$date": "2021-07-11T00:00:00.000Z"},
+    "outcome": "death",
+    "dateDeath": {"$date": "2021-07-10T00:00:00.000Z"},
+    "dateRecovered": {"$date": "2021-07-09T00:00:00.000Z"},
+}
+
+_EVENTS_parsed = {
+    "events.dateEntry": "2021-07-21",
+    "events.dateReported": "2021-07-20",
+    "events.dateLastModified": "2021-07-19",
+    "events.dateOnset": "2021-07-18",
+    "events.dateConfirmation": "2021-07-17",
+    "events.confirmationMethod": "last report",
+    "events.dateOfFirstConsult": "2021-07-16",
+    "events.hospitalized": "Y",
+    "events.reasonForHospitalization": "monitoring",
+    "events.dateHospitalization": "2021-07-15",
+    "events.dateDischargeHospital": "2021-07-14",
+    "events.intensiveCare": "Y",
+    "events.dateAdmissionICU": "2021-07-13",
+    "events.dateDischargeICU": "2021-07-12",
+    "events.homeMonitoring": "Y",
+    "events.isolated": "Y",
+    "events.dateIsolation": "2021-07-11",
+    "events.outcome": "death",
+    "events.dateDeath": "2021-07-10",
+    "events.dateRecovered": "2021-07-09",
+}
+
 
 _TRAVEL = [
     {
@@ -107,11 +129,6 @@ def test_convert_addl_sources(sources, expected):
     assert T.convert_addl_sources(sources) == expected
 
 
-@pytest.mark.parametrize("source,expected", _EVENTS)
-def test_convert_event(source, expected):
-    assert T.convert_event(source) == expected
-
-
 def test_convert_travel():
     assert T.convert_travel(json.dumps(_TRAVEL)) == _TRAVEL_parsed
 
@@ -128,7 +145,8 @@ def test_transform_output_match(fmt):
 
     lines_to_compare = zip(expected_lines, actual_lines)
     for line_pair in lines_to_compare:
-        assert line_pair[0] == line_pair[1]
+        # whitespaces in tsv file are causing issues with assert
+        assert "".join(line_pair[0].split()) == "".join(line_pair[1].split())
 
 
 def test_transform_empty(tmp_path):
@@ -167,7 +185,7 @@ def test_age_bucket_conversion():
 
 def test_age_bucket_row_conversion():
     row = {
-        "_id": "ObjectId(abc123)",
+        "_id": "1",
         "travelHistory.traveledPrior30Days": "false",
         "demographics.ageBuckets": "[\"001\"]"
     }

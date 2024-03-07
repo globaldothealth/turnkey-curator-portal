@@ -11,7 +11,7 @@ from freezegun import freeze_time
 import datetime
 
 
-S3_BUCKET = os.environ['S3_BUCKET']
+S3_AGGREGATE_BUCKET = os.environ['S3_AGGREGATE_BUCKET']
 S3_MAP_DATA_BUCKET = os.environ['S3_MAP_DATA_BUCKET']
 
 CASES = [
@@ -305,7 +305,7 @@ def s3():
         os.environ['AWS_DEFAULT_REGION'] = 'us-east-1'
         s3 = boto3.client("s3", endpoint_url=os.environ.get("S3_ENDPOINT"))
         s3.create_bucket(Bucket=S3_MAP_DATA_BUCKET)
-        s3.create_bucket(Bucket=S3_BUCKET)
+        s3.create_bucket(Bucket=S3_AGGREGATE_BUCKET)
         s3.put_object(
             ACL="public-read",
             Body=json.dumps(mocked_adm0_map_data),
@@ -342,60 +342,60 @@ def test_count_dataframe(s3):
 
     # We check if there are no objects in the bucket
     with pytest.raises(ClientError) as e:
-        s3.get_object(Bucket=S3_BUCKET, Key='admin0/latest.json')
+        s3.get_object(Bucket=S3_AGGREGATE_BUCKET, Key='admin0/latest.json')
     assert e.typename == 'NoSuchKey'
     with pytest.raises(ClientError) as e:
-        s3.get_object(Bucket=S3_BUCKET, Key='admin0/02-01-2024.json')
-    assert e.typename == 'NoSuchKey'
-
-    with pytest.raises(ClientError) as e:
-        s3.get_object(Bucket=S3_BUCKET, Key='admin1/latest.json')
-    assert e.typename == 'NoSuchKey'
-    with pytest.raises(ClientError) as e:
-        s3.get_object(Bucket=S3_BUCKET, Key='admin0/02-01-2024.json')
+        s3.get_object(Bucket=S3_AGGREGATE_BUCKET, Key='admin0/02-01-2024.json')
     assert e.typename == 'NoSuchKey'
 
     with pytest.raises(ClientError) as e:
-        s3.get_object(Bucket=S3_BUCKET, Key='admin1/latest.json')
+        s3.get_object(Bucket=S3_AGGREGATE_BUCKET, Key='admin1/latest.json')
     assert e.typename == 'NoSuchKey'
     with pytest.raises(ClientError) as e:
-        s3.get_object(Bucket=S3_BUCKET, Key='admin2/02-01-2024.json')
+        s3.get_object(Bucket=S3_AGGREGATE_BUCKET, Key='admin0/02-01-2024.json')
     assert e.typename == 'NoSuchKey'
 
     with pytest.raises(ClientError) as e:
-        s3.get_object(Bucket=S3_BUCKET, Key='admin3/latest.json')
+        s3.get_object(Bucket=S3_AGGREGATE_BUCKET, Key='admin1/latest.json')
     assert e.typename == 'NoSuchKey'
     with pytest.raises(ClientError) as e:
-        s3.get_object(Bucket=S3_BUCKET, Key='admin3/02-01-2024.json')
+        s3.get_object(Bucket=S3_AGGREGATE_BUCKET, Key='admin2/02-01-2024.json')
+    assert e.typename == 'NoSuchKey'
+
+    with pytest.raises(ClientError) as e:
+        s3.get_object(Bucket=S3_AGGREGATE_BUCKET, Key='admin3/latest.json')
+    assert e.typename == 'NoSuchKey'
+    with pytest.raises(ClientError) as e:
+        s3.get_object(Bucket=S3_AGGREGATE_BUCKET, Key='admin3/02-01-2024.json')
     assert e.typename == 'NoSuchKey'
 
     app.main()
 
     # We check if the newly created objects are in the bucket
-    s3_adm0_latest_obj = s3.get_object(Bucket=S3_BUCKET, Key='admin0/latest.json')
+    s3_adm0_latest_obj = s3.get_object(Bucket=S3_AGGREGATE_BUCKET, Key='admin0/latest.json')
     s3_adm0_latest_json = json.loads(s3_adm0_latest_obj['Body'].read())
     assert s3_adm0_latest_json == expected_adm0_json
-    s3_adm0_dated_obj = s3.get_object(Bucket=S3_BUCKET, Key='admin0/02-01-2024.json')
+    s3_adm0_dated_obj = s3.get_object(Bucket=S3_AGGREGATE_BUCKET, Key='admin0/02-01-2024.json')
     s3_adm0_dated_json = json.loads(s3_adm0_dated_obj['Body'].read())
     assert s3_adm0_dated_json == expected_adm0_json
 
-    s3_adm1_latest_obj = s3.get_object(Bucket=S3_BUCKET, Key='admin1/latest.json')
+    s3_adm1_latest_obj = s3.get_object(Bucket=S3_AGGREGATE_BUCKET, Key='admin1/latest.json')
     s3_adm1_latest_json = json.loads(s3_adm1_latest_obj['Body'].read())
     assert s3_adm1_latest_json == expected_adm1_json
-    s3_adm1_dated_obj = s3.get_object(Bucket=S3_BUCKET, Key='admin1/02-01-2024.json')
+    s3_adm1_dated_obj = s3.get_object(Bucket=S3_AGGREGATE_BUCKET, Key='admin1/02-01-2024.json')
     s3_adm1_dated_json = json.loads(s3_adm1_dated_obj['Body'].read())
     assert s3_adm1_dated_json == expected_adm1_json
 
-    s3_adm2_latest_obj = s3.get_object(Bucket=S3_BUCKET, Key='admin2/latest.json')
+    s3_adm2_latest_obj = s3.get_object(Bucket=S3_AGGREGATE_BUCKET, Key='admin2/latest.json')
     s3_adm2_latest_json = json.loads(s3_adm2_latest_obj['Body'].read())
     assert s3_adm2_latest_json == expected_adm2_json
-    s3_adm2_dated_obj = s3.get_object(Bucket=S3_BUCKET, Key='admin2/02-01-2024.json')
+    s3_adm2_dated_obj = s3.get_object(Bucket=S3_AGGREGATE_BUCKET, Key='admin2/02-01-2024.json')
     s3_adm2_dated_json = json.loads(s3_adm2_dated_obj['Body'].read())
     assert s3_adm2_dated_json == expected_adm2_json
 
-    s3_adm3_latest_obj = s3.get_object(Bucket=S3_BUCKET, Key='admin3/latest.json')
+    s3_adm3_latest_obj = s3.get_object(Bucket=S3_AGGREGATE_BUCKET, Key='admin3/latest.json')
     s3_adm3_latest_json = json.loads(s3_adm3_latest_obj['Body'].read())
     assert s3_adm3_latest_json == expected_adm3_json
-    s3_adm3_dated_obj = s3.get_object(Bucket=S3_BUCKET, Key='admin3/02-01-2024.json')
+    s3_adm3_dated_obj = s3.get_object(Bucket=S3_AGGREGATE_BUCKET, Key='admin3/02-01-2024.json')
     s3_adm3_dated_json = json.loads(s3_adm3_dated_obj['Body'].read())
     assert s3_adm3_dated_json == expected_adm3_json
