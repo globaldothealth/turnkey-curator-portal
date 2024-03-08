@@ -48,7 +48,7 @@ def map_adm0(adm0_entry, adm0_map_data):
     lastUpdated = adm0_entry.get('lastUpdated', '')
     if lastUpdated != '':
         lastUpdated = lastUpdated.strftime("%Y-%m-%d")
-    if id == '':
+    if id == '' or id not in adm0_map_data:
         return {"name": "", "caseCount": caseCount, "lastUpdated": lastUpdated, "countryCode": ''}
     return {**adm0_map_data[id], "caseCount": caseCount, "lastUpdated": lastUpdated, "countryCode": countryCode}
 
@@ -66,7 +66,7 @@ def map_adm1(adm1_entry, adm1_map_data):
     lastUpdated = adm1_entry.get('lastUpdated', '')
     if lastUpdated != '':
         lastUpdated = lastUpdated.strftime("%Y-%m-%d")
-    if id == '':
+    if id == '' or id not in adm1_map_data:
         return {"name": "", "caseCount": caseCount, "lastUpdated": lastUpdated, "countryCode": ''}
     return {**adm1_map_data[id], "caseCount": caseCount, "lastUpdated": lastUpdated, "countryCode": countryCode}
 
@@ -84,7 +84,7 @@ def map_adm2(adm2_entry, adm2_map_data):
     lastUpdated = adm2_entry.get('lastUpdated', '')
     if lastUpdated != '':
         lastUpdated = lastUpdated.strftime("%Y-%m-%d")
-    if id == '':
+    if id == '' or id not in adm2_map_data:
         return {"name": "", "caseCount": caseCount, "lastUpdated": lastUpdated, "countryCode": ''}
     return {**adm2_map_data[id], "caseCount": caseCount, "lastUpdated": lastUpdated, "countryCode": countryCode}
 
@@ -102,7 +102,7 @@ def map_adm3(adm3_entry, adm3_map_data):
     lastUpdated = adm3_entry.get('lastUpdated', '')
     if lastUpdated != '':
         lastUpdated = lastUpdated.strftime("%Y-%m-%d")
-    if id == '':
+    if id == '' or id not in adm3_map_data:
         return {"name": "", "caseCount": caseCount, "lastUpdated": lastUpdated, "countryCode": ''}
     return {**adm3_map_data[id], "caseCount": caseCount, "lastUpdated": lastUpdated, "countryCode": countryCode}
 
