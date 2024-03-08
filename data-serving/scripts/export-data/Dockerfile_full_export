@@ -6,4 +6,8 @@ COPY common.sh .
 COPY full_export.sh .
 COPY data_dictionary.txt .
 COPY citation.txt .
+COPY country_export.sh .
+COPY logger.py .
+COPY transform.py .
+COPY fields.txt .
 ENTRYPOINT ["./full_export.sh"]
