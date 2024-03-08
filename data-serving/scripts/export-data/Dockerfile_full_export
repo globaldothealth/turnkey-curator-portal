@@ -1,6 +1,6 @@
 FROM alpine:3.16
 RUN apk update
-RUN apk add bash aws-cli curl
+RUN apk add bash aws-cli mongodb-tools python3 curl
 
 COPY common.sh .
 COPY full_export.sh .
