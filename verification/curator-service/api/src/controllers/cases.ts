@@ -199,16 +199,15 @@ export default class CasesController {
         const month = ('0' + (dateObj.getMonth() + 1)).slice(-2);
         const year = dateObj.getFullYear();
 
-        const filename = `gh_${year}-${month}-${day}.tar`;
+        const filename = `gh_${year}-${month}-${day}.csv.gz`;
 
         const params = {
             Bucket: this.completeDataBucket,
-            Key: 'latest/latestdata-csv.tar',
+            Key: 'csv/full.csv.gz',
             Expires: 5 * 60,
             ResponseContentDisposition:
                 'attachment; filename ="' + filename + '"',
         };
-
         const user = req.user as IUser;
 
         try {
