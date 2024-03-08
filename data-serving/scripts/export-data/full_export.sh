@@ -5,8 +5,6 @@
 set -xeuo pipefail
 source ./common.sh
 require_env "${FULL_EXPORT_BUCKET:-}" "Specify FULL_EXPORT_BUCKET"
-require_env "${GDOTH_API_BASEURL:-}" "Specify GDOTH_API_BASEURL"
-require_env "${GDOTH_API_KEY:-}" "Specify GDOTH_API_KEY"
 require_env "${CONN:-}" "Specify MongoDB connection string in CONN"
 
 
