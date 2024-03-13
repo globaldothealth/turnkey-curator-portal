@@ -43,6 +43,11 @@ ENV REACT_APP_POLICY_PUBLIC_ID "89575059"
 ENV REACT_APP_COOKIE_CONSENT_PUBLIC_ID "2070778"
 ENV REACT_APP_RECAPTCHA_SITE_KEY "6LdhjvwgAAAAALrxavR_zR58kxxap07D4ba8X-jE"
 ENV REACT_APP_DISEASE_NAME "Mpox"
+ENV REACT_APP_MAP_LINK_DEV "https://map-dev.mpox-2024.global.health/"
+ENV REACT_APP_MAP_LINK_LOCAL "https://map-dev.mpox-2024.global.health/"
+ENV REACT_APP_MAP_LINK_LOCAL_E2E "https://map-dev.mpox-2024.global.health/"
+ENV REACT_APP_MAP_LINK_PROD "https://map.mpox-2024.global.health/"
+ENV REACT_APP_MAP_LINK_QA "https://map-dev.mpox-2024.global.health/"
 
 RUN npm run build
 
