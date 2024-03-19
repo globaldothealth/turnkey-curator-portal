@@ -8,8 +8,6 @@ This directory contains scripts to set up, run, and test the full stack during d
 - `setup-db.sh`: A script to that connects to your locally-running MongoDB instance (and ONLY that instance!) and (re-)creates the database and
   collection, applies the schema, creates indexes, and inserts some sample data.
 - `test_all.sh`: A script to run all of the tests from the sub-packages. Uses `run_full_stack.sh`.
-- `run_session.py`: Creates a new user, logs in, requests downloads from the curator service, and checks each download for formatting and contents.
-- `parsing.py`: Lists, describes, and runs local end-to-end parsers
 
 What, exactly, is this stack that we're running and/or testing? All of the components of this repo working together: a
 curator UI server that talks to a curator API server that talks to a data server. More concretely, a user can log into
@@ -50,14 +48,7 @@ LOCALSTACK_API_KEY=<Localstack (mock AWS) API key>
 **Note:** Local end-to-end testing, which uses `parsing.py` with either `run_full_stack.sh` or `test_full_stack.sh`, requires `LOCALSTACK_API_KEY`
 in order to use the paid features of Localstack.
 
-These values are stored in a dedicated secret manager. To request AWS credentials, or for access to
-other secret values, contact one of:
-
-- Christopher.Remmel@childrens.harvard.edu
-- Gaurav.Tuli@childrens.harvard.edu
-- Spencer.Marks@childrens.harvard.edu
-
-Note that for local development, it's fine to use your own values for these
+For local development, it's fine to use your own values for these
 secrets if you have them. For instance, if you have a developer Mapbox API
 token, or if you'd like to use a different GMail account for mailing notifications, or different OAuth client values.
 
@@ -216,10 +207,6 @@ explained above then:
 use covid19
 db.cases.remove({})
 ```
-
-## IDE setup
-
-If you're using VSCode, `.vscode/settings.json` contains useful default settings for working with Typescript and NodeJS.
 
 ## Update of dependencies
 

@@ -4,7 +4,8 @@
     "pathogen": "COVID-19",
     "caseReference": {
       "sourceId": "5ea86423bae6982635d2e1f8",
-      "sourceUrl": "https://test.com"
+      "sourceUrl": "https://test.com",
+      "isGovernmentSource": false
     },
     "location": {
       "country": "Poland",
@@ -16,6 +17,11 @@
     },
     "events": {
       "dateEntry": {
+        "$date": {
+          "$numberLong": "1578891600000"
+        }
+      },
+      "dateReported": {
         "$date": {
           "$numberLong": "1578891600000"
         }
@@ -38,7 +44,8 @@
     "pathogen": "COVID-19",
     "caseReference": {
       "sourceId": "5ea86423bae6982635d2e1f8",
-      "sourceUrl": "https://test.com"
+      "sourceUrl": "https://test.com",
+      "isGovernmentSource": false
     },
     "location": {
       "country": "Poland",
@@ -50,6 +57,11 @@
     },
     "events": {
       "dateEntry": {
+        "$date": {
+          "$numberLong": "1578891600000"
+        }
+      },
+      "dateReported": {
         "$date": {
           "$numberLong": "1578891600000"
         }

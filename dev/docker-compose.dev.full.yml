@@ -4,6 +4,7 @@ services:
     environment:
       DEBUG: "True"
       ENABLE_FAKE_GEOCODER: "True"
+      DB: "${DISEASE_NAME}"
   mongo:
     volumes:
       - "../verification/scripts:/verification/scripts"
@@ -22,6 +23,11 @@ services:
       STATIC_DIR: ""
       ENABLE_LOCAL_AUTH: "true"
       DISEASE_NAME: "${DISEASE_NAME}"
+      BASE_URL: "${BASE_URL}"
+      COMPLETE_DATA_BUCKET: "${COMPLETE_DATA_BUCKET}"
+      COUNTRY_DATA_BUCKET: "${COUNTRY_DATA_BUCKET}"
+      REACT_APP_RECAPTCHA_SITE_KEY: "${REACT_APP_RECAPTCHA_SITE_KEY}"
+      NODE_ENV: "dev"
   data:
     command: "npm run dev"
     volumes:
@@ -31,6 +37,7 @@ services:
       - mongo
     environment:
       SERVICE_ENV: "local"
+      NODE_ENV: "dev"
   curatorui:
     command: "npm run start-noenv"
     volumes:
@@ -47,7 +54,7 @@ services:
       ENABLE_LOCAL_AUTH: "true"
       DISEASE_NAME: "${DISEASE_NAME}"
   localstack:
-    image: localstack/localstack-full
+    image: localstack/localstack-pro
     ports:
       - "53:53"
       - "443:443"
@@ -61,7 +68,7 @@ services:
       AWS_ACCESS_KEY_ID: "fake"
       AWS_SECRET_ACCESS_KEY: "fake"
       LOCALSTACK_API_KEY: "${LOCALSTACK_API_KEY}"
-      SERVICES: s3,ec2,ses,batch,events,iam,lambda,ecr
+      SERVICES: s3,ec2,ses,batch,events,iam,ecr
       DEBUG: 1
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4566/health"]
@@ -82,49 +89,4 @@ services:
       DATA_BUCKET_NAME: "covid-19-data-export"
       CACHE_BUCKET_NAME: "covid-19-country-export"
       RETRIEVAL_BUCKET_NAME: "gdh-sources"
-      BATCH_QUEUE_NAME: "ingestion-queue"
       SES_EMAIL_ADDRESS: "info@global.health"
-      ECR_REPOSITORY_NAME: "gdh-ingestor"
-  setup-ingestion:
-    build:
-      context: ./
-      dockerfile: Dockerfile-ingestion
-    depends_on:
-      - setup-localstack
-    volumes:
-      - "../ingestion/functions:/ingestion/functions"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    environment:
-      AWS_ACCESS_KEY_ID: "fake"
-      AWS_SECRET_ACCESS_KEY: "fake"
-      AWS_DEFAULT_REGION: "eu-central-1"
-      AWS_ENDPOINT: "http://localstack:4566"
-      RETRIEVAL_BUCKET_NAME: "gdh-sources"
-      BATCH_QUEUE_NAME: "ingestion-queue"
-      ECR_REPOSITORY_NAME: "gdh-ingestor"
-      MOCK_SOURCE_DATA_SERVICE: "http://mock-source-data"
-      MOCK_SOURCE_DATA_PORT: 5001
-      CLIENT_EMAIL: "fake@fake.fake"
-  mock-source-data:
-    build:
-      context: ./
-      dockerfile: Dockerfile-mock-source-data
-    ports:
-      - "5001:5001"
-    volumes:
-      - "../ingestion/functions:/ingestion/functions"
-    environment:
-      MOCK_SOURCE_DATA_HOST: "0.0.0.0"
-      MOCK_SOURCE_DATA_PORT: 5001
-      MOCK_SOURCE_DATA_SERVICE: "http://mock-source-data"
-      AWS_ACCESS_KEY_ID: "fake"
-      AWS_SECRET_ACCESS_KEY: "fake"
-      AWS_DEFAULT_REGION: "eu-central-1"
-      AWS_ENDPOINT: "http://localstack:4566"
-      RETRIEVAL_BUCKET_NAME: "gdh-sources"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
