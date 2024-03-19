@@ -4,6 +4,7 @@ caseReference.sourceId
 caseReference.sourceUrl
 caseReference.uploadIds
 caseReference.verificationStatus
+caseStatus
 demographics.ageRange.start
 demographics.ageRange.end
 demographics.ageBuckets
