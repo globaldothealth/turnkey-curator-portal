@@ -6,6 +6,7 @@ import {
     CuratorsDocument,
 } from '../model/day0-case';
 import caseFields from '../model/fields.json';
+import { CaseStatus } from '../types/enums';
 import { Error, Query } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { GeocodeOptions, Geocoder, Resolution } from '../geocoding/geocoder';
@@ -500,7 +501,11 @@ export class CasesController {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const countriesData: any = {};
             // Get total case cardinality
-            const grandTotalCount = await Day0Case.countDocuments({});
+            const grandTotalCount = await Day0Case.countDocuments({
+                caseStatus: {
+                    $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
+                }
+            });
             if (grandTotalCount === 0) {
                 res.status(200).json({});
                 return;
@@ -508,6 +513,13 @@ export class CasesController {
 
             // Get cardinality of case statuses by country
             const countriesStatusCounts = await Day0Case.aggregate([
+                {
+                    $match: {
+                        caseStatus: {
+                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
+                        }
+                    }
+                },
                 {
                     $group: {
                         _id: {
@@ -558,7 +570,10 @@ export class CasesController {
                             $exists: true,
                             $ne: null,
                         },
-                    },
+                        caseStatus: {
+                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
+                        }
+                    }
                 },
                 {
                     $group: {
@@ -626,6 +641,13 @@ export class CasesController {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const totalStatusCount: any = await Day0Case.aggregate([
                 {
+                    $match: {
+                        caseStatus: {
+                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
+                        }
+                    }
+                },
+                {
                     $group: {
                         _id: '$caseStatus',
                         count: {
@@ -652,6 +674,13 @@ export class CasesController {
 
             // Get cardinality of outcomes total
             const totalOutcomeCount = await Day0Case.aggregate([
+                {
+                    $match: {
+                        caseStatus: {
+                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
+                        }
+                    }
+                },
                 {
                     $match: {
                         'events.outcome': {

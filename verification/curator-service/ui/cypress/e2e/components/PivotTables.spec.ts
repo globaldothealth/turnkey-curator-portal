@@ -90,6 +90,41 @@ describe('Pivot Tables', function () {
         });
     });
 
+    it('Does not display omitted or discarded cases in the Pivot Table', function () {
+        cy.intercept('GET', '/api/cases/countryData', {}).as('getCasesByCountryPivotData');
+        cy.visit('/');
+        cy.wait('@getProfile');
+        cy.visit('/cases');
+        cy.addCase({
+            country: 'Albania',
+            countryISO3: 'ALB',
+            sourceUrl: 'www.example.com',
+            confirmationMethod: 'PCR test',
+            dateEntry: '2020-01-01',
+            dateReported: '2020-01-01',
+            caseStatus: CaseStatus.OmitError,
+        });
+        cy.addCase({
+            country: 'France',
+            countryISO3: 'FRA',
+            sourceUrl: 'www.example.com',
+            confirmationMethod: 'PCR test',
+            dateEntry: '2020-01-01',
+            dateReported: '2020-01-01',
+            caseStatus: CaseStatus.Discarded,
+        });
+        cy.visit('/pivot-tables');
+        cy.wait('@getCasesByCountryPivotData');
+
+        cy.contains('tr', 'No records to display').should('exist');
+        cy.contains('tr', 'Grand Total').within(() => {
+            cy.get('td').eq(1).should('be.empty');
+            cy.get('td').eq(2).should('be.empty');
+            cy.get('td').eq(3).should('be.empty');
+            cy.get('td').eq(4).should('be.empty');
+        });
+    });
+
     it('Allow searching for country in Cases by Country Pivot Table', function () {
         cy.intercept('GET', '/api/cases/countryData', casesByCountryPivotDataFixture).as('getCasesByCountryPivotData');
         cy.visit('/');

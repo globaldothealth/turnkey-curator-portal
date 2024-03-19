@@ -4,6 +4,7 @@ services:
     environment:
       DEBUG: "True"
       ENABLE_FAKE_GEOCODER: "True"
+      DB: "${DISEASE_NAME}"
   curator:
     command: "npm run dev"
     volumes:
@@ -74,7 +75,6 @@ services:
       dockerfile: Dockerfile-test
     depends_on:
       - mongo
-      - mock-source-data
       - localstack
     ports:
       - "4444:4444"
