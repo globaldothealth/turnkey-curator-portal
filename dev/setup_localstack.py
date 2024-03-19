@@ -1,3 +1,4 @@
+import json
 from os import environ
 from time import sleep
 
@@ -6,17 +7,31 @@ import requests
 
 
 LOCALSTACK_URL = environ.get("AWS_ENDPOINT", "http://localstack:4566")
-BATCH_READY = '"batch": "running"'
+AWS_REGION = environ.get("AWS_DEFAULT_REGION", "eu-central-1")
 
 IAM_PROFILE_NAME = "ecsInstanceRole"
-IAM_PROFILE_ARN = "".join(["arn:aws:iam::000000000000:instance-profile/", "ecsInstanceRole"])
+IAM_PROFILE_ARN = "".join(
+    ["arn:aws:iam::000000000000:instance-profile/", "ecsInstanceRole"]
+)
 BATCH_SERVICE_ROLE_NAME = "foo"
 ECS_INSTANCE_ROLE_NAME = "ecsInstanceRole"
-IAM_ROLE_POLICY_DOCUMENT = "file://./iam_role.json"
+# IAM_ROLE_POLICY_DOCUMENT = "file://./iam_role.json"
+IAM_ROLE_POLICY_DOCUMENT = json.dumps(
+    {
+        "Effect": "Allow",
+        "Action": ["iam:AttachRolePolicy", "iam:CreateRole", "iam:PutRolePolicy"],
+        "Resource": "*",
+    }
+)
 EC2_SECURITY_GROUP_DESCRIPTION = "bar"
 EC2_SECURITY_GROUP_NAME = "sg-1234abcd"
 BATCH_COMPUTE_ENVIRONMENT_NAME = "M4Spot"
-BATCH_COMPUTE_ENVIRONMENT_ARN = "".join(["arn:aws:batch:eu-central-1:000000000000:compute-environment/", BATCH_COMPUTE_ENVIRONMENT_NAME])
+BATCH_COMPUTE_ENVIRONMENT_ARN = "".join(
+    [
+        "arn:aws:batch:eu-central-1:000000000000:compute-environment/",
+        BATCH_COMPUTE_ENVIRONMENT_NAME,
+    ]
+)
 BATCH_COMPUTE_ENVIRONMENT_TYPE = "MANAGED"
 
 BATCH_COMPUTE_RESOURCES = {
@@ -31,18 +46,14 @@ BATCH_COMPUTE_RESOURCES = {
     "securityGroupIds": [],
     "instanceRole": IAM_PROFILE_ARN,
     "ec2Configuration": [
-        {
-            "imageType": "string",
-            "imageIdOverride": "string"
-        },
-    ]
+        {"imageType": "string", "imageIdOverride": "string"},
+    ],
 }
 
 BATCH_JOB_QUEUE_NAME = environ.get("BATCH_QUEUE_NAME", "ingestion-queue")
-BATCH_COMPUTE_ENVIRONMENT_ORDER = [{
-    "order": 1,
-    "computeEnvironment": BATCH_COMPUTE_ENVIRONMENT_ARN
-}]
+BATCH_COMPUTE_ENVIRONMENT_ORDER = [
+    {"order": 1, "computeEnvironment": BATCH_COMPUTE_ENVIRONMENT_ARN}
+]
 
 DATA_BUCKET_NAME = environ.get("DATA_BUCKET_NAME", "covid-19-data-export")
 CACHE_BUCKET_NAME = environ.get("CACHE_BUCKET_NAME", "covid-19-country-export")
@@ -52,7 +63,6 @@ ECR_REPOSITORY_NAME = environ.get("ECR_REPOSITORY_NAME", "gdh-ingestor")
 
 
 class LocalstackWrangler(object):
-
     def __init__(self):
         self.iam_client = boto3.client("iam", endpoint_url=LOCALSTACK_URL)
         self.ec2_client = boto3.client("ec2", endpoint_url=LOCALSTACK_URL)
@@ -64,23 +74,18 @@ class LocalstackWrangler(object):
     def create_iam_role(self, role_name):
         print(f"Creating IAM role {role_name} for Batch")
         self.iam_client.create_role(
-            RoleName=role_name,
-            AssumeRolePolicyDocument=IAM_ROLE_POLICY_DOCUMENT 
+            RoleName=role_name, AssumeRolePolicyDocument=IAM_ROLE_POLICY_DOCUMENT
         )
         print("Done creating role")
 
     def create_iam_profile(self, profile_name):
         print(f"Creating IAM profile {profile_name} for ECS instance")
-        self.iam_client.create_instance_profile(
-            InstanceProfileName=profile_name
-        )
+        self.iam_client.create_instance_profile(InstanceProfileName=profile_name)
         print("Done creating profile")
 
     def get_iam_role_arn(self, role_name):
         print(f"Getting ARN for IAM role {role_name}")
-        response = self.iam_client.get_role(
-            RoleName=role_name
-        )
+        response = self.iam_client.get_role(RoleName=role_name)
         role_info = response.get("Role", {})
         arn = role_info.get("Arn", "")
         print(f"Got ARN {arn}")
@@ -89,8 +94,7 @@ class LocalstackWrangler(object):
     def create_security_group(self, group_name):
         print(f"Creating security group {group_name}")
         self.ec2_client.create_security_group(
-            Description=EC2_SECURITY_GROUP_DESCRIPTION,
-            GroupName=group_name
+            Description=EC2_SECURITY_GROUP_DESCRIPTION, GroupName=group_name
         )
         print("Created security group")
 
@@ -104,15 +108,10 @@ class LocalstackWrangler(object):
 
     def create_subnet(self):
         print("Creating VPC and subnet")
-        response = self.ec2_client.create_vpc(
-            CidrBlock="10.0.0.0/16"
-        )
+        response = self.ec2_client.create_vpc(CidrBlock="10.0.0.0/16")
         vpc_info = response.get("Vpc", {})
         vpc_id = vpc_info.get("VpcId", {})
-        self.ec2_client.create_subnet(
-            CidrBlock="10.0.2.0/24",
-            VpcId=vpc_id
-        )
+        self.ec2_client.create_subnet(CidrBlock="10.0.2.0/24", VpcId=vpc_id)
         print("Created VPC and subnet")
 
     def get_subnet_id(self):
@@ -123,7 +122,9 @@ class LocalstackWrangler(object):
         print(f"Got subnet ID {subnet_id}")
         return subnet_id
 
-    def create_compute_environment(self, security_group_id, batch_service_role_arn, subnet_id):
+    def create_compute_environment(
+        self, security_group_id, batch_service_role_arn, subnet_id
+    ):
         print(f"Creating compute environment for security group {security_group_id}")
         BATCH_COMPUTE_RESOURCES["securityGroupIds"].append(security_group_id)
         BATCH_COMPUTE_RESOURCES["subnets"].append(subnet_id)
@@ -131,7 +132,7 @@ class LocalstackWrangler(object):
             computeEnvironmentName=BATCH_COMPUTE_ENVIRONMENT_NAME,
             type=BATCH_COMPUTE_ENVIRONMENT_TYPE,
             computeResources=BATCH_COMPUTE_RESOURCES,
-            serviceRole=batch_service_role_arn
+            serviceRole=batch_service_role_arn,
         )
         print("Created security group")
 
@@ -141,39 +142,37 @@ class LocalstackWrangler(object):
             jobQueueName=queue_name,
             priority=1,
             state="ENABLED",
-            computeEnvironmentOrder=BATCH_COMPUTE_ENVIRONMENT_ORDER
+            computeEnvironmentOrder=BATCH_COMPUTE_ENVIRONMENT_ORDER,
         )
         print("Created job queue")
 
     def create_s3_bucket(self, bucket_name):
         print(f"Creating bucket {bucket_name}")
         self.s3_client.create_bucket(
-            Bucket=bucket_name
+            Bucket=bucket_name,
+            CreateBucketConfiguration={"LocationConstraint": AWS_REGION},
         )
         print("Created bucket")
 
     def setup_ses(self, email_address):
         print(f"Verifying email address {email_address}")
-        self.ses_client.verify_email_identity(
-            EmailAddress=email_address
-        )
+        self.ses_client.verify_email_identity(EmailAddress=email_address)
         print("Verified email address")
 
     def create_container_repository(self, repo_name):
         print(f"Creating container repository {repo_name}")
-        self.ecr_client.create_repository(
-            repositoryName=repo_name
-        )
+        self.ecr_client.create_repository(repositoryName=repo_name)
         print("Created container repository")
 
 
 def wait_for_localstack():
-    healthcheck_url = "".join([LOCALSTACK_URL, "/health"])
+    healthcheck_url = "".join([LOCALSTACK_URL, "/_localstack/health"])
     counter = 0
     while counter < 42:
         try:
             response = requests.get(healthcheck_url)
-            if BATCH_READY in response.text:
+            batch_status = response.json().get("services", {}).get("batch")
+            if batch_status == "available":
                 return
         except requests.exceptions.ConnectionError:
             pass

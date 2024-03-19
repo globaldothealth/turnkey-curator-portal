@@ -19,6 +19,10 @@ services:
       STATIC_DIR: ""
       ENABLE_LOCAL_AUTH: "true"
       DISEASE_NAME: "${DISEASE_NAME}"
+      BASE_URL: "${BASE_URL}"
+      COMPLETE_DATA_BUCKET: "${COMPLETE_DATA_BUCKET}"
+      COUNTRY_DATA_BUCKET: "${COUNTRY_DATA_BUCKET}"
+      REACT_APP_RECAPTCHA_SITE_KEY: "${REACT_APP_RECAPTCHA_SITE_KEY}"
   data:
     command: "npm run dev"
     volumes:
@@ -42,7 +46,7 @@ services:
       REACT_APP_COOKIE_CONSENT_PUBLIC_ID: "${REACT_APP_COOKIE_CONSENT_PUBLIC_ID}"
       ENABLE_LOCAL_AUTH: "true"
   localstack:
-    image: localstack/localstack-full
+    image: localstack/localstack-pro
     ports:
       - "53:53"
       - "443:443"
@@ -60,29 +64,6 @@ services:
       DEBUG: 1
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4566/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 10s
-  mock-source-data:
-    build:
-      context: ./
-      dockerfile: Dockerfile-mock-source-data
-    ports:
-      - "5001:5001"
-    volumes:
-      - "../ingestion/functions:/ingestion/functions"
-    environment:
-      MOCK_SOURCE_DATA_HOST: "0.0.0.0"
-      MOCK_SOURCE_DATA_PORT: 5001
-      MOCK_SOURCE_DATA_SERVICE: "http://mock-source-data"
-      AWS_ACCESS_KEY_ID: "fake"
-      AWS_SECRET_ACCESS_KEY: "fake"
-      AWS_DEFAULT_REGION: "eu-central-1"
-      AWS_ENDPOINT: "http://localstack:4566"
-      RETRIEVAL_BUCKET_NAME: "gdh-sources"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
       interval: 30s
       timeout: 10s
       retries: 3
