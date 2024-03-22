@@ -6,7 +6,7 @@ import {
     CuratorsDocument,
 } from '../model/day0-case';
 import caseFields from '../model/fields.json';
-import { CaseStatus } from '../types/enums';
+import { CaseStatus, Role } from '../types/enums';
 import { Error, Query } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { GeocodeOptions, Geocoder, Resolution } from '../geocoding/geocoder';
@@ -59,14 +59,24 @@ const caseFromDTO = async (receivedCase: CaseDTO) => {
 
     const user = await User.findOne({ email: receivedCase.curator?.email });
     if (user) {
-        if (user.roles.includes('junior curator')) {
+        logger.info(`User: ${JSON.stringify(user)}`)
+        if (user.roles.includes(Role.JuniorCurator)) {
             aCase.curators = {
-                createdBy: user,
+                createdBy: {
+                    name: user.name || '',
+                    email: user.email
+                },
             };
-        } else {
+        } else if (user.roles.includes(Role.Curator) || user.roles.includes(Role.Admin)) {
             aCase.curators = {
-                createdBy: user,
-                verifiedBy: user,
+                createdBy: {
+                    name: user.name || '',
+                    email: user.email
+                },
+                verifiedBy: {
+                    name: user.name || '',
+                    email: user.email
+                },
             };
         }
     }
@@ -242,7 +252,7 @@ export class CasesController {
             return;
         }
 
-        logger.info(
+        logger.debug(
             `Streaming case data in format ${req.body.format} matching query ${req.body.query} for correlation ID ${req.body.correlationId}`,
         );
 
@@ -255,7 +265,7 @@ export class CasesController {
             // Stream from mongoose directly into response
             // Use provided query and limit, if provided
             if (req.body.query) {
-                logger.info('Request body with query');
+                logger.debug('Request body with query');
                 cursor = casesMatchingSearchQuery({
                     searchQuery: req.body.query as string,
                     count: false,
@@ -264,7 +274,7 @@ export class CasesController {
                     .collation({ locale: 'en_US', strength: 2 })
                     .cursor();
             } else if (req.body.caseIds && queryLimit) {
-                logger.info('Request body with case IDs and limit');
+                logger.debug('Request body with case IDs and limit');
                 cursor = Day0Case.find({
                     _id: { $in: req.body.caseIds },
                 })
@@ -276,7 +286,7 @@ export class CasesController {
                     })
                     .cursor();
             } else if (req.body.caseIds) {
-                logger.info('Request body with case IDs and no limit');
+                logger.debug('Request body with case IDs and no limit');
                 cursor = Day0Case.find({
                     _id: { $in: req.body.caseIds },
                 })
@@ -287,7 +297,7 @@ export class CasesController {
                     })
                     .cursor();
             } else if (queryLimit) {
-                logger.info('Request body with limit and no case IDs');
+                logger.debug('Request body with limit and no case IDs');
                 cursor = Day0Case.find()
                     .lean()
                     .limit(queryLimit)
@@ -297,7 +307,7 @@ export class CasesController {
                     })
                     .cursor();
             } else {
-                logger.info('Request body with no query, limit, or case IDs');
+                logger.debug('Request body with no query, limit, or case IDs');
                 cursor = Day0Case.find()
                     .lean()
                     .collation({
@@ -392,7 +402,7 @@ export class CasesController {
      * Handles HTTP GET /api/cases.
      */
     list = async (req: Request, res: Response): Promise<void> => {
-        logger.info('List method entrypoint');
+        logger.debug('List method entrypoint');
         const page = Number(req.query.page) || 1;
         const limit = Number(req.query.limit) || 10;
         const countLimit = Number(req.query.count_limit) || 10000;
@@ -401,7 +411,7 @@ export class CasesController {
         const verificationStatus =
             Boolean(req.query.verification_status) || undefined;
 
-        logger.info('Got query params');
+        logger.debug('Got query params');
 
         if (page < 1) {
             res.status(422).json({ message: 'page must be > 0' });
@@ -420,7 +430,7 @@ export class CasesController {
             return;
         }
 
-        logger.info('Got past 422s');
+        logger.debug('Got past 422s');
         try {
             const casesQuery = casesMatchingSearchQuery({
                 searchQuery: req.query.q || '',
@@ -457,7 +467,7 @@ export class CasesController {
             ]);
 
             const dtos = await Promise.all(docs.map(dtoFromCase));
-            logger.info('got results');
+            logger.debug('got results');
             // total is actually stored in a count index in mongo, so the query is fast.
             // however to maintain existing behaviour, only return the count limit
             const reportedTotal = Math.min(total, countLimit);
@@ -469,11 +479,11 @@ export class CasesController {
                     nextPage: page + 1,
                     total: reportedTotal,
                 });
-                logger.info('Got multiple pages of results');
+                logger.debug('Got multiple pages of results');
                 return;
             }
             // If we fetched all available data, just return it.
-            logger.info('Got one page of results');
+            logger.debug('Got one page of results');
             res.json({ cases: dtos, total: reportedTotal });
         } catch (e) {
             if (e instanceof ParsingError) {
@@ -495,7 +505,7 @@ export class CasesController {
      * Handles HTTP GET /api/cases/countryData.
      */
     countryData = async (req: Request, res: Response): Promise<void> => {
-        logger.info('Get cases by country method entrypoint');
+        logger.debug('Get cases by country method entrypoint');
 
         try {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
