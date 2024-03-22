@@ -27,6 +27,7 @@ import {
     RevisionMetadataDocument,
     revisionMetadataSchema,
 } from './revision-metadata';
+import { userSchema } from '../model/user';
 
 /*
  * There are separate types for case for data storage (the mongoose document) and
@@ -60,8 +61,8 @@ export const sourceSchema = new mongoose.Schema({
 
 export const curatorsSchema = new mongoose.Schema(
     {
-        verifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
-        createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
+        verifiedBy: { type: userSchema },
+        createdBy: { type: userSchema },
     },
     { _id: false },
 );

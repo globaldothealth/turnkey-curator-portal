@@ -10,3 +10,9 @@ export enum YesNo {
     N = 'N',
     NA = 'NA',
 }
+
+export enum Role {
+    Admin = 'admin',
+    Curator = 'curator',
+    JuniorCurator = 'junior curator',
+}

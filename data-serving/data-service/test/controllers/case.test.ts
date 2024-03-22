@@ -18,10 +18,18 @@ import {
 import fs from 'fs';
 import { AgeBucket } from '../../src/model/age-bucket';
 import { User, UserDocument } from '../../src/model/user';
+import { Role } from '../../src/types/enums';
 
 let mongoServer: MongoMemoryServer;
 
+const curatorName = 'Casey Curatorio';
 const curatorUserEmail = 'case_curator@global.health';
+// const curatorMetadata = { 
+//     curator: {
+//         name: curatorName,
+//         email: curatorUserEmail
+//     }
+// };
 const curatorMetadata = { curator: { email: curatorUserEmail } };
 
 const minimalRequest = {
@@ -69,10 +77,17 @@ beforeAll(async () => {
     mockLocationServer.listen();
     mongoServer = new MongoMemoryServer();
     await createAgeBuckets();
-    curator = await User.create({ email: curatorUserEmail });
+    curator = await User.create(
+        { 
+            name: curatorName,
+            email: curatorUserEmail,
+            roles: [Role.Curator]
+        }
+    );
     minimalDay0CaseData = {
         ...minimalDay0CaseData,
-        ...{ curators: { createdBy: curator._id } },
+        // ...{ curators: { createdBy: curator._id } },
+        ...{ curators: curatorMetadata.curator },
         ...{
             revisionMetadata: {
                 revisionNumber: 0,
@@ -84,7 +99,8 @@ beforeAll(async () => {
     };
     fullDay0CaseData = {
         ...fullCase,
-        ...{ curators: { createdBy: curator._id } },
+        // ...{ curators: { createdBy: curator._id } },
+        ...{ curators: curatorMetadata.curator },
         ...{
             revisionMetadata: {
                 revisionNumber: 0,
