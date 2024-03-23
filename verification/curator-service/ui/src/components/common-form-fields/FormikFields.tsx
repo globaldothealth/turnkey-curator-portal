@@ -193,6 +193,8 @@ interface DateFieldProps {
 export function DateField(props: DateFieldProps): JSX.Element {
     const classes = useStyles();
 
+    const dateValue = props.value || 'yyyy/MM/dd';
+
     return (
         <div className={classes.fieldRow}>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -204,7 +206,7 @@ export function DateField(props: DateFieldProps): JSX.Element {
                     mask="____/__/__"
                     minDate={new Date('2019/12/01')}
                     disableFuture
-                    value={props.value}
+                    value={dateValue}
                     onChange={props.onChange}
                     renderInput={(params) => (
                         <MuiTextField
