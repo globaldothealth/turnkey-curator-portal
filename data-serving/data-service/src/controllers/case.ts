@@ -98,40 +98,43 @@ const dtoFromCase = async (storedCase: CaseDocument) => {
         });
     }
 
-    if (ageRange && creator) {
-        if (verifier) {
-            dto = {
-                ...dto,
-                demographics: {
-                    ...dto.demographics!,
-                    ageRange,
-                },
-                curators: {
-                    createdBy: {
-                        email: creator.email,
-                        name: creator.name,
-                    },
-                    verifiedBy: {
-                        email: verifier.email,
-                        name: verifier.name,
-                    },
-                } as CuratorsDocument,
-            };
-        } else {
-            dto = {
-                ...dto,
-                demographics: {
-                    ...dto.demographics!,
-                    ageRange,
-                },
-                curators: {
-                    createdBy: {
-                        email: creator.email,
-                        name: creator.name,
-                    },
-                } as CuratorsDocument,
-            };
+    if (ageRange) {
+        if(creator) {
+            if (verifier) {
+                dto = {
+                    ...dto,
+                    curators: {
+                        createdBy: {
+                            email: creator.email,
+                            name: creator.name,
+                        },
+                        verifiedBy: {
+                            email: verifier.email,
+                            name: verifier.name,
+                        },
+                    } as CuratorsDocument,
+                };
+            } else {
+                dto = {
+                    ...dto,
+                    curators: {
+                        createdBy: {
+                            email: creator.email,
+                            name: creator.name,
+                        },
+                    } as CuratorsDocument,
+                };
+            }
         }
+        dto = {
+            ...dto,
+            demographics: {
+                ...dto.demographics!,
+                ageRange,
+            }
+        };
+
+
 
         // although the type system can't see it, there's an ageBuckets property on the demographics DTO now
         delete ((dto as unknown) as {
