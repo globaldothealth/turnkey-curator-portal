@@ -86,8 +86,7 @@ beforeAll(async () => {
     );
     minimalDay0CaseData = {
         ...minimalDay0CaseData,
-        // ...{ curators: { createdBy: curator._id } },
-        ...{ curators: curatorMetadata.curator },
+        ...{ curators: { createdBy: curatorMetadata.curator } },
         ...{
             revisionMetadata: {
                 revisionNumber: 0,
@@ -99,8 +98,7 @@ beforeAll(async () => {
     };
     fullDay0CaseData = {
         ...fullCase,
-        // ...{ curators: { createdBy: curator._id } },
-        ...{ curators: curatorMetadata.curator },
+        ...{ curators: { createdBy: curatorMetadata.curator } },
         ...{
             revisionMetadata: {
                 revisionNumber: 0,
@@ -1016,7 +1014,7 @@ describe('POST', () => {
             .post('/api/cases/batchUpsert')
             .send({
                 cases: [
-                    { ...minimalCase, curators: { createdBy: curator._id } },
+                    minimalDay0CaseData,
                     invalidRequest,
                 ],
                 ...curatorMetadata,
