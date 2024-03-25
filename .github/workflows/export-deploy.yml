@@ -29,13 +29,9 @@ jobs:
       working-directory: data-serving/scripts/export-data
       env:
         REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        REPO_COUNTRY: gdh-tcp-country-exporter
         REPO_FULL: gdh-tcp-full-exporter
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        docker build -t $REGISTRY/$REPO_COUNTRY:$IMAGE_TAG -t $REGISTRY/$REPO_COUNTRY .
-        docker push $REGISTRY/$REPO_COUNTRY:$IMAGE_TAG
-        docker push $REGISTRY/$REPO_COUNTRY:latest
         docker build -f ./Dockerfile_full_export -t $REGISTRY/$REPO_FULL:$IMAGE_TAG -t $REGISTRY/$REPO_FULL .
         docker push $REGISTRY/$REPO_FULL:$IMAGE_TAG
         docker push $REGISTRY/$REPO_FULL:latest
