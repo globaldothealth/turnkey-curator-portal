@@ -52,13 +52,6 @@ preexistingConditions.previousInfection
 preexistingConditions.coInfection
 preexistingConditions.preexistingCondition
 preexistingConditions.pregnancyStatus
-revisionMetadata.creationMetadata.curator
-revisionMetadata.creationMetadata.date
-revisionMetadata.creationMetadata.notes
-revisionMetadata.editMetadata.curator
-revisionMetadata.editMetadata.date
-revisionMetadata.editMetadata.notes
-revisionMetadata.revisionNumber
 symptoms
 transmission.contactWithCase
 transmission.contactId
