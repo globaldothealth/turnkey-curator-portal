@@ -46,7 +46,6 @@ location.query
 location.name
 location.geometry.latitude
 location.geometry.longitude
-location.comment
 pathogen
 preexistingConditions.previousInfection
 preexistingConditions.coInfection
@@ -57,7 +56,6 @@ transmission.contactWithCase
 transmission.contactId
 transmission.contactSetting
 transmission.contactAnimal
-transmission.contactComment
 transmission.transmission
 travelHistory.travelHistory
 travelHistory.travelHistoryEntry
