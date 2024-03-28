@@ -1,0 +1,8 @@
+{
+  "caseStatus": {
+    "$nin": [ "discarded", "omit_error" ]
+  }, 
+  "curators.verifiedBy": {
+    "$exists": "true"
+  }
+}
