@@ -3,6 +3,7 @@ RUN apk update
 RUN apk add bash aws-cli mongodb-tools curl
 
 COPY full_export.sh .
+COPY query.json .
 COPY fields.txt .
 
 ENTRYPOINT ["./full_export.sh"]

@@ -13,7 +13,7 @@ require_env() {
 require_env "${FULL_EXPORT_BUCKET:-}" "Specify FULL_EXPORT_BUCKET"
 require_env "${CONN:-}" "Specify MongoDB connection string in CONN"
 
-mongoexport --uri="$CONN" --collection=day0cases --fieldFile=fields.txt --type=csv --out full.csv
+mongoexport --uri="$CONN" --queryFile="query.json" --collection=day0cases --fieldFile=fields.txt --type=csv --out full.csv
 
 gzip full.csv
 
