@@ -105,22 +105,22 @@ export const setBatchUpsertFields = async (
                 );
             }
         }
-        const curator = request.body.curator.email;
+        const curator = request.body.curator;
         if (curator) {
+            c.curator = curator;
             c.revisionMetadata = {
                 revisionNumber: 0,
                 creationMetadata: {
-                    curator,
+                    curator: curator.email,
                     date: currentDate,
                 },
                 updateMetadata: {
-                    curator,
+                    curator: curator.email,
                     date: currentDate,
                     notes: 'Creation',
                 },
             };
         }
-        console.log('Case:', c.revisionMetadata);
     });
     // Clean up the additional metadata that falls outside the `case` entity.
     delete request.body.curator;
@@ -243,14 +243,19 @@ export const createBatchDeleteCaseRevisions = async (
         });
     }
 
-    await CaseRevision.insertMany(casesToDelete, {
-        ordered: false,
-        rawResult: true,
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore Mongoose types don't include the `lean` option from its
-        // documentation: https://mongoosejs.com/docs/api.html#model_Model.insertMany
-        lean: true,
-    });
+    try {
+        await CaseRevision.insertMany(casesToDelete, {
+            ordered: false,
+            rawResult: true,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore Mongoose types don't include the `lean` option from its
+            // documentation: https://mongoosejs.com/docs/api.html#model_Model.insertMany
+            lean: true,
+        });
+    } catch (err) {
+        console.log('Failed to insert some case revisions');
+        console.log(err);
+    }
 
     next();
 };
