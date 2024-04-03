@@ -75,6 +75,7 @@ export const setBatchUpsertFields = async (
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
+    const currentDate = Date.now();
     // Find and map existing cases by sourceId:sourceEntryId.
     const existingCasesByCaseRefCombo = new Map(
         (await findCasesWithCaseReferenceData(request))
@@ -104,6 +105,22 @@ export const setBatchUpsertFields = async (
                 );
             }
         }
+        const curator = request.body.curator.email;
+        if (curator) {
+            c.revisionMetadata = {
+                revisionNumber: 0,
+                creationMetadata: {
+                    curator,
+                    date: currentDate,
+                },
+                updateMetadata: {
+                    curator,
+                    date: currentDate,
+                    notes: 'Creation',
+                },
+            };
+        }
+        console.log('Case:', c.revisionMetadata);
     });
     // Clean up the additional metadata that falls outside the `case` entity.
     delete request.body.curator;
