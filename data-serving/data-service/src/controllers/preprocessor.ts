@@ -9,6 +9,8 @@ import { CaseRevision } from '../model/case-revision';
 import { Query } from 'mongoose';
 import _ from 'lodash';
 
+import { logger } from '../util/logger';
+
 export const getCase = async (
     request: Request,
 ): Promise<CaseDocument | null> => {
@@ -253,8 +255,7 @@ export const createBatchDeleteCaseRevisions = async (
             lean: true,
         });
     } catch (err) {
-        console.log('Failed to insert some case revisions');
-        console.log(err);
+        logger.error(`Failed to insert some case revisions: ${err}`);
     }
 
     next();
@@ -283,8 +284,7 @@ export const createBatchUpsertCaseRevisions = async (
             lean: true,
         });
     } catch (err) {
-        console.log('Failed to insert some case revisions');
-        console.log(err);
+        logger.error(`Failed to insert some case revisions: ${err}`);
     }
 
     next();
@@ -319,8 +319,7 @@ export const createBatchUpdateCaseRevisions = async (
             lean: true,
         });
     } catch (err) {
-        console.log('Failed to insert some case revisions');
-        console.log(err);
+        logger.error(`Failed to insert some case revisions: ${err}`);
     }
 
     next();
