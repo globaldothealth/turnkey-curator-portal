@@ -482,11 +482,15 @@ export default function App(): JSX.Element {
                             <AutomatedSourceForm onModalClose={onModalClose} />
                         </Route>
                     )}
-                    {user && hasAnyRole(user, [Role.Curator]) && (
-                        <Route path="/cases/bulk">
-                            <BulkCaseForm onModalClose={onModalClose} />
-                        </Route>
-                    )}
+                    {user &&
+                        hasAnyRole(user, [
+                            Role.Curator,
+                            Role.JuniorCurator,
+                        ]) && (
+                            <Route path="/cases/bulk">
+                                <BulkCaseForm onModalClose={onModalClose} />
+                            </Route>
+                        )}
                     {user && hasAnyRole(user, [Role.Curator]) && (
                         <Route path="/sources/backfill">
                             <AutomatedBackfill onModalClose={onModalClose} />

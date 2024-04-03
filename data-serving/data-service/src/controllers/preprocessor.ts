@@ -9,6 +9,8 @@ import { CaseRevision } from '../model/case-revision';
 import { Query } from 'mongoose';
 import _ from 'lodash';
 
+import { logger } from '../util/logger';
+
 export const getCase = async (
     request: Request,
 ): Promise<CaseDocument | null> => {
@@ -75,6 +77,7 @@ export const setBatchUpsertFields = async (
     response: Response,
     next: NextFunction,
 ): Promise<void> => {
+    const currentDate = Date.now();
     // Find and map existing cases by sourceId:sourceEntryId.
     const existingCasesByCaseRefCombo = new Map(
         (await findCasesWithCaseReferenceData(request))
@@ -103,6 +106,22 @@ export const setBatchUpsertFields = async (
                     existingCaseUploadIds,
                 );
             }
+        }
+        const curator = request.body.curator;
+        if (curator) {
+            c.curator = curator;
+            c.revisionMetadata = {
+                revisionNumber: 0,
+                creationMetadata: {
+                    curator: curator.email,
+                    date: currentDate,
+                },
+                updateMetadata: {
+                    curator: curator.email,
+                    date: currentDate,
+                    notes: 'Creation',
+                },
+            };
         }
     });
     // Clean up the additional metadata that falls outside the `case` entity.
@@ -226,14 +245,18 @@ export const createBatchDeleteCaseRevisions = async (
         });
     }
 
-    await CaseRevision.insertMany(casesToDelete, {
-        ordered: false,
-        rawResult: true,
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore Mongoose types don't include the `lean` option from its
-        // documentation: https://mongoosejs.com/docs/api.html#model_Model.insertMany
-        lean: true,
-    });
+    try {
+        await CaseRevision.insertMany(casesToDelete, {
+            ordered: false,
+            rawResult: true,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore Mongoose types don't include the `lean` option from its
+            // documentation: https://mongoosejs.com/docs/api.html#model_Model.insertMany
+            lean: true,
+        });
+    } catch (err) {
+        logger.error(`Failed to insert some case revisions: ${err}`);
+    }
 
     next();
 };
@@ -261,8 +284,7 @@ export const createBatchUpsertCaseRevisions = async (
             lean: true,
         });
     } catch (err) {
-        console.log('Failed to insert some case revisions');
-        console.log(err);
+        logger.error(`Failed to insert some case revisions: ${err}`);
     }
 
     next();
@@ -297,8 +319,7 @@ export const createBatchUpdateCaseRevisions = async (
             lean: true,
         });
     } catch (err) {
-        console.log('Failed to insert some case revisions');
-        console.log(err);
+        logger.error(`Failed to insert some case revisions: ${err}`);
     }
 
     next();
