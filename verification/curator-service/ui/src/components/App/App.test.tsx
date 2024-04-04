@@ -9,10 +9,15 @@ import { Role } from '../../api/models/User';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedDataDictionaryLink = 'https://global.health/data-dictionary';
 const env = validateEnv();
 
 beforeEach(() => {
     jest.clearAllMocks();
+});
+
+beforeAll(() => {
+    process.env.REACT_APP_DATA_DICTIONARY_LINK = mockedDataDictionaryLink;
 });
 
 describe('<App />', () => {
@@ -129,7 +134,7 @@ describe('<App />', () => {
         );
         expect(await screen.findByTestId('dictionaryButton')).toHaveAttribute(
             'href',
-            'https://raw.githubusercontent.com/globaldothealth/list/main/data-serving/scripts/export-data/data_dictionary.txt',
+            mockedDataDictionaryLink,
         );
         expect(await screen.findByTestId('termsButton')).toHaveAttribute(
             'href',
