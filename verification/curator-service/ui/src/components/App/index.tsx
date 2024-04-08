@@ -112,10 +112,6 @@ const useStyles = makeStyles()((theme: Theme) => ({
         marginTop: '12px',
         width: '100%',
     },
-    // drawerHeader: {
-    //     // necessary for content to be below app bar
-    //     ...theme.mixins.toolbar, TODO unmock this
-    // },
     link: {
         marginTop: 12,
     },
@@ -442,7 +438,6 @@ export default function App(): JSX.Element {
                 })}
             >
                 <div />
-                {/*<div  className={classes.drawerHeader} /> TODO unmock this*/}
                 <Switch>
                     <Redirect
                         from="/:url*(/+)"

@@ -1,6 +1,5 @@
 import { styled } from '@mui/material/styles';
-import Alert from '@mui/material/Alert';
-import MenuItem from '@mui/material/MenuItem';
+import { Alert, MenuItem } from '@mui/material';
 
 export const LoaderContainer = styled('div')(() => ({
     position: 'absolute',
@@ -22,4 +21,8 @@ export const StyledAlert = styled(Alert)(() => ({
 export const ActionMenuItem = styled(MenuItem)(({ theme }) => ({
     color: theme.custom.palette.link.color,
     fontWeight: 'light',
+}));
+
+export const LineListContainer = styled('div')(() => ({
+    marginTop: '66px',
 }));

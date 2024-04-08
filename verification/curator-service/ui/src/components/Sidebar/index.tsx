@@ -1,28 +1,31 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useLocation, useHistory } from 'react-router-dom';
-import { useAppSelector } from '../../hooks/redux';
-import { selectUser } from '../../redux/auth/selectors';
-import { selectDiseaseName } from '../../redux/app/selectors';
+import {
+    Drawer,
+    Fab,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    Menu,
+    MenuItem,
+    Typography,
+} from '@mui/material';
+import {
+    Add as AddIcon,
+    Link as LinkIcon,
+    List as ListIcon,
+    People as PeopleIcon,
+    Publish as PublishIcon,
+    QueryStats as QueryStatsIcon,
+} from '@mui/icons-material';
 
-import Drawer from '@mui/material/Drawer';
-import Typography from '@mui/material/Typography';
-import Fab from '@mui/material/Fab';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import AddIcon from '@mui/icons-material/Add';
-import ListIcon from '@mui/icons-material/List';
-import LinkIcon from '@mui/icons-material/Link';
-import PublishIcon from '@mui/icons-material/Publish';
-import PeopleIcon from '@mui/icons-material/People';
-import QueryStatsIcon from '@mui/icons-material/QueryStats';
-import { hasAnyRole } from '../util/helperFunctions';
-
-import { useStyles } from './styled';
 import { Role } from '../../api/models/User';
+import { useAppSelector } from '../../hooks/redux';
+import { selectDiseaseName } from '../../redux/app/selectors';
+import { selectUser } from '../../redux/auth/selectors';
+import { useStyles } from './styled';
+import { hasAnyRole } from '../util/helperFunctions';
 
 interface SidebarProps {
     drawerOpen: boolean;
@@ -122,7 +125,6 @@ const Sidebar = ({ drawerOpen }: SidebarProps): JSX.Element => {
             }}
         >
             <div className={classes.drawerContents}>
-                <div className={classes.drawerHeader}></div>
                 <Typography className={classes.diseaseTitle}>
                     {diseaseName}
                 </Typography>

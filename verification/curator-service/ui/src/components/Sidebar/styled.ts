@@ -29,10 +29,6 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         marginLeft: '24px',
         marginRight: '32px',
     },
-    drawerHeader: {
-        // necessary for content to be below app bar
-        // ...theme.mixins.toolbar, TODO unmock this
-    },
     createNewButton: {
         margin: '12px 0',
         width: '100%',

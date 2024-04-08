@@ -22,6 +22,9 @@ const pivotTableStyles = makeStyles()(() => ({
         padding: '16px',
         fontWeight: 'bold',
     },
+    paper: {
+        marginTop: '70px',
+    },
 }));
 
 const PivotTables = () => {
@@ -42,11 +45,12 @@ const PivotTables = () => {
     );
 
     return (
-        <Paper>
+        <Paper className={classes.paper}>
             <MaterialTable
                 options={{
                     search: true,
                     paging: false,
+                    searchFieldAlignment: 'right',
                 }}
                 columns={[
                     { title: 'Country', field: 'country', defaultSort: 'asc' },
