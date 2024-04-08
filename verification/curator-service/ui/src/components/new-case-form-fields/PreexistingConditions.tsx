@@ -1,13 +1,16 @@
-import FieldTitle from '../common-form-fields/FieldTitle';
-import { FormikAutocomplete } from '../common-form-fields/FormikFields';
-import { StyledTooltip } from './StyledTooltip';
-import Scroll from 'react-scroll';
-import { SelectField } from '../common-form-fields/FormikFields';
+import clsx from 'clsx';
 import { FastField, useFormikContext } from 'formik';
 import { TextField } from 'formik-mui';
+import Scroll from 'react-scroll';
+
 import { Day0CaseFormValues } from '../../api/models/Day0Case';
+import {
+    FormikAutocomplete,
+    SelectField,
+} from '../common-form-fields/FormikFields';
+import FieldTitle from '../common-form-fields/FieldTitle';
 import { useStyles } from './styled';
-import clsx from 'clsx';
+import { StyledTooltip } from './StyledTooltip';
 
 const hasPreexistingConditionsValues = ['Y', 'N', 'NA'];
 
@@ -46,7 +49,7 @@ const TooltipText = () => (
 
 export default function PreexistingConditions(): JSX.Element {
     const { initialValues } = useFormikContext<Day0CaseFormValues>();
-    const classes = useStyles();
+    const { classes } = useStyles();
 
     return (
         <Scroll.Element name="preexistingConditions">

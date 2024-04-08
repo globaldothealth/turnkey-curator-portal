@@ -29,7 +29,7 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ drawerOpen }: SidebarProps): JSX.Element => {
-    const classes = useStyles();
+    const { classes } = useStyles();
     const location = useLocation();
     const history = useHistory();
 

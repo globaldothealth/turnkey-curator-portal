@@ -1,26 +1,24 @@
 import React, { RefObject } from 'react';
+import axios from 'axios';
 import {
+    Alert as MuiAlert,
     Button,
+    Checkbox,
     Divider,
     MenuItem,
+    Paper,
+    Switch,
     TablePagination,
+    TextField,
     Theme,
     Typography,
-    Switch,
 } from '@mui/material';
-import { WithStyles } from '@mui/styles';
-import createStyles from '@mui/styles/createStyles';
-import withStyles from '@mui/styles/withStyles';
-import Checkbox from '@mui/material/Checkbox';
-import MaterialTable, { QueryResult } from 'material-table';
-import { nameCountry } from './util/countryNames';
+import { withStyles } from 'tss-react/mui';
+import MaterialTable, { QueryResult } from '@material-table/core';
 
-import MuiAlert from '@mui/material/Alert';
-import Paper from '@mui/material/Paper';
-import SourceRetrievalButton from './SourceRetrievalButton';
-import TextField from '@mui/material/TextField';
-import axios from 'axios';
 import ChipInput from './ChipInput';
+import SourceRetrievalButton from './SourceRetrievalButton';
+import { nameCountry } from './util/countryNames';
 
 interface Origin {
     url: string;
@@ -79,37 +77,21 @@ interface TableRow {
     hasStableIdentifiers?: boolean;
 }
 
-// Return type isn't meaningful.
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-const styles = (theme: Theme) =>
-    createStyles({
-        error: {
-            color: theme.palette.error.main,
-            marginTop: theme.spacing(2),
-        },
-        alert: {
-            borderRadius: theme.spacing(1),
-            marginTop: theme.spacing(2),
-        },
-        divider: {
-            marginTop: theme.spacing(1),
-            marginBottom: theme.spacing(1),
-        },
-        spacer: { flex: 1 },
-        tablePaginationBar: {
-            alignItems: 'center',
-            backgroundColor: theme.palette.background.default,
-            display: 'flex',
-            height: '64px',
-        },
-        tableTitle: {
-            width: '100%',
-        },
-    });
-
 // Cf. https://material-ui.com/guides/typescript/#augmenting-your-props-using-withstyles
-type Props = WithStyles<typeof styles>;
-
+type Props = {
+    className?: string;
+    classes?: Partial<
+        Record<
+            | 'error'
+            | 'alert'
+            | 'divider'
+            | 'spacer'
+            | 'tablePaginationBar'
+            | 'tableTitle',
+            string
+        >
+    >;
+};
 class SourceTable extends React.Component<Props, SourceTableState> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     tableRef: RefObject<any> = React.createRef();
@@ -248,7 +230,7 @@ class SourceTable extends React.Component<Props, SourceTableState> {
                 <Paper>
                     {this.state.error && (
                         <MuiAlert
-                            classes={{ root: classes.alert }}
+                            classes={{ root: classes?.alert }}
                             variant="filled"
                             severity="error"
                         >
@@ -566,7 +548,7 @@ class SourceTable extends React.Component<Props, SourceTableState> {
                                         days ago
                                         <Divider
                                             variant="middle"
-                                            className={classes.divider}
+                                            className={classes?.divider}
                                         />
                                         <Button
                                             variant="contained"
@@ -692,15 +674,19 @@ class SourceTable extends React.Component<Props, SourceTableState> {
                             ),
                             Pagination: (props): JSX.Element => {
                                 return (
-                                    <div className={classes.tablePaginationBar}>
+                                    <div
+                                        className={classes?.tablePaginationBar}
+                                    >
                                         <Typography
                                             classes={{
-                                                root: classes.tableTitle,
+                                                root: classes?.tableTitle,
                                             }}
                                         >
                                             Ingestion sources
                                         </Typography>
-                                        <span className={classes.spacer}></span>
+                                        <span
+                                            className={classes?.spacer}
+                                        ></span>
                                         <TablePagination
                                             {...props}
                                         ></TablePagination>
@@ -727,10 +713,11 @@ class SourceTable extends React.Component<Props, SourceTableState> {
                                 zIndex: 1,
                             },
                         }}
-                        onChangeRowsPerPage={(newPageSize: number) => {
-                            this.setState({ pageSize: newPageSize });
-                            this.tableRef.current.onQueryChange();
-                        }}
+                        // TODO unmock this
+                        // onChangeRowsPerPage={(newPageSize: number) => {
+                        //     this.setState({ pageSize: newPageSize });
+                        //     this.tableRef.current.onQueryChange();
+                        // }}
                         editable={{
                             onRowUpdate: (
                                 newRowData: TableRow,
@@ -748,4 +735,29 @@ class SourceTable extends React.Component<Props, SourceTableState> {
     }
 }
 
-export default withStyles(styles, { withTheme: true })(SourceTable);
+const SourceTableStyled = withStyles(SourceTable, (theme: Theme) => ({
+    error: {
+        color: theme.palette.error.main,
+        marginTop: theme.spacing(2),
+    },
+    alert: {
+        borderRadius: theme.spacing(1),
+        marginTop: theme.spacing(2),
+    },
+    divider: {
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+    },
+    spacer: { flex: 1 },
+    tablePaginationBar: {
+        alignItems: 'center',
+        backgroundColor: theme.palette.background.default,
+        display: 'flex',
+        height: '64px',
+    },
+    tableTitle: {
+        width: '100%',
+    },
+}));
+
+export default SourceTableStyled;

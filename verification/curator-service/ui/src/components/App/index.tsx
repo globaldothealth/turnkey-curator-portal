@@ -24,7 +24,7 @@ import {
 } from 'react-router-dom';
 import { Theme } from '@mui/material/styles';
 
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
 import AutomatedBackfill from '../AutomatedBackfill';
 import AutomatedSourceForm from '../AutomatedSourceForm';
@@ -65,7 +65,7 @@ import { theme } from '../../theme/theme';
 import { setSearchQuery } from '../../redux/linelistTable/slice';
 import { selectSearchQuery } from '../../redux/linelistTable/selectors';
 
-const menuStyles = makeStyles((theme) => ({
+const menuStyles = makeStyles()((theme) => ({
     link: {
         color: theme.custom.palette.link.color,
         fontWeight: 300,
@@ -76,7 +76,7 @@ const menuStyles = makeStyles((theme) => ({
     },
 }));
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
     root: {
         display: 'flex',
         flexDirection: 'column',
@@ -112,10 +112,10 @@ const useStyles = makeStyles((theme: Theme) => ({
         marginTop: '12px',
         width: '100%',
     },
-    drawerHeader: {
-        // necessary for content to be below app bar
-        ...theme.mixins.toolbar,
-    },
+    // drawerHeader: {
+    //     // necessary for content to be below app bar
+    //     ...theme.mixins.toolbar, TODO unmock this
+    // },
     link: {
         marginTop: 12,
     },
@@ -161,7 +161,7 @@ function ProfileMenu(props: { user: User; version: string }): JSX.Element {
         setAnchorEl(null);
     };
 
-    const classes = menuStyles();
+    const { classes } = menuStyles();
 
     const releaseNotesUrl = getReleaseNotesUrl(props.version);
 
@@ -300,7 +300,7 @@ export default function App(): JSX.Element {
     const rootRef = React.useRef<HTMLDivElement>(null);
     const history = useHistory();
     const location = useLocation<LocationState>();
-    const classes = useStyles();
+    const { classes } = useStyles();
 
     const savedSearchQuery = localStorage.getItem('searchQuery');
 
@@ -441,7 +441,8 @@ export default function App(): JSX.Element {
                     [classes.contentShift]: drawerOpen,
                 })}
             >
-                <div className={classes.drawerHeader} />
+                <div />
+                {/*<div  className={classes.drawerHeader} /> TODO unmock this*/}
                 <Switch>
                     <Redirect
                         from="/:url*(/+)"

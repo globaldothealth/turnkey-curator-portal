@@ -4,7 +4,7 @@ import { useAppSelector } from '../hooks/redux';
 import { selectUser } from '../redux/auth/selectors';
 
 import { Button, Paper, Typography, Theme } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { FastField, Form, Formik } from 'formik';
 
 import AppModal from './AppModal';
@@ -24,7 +24,7 @@ enum Format {
     Xlsx = 'XLSX',
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
     headerBlurb: {
         maxWidth: '70%',
         paddingBottom: '3em',
@@ -102,7 +102,7 @@ const AutomatedSourceFormSchema = Yup.object().shape({
 });
 
 export default function AutomatedSourceForm(props: Props): JSX.Element {
-    const classes = useStyles();
+    const { classes } = useStyles();
     const history = useHistory();
     const [errorMessage, setErrorMessage] = React.useState('');
 

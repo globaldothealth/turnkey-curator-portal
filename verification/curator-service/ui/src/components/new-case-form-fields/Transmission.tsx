@@ -1,15 +1,16 @@
+import clsx from 'clsx';
+import { FastField, useFormikContext } from 'formik';
+import { TextField } from 'formik-mui';
+import Scroll from 'react-scroll';
+
+import { Day0CaseFormValues } from '../../api/models/Day0Case';
 import FieldTitle from '../common-form-fields/FieldTitle';
-import { StyledTooltip } from './StyledTooltip';
 import {
     FormikAutocomplete,
     SelectField,
 } from '../common-form-fields/FormikFields';
-import Scroll from 'react-scroll';
-import { FastField, useFormikContext } from 'formik';
-import { Day0CaseFormValues } from '../../api/models/Day0Case';
-import { TextField } from 'formik-mui';
 import { useStyles } from './styled';
-import clsx from 'clsx';
+import { StyledTooltip } from './StyledTooltip';
 
 const TooltipText = () => (
     <StyledTooltip>
@@ -45,7 +46,7 @@ const TooltipText = () => (
 
 export default function Transmission(): JSX.Element {
     const { initialValues } = useFormikContext<Day0CaseFormValues>();
-    const globalClasses = useStyles();
+    const { classes } = useStyles();
 
     return (
         <Scroll.Element name="transmission">
@@ -55,12 +56,7 @@ export default function Transmission(): JSX.Element {
                 label="Contact with case"
                 values={['Y', 'N', 'NA']}
             />
-            <div
-                className={clsx([
-                    globalClasses.fieldRow,
-                    globalClasses.halfWidth,
-                ])}
-            >
+            <div className={clsx([classes.fieldRow, classes.halfWidth])}>
                 <FastField
                     name="transmission.contactId"
                     type="text"
@@ -69,12 +65,7 @@ export default function Transmission(): JSX.Element {
                     fullWidth
                 />
             </div>
-            <div
-                className={clsx([
-                    globalClasses.fieldRow,
-                    globalClasses.halfWidth,
-                ])}
-            >
+            <div className={clsx([classes.fieldRow, classes.halfWidth])}>
                 <FastField
                     name="transmission.contactSetting"
                     type="text"
@@ -83,12 +74,7 @@ export default function Transmission(): JSX.Element {
                     fullWidth
                 />
             </div>
-            <div
-                className={clsx([
-                    globalClasses.fieldRow,
-                    globalClasses.halfWidth,
-                ])}
-            >
+            <div className={clsx([classes.fieldRow, classes.halfWidth])}>
                 <FastField
                     name="transmission.contactAnimal"
                     type="text"
@@ -97,12 +83,7 @@ export default function Transmission(): JSX.Element {
                     fullWidth
                 />
             </div>
-            <div
-                className={clsx([
-                    globalClasses.fieldRow,
-                    globalClasses.halfWidth,
-                ])}
-            >
+            <div className={clsx([classes.fieldRow, classes.halfWidth])}>
                 <FastField
                     name="transmission.contactComment"
                     type="text"
@@ -111,7 +92,7 @@ export default function Transmission(): JSX.Element {
                     fullWidth
                 />
             </div>
-            <div className={globalClasses.fieldRow}>
+            <div className={classes.fieldRow}>
                 <FormikAutocomplete
                     name="transmissionHelper"
                     freeSolo

@@ -1,6 +1,3 @@
-import { useAppDispatch } from '../../hooks/redux';
-import { changeCasesStatus } from '../../redux/linelistTable/thunk';
-import { VerificationStatus } from '../../api/models/Case';
 import {
     Button,
     Dialog,
@@ -11,7 +8,6 @@ import {
     TextField,
 } from '@mui/material';
 import { useFormik } from 'formik';
-import { CaseStatus } from '../../api/models/Day0Case';
 
 interface Props {
     isOpen: boolean;
@@ -26,8 +22,6 @@ export const CaseExcludeDialog = ({
     caseIds,
     query,
 }: Props): JSX.Element => {
-    const dispatch = useAppDispatch();
-
     const formik = useFormik({
         initialValues: {
             note: '',

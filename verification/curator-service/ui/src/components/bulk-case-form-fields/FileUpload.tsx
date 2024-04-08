@@ -1,10 +1,10 @@
 import React from 'react';
 import { RequiredHelperText } from '../common-form-fields/FormikFields';
 import { Button, Typography } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { useFormikContext } from 'formik';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
     borderless: {
         borderStyle: 'none',
     },
@@ -19,7 +19,7 @@ const useStyles = makeStyles(() => ({
 export default function FileUpload(): JSX.Element {
     const [fileName, setFileName] = React.useState('');
     const { setFieldValue } = useFormikContext();
-    const classes = useStyles();
+    const { classes } = useStyles();
     const name = 'file';
     return (
         <fieldset className={classes.borderless}>

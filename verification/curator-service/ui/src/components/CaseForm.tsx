@@ -1,8 +1,13 @@
 import * as Yup from 'yup';
 
-import { Button, LinearProgress, Typography } from '@mui/material';
+import {
+    Alert as MuiAlert,
+    Button,
+    LinearProgress,
+    Paper,
+    Typography,
+} from '@mui/material';
 import { Form, Formik } from 'formik';
-import { Paper } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { green, grey, red } from '@mui/material/colors';
 
@@ -15,7 +20,6 @@ import ErrorIcon from '@mui/icons-material/Error';
 import Events from './new-case-form-fields/Events';
 import GenomeSequences from './new-case-form-fields/GenomeSequences';
 import LocationForm from './new-case-form-fields/LocationForm';
-import MuiAlert from '@mui/material/Alert';
 import PreexistingConditions from './new-case-form-fields/PreexistingConditions';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import React from 'react';

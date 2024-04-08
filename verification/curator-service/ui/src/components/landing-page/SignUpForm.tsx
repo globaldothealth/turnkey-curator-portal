@@ -5,7 +5,7 @@ import { useAppDispatch } from '../../hooks/redux';
 import { signUpWithEmailAndPassword } from '../../redux/auth/thunk';
 
 import { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
@@ -25,7 +25,7 @@ import { sendCustomGtmEvent } from '../util/helperFunctions';
 import ReCAPTCHA from 'react-google-recaptcha';
 import PasswordStrengthBar from 'react-password-strength-bar';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
     checkboxRoot: {
         display: 'block',
     },
@@ -100,7 +100,7 @@ export default function SignUpForm({
     setRegistrationScreenOn,
     recaptchaRef,
 }: SignUpFormProps): React.ReactElement {
-    const classes = useStyles();
+    const { classes } = useStyles();
     const dispatch = useAppDispatch();
 
     const [passwordVisible, setPasswordVisible] = useState(false);

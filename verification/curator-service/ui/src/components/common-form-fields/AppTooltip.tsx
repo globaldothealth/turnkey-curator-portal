@@ -1,8 +1,8 @@
-import Tooltip from '@mui/material/Tooltip';
+import { Tooltip } from '@mui/material';
 import { Theme } from '@mui/material/styles';
-import { withStyles } from '@mui/styles';
+import { withStyles } from 'tss-react/mui';
 
-export const AppTooltip = withStyles((theme: Theme) => ({
+export const AppTooltip = withStyles(Tooltip, (theme: Theme) => ({
     arrow: {
         color: theme.palette.primary.main,
     },
@@ -27,4 +27,4 @@ export const AppTooltip = withStyles((theme: Theme) => ({
             borderBottom: '1px dotted white',
         },
     },
-}))(Tooltip);
+}));

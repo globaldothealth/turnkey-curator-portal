@@ -2,12 +2,15 @@ import axios from 'axios';
 import { FastField, Field, useFormikContext } from 'formik';
 import { Select, TextField } from 'formik-mui';
 import { get } from 'lodash';
-import { Autocomplete, FormHelperText } from '@mui/material';
+import {
+    Autocomplete,
+    FormControl,
+    FormHelperText,
+    MenuItem,
+    TextField as MuiTextField,
+} from '@mui/material';
 import { createFilterOptions } from '@mui/material/Autocomplete';
-import FormControl from '@mui/material/FormControl';
-import MenuItem from '@mui/material/MenuItem';
-import MuiTextField from '@mui/material/TextField';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -18,7 +21,7 @@ import { AutomatedSourceFormValues } from '../AutomatedSourceForm';
 import BulkCaseFormValues from '../bulk-case-form-fields/BulkCaseFormValues';
 import { hasKey } from '../Utils';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
     fieldRow: {
         marginBottom: '2em',
         width: '100%',
@@ -156,7 +159,7 @@ interface SelectFieldProps {
 }
 
 export function SelectField(props: SelectFieldProps): JSX.Element {
-    const classes = useStyles();
+    const { classes } = useStyles();
     return (
         <FormControl className={classes.fieldRow} variant="standard">
             <FastField
@@ -191,7 +194,7 @@ interface DateFieldProps {
 }
 
 export function DateField(props: DateFieldProps): JSX.Element {
-    const classes = useStyles();
+    const { classes } = useStyles();
 
     const dateValue = props.value || 'yyyy/MM/dd';
 

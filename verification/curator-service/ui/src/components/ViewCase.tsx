@@ -19,7 +19,7 @@ import MuiAlert from '@mui/material/Alert';
 import Scroll from 'react-scroll';
 import axios from 'axios';
 import createHref from './util/links';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import renderDate from './util/date';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
@@ -34,7 +34,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { selectUser } from '../redux/auth/selectors';
 import { Role } from '../api/models/User';
 
-const styles = makeStyles(() => ({
+const styles = makeStyles()(() => ({
     errorMessage: {
         height: 'fit-content',
         width: '100%',
@@ -92,7 +92,7 @@ export default function ViewCase(props: Props): JSX.Element {
         }
     };
 
-    const classes = styles();
+    const { classes } = styles();
 
     return (
         <AppModal title="Case details" onModalClose={props.onModalClose}>
@@ -128,7 +128,7 @@ interface CaseDetailsProps {
     enableEdit?: boolean;
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
     paper: {
         background: theme.palette.background.paper,
         marginTop: '1em',
@@ -192,7 +192,7 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
     const theme = useTheme();
     const showNavMenu = useMediaQuery(theme.breakpoints.up('sm'));
     const [verifyDialogOpen, setVerifyDialogOpen] = useState(false);
-    const classes = useStyles();
+    const { classes } = useStyles();
 
     const scrollTo = (name: string): void => {
         Scroll.scroller.scrollTo(name, {

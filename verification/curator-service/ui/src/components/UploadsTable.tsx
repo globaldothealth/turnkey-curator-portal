@@ -1,4 +1,4 @@
-import MaterialTable, { QueryResult } from 'material-table';
+import MaterialTable, { QueryResult } from '@material-table/core';
 import { Paper, TablePagination, Typography } from '@mui/material';
 import { useRef, useState } from 'react';
 
@@ -232,12 +232,13 @@ const UploadsTable = () => {
                             zIndex: 1,
                         },
                     }}
-                    onChangeRowsPerPage={(newPageSize: number): void => {
-                        setPageSize(newPageSize);
-                        if (tableRef && tableRef.current) {
-                            tableRef.current.onQueryChange();
-                        }
-                    }}
+                    // TODO unmock this
+                    // onChangeRowsPerPage={(newPageSize: number): void => {
+                    //     setPageSize(newPageSize);
+                    //     if (tableRef && tableRef.current) {
+                    //         tableRef.current.onQueryChange();
+                    //     }
+                    // }}
                 />
             </Paper>
         </div>

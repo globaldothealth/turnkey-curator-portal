@@ -6,7 +6,7 @@ import { signInWithEmailAndPassword } from '../../redux/auth/thunk';
 import { setForgotPasswordPopupOpen } from '../../redux/auth/slice';
 
 import { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
@@ -22,7 +22,7 @@ import GoogleButton from 'react-google-button';
 import ForgotPasswordForm from './ForgotPasswordForm';
 import ReCAPTCHA from 'react-google-recaptcha';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
     required: {
         color: theme.palette.error.main,
     },
@@ -79,7 +79,7 @@ export default function SignInForm({
     recaptchaRef,
 }: SignInFormProps): JSX.Element {
     const dispatch = useAppDispatch();
-    const classes = useStyles();
+    const { classes } = useStyles();
 
     const [passwordVisible, setPasswordVisible] = useState(false);
 

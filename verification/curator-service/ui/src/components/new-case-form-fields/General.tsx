@@ -1,13 +1,13 @@
-import { SelectField } from '../common-form-fields/FormikFields';
-
-import FieldTitle from '../common-form-fields/FieldTitle';
-import Scroll from 'react-scroll';
-import { StyledTooltip } from './StyledTooltip';
-import { CaseStatus } from '../../api/models/Day0Case';
 import clsx from 'clsx';
-import { useStyles } from './styled';
 import { FastField } from 'formik';
 import { TextField } from 'formik-mui';
+import Scroll from 'react-scroll';
+
+import { CaseStatus } from '../../api/models/Day0Case';
+import { SelectField } from '../common-form-fields/FormikFields';
+import FieldTitle from '../common-form-fields/FieldTitle';
+import { useStyles } from './styled';
+import { StyledTooltip } from './StyledTooltip';
 
 const TooltipText = () => (
     <StyledTooltip>
@@ -32,7 +32,7 @@ const TooltipText = () => (
 );
 
 export default function General(): JSX.Element {
-    const classes = useStyles();
+    const { classes } = useStyles();
 
     return (
         <Scroll.Element name="general">

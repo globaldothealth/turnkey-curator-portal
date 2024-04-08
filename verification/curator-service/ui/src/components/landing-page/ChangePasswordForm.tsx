@@ -8,7 +8,7 @@ import { resetPassword } from '../../redux/auth/thunk';
 import { toggleSnackbar } from '../../redux/auth/slice';
 
 import { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
@@ -21,7 +21,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import PasswordStrengthBar from 'react-password-strength-bar';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
     checkboxRoot: {
         display: 'block',
     },
@@ -86,7 +86,7 @@ export default function ChangePasswordForm({
     id,
     disabled,
 }: ChangePasswordFormProps): JSX.Element {
-    const classes = useStyles();
+    const { classes } = useStyles();
     const dispatch = useAppDispatch();
     const history = useHistory();
 

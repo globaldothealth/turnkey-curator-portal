@@ -1,4 +1,4 @@
-import MaterialTable, { QueryResult } from 'material-table';
+import MaterialTable, { QueryResult } from '@material-table/core';
 import {
     Avatar,
     Button,
@@ -21,7 +21,7 @@ import { Theme } from '@mui/material/styles';
 import { useAppSelector } from '../hooks/redux';
 import { selectUser } from '../redux/auth/selectors';
 
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
 import MuiAlert from '@mui/material/Alert';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -55,7 +55,7 @@ interface UsersSelectDisplayProps extends React.HTMLAttributes<HTMLDivElement> {
 
 // Return type isn't meaningful.
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
     alert: {
         borderRadius: theme.spacing(1),
         marginTop: theme.spacing(2),
@@ -69,7 +69,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }));
 
-const rowMenuStyles = makeStyles((theme: Theme) => ({
+const rowMenuStyles = makeStyles()((theme: Theme) => ({
     menuItemTitle: {
         marginLeft: theme.spacing(1),
     },
@@ -90,7 +90,7 @@ function RowMenu(props: {
     const [deleteDialogOpen, setDeleteDialogOpen] =
         React.useState<boolean>(false);
     const [isDeleting, setIsDeleting] = React.useState(false);
-    const classes = rowMenuStyles();
+    const { classes } = rowMenuStyles();
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
         event.stopPropagation();
@@ -220,7 +220,7 @@ const Users = ({ onUserChange }: UsersProps) => {
 
     const user = useAppSelector(selectUser);
 
-    const classes = useStyles();
+    const { classes } = useStyles();
 
     useEffect(() => {
         axios
@@ -415,10 +415,11 @@ const Users = ({ onUserChange }: UsersProps) => {
                         zIndex: 1,
                     },
                 }}
-                onChangeRowsPerPage={(newPageSize: number) => {
-                    setPageSize(newPageSize);
-                    tableRef.current.onQueryChange();
-                }}
+                // TODO unmock this
+                // onChangeRowsPerPage={(newPageSize: number) => {
+                //     setPageSize(newPageSize);
+                //     tableRef.current.onQueryChange();
+                // }}
             />
         </Paper>
     );

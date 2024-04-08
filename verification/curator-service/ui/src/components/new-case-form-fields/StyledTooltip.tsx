@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
-const styles = makeStyles((width: string) => ({
+const styles = makeStyles()(() => ({
     tooltip: {
         width: '300px',
         padding: '5px',
@@ -40,7 +40,7 @@ const styles = makeStyles((width: string) => ({
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const StyledTooltip: FunctionComponent<any> = ({ children, wide }) => {
-    const classes = styles();
+    const { classes } = styles();
 
     if (wide) {
         return <div className={`${classes.wideTooltip}`}>{children}</div>;

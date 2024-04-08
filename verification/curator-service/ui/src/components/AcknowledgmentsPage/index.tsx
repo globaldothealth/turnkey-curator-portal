@@ -3,16 +3,18 @@ import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import Helmet from 'react-helmet';
 
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Divider from '@mui/material/Divider';
-import CircularProgress from '@mui/material/CircularProgress';
+import {
+    CircularProgress,
+    Divider,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TablePagination,
+    TableRow,
+    Typography,
+} from '@mui/material';
 import { fetchAcknowledgmentData } from '../../redux/acknowledgmentData/thunk';
 import { SnackbarAlert } from '../SnackbarAlert';
 import EnhancedTableHead from './EnhancedTableHead';
@@ -28,7 +30,7 @@ import { Data, Order } from './types';
 import { createData, getComparator, stableSort } from './helperFunctions';
 
 export default function AcknowledgmentsPage(): JSX.Element {
-    const classes = useTableStyles();
+    const { classes } = useTableStyles();
     const [order, setOrder] = React.useState<Order>('asc');
     const [orderBy, setOrderBy] = React.useState<keyof Data>('providerName');
     const [page, setPage] = React.useState(0);

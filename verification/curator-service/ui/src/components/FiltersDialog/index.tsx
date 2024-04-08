@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useFormik } from 'formik';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { filtersToURL, URLToFilters } from '../util/searchQuery';
-import { hasAnyRole } from '../util/helperFunctions';
-
 import {
+    Alert,
     Dialog,
     DialogContent,
     DialogTitle,
@@ -17,8 +14,11 @@ import {
     InputLabel,
     OutlinedInput,
     IconButton,
+    useMediaQuery,
 } from '@mui/material';
-import { Alert } from '@mui/material';
+import { Close as CloseIcon } from '@mui/icons-material';
+import { filtersToURL, URLToFilters } from '../util/searchQuery';
+import { hasAnyRole } from '../util/helperFunctions';
 import { useAppSelector, useAppDispatch } from '../../hooks/redux';
 import { fetchCountries } from '../../redux/filters/thunk';
 import {
@@ -33,7 +33,6 @@ import {
 } from '../../redux/filters/selectors';
 import { setModalOpen, setActiveFilterInput } from '../../redux/filters/slice';
 import { codeForCountry } from '../util/countryNames';
-import CloseIcon from '@mui/icons-material/Close';
 import { useStyles } from './styled';
 import { sendCustomGtmEvent } from '../util/helperFunctions';
 import { Gender, Outcome } from '../../api/models/Day0Case';
@@ -75,7 +74,7 @@ export default function FiltersDialog({
     closeAlert,
 }: FiltersModalProps): JSX.Element {
     const dispatch = useAppDispatch();
-    const classes = useStyles();
+    const { classes } = useStyles();
     const location = useLocation();
     const history = useHistory();
 

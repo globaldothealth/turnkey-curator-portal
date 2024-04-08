@@ -18,7 +18,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
 import { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
@@ -37,7 +37,7 @@ import Helmet from 'react-helmet';
 import PasswordStrengthBar from 'react-password-strength-bar';
 import { Role } from '../api/models/User';
 
-const styles = makeStyles((theme: Theme) => ({
+const styles = makeStyles()((theme: Theme) => ({
     root: {
         textAlign: 'center',
     },
@@ -56,7 +56,7 @@ const styles = makeStyles((theme: Theme) => ({
     },
 }));
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()(() => ({
     inputField: {
         display: 'block',
         width: '240px',
@@ -119,7 +119,7 @@ export function ResetAPIKeyForm(): JSX.Element {
     );
 }
 export function ChangePasswordFormInProfile(): JSX.Element {
-    const classes = useStyles();
+    const { classes } = useStyles();
     const dispatch = useAppDispatch();
 
     const [passwordStrength, setPasswordStrength] = useState(0);
@@ -380,7 +380,7 @@ export function ChangePasswordFormInProfile(): JSX.Element {
 }
 
 export default function Profile(): JSX.Element {
-    const classes = styles();
+    const { classes } = styles();
 
     const user = useAppSelector(selectUser);
 

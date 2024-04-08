@@ -6,8 +6,7 @@ import {
     TextField,
     Theme,
 } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
-import withStyles from '@mui/styles/withStyles';
+import { makeStyles, withStyles } from 'tss-react/mui';
 import CloseIcon from '@mui/icons-material/Close';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import HelpIcon from '@mui/icons-material/HelpOutline';
@@ -23,7 +22,7 @@ import { useAppSelector, useAppDispatch } from '../hooks/redux';
 import { selectFilterBreadcrumbs } from '../redux/app/selectors';
 import { setModalOpen } from '../redux/filters/slice';
 
-const searchBarStyles = makeStyles((theme: Theme) => ({
+const searchBarStyles = makeStyles()((theme: Theme) => ({
     searchRoot: {
         paddingTop: theme.spacing(1),
         paddingBottom: theme.spacing(1),
@@ -46,7 +45,7 @@ const searchBarStyles = makeStyles((theme: Theme) => ({
     },
 }));
 
-const StyledSearchTextField = withStyles((theme: Theme) => ({
+const StyledSearchTextField = withStyles(TextField, (theme: Theme) => ({
     root: {
         backgroundColor: theme.palette.background.paper,
         borderRadius: '8px',
@@ -63,13 +62,13 @@ const StyledSearchTextField = withStyles((theme: Theme) => ({
             },
         },
     },
-}))(TextField);
+}));
 
-const StyledInputAdornment = withStyles({
+const StyledInputAdornment = withStyles(InputAdornment, {
     positionStart: {
         marginRight: 0,
     },
-})(InputAdornment);
+});
 
 interface SearchBarProps {
     rootComponentRef: React.RefObject<HTMLDivElement>;
@@ -79,7 +78,7 @@ export default function SearchBar({
     rootComponentRef,
 }: SearchBarProps): JSX.Element {
     const dispatch = useAppDispatch();
-    const classes = searchBarStyles();
+    const { classes } = searchBarStyles();
     const location = useLocation();
     const history = useHistory();
 

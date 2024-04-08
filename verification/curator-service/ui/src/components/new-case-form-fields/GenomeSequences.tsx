@@ -1,11 +1,11 @@
+import clsx from 'clsx';
 import { FastField } from 'formik';
+import { TextField } from 'formik-mui';
+import Scroll from 'react-scroll';
 
 import FieldTitle from '../common-form-fields/FieldTitle';
-import { StyledTooltip } from './StyledTooltip';
-import Scroll from 'react-scroll';
-import { TextField } from 'formik-mui';
 import { useStyles } from './styled';
-import clsx from 'clsx';
+import { StyledTooltip } from './StyledTooltip';
 
 const TooltipText = () => (
     <StyledTooltip>
@@ -31,7 +31,7 @@ const TooltipText = () => (
 );
 
 export default function GenomeSequences(): JSX.Element {
-    const globalClasses = useStyles();
+    const { classes } = useStyles();
 
     return (
         <Scroll.Element name="genomeSequences">
@@ -40,12 +40,7 @@ export default function GenomeSequences(): JSX.Element {
                 interactive
                 tooltip={<TooltipText />}
             />
-            <div
-                className={clsx([
-                    globalClasses.fieldRow,
-                    globalClasses.halfWidth,
-                ])}
-            >
+            <div className={clsx([classes.fieldRow, classes.halfWidth])}>
                 <FastField
                     name="genomeSequences.genomicsMetadata"
                     type="text"
@@ -54,12 +49,7 @@ export default function GenomeSequences(): JSX.Element {
                     fullWidth
                 />
             </div>
-            <div
-                className={clsx([
-                    globalClasses.fieldRow,
-                    globalClasses.halfWidth,
-                ])}
-            >
+            <div className={clsx([classes.fieldRow, classes.halfWidth])}>
                 <FastField
                     name="genomeSequences.accessionNumber"
                     type="text"
