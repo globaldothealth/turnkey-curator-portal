@@ -212,7 +212,7 @@ export function DateField(props: DateFieldProps): JSX.Element {
                     disableFuture
                     value={dateValue}
                     onChange={props.onChange}
-                    // renderInput={(params) => (
+                    // renderInput={(params) => ( // TODO check if this is needed
                     //     <MuiTextField
                     //         {...params}
                     //         name={props.name}
