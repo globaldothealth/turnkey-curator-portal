@@ -1,18 +1,20 @@
-import { useAppSelector, useAppDispatch } from '../../hooks/redux';
+import {
+    Button,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import {
     selectIsLoading,
     selectTotalCases,
 } from '../../redux/linelistTable/selectors';
 import { deleteCases } from '../../redux/linelistTable/thunk';
-
-import { useTheme } from '@mui/material/styles';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogActions from '@mui/material/DialogActions';
-import DialogTitle from '@mui/material/DialogTitle';
-import CircularProgress from '@mui/material/CircularProgress';
-import Button from '@mui/material/Button';
 
 interface CaseDeleteDialogProps {
     isOpen: boolean;

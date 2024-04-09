@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { Typography, Paper } from '@mui/material';
 import { styled, Theme } from '@mui/material/styles';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import {
@@ -54,7 +54,7 @@ const StyledPaper = styled(Paper, {
     width: '1000px',
 }));
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
     body: {
         display: 'flex',
         marginTop: '20px',
@@ -210,7 +210,7 @@ const LandingPage = (): JSX.Element => {
     const dispatch = useAppDispatch();
 
     const smallHeight = useMediaQuery('(max-height:1050px)');
-    const classes = useStyles();
+    const { classes } = useStyles();
     const [registrationScreenOn, setRegistrationScreenOn] = useState(true);
     const [changePasswordScreenOn, setChangePasswordScreenOn] = useState(false);
     const recaptchaRef = useRef<ReCAPTCHA>(null);

@@ -2,10 +2,10 @@ import axios from 'axios';
 import { Field, useFormikContext } from 'formik';
 import { TextField } from 'formik-mui';
 import throttle from 'lodash/throttle';
-import { Typography } from '@mui/material';
-import Autocomplete from '@mui/material/Autocomplete';
+import { Autocomplete, Typography } from '@mui/material';
+import { Theme } from '@mui/material/styles';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import React from 'react';
 import Scroll from 'react-scroll';
 
@@ -69,7 +69,7 @@ function LocationForm(): JSX.Element {
     );
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
     icon: {
         color: theme.palette.text.secondary,
         marginRight: theme.spacing(2),
@@ -94,7 +94,7 @@ const useStyles = makeStyles((theme) => ({
 function LocationCommentsList(): JSX.Element {
     const { initialValues } = useFormikContext<Day0CaseFormValues>();
     const [locationComments, setLocationComments] = React.useState([]);
-    const classes = useStyles();
+    const { classes } = useStyles();
 
     React.useEffect(
         () => {
@@ -134,7 +134,7 @@ interface PlacesAutocompleteProps {
 export function PlacesAutocomplete(
     props: PlacesAutocompleteProps,
 ): JSX.Element {
-    const classes = useStyles();
+    const { classes } = useStyles();
     const [value, setValue] = React.useState<GeocodeLocation | null>(null);
     const [inputValue, setInputValue] = React.useState('');
     const [options, setOptions] = React.useState<GeocodeLocation[]>([]);

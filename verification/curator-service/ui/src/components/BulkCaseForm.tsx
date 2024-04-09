@@ -1,7 +1,13 @@
 import * as Yup from 'yup';
 
 import { useState } from 'react';
-import { Button, CircularProgress, Typography } from '@mui/material';
+import {
+    Alert,
+    Button,
+    CircularProgress,
+    Paper,
+    Typography,
+} from '@mui/material';
 import {
     CaseReference,
     CaseStatus,
@@ -15,20 +21,18 @@ import { Form, Formik } from 'formik';
 import Papa, { ParseLocalConfig, ParseResult } from 'papaparse';
 import Source, { submitSource } from './common-form-fields/Source';
 
-import Alert from '@mui/material/Alert';
 import AppModal from './AppModal';
 import BulkCaseFormValues from './bulk-case-form-fields/BulkCaseFormValues';
 import CaseValidationError from './bulk-case-form-fields/CaseValidationError';
 import FileUpload from './bulk-case-form-fields/FileUpload';
-import { Paper } from '@mui/material';
 import ValidationErrorList from './bulk-case-form-fields/ValidationErrorList';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
 // Return type isn't meaningful.
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()(() => ({
     headerBlurb: {
         maxWidth: '70%',
         paddingBottom: '3em',
@@ -217,7 +221,7 @@ const BulkCaseForm = (props: BulkCaseFormProps) => {
     const { onModalClose } = props;
 
     const history = useHistory();
-    const classes = useStyles();
+    const { classes } = useStyles();
 
     const [errorMessage, setErrorMessage] = useState('');
     const [errors, setErrors] = useState<CaseValidationError[]>([]);

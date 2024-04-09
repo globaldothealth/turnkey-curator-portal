@@ -45,7 +45,7 @@ import {
     setDeleteCasesDialogOpen,
     setRowsAcrossPagesSelected,
 } from '../../redux/linelistTable/slice';
-import { LoaderContainer, StyledAlert } from './styled';
+import { LineListContainer, LoaderContainer, StyledAlert } from './styled';
 import { nameCountry } from '../util/countryNames';
 import renderDate from '../util/date';
 import { hasAnyRole, parseAgeRange } from '../util/helperFunctions';
@@ -203,7 +203,7 @@ const LinelistTable = () => {
     const isSelected = (id: string) => casesSelected.indexOf(id) !== -1;
 
     return (
-        <>
+        <LineListContainer>
             <Helmet>
                 <title>Global.health | Cases</title>
             </Helmet>
@@ -492,7 +492,7 @@ const LinelistTable = () => {
                 caseIds={rowsAcrossPagesSelected ? undefined : casesSelected}
                 query={rowsAcrossPagesSelected ? searchQuery : undefined}
             />
-        </>
+        </LineListContainer>
     );
 };
 

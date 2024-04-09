@@ -1,13 +1,13 @@
-import { DateField, SelectField } from '../common-form-fields/FormikFields';
-import { FastField, useFormikContext } from 'formik';
-
-import FieldTitle from '../common-form-fields/FieldTitle';
-import { StyledTooltip } from './StyledTooltip';
-import Scroll from 'react-scroll';
-import { Day0CaseFormValues } from '../../api/models/Day0Case';
-import { TextField } from 'formik-mui';
-import { useStyles } from './styled';
 import clsx from 'clsx';
+import { FastField, useFormikContext } from 'formik';
+import { TextField } from 'formik-mui';
+import Scroll from 'react-scroll';
+
+import { Day0CaseFormValues } from '../../api/models/Day0Case';
+import { DateField, SelectField } from '../common-form-fields/FormikFields';
+import FieldTitle from '../common-form-fields/FieldTitle';
+import { useStyles } from './styled';
+import { StyledTooltip } from './StyledTooltip';
 
 const hasTravelledValues = ['Y', 'N', 'NA'];
 
@@ -51,7 +51,7 @@ const TooltipText = () => (
 
 export default function TravelHistory(): JSX.Element {
     const { values, setValues } = useFormikContext<Day0CaseFormValues>();
-    const globalClasses = useStyles();
+    const { classes } = useStyles();
 
     return (
         <Scroll.Element name="travelHistory">
@@ -79,10 +79,7 @@ export default function TravelHistory(): JSX.Element {
                         }}
                     />
                     <div
-                        className={clsx([
-                            globalClasses.fieldRow,
-                            globalClasses.halfWidth,
-                        ])}
+                        className={clsx([classes.fieldRow, classes.halfWidth])}
                     >
                         <FastField
                             name="travelHistory.travelHistoryStart"
@@ -93,10 +90,7 @@ export default function TravelHistory(): JSX.Element {
                         />
                     </div>
                     <div
-                        className={clsx([
-                            globalClasses.fieldRow,
-                            globalClasses.halfWidth,
-                        ])}
+                        className={clsx([classes.fieldRow, classes.halfWidth])}
                     >
                         <FastField
                             name="travelHistory.travelHistoryLocation"
@@ -107,10 +101,7 @@ export default function TravelHistory(): JSX.Element {
                         />
                     </div>
                     <div
-                        className={clsx([
-                            globalClasses.fieldRow,
-                            globalClasses.halfWidth,
-                        ])}
+                        className={clsx([classes.fieldRow, classes.halfWidth])}
                     >
                         <FastField
                             name="travelHistory.travelHistoryCountry"

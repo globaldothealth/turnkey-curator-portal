@@ -1,8 +1,8 @@
 import React from 'react';
 import { Typography } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
-const styles = makeStyles(() => ({
+const styles = makeStyles()(() => ({
     root: {
         marginTop: '12px',
         width: '80%',
@@ -10,7 +10,7 @@ const styles = makeStyles(() => ({
 }));
 
 export default function TermsOfUse(): JSX.Element {
-    const classes = styles();
+    const { classes } = styles();
     return (
         <div className={classes.root}>
             <Typography variant="h5">Global.health Terms of Use</Typography>

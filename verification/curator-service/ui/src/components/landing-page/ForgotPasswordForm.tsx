@@ -17,7 +17,7 @@ import {
 } from '../../redux/auth/slice';
 
 import { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
@@ -29,7 +29,7 @@ import {
     DialogTitle,
 } from '@mui/material';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
     checkboxRoot: {
         display: 'block',
     },
@@ -64,7 +64,7 @@ interface FormValues {
 }
 
 export default function ForgotPasswordForm(): React.ReactElement {
-    const classes = useStyles();
+    const { classes } = useStyles();
     const dispatch = useAppDispatch();
 
     const resetPasswordEmailSent = useAppSelector(selectResetPasswordEmailSent);

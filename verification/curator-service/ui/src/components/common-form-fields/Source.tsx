@@ -10,12 +10,10 @@ import {
     ErrorMessage,
 } from 'formik';
 import { CheckboxWithLabel, TextField } from 'formik-mui';
-import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Autocomplete, List, ListItem, Grid } from '@mui/material';
-import Button from '@mui/material/Button';
+import { Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { Autocomplete, Button, List, ListItem, Grid } from '@mui/material';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
 import { Day0CaseFormValues, CaseReference } from '../../api/models/Day0Case';
 import BulkCaseFormValues from '../bulk-case-form-fields/BulkCaseFormValues';
@@ -55,7 +53,7 @@ const TooltipText = () => (
     </StyledTooltip>
 );
 
-const useSourceStyles = makeStyles(() => ({
+const useSourceStyles = makeStyles()(() => ({
     additionalSources: {
         width: '50%',
     },
@@ -75,7 +73,7 @@ const useSourceStyles = makeStyles(() => ({
 }));
 
 export default function Source(props: SourceProps) {
-    const classes = useSourceStyles();
+    const { classes } = useSourceStyles();
     const { values } = useFormikContext<
         Day0CaseFormValues | BulkCaseFormValues
     >();
@@ -291,7 +289,7 @@ export async function submitSource(opts: {
 
 const filter = createFilterOptions<CaseReferenceForm>();
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
     sourceTextField: {
         marginTop: '1em',
     },
@@ -309,7 +307,7 @@ const useStyles = makeStyles(() => ({
 export function SourcesAutocomplete(
     props: SourceAutocompleteProps,
 ): JSX.Element {
-    const classes = useStyles();
+    const { classes } = useStyles();
     const name = 'caseReference';
     const [value, setValue] = React.useState<CaseReferenceForm | null>(
         props.initialValue || null,

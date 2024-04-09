@@ -6,11 +6,11 @@ import FieldTitle from '../common-form-fields/FieldTitle';
 import { StyledTooltip } from './StyledTooltip';
 import Scroll from 'react-scroll';
 import axios from 'axios';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { useFormikContext } from 'formik';
 import { Day0CaseFormValues } from '../../api/models/Day0Case';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
     chip: {
         margin: '0.5em',
     },
@@ -63,7 +63,7 @@ function SymptomList(props: SymptomListProps): JSX.Element {
         [],
     );
 
-    const classes = useStyles();
+    const { classes } = useStyles();
 
     const rawInitialValues = initialValues[props.collectionName];
     const splittedValues =

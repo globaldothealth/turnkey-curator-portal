@@ -1,8 +1,5 @@
 import React from 'react';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import TableCell from '@mui/material/TableCell';
-import TableSortLabel from '@mui/material/TableSortLabel';
+import { TableCell, TableHead, TableRow, TableSortLabel } from '@mui/material';
 
 import { EnhancedTableProps, Data, HeadCell } from './types';
 
@@ -31,24 +28,24 @@ function EnhancedTableHead(props: EnhancedTableProps): JSX.Element {
 
     return (
         <TableHead>
-            <TableRow className={classes.headerRow}>
+            <TableRow className={classes?.headerRow}>
                 {headCells.map((headCell) => (
                     <TableCell
                         key={headCell.id}
                         align={headCell.numeric ? 'right' : 'left'}
                         padding={headCell.disablePadding ? 'none' : 'normal'}
                         sortDirection={orderBy === headCell.id ? order : false}
-                        className={classes.headerCell}
+                        className={classes?.headerCell}
                     >
                         <TableSortLabel
                             active={orderBy === headCell.id}
                             direction={orderBy === headCell.id ? order : 'asc'}
                             onClick={createSortHandler(headCell.id)}
-                            className={classes.activeCellLabel}
+                            className={classes?.activeCellLabel}
                         >
                             {headCell.label}
                             {orderBy === headCell.id ? (
-                                <span className={classes.visuallyHidden}>
+                                <span className={classes?.visuallyHidden}>
                                     {order === 'desc'
                                         ? 'sorted descending'
                                         : 'sorted ascending'}

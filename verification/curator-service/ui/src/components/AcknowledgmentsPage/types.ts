@@ -17,7 +17,12 @@ export interface HeadCell {
 export type Order = 'asc' | 'desc';
 
 export interface EnhancedTableProps {
-    classes: ReturnType<typeof useTableStyles>;
+    classes?: Partial<
+        Record<
+            'headerRow' | 'headerCell' | 'activeCellLabel' | 'visuallyHidden',
+            string
+        >
+    >;
     numSelected: number;
     onRequestSort: (
         event: React.MouseEvent<unknown>,

@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react';
 import { Box, Portal, Theme, Typography } from '@mui/material';
-import { WithStyles } from '@mui/styles';
-import createStyles from '@mui/styles/createStyles';
-import withStyles from '@mui/styles/withStyles';
+import { withStyles } from 'tss-react/mui';
 import CloseIcon from '@mui/icons-material/Close';
 import Draggable, { ControlPosition } from 'react-draggable';
 
@@ -13,58 +11,16 @@ declare module 'react-draggable' {
     }
 }
 
-type Props = WithStyles<typeof styles> & {
+type Props = {
     rootComponentRef: React.RefObject<HTMLDivElement>;
     triggerComponentRef: React.RefObject<HTMLButtonElement>;
     isOpen: boolean;
     onToggle: () => void;
+    className?: string;
+    classes?: Partial<
+        Record<'root' | 'closeIcon' | 'title' | 'textSection', string>
+    >;
 };
-
-// Return type isn't meaningful.
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-const styles = (theme: Theme) =>
-    createStyles({
-        root: {
-            maxWidth: 520,
-            backgroundColor: theme.palette.primary.main,
-            color: theme.palette.primary.contrastText,
-            cursor: 'move',
-            position: 'absolute',
-            zIndex: 1500,
-            borderRadius: 5,
-            padding: theme.spacing(4),
-        },
-        closeIcon: {
-            width: 30,
-            height: 30,
-            cursor: 'pointer',
-        },
-        title: {
-            fontFamily: 'Inter',
-            fontSize: 22,
-            fontWeight: 'bold',
-        },
-        subtitle: {
-            fontSize: 18,
-            fontWeight: 'bold',
-        },
-        list: {
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'space-between',
-            padding: 0,
-            fontSize: 16,
-
-            '& > li': {
-                flex: '0 0 33.3333%',
-                listStyleType: 'none',
-            },
-        },
-        textSection: {
-            fontFamily: 'Inter',
-            marginBottom: '1rem',
-        },
-    });
 
 // additional offsets to keep the position ideally below the data guide button
 const LEFT_OFFSET = -16;
@@ -108,38 +64,38 @@ const SearchGuideDialog = ({
             >
                 <div
                     ref={nodeRef}
-                    className={classes.root}
+                    className={classes?.root}
                     id="draggable-search-guide"
                 >
                     <Box sx={{ position: 'relative' }}>
                         <Box sx={{ position: 'absolute', top: 0, right: 0 }}>
                             <CloseIcon
-                                className={classes.closeIcon}
+                                className={classes?.closeIcon}
                                 onClick={onToggle}
                                 data-testid="close-search-guide-button"
                                 id="close-guide-icon"
                             />
                         </Box>
                         <Box sx={{ mb: 1 }}>
-                            <Typography className={classes.title}>
+                            <Typography className={classes?.title}>
                                 Welcome to Global.health Data!
                             </Typography>
                         </Box>
-                        <Typography className={classes.textSection}>
+                        <Typography className={classes?.textSection}>
                             You can explore our line-list dataset by{' '}
                             <strong>filtering</strong>, <strong>sorting</strong>
                             , or <strong>searching</strong>.
                         </Typography>
-                        <Typography className={classes.textSection}>
+                        <Typography className={classes?.textSection}>
                             <strong>To filter</strong>, click the "Filter"
                             button or a column header and enter parameters for
                             any of the available fields.
                         </Typography>
-                        <Typography className={classes.textSection}>
+                        <Typography className={classes?.textSection}>
                             <strong>To sort</strong>, use the dropdown menu on
                             the left and choose ascending or descending.
                         </Typography>
-                        <Typography className={classes.textSection}>
+                        <Typography className={classes?.textSection}>
                             <strong>For full-text search</strong>, enter any
                             combination of search terms.
                         </Typography>
@@ -155,4 +111,50 @@ const SearchGuideDialog = ({
     );
 };
 
-export default withStyles(styles, { withTheme: true })(SearchGuideDialog);
+const SearchGuideDialogStyled = withStyles(
+    SearchGuideDialog,
+    (theme: Theme) => ({
+        root: {
+            maxWidth: 520,
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.primary.contrastText,
+            cursor: 'move',
+            position: 'absolute',
+            zIndex: 1500,
+            borderRadius: 5,
+            padding: theme.spacing(4),
+        },
+        closeIcon: {
+            width: 30,
+            height: 30,
+            cursor: 'pointer',
+        },
+        title: {
+            fontFamily: 'Inter',
+            fontSize: 22,
+            fontWeight: 'bold',
+        },
+        subtitle: {
+            fontSize: 18,
+            fontWeight: 'bold',
+        },
+        list: {
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'space-between',
+            padding: 0,
+            fontSize: 16,
+
+            '& > li': {
+                flex: '0 0 33.3333%',
+                listStyleType: 'none',
+            },
+        },
+        textSection: {
+            fontFamily: 'Inter',
+            marginBottom: '1rem',
+        },
+    }),
+);
+
+export default SearchGuideDialogStyled;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography } from '@mui/material';
 import { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import clsx from 'clsx';
 
@@ -22,41 +22,39 @@ interface StylesProps {
     smallWidth: boolean;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
-    logosContainer: {
-        display: 'flex',
-        flexDirection: (props: StylesProps) =>
-            props.smallWidth ? 'column' : 'row',
-
-        alignItems: (props: StylesProps) =>
-            props.smallWidth ? 'center' : 'flex-start',
-
-        marginTop: '10px',
-        '&.fullWidth': {
-            justifyContent: 'space-evenly',
-            alignItems: 'center',
+const useStyles = makeStyles<StylesProps>()(
+    (theme: Theme, props: StylesProps) => ({
+        logosContainer: {
+            display: 'flex',
+            flexDirection: props.smallWidth ? 'column' : 'row',
+            alignItems: props.smallWidth ? 'center' : 'flex-start',
+            marginTop: '10px',
+            '&.fullWidth': {
+                justifyContent: 'space-evenly',
+                alignItems: 'center',
+            },
         },
-    },
-    logo: {
-        maxWidth: '100px',
-        height: 'auto',
-        '&.big': {
-            maxWidth: '120px',
+        logo: {
+            maxWidth: '100px',
+            height: 'auto',
+            '&.big': {
+                maxWidth: '120px',
+            },
+            '&.gray': {
+                WebkitFilter: 'grayscale(100%)',
+                filter: 'grayscale(100%)',
+            },
         },
-        '&.gray': {
-            WebkitFilter: 'grayscale(100%)',
-            filter: 'grayscale(100%)',
+        title: {
+            marginTop: '20px',
+            color: theme.custom.palette.landingPage.descriptionTextColor,
         },
-    },
-    title: {
-        marginTop: '20px',
-        color: theme.custom.palette.landingPage.descriptionTextColor,
-    },
-}));
+    }),
+);
 
 export default function PartnerLogos(): JSX.Element {
     const smallWidth = useMediaQuery('(max-width:700px)');
-    const classes = useStyles({ smallWidth });
+    const { classes } = useStyles({ smallWidth });
     const logos = [
         bch,
         georgetown,

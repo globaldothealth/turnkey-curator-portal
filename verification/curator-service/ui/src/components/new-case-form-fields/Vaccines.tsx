@@ -1,13 +1,14 @@
+import clsx from 'clsx';
 import { FastField, useFormikContext } from 'formik';
+import { TextField } from 'formik-mui';
+import Scroll from 'react-scroll';
+
+import { Day0CaseFormValues } from '../../api/models/Day0Case';
 import { DateField, SelectField } from '../common-form-fields/FormikFields';
 import FieldTitle from '../common-form-fields/FieldTitle';
-import { StyledTooltip } from './StyledTooltip';
-import Scroll from 'react-scroll';
-import { TextField } from 'formik-mui';
-import { VaccineSideEffects } from './Symptoms';
-import { Day0CaseFormValues } from '../../api/models/Day0Case';
 import { useStyles } from './styled';
-import clsx from 'clsx';
+import { StyledTooltip } from './StyledTooltip';
+import { VaccineSideEffects } from './Symptoms';
 
 const TooltipText = () => (
     <StyledTooltip>
@@ -32,7 +33,7 @@ const TooltipText = () => (
 
 export default function Vaccines(): JSX.Element {
     const { values, setValues } = useFormikContext<Day0CaseFormValues>();
-    const globalClasses = useStyles();
+    const { classes } = useStyles();
 
     return (
         <Scroll.Element name="vaccines">
@@ -49,10 +50,7 @@ export default function Vaccines(): JSX.Element {
             {values.vaccination.vaccination === 'Y' && (
                 <>
                     <div
-                        className={clsx([
-                            globalClasses.fieldRow,
-                            globalClasses.halfWidth,
-                        ])}
+                        className={clsx([classes.fieldRow, classes.halfWidth])}
                     >
                         <FastField
                             name="vaccination.vaccineName"

@@ -1,13 +1,13 @@
-import { DateField, SelectField } from '../common-form-fields/FormikFields';
-
-import FieldTitle from '../common-form-fields/FieldTitle';
-import { StyledTooltip } from './StyledTooltip';
-import Scroll from 'react-scroll';
+import clsx from 'clsx';
 import { FastField, useFormikContext } from 'formik';
 import { TextField } from 'formik-mui';
+import Scroll from 'react-scroll';
+
 import { Outcome, Day0CaseFormValues } from '../../api/models/Day0Case';
+import { DateField, SelectField } from '../common-form-fields/FormikFields';
+import FieldTitle from '../common-form-fields/FieldTitle';
 import { useStyles } from './styled';
-import clsx from 'clsx';
+import { StyledTooltip } from './StyledTooltip';
 
 const yesNoUndefined = ['Y', 'N', 'NA'];
 
@@ -110,7 +110,7 @@ const TooltipText = () => (
 export default function Events(): JSX.Element {
     const { values, setFieldValue, errors } =
         useFormikContext<Day0CaseFormValues>();
-    const classes = useStyles();
+    const { classes } = useStyles();
 
     return (
         <Scroll.Element name="events">

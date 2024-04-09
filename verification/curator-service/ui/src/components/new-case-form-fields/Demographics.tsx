@@ -11,11 +11,11 @@ import Scroll from 'react-scroll';
 import { TextField } from 'formik-mui';
 import { StyledTooltip } from './StyledTooltip';
 import axios from 'axios';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { Gender, Day0CaseFormValues } from '../../api/models/Day0Case';
 import { useStyles } from './styled';
 
-const styles = makeStyles(() => ({
+const styles = makeStyles()(() => ({
     ageRow: {
         alignItems: 'baseline',
         display: 'flex',
@@ -80,8 +80,8 @@ const TooltipText = () => (
 );
 
 export default function Demographics(): JSX.Element {
-    const classes = styles();
-    const globalClasses = useStyles();
+    const { classes } = styles();
+    const globalClasses = useStyles().classes;
     const { initialValues, setFieldValue } =
         useFormikContext<Day0CaseFormValues>();
     const [commonOccupations, setCommonOccupations] = React.useState([]);

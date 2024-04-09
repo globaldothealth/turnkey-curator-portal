@@ -1,5 +1,4 @@
-import Autocomplete from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
+import { Autocomplete, TextField } from '@mui/material';
 
 interface ChipInputProps {
     label: string;

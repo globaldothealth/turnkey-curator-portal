@@ -1,6 +1,5 @@
-import { useAppSelector, useAppDispatch } from '../../hooks/redux';
+import { useAppSelector } from '../../hooks/redux';
 import { selectVerificationStatus } from '../../redux/linelistTable/selectors';
-import { changeCasesStatus } from '../../redux/linelistTable/thunk';
 
 import {
     Button,
@@ -24,8 +23,6 @@ export const CaseIncludeDialog = ({
     caseIds,
     query,
 }: Props): JSX.Element => {
-    const dispatch = useAppDispatch();
-
     const verificationStatus = useAppSelector(selectVerificationStatus);
 
     const handleSubmit = () => {

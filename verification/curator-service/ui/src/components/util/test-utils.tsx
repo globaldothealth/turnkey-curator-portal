@@ -13,11 +13,6 @@ import { theme } from '../../theme/theme';
 // Import your own reducer
 import store, { rootReducer, RootState } from '../../redux/store';
 
-declare module '@mui/styles/defaultTheme' {
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface DefaultTheme extends Theme {}
-}
-
 interface CustomOptions {
     initialState?: RootState;
     store?: typeof store;

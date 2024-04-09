@@ -8,14 +8,14 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import { useStyles } from './styled';
 import PolicyLink from '../PolicyLink';
 import FeedbackEmailDialog from '../FeedbackEmailDialog';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 
 interface FooterProps {
     drawerOpen: boolean;
 }
 
 const Footer = ({ drawerOpen }: FooterProps): JSX.Element => {
-    const classes = useStyles();
+    const { classes } = useStyles();
     const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
 
     const openFeedbackModal = () => {

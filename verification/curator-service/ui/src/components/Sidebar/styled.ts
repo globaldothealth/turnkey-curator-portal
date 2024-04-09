@@ -1,7 +1,7 @@
 import { Theme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
-export const useStyles = makeStyles((theme: Theme) => ({
+export const useStyles = makeStyles()((theme: Theme) => ({
     link: {
         color: theme.custom.palette.link.color,
     },
@@ -28,10 +28,6 @@ export const useStyles = makeStyles((theme: Theme) => ({
         height: '100%',
         marginLeft: '24px',
         marginRight: '32px',
-    },
-    drawerHeader: {
-        // necessary for content to be below app bar
-        ...theme.mixins.toolbar,
     },
     createNewButton: {
         margin: '12px 0',

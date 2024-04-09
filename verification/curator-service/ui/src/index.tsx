@@ -9,18 +9,9 @@ import App from './components/App';
 import { BrowserRouter } from 'react-router-dom';
 import store from './redux/store';
 import { Provider } from 'react-redux';
-import {
-    ThemeProvider,
-    Theme,
-    StyledEngineProvider,
-} from '@mui/material/styles';
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { theme } from './theme/theme';
 import TagManager from 'react-gtm-module';
-
-declare module '@mui/styles/defaultTheme' {
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface
-    interface DefaultTheme extends Theme {}
-}
 
 const tagManagerArgs = {
     gtmId: 'GTM-WHCJVVH',

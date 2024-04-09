@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import MaterialTable, { MTableBody } from 'material-table';
+import MaterialTable, { MTableBody } from '@material-table/core';
 import { Paper } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 import { useSelector } from 'react-redux';
 
 import { useAppDispatch } from '../../hooks/redux';
@@ -12,7 +12,7 @@ import {
 import { CasesByCountry } from '../../redux/pivotTables/slice';
 import { fetchCasesByCountryPivotData } from '../../redux/pivotTables/thunk';
 
-const pivotTableStyles = makeStyles(() => ({
+const pivotTableStyles = makeStyles()(() => ({
     cell: {
         padding: '16px',
         fontWeight: 'bold',
@@ -22,10 +22,13 @@ const pivotTableStyles = makeStyles(() => ({
         padding: '16px',
         fontWeight: 'bold',
     },
+    paper: {
+        marginTop: '70px',
+    },
 }));
 
 const PivotTables = () => {
-    const classes = pivotTableStyles();
+    const { classes } = pivotTableStyles();
     const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -42,11 +45,12 @@ const PivotTables = () => {
     );
 
     return (
-        <Paper>
+        <Paper className={classes.paper}>
             <MaterialTable
                 options={{
                     search: true,
                     paging: false,
+                    searchFieldAlignment: 'right',
                 }}
                 columns={[
                     { title: 'Country', field: 'country', defaultSort: 'asc' },

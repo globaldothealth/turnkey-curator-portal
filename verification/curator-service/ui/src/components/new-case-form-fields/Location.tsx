@@ -1,7 +1,7 @@
 import { FastField, useFormikContext, Field, ErrorMessage } from 'formik';
 import { TextField } from 'formik-mui';
 import { getName, alpha2ToAlpha3, getNames } from 'i18n-iso-countries';
-import { InputAdornment } from '@material-ui/core';
+import { InputAdornment } from '@mui/material';
 import PublicIcon from '@mui/icons-material/Public';
 import {
     Autocomplete,
@@ -10,13 +10,13 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import React, { useEffect } from 'react';
 
 import { Day0CaseFormValues } from '../../api/models/Day0Case';
 import axios from 'axios';
 
-const styles = makeStyles(() => ({
+const styles = makeStyles()(() => ({
     autocompleteField: { width: '100%' },
     field: { width: '100%' },
     halfWidth: { marginTop: '1em', width: '50%' },
@@ -41,7 +41,7 @@ type adminEntry = {
 
 export default function Location(): JSX.Element {
     const countryNames = getNames('en');
-    const classes = styles();
+    const { classes } = styles();
     const { values, setFieldValue, initialValues } =
         useFormikContext<Day0CaseFormValues>();
 

@@ -1,23 +1,25 @@
+import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-
-import Button from '@mui/material/Button';
-import SaveAltIcon from '@mui/icons-material/SaveAlt';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import FormHelperText from '@mui/material/FormHelperText';
-import DialogContent from '@mui/material/DialogContent';
-import Typography from '@mui/material/Typography';
-import LinearProgress from '@mui/material/LinearProgress';
-import Tooltip from '@mui/material/Tooltip';
+import {
+    Button,
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    FormControl,
+    FormHelperText,
+    InputLabel,
+    LinearProgress,
+    MenuItem,
+    Select,
+    Tooltip,
+    Typography,
+} from '@mui/material';
+import { SaveAlt as SaveAltIcon } from '@mui/icons-material';
+import { SelectChangeEvent } from '@mui/material/Select';
 
 import { StyledDownloadButton } from './styled';
 import { URLToSearchQuery } from '../util/searchQuery';
-import axios from 'axios';
 
 export function DownloadButton(): JSX.Element {
     const location = useLocation();

@@ -10,9 +10,9 @@ import {
     Typography,
 } from '@mui/material';
 
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'tss-react/mui';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles()({
     dialogContainer: {
         height: '40%',
     },
@@ -28,7 +28,7 @@ const useStyles = makeStyles({
 
 export default function PopupSmallScreens(): JSX.Element {
     const theme = useTheme();
-    const classes = useStyles();
+    const { classes } = useStyles();
     const [dialogOpen, setDialogOpen] = useState(false);
 
     /**
