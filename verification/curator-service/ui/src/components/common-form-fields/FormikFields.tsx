@@ -196,7 +196,8 @@ interface DateFieldProps {
 export function DateField(props: DateFieldProps): JSX.Element {
     const { classes } = useStyles();
 
-    const dateValue = props.value || 'yyyy/MM/dd';
+    const dateValue =
+        typeof props.value === 'string' ? new Date(props.value) : props.value;
 
     return (
         <div className={classes.fieldRow}>
@@ -205,22 +206,22 @@ export function DateField(props: DateFieldProps): JSX.Element {
                     className={classes.field}
                     data-testid={props.name}
                     label={props.label}
-                    inputFormat="yyyy/MM/dd"
-                    mask="____/__/__"
+                    format="yyyy/MM/dd"
+                    // mask="____/__/__"
                     minDate={new Date('2019/12/01')}
                     disableFuture
                     value={dateValue}
                     onChange={props.onChange}
-                    renderInput={(params) => (
-                        <MuiTextField
-                            {...params}
-                            name={props.name}
-                            fullWidth
-                            // Non formik component needs different error handling
-                            error={!!props.errorMessage}
-                            helperText={props.errorMessage}
-                        />
-                    )}
+                    // renderInput={(params) => (
+                    //     <MuiTextField
+                    //         {...params}
+                    //         name={props.name}
+                    //         fullWidth
+                    //         // Non formik component needs different error handling
+                    //         error={!!props.errorMessage}
+                    //         helperText={props.errorMessage}
+                    //     />
+                    // )}
                 />
             </LocalizationProvider>
             {props.required && <RequiredHelperText name={props.name} />}
