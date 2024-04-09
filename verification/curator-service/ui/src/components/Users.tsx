@@ -415,11 +415,10 @@ const Users = ({ onUserChange }: UsersProps) => {
                         zIndex: 1,
                     },
                 }}
-                // TODO unmock this
-                // onChangeRowsPerPage={(newPageSize: number) => {
-                //     setPageSize(newPageSize);
-                //     tableRef.current.onQueryChange();
-                // }}
+                onRowsPerPageChange={(newPageSize: number) => {
+                    setPageSize(newPageSize);
+                    tableRef.current.onQueryChange();
+                }}
             />
         </Paper>
     );

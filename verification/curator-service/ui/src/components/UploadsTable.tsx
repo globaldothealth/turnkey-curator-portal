@@ -232,13 +232,12 @@ const UploadsTable = () => {
                             zIndex: 1,
                         },
                     }}
-                    // TODO unmock this
-                    // onChangeRowsPerPage={(newPageSize: number): void => {
-                    //     setPageSize(newPageSize);
-                    //     if (tableRef && tableRef.current) {
-                    //         tableRef.current.onQueryChange();
-                    //     }
-                    // }}
+                    onRowsPerPageChange={(newPageSize: number): void => {
+                        setPageSize(newPageSize);
+                        if (tableRef && tableRef.current) {
+                            tableRef.current.onQueryChange();
+                        }
+                    }}
                 />
             </Paper>
         </div>

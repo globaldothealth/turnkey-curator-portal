@@ -87,7 +87,8 @@ type Props = {
             | 'divider'
             | 'spacer'
             | 'tablePaginationBar'
-            | 'tableTitle',
+            | 'tableTitle'
+            | 'sourcesSection',
             string
         >
     >;
@@ -227,7 +228,7 @@ class SourceTable extends React.Component<Props, SourceTableState> {
         const { classes } = this.props;
         return (
             <div>
-                <Paper>
+                <Paper className={classes?.sourcesSection}>
                     {this.state.error && (
                         <MuiAlert
                             classes={{ root: classes?.alert }}
@@ -757,6 +758,9 @@ const SourceTableStyled = withStyles(SourceTable, (theme: Theme) => ({
     },
     tableTitle: {
         width: '100%',
+    },
+    sourcesSection: {
+        marginTop: '66px',
     },
 }));
 

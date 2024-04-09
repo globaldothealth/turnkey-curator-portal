@@ -133,9 +133,9 @@ describe('<SourceTable />', () => {
         // Throw error on delete request.
         mockedAxios.delete.mockRejectedValueOnce(new Error('Request failed'));
 
-        const deleteButton = screen.getByText(/delete_outline/);
+        const deleteButton = screen.getByTestId(/delete_outline/);
         fireEvent.click(deleteButton);
-        const confirmButton = screen.getByText(/check/);
+        const confirmButton = screen.getByTestId(/check/);
         fireEvent.click(confirmButton);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
 
@@ -200,9 +200,9 @@ describe('<SourceTable />', () => {
         mockedAxios.get.mockResolvedValueOnce(axiosGetAfterDeleteResponse);
         mockedAxios.delete.mockResolvedValueOnce(axiosDeleteResponse);
 
-        const deleteButton = screen.getByText(/delete_outline/);
+        const deleteButton = screen.getByTestId(/delete_outline/);
         fireEvent.click(deleteButton);
-        const confirmButton = screen.getByText(/check/);
+        const confirmButton = screen.getByTestId(/check/);
         fireEvent.click(confirmButton);
         expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
         expect(mockedAxios.delete).toHaveBeenCalledWith(
@@ -283,9 +283,9 @@ describe('<SourceTable />', () => {
         mockedAxios.put.mockResolvedValueOnce(axiosEditResponse);
         mockedAxios.get.mockResolvedValueOnce(axiosGetAfterEditResponse);
 
-        const editButton = screen.getByText(/edit/);
+        const editButton = screen.getByTestId(/edit/);
         fireEvent.click(editButton);
-        const confirmButton = screen.getByText(/check/);
+        const confirmButton = screen.getByTestId(/check/);
         fireEvent.click(confirmButton);
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
 
@@ -369,9 +369,9 @@ describe('<SourceTable />', () => {
         mockedAxios.put.mockResolvedValueOnce(axiosEditResponse);
         mockedAxios.get.mockResolvedValueOnce(axiosGetAfterEditResponse);
 
-        const editButton = screen.getByText(/edit/);
+        const editButton = screen.getByTestId(/edit/);
         fireEvent.click(editButton);
-        const confirmButton = screen.getByText(/check/);
+        const confirmButton = screen.getByTestId(/check/);
         fireEvent.click(confirmButton);
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
 
@@ -453,9 +453,9 @@ describe('<SourceTable />', () => {
         mockedAxios.put.mockResolvedValueOnce(axiosEditResponse);
         mockedAxios.get.mockResolvedValueOnce(axiosGetAfterEditResponse);
 
-        const editButton = screen.getByText(/edit/);
+        const editButton = screen.getByTestId(/edit/);
         fireEvent.click(editButton);
-        const confirmButton = screen.getByText(/check/);
+        const confirmButton = screen.getByTestId(/check/);
         fireEvent.click(confirmButton);
         expect(mockedAxios.put).toHaveBeenCalledTimes(1);
 
