@@ -121,10 +121,10 @@ export function FormikAutocomplete(
                 return filtered;
             }}
             loading={loading}
-            onChange={(_, values): void =>
+            onChange={(_, values) =>
                 setFieldValue(props.name, values ?? undefined)
             }
-            onBlur={(): void => setTouched({ [props.name]: true })}
+            onBlur={() => setTouched({ [props.name]: true })}
             defaultValue={props.initialValue}
             renderInput={(params): JSX.Element => (
                 // Do not use FastField here
