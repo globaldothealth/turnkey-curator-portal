@@ -18,9 +18,10 @@
         "css-mediaquery": "^0.1.2",
         "date-fns": "^2.29.2",
         "envalid": "^7.2.1",
-        "formik": "^2.2.9",
-        "formik-mui": "^4.0.0-alpha.3",
+        "formik": "^2.4.5",
+        "formik-mui": "^5.0.0-alpha.0",
         "formik-mui-lab": "^1.0.0",
+        "formik-mui-x-date-pickers": "^0.0.1",
         "history": "^4.10.1",
         "http-proxy-middleware": "^2.0.1",
         "i18n-iso-countries": "^7.3.0",
@@ -43,7 +44,7 @@
         "shortid": "^2.2.8",
         "tss-react": "^4.9.6",
         "typeface-roboto": "^1.1.13",
-        "yup": "^0.32.11"
+        "yup": "^1.4.0"
     },
     "scripts": {
         "start-noenv": "react-scripts start",
