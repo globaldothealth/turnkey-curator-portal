@@ -207,21 +207,18 @@ export function DateField(props: DateFieldProps): JSX.Element {
                     data-testid={props.name}
                     label={props.label}
                     format="yyyy/MM/dd"
-                    // mask="____/__/__"
                     minDate={new Date('2019/12/01')}
                     disableFuture
                     value={dateValue}
+                    name={props.name}
                     onChange={props.onChange}
-                    // renderInput={(params) => ( // TODO check if this is needed
-                    //     <MuiTextField
-                    //         {...params}
-                    //         name={props.name}
-                    //         fullWidth
-                    //         // Non formik component needs different error handling
-                    //         error={!!props.errorMessage}
-                    //         helperText={props.errorMessage}
-                    //     />
-                    // )}
+                    slotProps={{
+                        textField: {
+                            name: props.name,
+                            error: !!props.errorMessage,
+                            helperText: props.errorMessage,
+                        },
+                    }}
                 />
             </LocalizationProvider>
             {props.required && <RequiredHelperText name={props.name} />}
