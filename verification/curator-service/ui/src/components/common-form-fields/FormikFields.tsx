@@ -7,11 +7,10 @@ import {
     FormControl,
     FormHelperText,
     MenuItem,
-    // TextField as MuiTextField,
 } from '@mui/material';
 import { createFilterOptions } from '@mui/material/Autocomplete';
 import { makeStyles } from 'tss-react/mui';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import React, { BaseSyntheticEvent } from 'react';
