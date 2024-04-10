@@ -10,11 +10,11 @@ export function nameCountry(isoCode: string, country?: string): string {
         countryName = countries.getName(country, 'en', { select: 'official' });
     }
 
-    return countryName;
+    return countryName || '';
 }
 
 export function codeForCountry(name: string): string {
-    return countries.getAlpha3Code(name, 'en');
+    return countries.getAlpha3Code(name, 'en') || '';
 }
 
 export function allCountryNames(): LocalizedCountryNames<{
