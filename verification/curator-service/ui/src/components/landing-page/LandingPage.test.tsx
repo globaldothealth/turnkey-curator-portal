@@ -15,6 +15,7 @@ afterAll(() => server.close());
 
 jest.mock('react-google-recaptcha', () => {
     const { forwardRef, useImperativeHandle } = jest.requireActual('react');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const RecaptchaV2 = forwardRef((props: any, ref: any) => {
         useImperativeHandle(ref, () => ({
             reset: jest.fn(),
@@ -392,7 +393,7 @@ describe('<ForgotPasswordForm />', () => {
 describe('<ChangePasswordForm />', () => {
     test('displays the change password form', async () => {
         render(
-            <Route exact path="/reset-password/:token/:id">
+            <Route path="/reset-password/:token/:id">
                 <LandingPage />
             </Route>,
             { initialRoute: '/reset-password/token/id' },
@@ -405,7 +406,7 @@ describe('<ChangePasswordForm />', () => {
         const user = userEvent.setup();
 
         render(
-            <Route exact path="/reset-password/:token/:id">
+            <Route path="/reset-password/:token/:id">
                 <LandingPage />
             </Route>,
             { initialRoute: '/reset-password/token/id' },
@@ -422,7 +423,7 @@ describe('<ChangePasswordForm />', () => {
         const user = userEvent.setup();
 
         render(
-            <Route exact path="/reset-password/:token/:id">
+            <Route path="/reset-password/:token/:id">
                 <LandingPage />
             </Route>,
             { initialRoute: '/reset-password/token/id' },

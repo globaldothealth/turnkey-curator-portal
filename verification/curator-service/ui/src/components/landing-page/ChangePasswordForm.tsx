@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useAppSelector, useAppDispatch } from '../../hooks/redux';
@@ -88,7 +88,7 @@ export default function ChangePasswordForm({
 }: ChangePasswordFormProps): JSX.Element {
     const { classes } = useStyles();
     const dispatch = useAppDispatch();
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const [passwordStrength, setPasswordStrength] = useState(0);
     const passwordReset = useAppSelector(selectPasswordReset);
@@ -98,14 +98,14 @@ export default function ChangePasswordForm({
 
     // Redirect user to landing page if there is no token or id
     useEffect(() => {
-        if (!token || !id) history.push('/');
-    }, [history, token, id]);
+        if (!token || !id) navigate('/');
+    }, [navigate, token, id]);
 
     // After successful password reset redirect user to landing page and show snackbar alert
     useEffect(() => {
         if (!passwordReset) return;
 
-        history.push('/');
+        navigate('/');
         dispatch(
             toggleSnackbar({
                 isOpen: true,
@@ -113,7 +113,7 @@ export default function ChangePasswordForm({
                     'Your password was changed successfully. You can now sign in using the new password',
             }),
         );
-    }, [dispatch, history, passwordReset]);
+    }, [dispatch, navigate, passwordReset]);
 
     const lowercaseRegex = /(?=.*[a-z])/;
     const uppercaseRegex = /(?=.*[A-Z])/;

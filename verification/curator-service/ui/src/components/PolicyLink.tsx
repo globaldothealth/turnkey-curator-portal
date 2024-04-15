@@ -12,7 +12,7 @@ interface Props {
 }
 
 const POLICY_URL = 'https://www.iubenda.com';
-const POLICY_ID = process.env.REACT_APP_POLICY_PUBLIC_ID;
+const POLICY_ID = import.meta.env.VITE_APP_POLICY_PUBLIC_ID;
 export default function PolicyLink({
     children,
     type,

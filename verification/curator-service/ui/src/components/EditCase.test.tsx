@@ -1,5 +1,5 @@
 import * as fullCase from './fixtures/fullCase.json';
-import { screen, render, waitFor } from './util/test-utils';
+import { screen, render } from './util/test-utils';
 import EditCase from './EditCase';
 import axios from 'axios';
 import { initialLoggedInState } from '../redux/store';
@@ -60,11 +60,10 @@ describe('<EditCase />', () => {
 
         render(
             <EditCase
-                id="abc123"
                 onModalClose={(): void => {
                     return;
                 }}
-                diseaseName={env.REACT_APP_DISEASE_NAME}
+                diseaseName={env.VITE_APP_DISEASE_NAME}
             />,
             {
                 initialState: initialLoggedInState,
@@ -115,11 +114,10 @@ describe('<EditCase />', () => {
 
         render(
             <EditCase
-                id="abc123"
                 onModalClose={(): void => {
                     return;
                 }}
-                diseaseName={env.REACT_APP_DISEASE_NAME}
+                diseaseName={env.VITE_APP_DISEASE_NAME}
             />,
         );
 

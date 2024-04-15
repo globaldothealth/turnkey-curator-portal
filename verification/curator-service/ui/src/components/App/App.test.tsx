@@ -36,7 +36,7 @@ describe('<App />', () => {
             } else if (url === '/diseaseName') {
                 return Promise.resolve({
                     status: 200,
-                    data: env.REACT_APP_DISEASE_NAME,
+                    data: env.VITE_APP_DISEASE_NAME,
                 });
             } else if (url.includes('/api/cases')) {
                 return Promise.resolve({
@@ -70,7 +70,7 @@ describe('<App />', () => {
             } else if (url === '/diseaseName') {
                 return Promise.resolve({
                     status: 200,
-                    data: env.REACT_APP_DISEASE_NAME,
+                    data: env.VITE_APP_DISEASE_NAME,
                 });
             } else {
                 return Promise.resolve(axiosResponse);
@@ -107,7 +107,7 @@ describe('<App />', () => {
             } else if (url === '/diseaseName') {
                 return Promise.resolve({
                     status: 200,
-                    data: env.REACT_APP_DISEASE_NAME,
+                    data: env.VITE_APP_DISEASE_NAME,
                 });
             } else if (url.includes('/api/cases')) {
                 return Promise.resolve({
@@ -160,7 +160,7 @@ describe('<App />', () => {
             } else if (url === '/diseaseName') {
                 return Promise.resolve({
                     status: 200,
-                    data: env.REACT_APP_DISEASE_NAME,
+                    data: env.VITE_APP_DISEASE_NAME,
                 });
             } else if (url.includes('/api/cases')) {
                 return Promise.resolve({
@@ -220,7 +220,7 @@ describe('<App />', () => {
             } else if (url === '/diseaseName') {
                 return Promise.resolve({
                     status: 200,
-                    data: env.REACT_APP_DISEASE_NAME,
+                    data: env.VITE_APP_DISEASE_NAME,
                 });
             } else if (url.includes('/api/cases')) {
                 return Promise.resolve({
@@ -265,7 +265,7 @@ describe('Download dataset', () => {
             } else if (url === '/diseaseName') {
                 return Promise.resolve({
                     status: 200,
-                    data: env.REACT_APP_DISEASE_NAME,
+                    data: env.VITE_APP_DISEASE_NAME,
                 });
             } else if (url.includes('/api/cases')) {
                 return Promise.resolve({

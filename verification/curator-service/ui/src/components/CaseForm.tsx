@@ -29,7 +29,7 @@ import Transmission from './new-case-form-fields/Transmission';
 import TravelHistory from './new-case-form-fields/TravelHistory';
 import Vaccines from './new-case-form-fields/Vaccines';
 import { hasKey } from './Utils';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { Day0Case, Day0CaseFormValues } from '../api/models/Day0Case';
@@ -353,7 +353,7 @@ export default function CaseForm(props: Props): JSX.Element {
     const { initialCase } = props;
     const theme = useTheme();
     const showTableOfContents = useMediaQuery(theme.breakpoints.up('sm'));
-    const history = useHistory();
+    const navigate = useNavigate();
     const [errorMessage, setErrorMessage] = React.useState('');
     const diseaseName = useAppSelector(selectDiseaseName);
 
@@ -525,8 +525,7 @@ export default function CaseForm(props: Props): JSX.Element {
             return;
         }
         // Navigate to cases after successful submit
-        history.push({
-            pathname: '/cases',
+        navigate('/cases', {
             state: {
                 newCaseIds: newCaseIds,
                 editedCaseIds: props.initialCase?._id

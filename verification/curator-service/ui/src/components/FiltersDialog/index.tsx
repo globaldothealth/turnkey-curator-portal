@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import {
     Alert,
@@ -76,7 +76,7 @@ export default function FiltersDialog({
     const dispatch = useAppDispatch();
     const { classes } = useStyles();
     const location = useLocation();
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const [formValues, setFormValues] = useState<FilterFormValues>(
         URLToFilters(location.search),
@@ -157,7 +157,10 @@ export default function FiltersDialog({
 
             sendCustomGtmEvent('filters_applied', { query: searchQuery });
 
-            history.push({ pathname: '/cases', search: searchQuery });
+            navigate({
+                pathname: '/cases',
+                search: searchQuery,
+            });
         },
     });
 

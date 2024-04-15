@@ -73,7 +73,7 @@ describe('<CaseForm />', () => {
                 onModalClose={(): void => {
                     return;
                 }}
-                diseaseName={env.REACT_APP_DISEASE_NAME}
+                diseaseName={env.VITE_APP_DISEASE_NAME}
             />,
             {
                 initialState: initialLoggedInState,
@@ -102,7 +102,7 @@ describe('<CaseForm />', () => {
                     onModalClose={(): void => {
                         return;
                     }}
-                    diseaseName={env.REACT_APP_DISEASE_NAME}
+                    diseaseName={env.VITE_APP_DISEASE_NAME}
                 />
             </ThemeProvider>,
             { initialState: initialLoggedInState, initialRoute: '/cases/new' },

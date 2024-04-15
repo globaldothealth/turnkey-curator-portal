@@ -32,7 +32,7 @@ export const initialLoggedInState: RootState = {
         filterBreadcrumbs: [],
         version: '1.0',
         env: 'local',
-        diseaseName: env.REACT_APP_DISEASE_NAME,
+        diseaseName: env.VITE_APP_DISEASE_NAME,
     },
     filters: {
         modalOpen: false,

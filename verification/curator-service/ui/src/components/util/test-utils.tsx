@@ -2,13 +2,9 @@ import React, { ReactElement } from 'react';
 import { render as rtlRender } from '@testing-library/react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import { Router } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
-import {
-    ThemeProvider,
-    Theme,
-    StyledEngineProvider,
-} from '@mui/material/styles';
+import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { theme } from '../../theme/theme';
 // Import your own reducer
 import store, { rootReducer, RootState } from '../../redux/store';
@@ -16,6 +12,7 @@ import store, { rootReducer, RootState } from '../../redux/store';
 interface CustomOptions {
     initialState?: RootState;
     store?: typeof store;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     renderOptions?: any;
     initialRoute?: string;
 }
@@ -36,7 +33,7 @@ function render(ui: ReactElement, options?: CustomOptions) {
     function Wrapper(props: { children: ReactElement }) {
         return (
             <Provider store={store}>
-                <Router history={history}>
+                <Router>
                     <StyledEngineProvider injectFirst>
                         <ThemeProvider theme={theme}>
                             {props.children}

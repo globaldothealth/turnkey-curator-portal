@@ -16,7 +16,7 @@ import DataGuideDialog from './DataGuideDialog';
 import { useDebounce } from '../hooks/useDebounce';
 import FiltersDialog from './FiltersDialog';
 import { searchQueryToURL, URLToSearchQuery } from './util/searchQuery';
-import { useLocation, useHistory } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { KeyboardEvent, ChangeEvent } from 'react';
 import { useAppSelector, useAppDispatch } from '../hooks/redux';
 import { selectFilterBreadcrumbs } from '../redux/app/selectors';
@@ -80,7 +80,7 @@ export default function SearchBar({
     const dispatch = useAppDispatch();
     const { classes } = searchBarStyles();
     const location = useLocation();
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const [isUserTyping, setIsUserTyping] = useState<boolean>(false);
     const [isDataGuideOpen, setIsDataGuideOpen] = useState<boolean>(false);
@@ -121,7 +121,7 @@ export default function SearchBar({
         if (!isUserTyping) return;
 
         setIsUserTyping(false);
-        history.push({
+        navigate({
             pathname: '/cases',
             search: searchQueryToURL(debouncedSearch),
         });
@@ -136,7 +136,7 @@ export default function SearchBar({
         if (ev.key === 'Enter') {
             ev.preventDefault();
             setIsUserTyping(false);
-            history.push({
+            navigate({
                 pathname: '/cases',
                 search: searchQueryToURL(searchInput),
             });
@@ -256,7 +256,7 @@ export default function SearchBar({
                                         aria-label="clear search"
                                         onClick={(): void => {
                                             setSearchInput('');
-                                            history.push({
+                                            navigate({
                                                 pathname: '/cases',
                                                 search: '',
                                             });

@@ -16,10 +16,10 @@ import LinelistTable from '../LinelistTable';
 import PivotTables from '../PivotTables';
 import {
     Link,
-    Redirect,
     Route,
-    Switch,
-    useHistory,
+    Routes,
+    useNavigate,
+    Navigate,
     useLocation,
 } from 'react-router-dom';
 import { Theme } from '@mui/material/styles';
@@ -254,11 +254,6 @@ function ProfileMenu(props: { user: User; version: string }): JSX.Element {
     );
 }
 
-interface LocationState {
-    search: string;
-    lastLocation: string;
-}
-
 export interface ChipData {
     key: string;
     value: string;
@@ -294,8 +289,8 @@ export default function App(): JSX.Element {
     const showMenu = useMediaQuery(theme.breakpoints.up('sm'));
     const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
     const rootRef = React.useRef<HTMLDivElement>(null);
-    const history = useHistory();
-    const location = useLocation<LocationState>();
+    const navigate = useNavigate();
+    const location = useLocation();
     const { classes } = useStyles();
 
     const savedSearchQuery = localStorage.getItem('searchQuery');
@@ -326,14 +321,16 @@ export default function App(): JSX.Element {
     };
 
     const onModalClose = (): void => {
-        history.push({
-            pathname:
-                location.state && location.state.lastLocation
-                    ? location.state.lastLocation
-                    : '/cases',
-            search: searchQuery,
-            state: { lastLocation: '/case/view' },
-        });
+        navigate(
+            {
+                pathname:
+                    location.state && location.state.lastLocation
+                        ? location.state.lastLocation
+                        : '/cases',
+                search: searchQuery,
+            },
+            { state: { lastLocation: '/case/view' } },
+        );
     };
 
     useEffect(() => {
@@ -354,7 +351,7 @@ export default function App(): JSX.Element {
     useEffect(() => {
         if (savedSearchQuery === null || savedSearchQuery === '') return;
 
-        history.push({ pathname: '/cases', search: savedSearchQuery });
+        navigate({ pathname: '/cases', search: savedSearchQuery });
 
         // eslint-disable-next-line
     }, [savedSearchQuery]);
@@ -438,71 +435,78 @@ export default function App(): JSX.Element {
                 })}
             >
                 <div />
-                <Switch>
-                    <Redirect
-                        from="/:url*(/+)"
-                        to={location.pathname.slice(0, -1)}
+                <Routes>
+                    <Route
+                        path="/:url*(/+)"
+                        element={
+                            <Navigate to={location.pathname.slice(0, -1)} />
+                        }
                     />
                     {user && (
-                        <Route exact path="/pivot-tables">
-                            <PivotTables />
-                        </Route>
+                        <Route path="/pivot-tables" element={<PivotTables />} />
                     )}
                     {user && (
-                        <Route exact path="/cases">
-                            <LinelistTable />
-                        </Route>
+                        <Route path="/cases" element={<LinelistTable />} />
                     )}
                     {hasAnyRole(user, [Role.Curator, Role.JuniorCurator]) && (
-                        <Route exact path="/sources">
-                            <SourceTable />
-                        </Route>
+                        <Route path="/sources" element={<SourceTable />} />
                     )}
                     {hasAnyRole(user, [Role.Curator]) && (
-                        <Route exact path="/uploads">
-                            <UploadsTable />
-                        </Route>
+                        <Route path="/uploads" element={<UploadsTable />} />
                     )}
-                    {user && (
-                        <Route path="/profile">
-                            <Profile />
-                        </Route>
-                    )}
+                    {user && <Route path="/profile" element={<Profile />} />}
                     {user && hasAnyRole(user, [Role.Admin]) && (
-                        <Route path="/users">
-                            <Users onUserChange={getUser} />
-                        </Route>
+                        <Route
+                            path="/users"
+                            element={<Users onUserChange={getUser} />}
+                        />
                     )}{' '}
                     {user && hasAnyRole(user, [Role.Curator]) && (
-                        <Route path="/sources/automated">
-                            <AutomatedSourceForm onModalClose={onModalClose} />
-                        </Route>
+                        <Route
+                            path="/sources/automated"
+                            element={
+                                <AutomatedSourceForm
+                                    onModalClose={onModalClose}
+                                />
+                            }
+                        />
                     )}
                     {user &&
                         hasAnyRole(user, [
                             Role.Curator,
                             Role.JuniorCurator,
                         ]) && (
-                            <Route path="/cases/bulk">
-                                <BulkCaseForm onModalClose={onModalClose} />
-                            </Route>
+                            <Route
+                                path="/cases/bulk"
+                                element={
+                                    <BulkCaseForm onModalClose={onModalClose} />
+                                }
+                            />
                         )}
                     {user && hasAnyRole(user, [Role.Curator]) && (
-                        <Route path="/sources/backfill">
-                            <AutomatedBackfill onModalClose={onModalClose} />
-                        </Route>
+                        <Route
+                            path="/sources/backfill"
+                            element={
+                                <AutomatedBackfill
+                                    onModalClose={onModalClose}
+                                />
+                            }
+                        />
                     )}
                     {user &&
                         hasAnyRole(user, [
                             Role.Curator,
                             Role.JuniorCurator,
                         ]) && (
-                            <Route path="/cases/new">
-                                <CaseForm
-                                    onModalClose={onModalClose}
-                                    diseaseName={diseaseName}
-                                />
-                            </Route>
+                            <Route
+                                path="/cases/new"
+                                element={
+                                    <CaseForm
+                                        onModalClose={onModalClose}
+                                        diseaseName={diseaseName}
+                                    />
+                                }
+                            />
                         )}
                     {user &&
                         hasAnyRole(user, [
@@ -511,66 +515,60 @@ export default function App(): JSX.Element {
                         ]) && (
                             <Route
                                 path="/cases/edit/:id"
-                                render={({ match }) => {
-                                    return (
-                                        <EditCase
-                                            id={match.params.id}
-                                            onModalClose={onModalClose}
-                                            diseaseName={diseaseName}
-                                        />
-                                    );
-                                }}
+                                element={
+                                    <EditCase
+                                        onModalClose={onModalClose}
+                                        diseaseName={diseaseName}
+                                    />
+                                }
                             />
                         )}
                     {user && (
                         <Route
                             path="/cases/view/:id"
-                            render={({ match }): JSX.Element => {
-                                return (
-                                    <ViewCase
-                                        id={match.params.id}
-                                        enableEdit={hasAnyRole(user, [
-                                            Role.Curator,
-                                            Role.JuniorCurator,
-                                        ])}
-                                        onModalClose={onModalClose}
-                                    />
-                                );
-                            }}
+                            element={
+                                <ViewCase
+                                    enableEdit={hasAnyRole(user, [
+                                        Role.Curator,
+                                        Role.JuniorCurator,
+                                    ])}
+                                    onModalClose={onModalClose}
+                                />
+                            }
                         />
                     )}
-                    <Route exact path="/data-acknowledgments">
-                        <AcknowledgmentsPage />
-                    </Route>
-                    <Route exact path="/terms">
-                        <TermsOfUse />
-                    </Route>
                     <Route
-                        exact
-                        path="/reset-password/:token/:id"
-                        component={LandingPage}
+                        path="/data-acknowledgments"
+                        element={<AcknowledgmentsPage />}
                     />
-                    <Route exact path="/">
-                        {user ? (
-                            <Redirect
-                                to={{
-                                    pathname: '/cases',
-                                    search: savedSearchQuery || '',
-                                }}
-                            />
-                        ) : isLoadingUser ? (
-                            <></>
-                        ) : (
-                            <LandingPage />
-                        )}
-                    </Route>
+                    <Route path="/terms" element={<TermsOfUse />} />
+                    <Route
+                        path="/reset-password/:token/:id"
+                        element={<LandingPage />}
+                    />
+                    <Route
+                        path="/"
+                        element={
+                            user ? (
+                                <Navigate
+                                    to={{
+                                        pathname: '/cases',
+                                        search: savedSearchQuery || '',
+                                    }}
+                                    replace
+                                />
+                            ) : isLoadingUser ? (
+                                <></>
+                            ) : (
+                                <LandingPage />
+                            )
+                        }
+                    />
                     {/* Redirect any unavailable URLs to / after the user has loaded. */}
                     {!isLoadingUser && (
-                        <Route path="/">
-                            <Redirect to="/" />
-                        </Route>
+                        <Route path="/" element={<Navigate to="/" replace />} />
                     )}
-                </Switch>
+                </Routes>
             </main>
 
             {user && <Footer drawerOpen={drawerOpen} />}

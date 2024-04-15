@@ -1,4 +1,4 @@
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../../hooks/redux';
 import { selectFilterBreadcrumbs } from '../../redux/app/selectors';
 import { deleteFilterBreadcrumbs } from '../../redux/app/slice';
@@ -11,7 +11,7 @@ import { FilterLabels } from '../../constants/types';
 
 const FilterChips = () => {
     const dispatch = useAppDispatch();
-    const history = useHistory();
+    const navigate = useNavigate();
     const location = useLocation();
 
     const filterBreadcrumbs = useAppSelector(selectFilterBreadcrumbs);
@@ -20,7 +20,7 @@ const FilterChips = () => {
         const searchParams = new URLSearchParams(location.search);
         dispatch(deleteFilterBreadcrumbs(breadcrumbToDelete));
         searchParams.delete(breadcrumbToDelete.key);
-        history.push({
+        navigate({
             pathname: '/cases',
             search: searchParams.toString(),
         });

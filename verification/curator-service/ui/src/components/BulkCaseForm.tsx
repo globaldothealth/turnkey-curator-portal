@@ -27,7 +27,7 @@ import CaseValidationError from './bulk-case-form-fields/CaseValidationError';
 import FileUpload from './bulk-case-form-fields/FileUpload';
 import ValidationErrorList from './bulk-case-form-fields/ValidationErrorList';
 import axios from 'axios';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { makeStyles } from 'tss-react/mui';
 
 // Return type isn't meaningful.
@@ -220,7 +220,7 @@ const BulkFormSchema = Yup.object().shape({
 const BulkCaseForm = (props: BulkCaseFormProps) => {
     const { onModalClose } = props;
 
-    const history = useHistory();
+    const navigate = useNavigate();
     const { classes } = useStyles();
 
     const [errorMessage, setErrorMessage] = useState('');
@@ -413,17 +413,16 @@ const BulkCaseForm = (props: BulkCaseFormProps) => {
             upsertResponse.numCreated === 0
                 ? ''
                 : upsertResponse.numCreated === 1
-                ? '1 new case added. '
-                : `${upsertResponse.numCreated} new cases added. `;
+                  ? '1 new case added. '
+                  : `${upsertResponse.numCreated} new cases added. `;
         const updatedMessage =
             upsertResponse.numUpdated === 0
                 ? ''
                 : upsertResponse.numUpdated === 1
-                ? '1 case updated. '
-                : `${upsertResponse.numUpdated} cases updated. `;
+                  ? '1 case updated. '
+                  : `${upsertResponse.numUpdated} cases updated. `;
 
-        history.push({
-            pathname: '/cases',
+        navigate('/cases', {
             state: {
                 bulkMessage: `${filename} uploaded. ${createdMessage} ${updatedMessage}`,
                 searchQuery: `uploadid:${uploadId}`,

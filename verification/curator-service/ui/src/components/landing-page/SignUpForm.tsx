@@ -366,8 +366,8 @@ export default function SignUpForm({
                                         });
 
                                         window.location.href = `${
-                                            process.env.REACT_APP_LOGIN_URL ??
-                                            ''
+                                            import.meta.env
+                                                .VITE_APP_LOGIN_URL ?? ''
                                         }?newsletterAccepted=${
                                             formik.values.isNewsletterChecked
                                         }`;

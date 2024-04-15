@@ -14,7 +14,7 @@ import { Day0Case, Outcome, YesNo } from '../api/models/Day0Case';
 import AppModal from './AppModal';
 import EditIcon from '@mui/icons-material/EditOutlined';
 import CheckIcon from '@mui/icons-material/CheckCircleOutline';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import MuiAlert from '@mui/material/Alert';
 import Scroll from 'react-scroll';
 import axios from 'axios';
@@ -42,12 +42,12 @@ const styles = makeStyles()(() => ({
 }));
 
 interface Props {
-    id: string;
     enableEdit?: boolean;
     onModalClose: () => void;
 }
 
 export default function ViewCase(props: Props): JSX.Element {
+    const { id } = useParams();
     const [c, setCase] = useState<Day0Case>();
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>();
@@ -55,7 +55,7 @@ export default function ViewCase(props: Props): JSX.Element {
     useEffect(() => {
         setLoading(true);
         axios
-            .get<Day0Case[]>(`/api/cases/${props.id}`)
+            .get<Day0Case[]>(`/api/cases/${id}`)
             .then((resp) => {
                 setCase(resp.data[0]);
                 setErrorMessage(undefined);
@@ -65,7 +65,7 @@ export default function ViewCase(props: Props): JSX.Element {
                 setErrorMessage(e.response?.data?.message || e.toString());
             })
             .finally(() => setLoading(false));
-    }, [props.id]);
+    }, [id]);
 
     const verifyCase = (
         onSuccess: () => void,

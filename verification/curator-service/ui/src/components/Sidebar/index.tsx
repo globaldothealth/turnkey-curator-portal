@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { Link, useLocation, useHistory } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
     Drawer,
     Fab,
@@ -34,7 +34,7 @@ interface SidebarProps {
 const Sidebar = ({ drawerOpen }: SidebarProps): JSX.Element => {
     const { classes } = useStyles();
     const location = useLocation();
-    const history = useHistory();
+    const navigate = useNavigate();
 
     const diseaseName = useAppSelector(selectDiseaseName);
     const [createNewButtonAnchorEl, setCreateNewButtonAnchorEl] =
@@ -54,10 +54,7 @@ const Sidebar = ({ drawerOpen }: SidebarProps): JSX.Element => {
     const handleNewCaseClick = () => {
         closeCreateNewPopup();
 
-        history.push({
-            pathname: '/cases/new',
-            state: { lastLocation: location.pathname },
-        });
+        navigate('/cases/new', { state: { lastLocation: location.pathname } });
     };
 
     const menuList = useMemo(

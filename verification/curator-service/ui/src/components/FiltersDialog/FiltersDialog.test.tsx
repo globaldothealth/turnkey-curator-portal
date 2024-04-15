@@ -20,7 +20,7 @@ beforeEach(() => {
         } else if (url === '/diseaseName') {
             return Promise.resolve({
                 status: 200,
-                data: env.REACT_APP_DISEASE_NAME,
+                data: env.VITE_APP_DISEASE_NAME,
             });
         } else if (url.includes('/api/cases')) {
             return Promise.resolve({

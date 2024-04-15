@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
@@ -8,7 +8,6 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import DoNotDisturbOutlinedIcon from '@mui/icons-material/DoNotDisturbOutlined';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { CaseDeleteDialog } from '../Dialogs/CaseDeleteDialog';
-import { CaseExcludeDialog } from '../Dialogs/CaseExcludeDialog';
 
 import { ActionMenuItem } from './styled';
 
@@ -23,13 +22,13 @@ enum Actions {
 }
 
 export const ActionMenu = ({ caseId }: ActionMenuProps) => {
-    const history = useHistory();
+    const navigate = useNavigate();
     const location = useLocation();
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [excludeDialogOpen, setExcludeDialogOpen] = useState(false);
+    // const [_excludeDialogOpen, setExcludeDialogOpen] = useState(false);
 
     const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
         event.stopPropagation();
@@ -53,8 +52,10 @@ export const ActionMenu = ({ caseId }: ActionMenuProps) => {
 
         switch (action) {
             case Actions.Edit:
-                history.push(`/cases/edit/${caseId}`, {
-                    lastLocation: location.pathname,
+                navigate(`/cases/edit/${caseId}`, {
+                    state: {
+                        lastLocation: location.pathname,
+                    },
                 });
                 break;
 
@@ -62,9 +63,9 @@ export const ActionMenu = ({ caseId }: ActionMenuProps) => {
                 setDeleteDialogOpen(true);
                 break;
 
-            case Actions.Exclude:
-                setExcludeDialogOpen(true);
-                break;
+            // case Actions.Exclude:
+            //     setExcludeDialogOpen(true);
+            //     break;
         }
     };
 
