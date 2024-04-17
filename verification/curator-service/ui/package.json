@@ -60,7 +60,7 @@
         "import-case-data": "npm --prefix ../../../data-serving/scripts/setup-db run import-sample-data",
         "lint": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
         "test": "vitest",
-        "test-and-coverage": "vitest --coverage --watchAll=false --transformIgnorePatterns 'node_modules/(?!(headers-polyfill/lib)/)'",
+        "test-and-coverage": "vitest --coverage --run",
         "test-silent": "vitest --watchAll=false",
         "eject": "vite eject",
         "cypress-open": "cypress open",
