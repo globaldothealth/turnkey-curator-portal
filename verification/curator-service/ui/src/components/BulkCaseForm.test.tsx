@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import {
     screen,
     fireEvent,
@@ -9,8 +10,7 @@ import {
 import BulkCaseForm from './BulkCaseForm';
 import axios from 'axios';
 
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+vi.mock('axios');
 
 beforeEach(() => {
     const axiosSourcesResponse = {
@@ -20,7 +20,7 @@ beforeEach(() => {
         config: {},
         headers: {},
     };
-    mockedAxios.get.mockResolvedValueOnce(axiosSourcesResponse);
+    axios.get.mockResolvedValueOnce(axiosSourcesResponse);
 });
 
 afterEach(() => {
@@ -35,7 +35,7 @@ it('renders source and csv upload widgets', async () => {
             }}
         />,
     );
-    await waitFor(() => expect(mockedAxios.get).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(1));
 
     // Header text
     expect(screen.getByTestId('header-title')).toBeInTheDocument();
@@ -78,7 +78,7 @@ it('displays spinner post upload', async () => {
             }}
         />,
     );
-    await waitFor(() => expect(mockedAxios.get).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(1));
 
     const inputField = screen.getByTestId('csv-input');
     const file = new File(['a\nb'], 'data.csv', {
@@ -95,8 +95,8 @@ it('displays spinner post upload', async () => {
         config: {},
         headers: {},
     };
-    mockedAxios.post.mockResolvedValueOnce(axiosResponse);
-    mockedAxios.put.mockResolvedValueOnce(axiosResponse);
+    axios.post.mockResolvedValueOnce(axiosResponse);
+    axios.put.mockResolvedValueOnce(axiosResponse);
 
     fireEvent.change(inputField);
     fireEvent.click(screen.getByText(/upload cases/i));

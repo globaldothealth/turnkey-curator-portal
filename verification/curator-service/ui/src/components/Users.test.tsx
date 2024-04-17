@@ -2,19 +2,20 @@ import { screen, fireEvent, render, within, waitFor } from './util/test-utils';
 
 import Users from './Users';
 import axios from 'axios';
+import { vi } from 'vitest';
 import { initialLoggedInState } from '../redux/store';
 import userEvent from '@testing-library/user-event';
 import { Role } from '../api/models/User';
 
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+vi.mock('axios');
 
 beforeEach(() => {
     jest.clearAllMocks();
 });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mockGetAxios(getUsersResponse: any): void {
-    mockedAxios.get.mockImplementation((url) => {
+    axios.get.mockImplementation((url) => {
         switch (url) {
             case '/api/users/roles':
                 return Promise.resolve({
@@ -65,9 +66,7 @@ describe('<Users />', () => {
         };
         mockGetAxios(axiosResponse);
         render(<Users onUserChange={jest.fn()} />);
-        expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/api/users/?limit=10&page=1',
-        );
+        expect(axios.get).toHaveBeenCalledWith('/api/users/?limit=10&page=1');
 
         // Find Admin user and check if all the data is correct
         expect(await screen.findByText('Admin')).toBeInTheDocument();
@@ -138,7 +137,7 @@ describe('<Users />', () => {
             config: {},
             headers: {},
         };
-        mockedAxios.put.mockResolvedValueOnce(axiosPutResponse);
+        axios.put.mockResolvedValueOnce(axiosPutResponse);
         fireEvent.mouseDown(
             screen.getByTestId('Alice Smith-select-roles-button'),
         );
@@ -147,8 +146,8 @@ describe('<Users />', () => {
         fireEvent.keyDown(screen.getByRole('listbox'), { key: 'Escape' });
 
         // Check roles are updated
-        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.put).toHaveBeenCalledWith('/api/users/abc123', {
+        expect(axios.put).toHaveBeenCalledTimes(1);
+        expect(axios.put).toHaveBeenCalledWith('/api/users/abc123', {
             roles: [Role.Admin, Role.JuniorCurator],
         });
     });
@@ -199,7 +198,7 @@ describe('<Users />', () => {
             config: {},
             headers: {},
         };
-        mockedAxios.put.mockResolvedValueOnce(axiosPutResponse);
+        axios.put.mockResolvedValueOnce(axiosPutResponse);
         expect(functionCalledCounter).toBe(0);
 
         // Select new role
@@ -279,7 +278,7 @@ describe('<Users />', () => {
             config: {},
             headers: {},
         };
-        mockedAxios.put.mockResolvedValueOnce(axiosPutResponse);
+        axios.put.mockResolvedValueOnce(axiosPutResponse);
         expect(functionCalledCounter).toBe(0);
 
         // Select new role

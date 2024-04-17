@@ -4,17 +4,17 @@ import App from '../App';
 import { format } from 'date-fns';
 import { initialLoggedInState } from '../../redux/store';
 import axios from 'axios';
+import { vi } from 'vitest';
 import validateEnv from '../../util/validate-env';
 import { Role } from '../../api/models/User';
 
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+vi.mock('axios');
 const env = validateEnv();
 
 beforeEach(() => {
     jest.clearAllMocks();
 
-    mockedAxios.get.mockImplementation((url) => {
+    axios.get.mockImplementation((url) => {
         if (url === '/version') {
             return Promise.resolve({ status: 200, data: '1.10.1' });
         } else if (url === '/diseaseName') {

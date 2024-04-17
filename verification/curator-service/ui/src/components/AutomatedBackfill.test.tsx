@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import axios from 'axios';
 import userEvent from '@testing-library/user-event';
 
@@ -10,9 +11,8 @@ import {
     waitForElementToBeRemoved,
 } from './util/test-utils';
 
-jest.setTimeout(30000);
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+// jest.setTimeout(30000);
+vi.mock('axios');
 
 afterEach(() => {
     jest.clearAllMocks();
@@ -26,7 +26,7 @@ it('renders form', async () => {
         config: {},
         headers: {},
     };
-    mockedAxios.get.mockResolvedValueOnce(axiosSourcesResponse);
+    axios.get.mockResolvedValueOnce(axiosSourcesResponse);
 
     render(
         <AutomatedBackfill
@@ -35,7 +35,7 @@ it('renders form', async () => {
             }}
         />,
     );
-    await waitFor(() => expect(mockedAxios.get).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(1));
 
     // Header text
     expect(screen.getByTestId('header-title')).toBeInTheDocument();
@@ -92,7 +92,7 @@ it('displays spinner and status post backfill', async () => {
         headers: {},
     };
 
-    mockedAxios.get.mockImplementation((url) => {
+    axios.get.mockImplementation((url) => {
         if (url.includes('/api/sources')) {
             return Promise.resolve(axiosSourcesResponse);
         } else {
@@ -100,7 +100,7 @@ it('displays spinner and status post backfill', async () => {
         }
     });
 
-    mockedAxios.post.mockResolvedValueOnce(axiosResponse);
+    axios.post.mockResolvedValueOnce(axiosResponse);
 
     render(
         <AutomatedBackfill
@@ -110,7 +110,7 @@ it('displays spinner and status post backfill', async () => {
         />,
         { initialState: initialLoggedInState },
     );
-    await waitFor(() => expect(mockedAxios.get).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(1));
 
     await user.click(
         screen.getByLabelText(/Paste URL for data source or search/i),

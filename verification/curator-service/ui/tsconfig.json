@@ -1,7 +1,7 @@
 {
   "extends": "../../../common/tsconfig.json",
   "compilerOptions": {
-    "target": "es5",
+    "target": "ESNext",
     "downlevelIteration": true,
     "lib": [
       "dom",
@@ -19,19 +19,9 @@
     "noFallthroughCasesInSwitch": true,
     "useUnknownInCatchVariables": false,
     "typeRoots": ["./node_modules/@types", "./src/types"],
-    "types": ["vite/client", "vite-plugin-svgr/client"]
+    "types": ["vite/client", "vite-plugin-svgr/client", "jest", "node", "@testing-library/jest-dom"]
   },
   "include": [
     "src"
   ]
 }
-
-
-
-//  "compilerOptions": {
-//    "target": "ESNext",
-//    "allowJs": false,
-//    "esModuleInterop": true,
-//    "strict": true,
-//    "moduleResolution": "node",
-//    "resolveJsonModule": true,

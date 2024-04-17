@@ -2,11 +2,11 @@ import * as fullCase from './fixtures/fullCase.json';
 import { screen, render } from './util/test-utils';
 import EditCase from './EditCase';
 import axios from 'axios';
+import { vi } from 'vitest';
 import { initialLoggedInState } from '../redux/store';
 import validateEnv from '../util/validate-env';
 
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+vi.mock('axios');
 const env = validateEnv();
 
 afterEach(() => {
@@ -44,7 +44,7 @@ describe('<EditCase />', () => {
             headers: {},
         };
 
-        mockedAxios.get.mockImplementation((url) => {
+        axios.get.mockImplementation((url) => {
             if (url.includes('/api/cases')) {
                 return Promise.resolve(axiosCaseResponse);
             } else if (url.includes('/api/sources')) {
@@ -110,7 +110,7 @@ describe('<EditCase />', () => {
     });
 
     it('displays API errors', async () => {
-        mockedAxios.get.mockRejectedValueOnce(new Error('Request failed'));
+        axios.get.mockRejectedValueOnce(new Error('Request failed'));
 
         render(
             <EditCase
@@ -121,8 +121,8 @@ describe('<EditCase />', () => {
             />,
         );
 
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/api/cases/abc123');
+        expect(axios.get).toHaveBeenCalledTimes(1);
+        expect(axios.get).toHaveBeenCalledWith('/api/cases/abc123');
         const errorMsg = await screen.findByText(/Request failed/);
         expect(errorMsg).toBeInTheDocument();
     });
