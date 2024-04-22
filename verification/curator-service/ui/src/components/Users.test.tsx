@@ -7,7 +7,13 @@ import { initialLoggedInState } from '../redux/store';
 import userEvent from '@testing-library/user-event';
 import { Role } from '../api/models/User';
 
-vi.mock('axios');
+beforeAll(() => {
+    vi.mock('axios');
+});
+
+afterAll(() => {
+    vi.clearAllMocks();
+});
 
 beforeEach(() => {
     jest.clearAllMocks();

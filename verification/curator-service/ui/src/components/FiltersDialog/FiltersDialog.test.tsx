@@ -8,8 +8,15 @@ import { vi } from 'vitest';
 import validateEnv from '../../util/validate-env';
 import { Role } from '../../api/models/User';
 
-vi.mock('axios');
 const env = validateEnv();
+
+beforeAll(() => {
+    vi.mock('axios');
+});
+
+afterAll(() => {
+    vi.clearAllMocks();
+});
 
 beforeEach(() => {
     jest.clearAllMocks();

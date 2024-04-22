@@ -6,4 +6,4 @@
 import '@testing-library/jest-dom';
 import 'vitest-canvas-mock';
 import { vi } from 'vitest';
-vi.setConfig({ testTimeout: 30_000 });
+vi.setConfig({ testTimeout: 30000 });

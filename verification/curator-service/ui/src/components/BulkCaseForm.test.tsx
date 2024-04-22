@@ -10,7 +10,13 @@ import {
 import BulkCaseForm from './BulkCaseForm';
 import axios from 'axios';
 
-vi.mock('axios');
+beforeAll(() => {
+    vi.mock('axios');
+});
+
+afterAll(() => {
+    vi.clearAllMocks();
+});
 
 beforeEach(() => {
     const axiosSourcesResponse = {

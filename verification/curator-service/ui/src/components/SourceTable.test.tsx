@@ -7,7 +7,13 @@ import SourceTable from './SourceTable';
 import axios from 'axios';
 import { vi } from 'vitest';
 
-vi.mock('axios');
+beforeAll(() => {
+    vi.mock('axios');
+});
+
+afterAll(() => {
+    vi.clearAllMocks();
+});
 
 afterEach(() => {
     axios.get.mockClear();

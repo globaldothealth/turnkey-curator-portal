@@ -8,7 +8,13 @@ import { render } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import { theme } from '../theme/theme';
 
-vi.mock('axios');
+beforeAll(() => {
+    vi.mock('axios');
+});
+
+afterAll(() => {
+    vi.clearAllMocks();
+});
 
 afterEach(() => {
     jest.clearAllMocks();

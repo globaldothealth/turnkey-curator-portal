@@ -8,7 +8,6 @@ import { initialLoggedInState } from '../redux/store';
 import mediaQuery from 'css-mediaquery';
 import validateEnv from '../util/validate-env';
 
-vi.mock('axios');
 const env = validateEnv();
 
 const createMatchMedia = (width: string) => {
@@ -28,6 +27,14 @@ const createMatchMedia = (width: string) => {
 };
 
 describe('<CaseForm />', () => {
+    beforeAll(() => {
+        vi.mock('axios');
+    });
+
+    afterAll(() => {
+        vi.clearAllMocks();
+    });
+
     beforeEach(() => {
         const axiosSourcesResponse = {
             data: { sources: [] },

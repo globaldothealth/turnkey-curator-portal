@@ -9,8 +9,15 @@ import { render, fireEvent, screen } from './util/test-utils';
 import { initialLoggedInState } from '../redux/store';
 import validateEnv from '../util/validate-env';
 
-vi.mock('axios');
 const env = validateEnv();
+
+beforeAll(() => {
+    vi.mock('axios');
+});
+
+afterAll(() => {
+    vi.clearAllMocks();
+});
 
 afterEach(() => {
     vi.clearAllMocks();

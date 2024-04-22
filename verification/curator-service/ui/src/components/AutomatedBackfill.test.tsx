@@ -12,7 +12,14 @@ import {
 } from './util/test-utils';
 
 // jest.setTimeout(30000);
-vi.mock('axios');
+
+beforeAll(() => {
+    vi.mock('axios');
+});
+
+afterAll(() => {
+    vi.clearAllMocks();
+});
 
 afterEach(() => {
     jest.clearAllMocks();

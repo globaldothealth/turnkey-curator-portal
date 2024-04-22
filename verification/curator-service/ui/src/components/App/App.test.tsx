@@ -8,8 +8,15 @@ import { MapLink } from '../../constants/types';
 import validateEnv from '../../util/validate-env';
 import { Role } from '../../api/models/User';
 
-vi.mock('axios');
 const env = validateEnv();
+
+beforeAll(() => {
+    vi.mock('axios');
+});
+
+afterAll(() => {
+    vi.clearAllMocks();
+});
 
 beforeEach(() => {
     vi.clearAllMocks();
