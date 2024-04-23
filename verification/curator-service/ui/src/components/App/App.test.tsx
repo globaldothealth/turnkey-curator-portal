@@ -8,6 +8,8 @@ import { MapLink } from '../../constants/types';
 import validateEnv from '../../util/validate-env';
 import { Role } from '../../api/models/User';
 
+const mockedDataDictionaryLink = 'https://global.health/data-dictionary';
+
 const env = validateEnv();
 
 beforeAll(() => {
@@ -20,6 +22,10 @@ afterAll(() => {
 
 beforeEach(() => {
     vi.clearAllMocks();
+});
+
+beforeAll(() => {
+    process.env.VITE_APP_DATA_DICTIONARY_LINK = mockedDataDictionaryLink;
 });
 
 describe('<App />', () => {
@@ -136,7 +142,7 @@ describe('<App />', () => {
         );
         expect(await screen.findByTestId('dictionaryButton')).toHaveAttribute(
             'href',
-            'https://raw.githubusercontent.com/globaldothealth/list/main/data-serving/scripts/export-data/data_dictionary.txt',
+            mockedDataDictionaryLink,
         );
         expect(await screen.findByTestId('termsButton')).toHaveAttribute(
             'href',

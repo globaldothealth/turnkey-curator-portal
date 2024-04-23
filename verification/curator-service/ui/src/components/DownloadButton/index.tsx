@@ -249,7 +249,7 @@ export function DownloadButton(): JSX.Element {
 
                     <Typography variant="body2">
                         <a
-                            href="https://raw.githubusercontent.com/globaldothealth/list/main/data-serving/scripts/export-data/data_dictionary.txt"
+                            href={process.env.REACT_APP_DATA_DICTIONARY_LINK}
                             target="_blank"
                             rel="noreferrer"
                         >

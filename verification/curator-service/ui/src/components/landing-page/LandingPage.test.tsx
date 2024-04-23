@@ -8,8 +8,12 @@ import { setupServer } from 'msw/node';
 import { Route } from 'react-router-dom';
 
 const server = setupServer();
+const mockedDataDictionaryLink = 'https://global.health/data-dictionary';
 
-beforeAll(() => server.listen());
+beforeAll(() => {
+    server.listen();
+    process.env.REACT_APP_DATA_DICTIONARY_LINK = mockedDataDictionaryLink;
+});
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
@@ -63,7 +67,7 @@ describe('<LandingPage />', () => {
         );
         expect(screen.getByText('Data dictionary')).toHaveAttribute(
             'href',
-            'https://raw.githubusercontent.com/globaldothealth/list/main/data-serving/scripts/export-data/data_dictionary.txt',
+            mockedDataDictionaryLink,
         );
         expect(screen.getByText('Terms of use')).toHaveAttribute(
             'href',

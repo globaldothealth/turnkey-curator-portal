@@ -155,7 +155,7 @@ const MoreInformationLinks = ({
                 </div>
                 <div className={classes.link}>
                     <a
-                        href="https://raw.githubusercontent.com/globaldothealth/list/main/data-serving/scripts/export-data/data_dictionary.txt"
+                        href={process.env.REACT_APP_DATA_DICTIONARY_LINK}
                         rel="noopener noreferrer"
                         target="_blank"
                     >
