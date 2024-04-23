@@ -24,9 +24,9 @@ beforeEach(() => {
     vi.clearAllMocks();
 });
 
-beforeAll(() => {
-    process.env.VITE_APP_DATA_DICTIONARY_LINK = mockedDataDictionaryLink;
-});
+// beforeAll(() => {
+//     process.env.VITE_APP_DATA_DICTIONARY_LINK = mockedDataDictionaryLink;
+// });
 
 describe('<App />', () => {
     it('renders without crashing when logged in', async () => {

@@ -155,7 +155,7 @@ const MoreInformationLinks = ({
                 </div>
                 <div className={classes.link}>
                     <a
-                        href={process.env.REACT_APP_DATA_DICTIONARY_LINK}
+                        href={import.meta.env.VITE_APP_DATA_DICTIONARY_LINK}
                         rel="noopener noreferrer"
                         target="_blank"
                     >

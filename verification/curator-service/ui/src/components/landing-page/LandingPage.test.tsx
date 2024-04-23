@@ -12,7 +12,7 @@ const mockedDataDictionaryLink = 'https://global.health/data-dictionary';
 
 beforeAll(() => {
     server.listen();
-    process.env.REACT_APP_DATA_DICTIONARY_LINK = mockedDataDictionaryLink;
+    import.meta.env.VITE_APP_DATA_DICTIONARY_LINK = mockedDataDictionaryLink;
 });
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());

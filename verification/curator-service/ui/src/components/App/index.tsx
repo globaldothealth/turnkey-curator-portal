@@ -218,7 +218,7 @@ function ProfileMenu(props: { user: User; version: string }): JSX.Element {
                 <a
                     rel="noopener noreferrer"
                     target="_blank"
-                    href={process.env.REACT_APP_DATA_DICTIONARY_LINK}
+                    href={import.meta.env.VITE_APP_DATA_DICTIONARY_LINK}
                     onClick={handleClose}
                     className={classes.link}
                 >
