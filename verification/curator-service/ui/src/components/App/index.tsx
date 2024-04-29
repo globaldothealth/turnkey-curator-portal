@@ -567,6 +567,7 @@ export default function App(): JSX.Element {
                     {/* Redirect any unavailable URLs to / after the user has loaded. */}
                     {!isLoadingUser && (
                         <Route path="/" element={<Navigate to="/" replace />} />
+                        <Route path="*" element={<Navigate to="/" replace />} />
                     )}
                 </Routes>
             </main>
