@@ -3,7 +3,7 @@ import { Form, Formik } from 'formik';
 import Location from './Location';
 import { render, screen } from '../util/test-utils';
 
-it.skip('shows location when passed location information', async () => {
+it('shows location when passed location information', async () => {
     render(
         <Formik
             initialValues={{
