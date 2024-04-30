@@ -6,6 +6,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import { ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import { theme } from '../../theme/theme';
+import { act } from 'react-dom/test-utils';
 // Import your own reducer
 import store, { rootReducer, RootState } from '../../redux/store';
 
