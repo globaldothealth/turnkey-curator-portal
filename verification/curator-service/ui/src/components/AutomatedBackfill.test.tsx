@@ -1,6 +1,7 @@
 import { vi } from 'vitest';
 import axios from 'axios';
 import userEvent from '@testing-library/user-event';
+import { act } from 'react-dom/test-utils';
 
 import AutomatedBackfill from './AutomatedBackfill';
 import { initialLoggedInState } from '../redux/store';
@@ -119,10 +120,14 @@ it('displays spinner and status post backfill', async () => {
     );
     await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(1));
 
-    await user.click(
-        screen.getByLabelText(/Paste URL for data source or search/i),
-    );
-    await user.click(screen.getByText('https://example.com'));
+    await act(async () => {
+        await user.click(
+            screen.getByLabelText(/Paste URL for data source or search/i),
+        );
+    });
+    await act(async () => {
+        await user.click(screen.getByText('https://example.com'));
+    });
 
     const startDate = screen.getByRole('textbox', {
         name: 'First date to backfill (inclusive)',
@@ -134,13 +139,25 @@ it('displays spinner and status post backfill', async () => {
         throw Error('Unable to find date selector');
     }
 
-    await user.click(screen.getAllByRole('button', { name: 'Choose date' })[0]);
-    await user.click(screen.getByRole('gridcell', { name: '1' }));
+    await act(async () => {
+        await user.click(
+            screen.getAllByRole('button', { name: 'Choose date' })[0],
+        );
+    });
+    await act(async () => {
+        await user.click(screen.getByRole('gridcell', { name: '1' }));
+    });
 
-    await user.click(screen.getByRole('button', { name: 'Choose date' }));
-    await user.click(screen.getByRole('gridcell', { name: '2' }));
+    await act(async () => {
+        await user.click(screen.getByRole('button', { name: 'Choose date' }));
+    });
+    await act(async () => {
+        await user.click(screen.getByRole('gridcell', { name: '2' }));
+    });
 
-    await user.click(screen.getByTestId('submit'));
+    await act(async () => {
+        await user.click(screen.getByTestId('submit'));
+    });
 
     expect(screen.getByTestId('submit')).toBeDisabled();
     expect(screen.getByTestId('cancel')).toBeDisabled();

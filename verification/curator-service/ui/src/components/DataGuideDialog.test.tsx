@@ -1,7 +1,8 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
-import { screen, render, waitFor } from './util/test-utils';
 import { Button } from '@mui/material';
+import { act } from 'react-dom/test-utils';
+import { screen, render, waitFor } from './util/test-utils';
 import DataGuideDialog from './DataGuideDialog';
 
 const SearchGuideTestCase = ({ defaultOpen = false }): JSX.Element => {
@@ -34,7 +35,9 @@ it('opens properly after clicking on button', async () => {
         screen.queryByText(/Welcome to Global.health Data!/i),
     ).not.toBeInTheDocument();
 
-    await user.click(screen.getByText('Open'));
+    await act(async () => {
+        await user.click(screen.getByText('Open'));
+    });
 
     waitFor(() => {
         expect(
@@ -52,7 +55,9 @@ it('closes properly after clicking on close button', async () => {
         screen.queryByText(/Welcome to Global.health Data!/i),
     ).not.toBeInTheDocument();
 
-    await user.click(screen.getByText('Open'));
+    await act(async () => {
+        await user.click(screen.getByText('Open'));
+    });
 
     waitFor(() => {
         expect(
@@ -60,7 +65,9 @@ it('closes properly after clicking on close button', async () => {
         ).toBeInTheDocument();
     });
 
-    await user.click(screen.getByTestId('close-search-guide-button'));
+    await act(async () => {
+        await user.click(screen.getByTestId('close-search-guide-button'));
+    });
 
     expect(
         screen.queryByText(/Welcome to Global.health Data!/i),

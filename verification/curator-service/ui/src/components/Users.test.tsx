@@ -1,4 +1,5 @@
 import { screen, fireEvent, render, within, waitFor } from './util/test-utils';
+import { act } from 'react-dom/test-utils';
 
 import Users from './Users';
 import axios from 'axios';
@@ -144,12 +145,18 @@ describe('<Users />', () => {
             headers: {},
         };
         axios.put.mockResolvedValueOnce(axiosPutResponse);
-        fireEvent.mouseDown(
-            screen.getByTestId('Alice Smith-select-roles-button'),
-        );
+        await act(async () => {
+            fireEvent.mouseDown(
+                screen.getByTestId('Alice Smith-select-roles-button'),
+            );
+        });
         const listbox = within(screen.getByRole('listbox'));
-        fireEvent.click(listbox.getByText(/junior curator/i));
-        fireEvent.keyDown(screen.getByRole('listbox'), { key: 'Escape' });
+        await act(async () => {
+            fireEvent.click(listbox.getByText(/junior curator/i));
+        });
+        await act(async () => {
+            fireEvent.keyDown(screen.getByRole('listbox'), {key: 'Escape'});
+        });
 
         // Check roles are updated
         expect(axios.put).toHaveBeenCalledTimes(1);
