@@ -18,8 +18,11 @@ beforeAll(() => {
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-jest.mock('react-google-recaptcha', () => {
-    const { forwardRef, useImperativeHandle } = jest.requireActual('react');
+vi.mock('react-google-recaptcha', async () => {
+    const { forwardRef, useImperativeHandle } = (await vi.importActual(
+        'react',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    )) as any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const RecaptchaV2 = forwardRef((props: any, ref: any) => {
         useImperativeHandle(ref, () => ({
@@ -39,7 +42,7 @@ jest.mock('react-google-recaptcha', () => {
         );
     });
 
-    return RecaptchaV2;
+    return { default: RecaptchaV2 };
 });
 
 vi.stubEnv('RECAPTCHA_SITE_KEY', '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI');
@@ -100,7 +103,7 @@ describe('<LandingPage />', () => {
 });
 
 describe('<SignInForm />', () => {
-    it.skip('renders and submits form', async () => {
+    it('renders and submits form', async () => {
         server.use(
             rest.post('/auth/signin', (req, res, ctx) => {
                 return res(
@@ -132,23 +135,11 @@ describe('<SignInForm />', () => {
             // await user.click(screen.getByRole('button', { name: 'Sign in' }));
         });
 
-        // await waitFor(() => {
-        //     expect(
-        //         screen.getByText(/Wrong username or password/i),
-        //     ).toBeInTheDocument();
-        // });
-        await vi.waitFor(
-            async () => {
-                console.log(screen.debug());
-                expect(
-                    screen.getByText(/Wrong username or password/i),
-                ).toBeInTheDocument();
-            },
-            {
-                timeout: 1000, // default is 1000
-                interval: 900, // default is 50
-            },
-        );
+        await waitFor(() => {
+            expect(
+                screen.getByText(/Wrong username or password/i),
+            ).toBeInTheDocument();
+        });
     });
 
     it('displays verification errors when email input is empty', async () => {
