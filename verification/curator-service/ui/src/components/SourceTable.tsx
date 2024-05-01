@@ -643,7 +643,6 @@ class SourceTable extends React.Component<Props, SourceTableState> {
                         // https://docs.mongodb.com/manual/text-search/
                         search: false,
                         filtering: false,
-                        sorting: false,
                         emptyRowsWhenPaging: false,
                         padding: 'dense',
                         draggable: false, // No need to be able to drag and drop headers.
