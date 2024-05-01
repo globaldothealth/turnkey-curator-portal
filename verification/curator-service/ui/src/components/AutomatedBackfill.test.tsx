@@ -152,7 +152,7 @@ it('displays spinner and status post backfill', async () => {
         await user.click(screen.getByRole('button', { name: 'Choose date' }));
     });
     await act(async () => {
-        await user.click(screen.getByRole('gridcell', { name: '2' }));
+        await user.click(screen.getByRole('gridcell', { name: '1' }));
     });
 
     await act(async () => {
