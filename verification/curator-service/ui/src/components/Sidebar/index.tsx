@@ -172,11 +172,13 @@ const Sidebar = ({ drawerOpen }: SidebarProps): JSX.Element => {
                         )}
                         {hasAnyRole(user, [Role.Curator]) && (
                             <Link
-                                to="/sources/automated"
+                                to="/sources/backfill"
                                 onClick={closeCreateNewPopup}
                                 className={classes.link}
                             >
-                                <MenuItem>New automated source</MenuItem>
+                                <MenuItem>
+                                    New automated source backfill
+                                </MenuItem>
                             </Link>
                         )}
                     </Menu>
