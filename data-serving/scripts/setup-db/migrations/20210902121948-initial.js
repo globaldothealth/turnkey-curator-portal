@@ -4,9 +4,9 @@ module.exports = {
   async up(db, client) {
     await createCollectionValidationAndIndexes(
       db,
-      'cases',
-      'schemas/cases.schema.json',
-      'schemas/cases.indexes.json'
+      'day0cases',
+      'schemas/day0cases.schema.json',
+      'schemas/day0cases.indexes.json'
     );
 
     await createCollectionValidationAndIndexes(
