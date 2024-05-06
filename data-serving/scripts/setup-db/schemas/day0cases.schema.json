@@ -2,6 +2,7 @@
     "$jsonSchema": {
         "bsonType": "object",
         "additionalProperties": false,
+        "required": ["caseStatus"],
         "properties": {
             "_id": {
                 "bsonType": "number",
@@ -12,6 +13,102 @@
             },
             "list": {
                 "bsonType": "bool"
+            },
+            "caseStatus": {
+                "bsonType": "string"
+            },
+            "comment": {
+                "bsonType": "string"
+            },
+            "curators": {
+                "bsonType": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "verifiedBy": {
+                        "bsonType": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "_id": {
+                                "bsonType": "objectId"
+                            },
+                            "name": {
+                                "bsonType": "string"
+                            },
+                            "email": {
+                                "bsonType": "string"
+                            },
+                            "roles": {
+                                "bsonType": "array",
+                                "uniqueItems": true,
+                                "items": {
+                                    "bsonType": "string"
+                                }
+                            }
+                        }
+                    },
+                    "createdBy": {
+                        "bsonType": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "_id": {
+                                "bsonType": "objectId"
+                            },
+                            "name": {
+                                "bsonType": "string"
+                            },
+                            "email": {
+                                "bsonType": "string"
+                            },
+                            "roles": {
+                                "bsonType": "array",
+                                "uniqueItems": true,
+                                "items": {
+                                    "bsonType": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "revisionMetadata": {
+                "bsonType": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "revisionNumber": {
+                        "bsonType": "number",
+                        "minimum": 0
+                    },
+                    "creationMetadata": {
+                        "bsonType": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "curator": {
+                                "bsonType": "string"
+                            },
+                            "date": {
+                                "bsonType": "date"
+                            },
+                            "notes": {
+                                "bsonType": "string"
+                            }
+                        }
+                    },
+                    "updateMetadata": {
+                        "bsonType": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "curator": {
+                                "bsonType": "string"
+                            },
+                            "date": {
+                                "bsonType": "date"
+                            },
+                            "notes": {
+                                "bsonType": "string"
+                            }
+                        }
+                    }
+                }
             },
             "caseReference": {
                 "bsonType": "object",
@@ -25,6 +122,9 @@
                     },
                     "sourceUrl": {
                         "bsonType": "string"
+                    },
+                    "isGovernmentSource": {
+                        "bsonType": "bool"
                     },
                     "uploadIds": {
                         "bsonType": "array",
@@ -66,6 +166,13 @@
                                 "minimum": 0,
                                 "maximum": 120
                             }
+                        }
+                    },
+                    "ageBuckets": {
+                        "bsonType": "array",
+                        "uniqueItems": true,
+                        "items": {
+                            "bsonType": "objectId"
                         }
                     },
                     "gender": {
@@ -120,9 +227,28 @@
                     "location": {
                         "bsonType": "string"
                     },
-                    "place": {
+                    "geoResolution": {
                         "bsonType": "string"
                     },
+                    "admin1": {
+                        "bsonType": "string"
+                    },
+                    "admin1WikiId": {
+                        "bsonType": "string"
+                    },
+                    "admin2": {
+                        "bsonType": "string"
+                    },
+                    "admin2WikiId": {
+                        "bsonType": "string"
+                    },
+                    "admin3": {
+                        "bsonType": "string"
+                    },
+                    "admin3WikiId": {
+                        "bsonType": "string"
+                    },
+
                     "query": {
                         "bsonType": "string"
                     }
@@ -135,7 +261,7 @@
                         "bsonType": ["date"]
                     },
                     "dateLastModified": {
-                        "bsonType": ["date"]
+                        "bsonType": ["date", "null"]
                     },
                     "dateOnset": {
                         "bsonType": ["date"]
