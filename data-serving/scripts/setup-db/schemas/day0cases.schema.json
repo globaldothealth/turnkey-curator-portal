@@ -218,18 +218,6 @@
                 "bsonType": "object",
                 "additionalProperties": false,
                 "properties": {
-                    "country": {
-                        "bsonType": "string"
-                    },
-                    "countryISO3": {
-                        "bsonType": "string"
-                    },
-                    "location": {
-                        "bsonType": "string"
-                    },
-                    "geoResolution": {
-                        "bsonType": "string"
-                    },
                     "admin1": {
                         "bsonType": "string"
                     },
@@ -248,7 +236,36 @@
                     "admin3WikiId": {
                         "bsonType": "string"
                     },
-
+                    "comment": {
+                        "bsonType": "string"
+                    },
+                    "country": {
+                        "bsonType": "string"
+                    },
+                    "countryISO3": {
+                        "bsonType": "string"
+                    },
+                    "geometry": {
+                        "bsonType": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "latitude": {
+                                "bsonType": "double"
+                            },
+                            "longitude": {
+                                "bsonType": "double"
+                            }
+                        }
+                    },
+                    "geoResolution": {
+                        "bsonType": "string"
+                    },
+                    "location": {
+                        "bsonType": "string"
+                    },
+                    "name": {
+                        "bsonType": "string"
+                    },
                     "query": {
                         "bsonType": "string"
                     }
