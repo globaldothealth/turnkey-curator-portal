@@ -8,6 +8,7 @@
     "lint": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "import-sample-data": "python3 ./import-sample-data.py",
     "migrate": "npm ci && migrate-mongo up",
+    "migrate-down": "npm ci && migrate-mongo down",
     "delete-all-cases": "mongosh $CONN --eval 'db.cases.deleteMany({})'"
   },
   "repository": {
