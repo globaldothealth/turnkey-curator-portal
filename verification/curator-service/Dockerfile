@@ -53,7 +53,7 @@ RUN npm run build
 
 
 # Multi-staged build, use a trimmed down version of node for prod.
-FROM node:16.18.0 as prod
+FROM node:18.18.0 as prod
 
 # No need to run as root.
 USER node
