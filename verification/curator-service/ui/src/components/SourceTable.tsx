@@ -760,7 +760,7 @@ const SourceTableStyled = withStyles(SourceTable, (theme: Theme) => ({
         width: '100%',
     },
     sourcesSection: {
-        marginTop: '66px',
+        marginTop: '64px',
     },
 }));
 

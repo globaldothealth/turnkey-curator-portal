@@ -24,5 +24,5 @@ export const ActionMenuItem = styled(MenuItem)(({ theme }) => ({
 }));
 
 export const LineListContainer = styled('div')(() => ({
-    marginTop: '66px',
+    marginTop: '64px',
 }));
