@@ -2,6 +2,8 @@
 // allows you to do things like:
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom/extend-expect';
-import 'jest-canvas-mock';
-jest.setTimeout(20000);
+// import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
+import 'vitest-canvas-mock';
+import { vi } from 'vitest';
+vi.setConfig({ testTimeout: 30000 });

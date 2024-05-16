@@ -14,7 +14,7 @@ import MuiAlert from '@mui/material/Alert';
 import { SelectField } from './common-form-fields/FormikFields';
 import { TextField, CheckboxWithLabel } from 'formik-mui';
 import axios from 'axios';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import countries from 'i18n-iso-countries';
 
 // eslint-disable-next-line
@@ -103,7 +103,7 @@ const AutomatedSourceFormSchema = Yup.object().shape({
 
 export default function AutomatedSourceForm(props: Props): JSX.Element {
     const { classes } = useStyles();
-    const history = useHistory();
+    const navigate = useNavigate();
     const [errorMessage, setErrorMessage] = React.useState('');
 
     const user = useAppSelector(selectUser);
@@ -135,9 +135,7 @@ export default function AutomatedSourceForm(props: Props): JSX.Element {
             return;
         }
         // Navigate to sources after successful submit
-        history.push({
-            pathname: '/sources',
-        });
+        navigate('/sources');
     };
 
     return (

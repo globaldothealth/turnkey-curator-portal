@@ -1,7 +1,7 @@
 # This dockerfile builds the curator API service and its UI in a single container.
 # The UI is served as a static resource from the curator API service express server.
 # Security best practices are followed and a trimmed down image is used for production serving.
-FROM node:16.18.0 as builder
+FROM node:18.18.0 as builder
 
 # Build the curator service.
 WORKDIR /usr/src/app/verification/curator-service/api
@@ -42,18 +42,18 @@ ENV REACT_APP_PUBLIC_MAPBOX_TOKEN "pk.eyJ1IjoiaGVhbHRobWFwIiwiYSI6ImNrYzNjczdmcz
 ENV REACT_APP_POLICY_PUBLIC_ID "89575059"
 ENV REACT_APP_COOKIE_CONSENT_PUBLIC_ID "2070778"
 ENV REACT_APP_RECAPTCHA_SITE_KEY "6LdhjvwgAAAAALrxavR_zR58kxxap07D4ba8X-jE"
-ENV REACT_APP_DISEASE_NAME "Mpox"
-ENV REACT_APP_MAP_LINK_DEV "http://dev-map.marburg.global.health/"
-ENV REACT_APP_MAP_LINK_LOCAL "http://dev-map.marburg.global.health/"
-ENV REACT_APP_MAP_LINK_LOCAL_E2E "http://dev-map.marburg.global.health/"
-ENV REACT_APP_MAP_LINK_PROD "http://dev-map.marburg.global.health/"
-ENV REACT_APP_MAP_LINK_QA "http://map.marburg.global.health/"
+ENV VITE_APP_DISEASE_NAME "Mpox"
+ENV VITE_APP_MAP_LINK_DEV "http://dev-map.marburg.global.health/"
+ENV VITE_APP_MAP_LINK_LOCAL "http://dev-map.marburg.global.health/"
+ENV VITE_APP_MAP_LINK_LOCAL_E2E "http://dev-map.marburg.global.health/"
+ENV VITE_APP_MAP_LINK_PROD "http://dev-map.marburg.global.health/"
+ENV VITE_APP_MAP_LINK_QA "http://map.marburg.global.health/"
 
 RUN npm run build
 
 
 # Multi-staged build, use a trimmed down version of node for prod.
-FROM node:16.18.0 as prod
+FROM node:18.18.0 as prod
 
 # No need to run as root.
 USER node

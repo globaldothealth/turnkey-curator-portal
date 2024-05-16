@@ -5,15 +5,21 @@ import { screen, fireEvent, render, waitFor } from './util/test-utils';
 import React from 'react';
 import SourceTable from './SourceTable';
 import axios from 'axios';
+import { vi } from 'vitest';
 
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+beforeAll(() => {
+    vi.mock('axios');
+});
+
+afterAll(() => {
+    vi.clearAllMocks();
+});
 
 afterEach(() => {
-    mockedAxios.get.mockClear();
-    mockedAxios.delete.mockClear();
-    mockedAxios.post.mockClear();
-    mockedAxios.put.mockClear();
+    axios.get.mockClear();
+    axios.delete.mockClear();
+    axios.post.mockClear();
+    axios.put.mockClear();
 });
 
 describe('<SourceTable />', () => {
@@ -56,14 +62,12 @@ describe('<SourceTable />', () => {
             config: {},
             headers: {},
         };
-        mockedAxios.get.mockResolvedValueOnce(axiosResponse);
+        axios.get.mockResolvedValueOnce(axiosResponse);
         render(<SourceTable />);
 
         // Verify backend calls.
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/api/sources/?limit=10&page=1',
-        );
+        expect(axios.get).toHaveBeenCalledTimes(1);
+        expect(axios.get).toHaveBeenCalledWith('/api/sources/?limit=10&page=1');
 
         // Verify display content.
         expect(
@@ -120,24 +124,22 @@ describe('<SourceTable />', () => {
             config: {},
             headers: {},
         };
-        mockedAxios.get.mockResolvedValueOnce(axiosResponse);
+        axios.get.mockResolvedValueOnce(axiosResponse);
         render(<SourceTable />);
 
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/api/sources/?limit=10&page=1',
-        );
+        expect(axios.get).toHaveBeenCalledTimes(1);
+        expect(axios.get).toHaveBeenCalledWith('/api/sources/?limit=10&page=1');
         const row = await screen.findByText(/abc123/);
         expect(row).toBeInTheDocument();
 
         // Throw error on delete request.
-        mockedAxios.delete.mockRejectedValueOnce(new Error('Request failed'));
+        axios.delete.mockRejectedValueOnce(new Error('Request failed'));
 
         const deleteButton = screen.getByTestId(/delete_outline/);
         fireEvent.click(deleteButton);
         const confirmButton = screen.getByTestId(/check/);
         fireEvent.click(confirmButton);
-        expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
+        expect(axios.delete).toHaveBeenCalledTimes(1);
 
         const error = await screen.findByText('Error: Request failed');
         expect(error).toBeInTheDocument();
@@ -166,14 +168,12 @@ describe('<SourceTable />', () => {
             config: {},
             headers: {},
         };
-        mockedAxios.get.mockResolvedValueOnce(axiosResponse);
+        axios.get.mockResolvedValueOnce(axiosResponse);
 
         // Load table
         render(<SourceTable />);
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/api/sources/?limit=10&page=1',
-        );
+        expect(axios.get).toHaveBeenCalledTimes(1);
+        expect(axios.get).toHaveBeenCalledWith('/api/sources/?limit=10&page=1');
         const row = await screen.findByText(/abc123/);
         expect(row).toBeInTheDocument();
 
@@ -197,20 +197,20 @@ describe('<SourceTable />', () => {
             config: {},
             headers: {},
         };
-        mockedAxios.get.mockResolvedValueOnce(axiosGetAfterDeleteResponse);
-        mockedAxios.delete.mockResolvedValueOnce(axiosDeleteResponse);
+        axios.get.mockResolvedValueOnce(axiosGetAfterDeleteResponse);
+        axios.delete.mockResolvedValueOnce(axiosDeleteResponse);
 
         const deleteButton = screen.getByTestId(/delete_outline/);
         fireEvent.click(deleteButton);
         const confirmButton = screen.getByTestId(/check/);
         fireEvent.click(confirmButton);
-        expect(mockedAxios.delete).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.delete).toHaveBeenCalledWith(
+        expect(axios.delete).toHaveBeenCalledTimes(1);
+        expect(axios.delete).toHaveBeenCalledWith(
             '/api/sources/' + sources[0]._id,
         );
 
         // Check table data is reloaded
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(axios.get).toHaveBeenCalledTimes(1);
         const noRec = await screen.findByText(/No records to display/);
         expect(noRec).toBeInTheDocument();
     });
@@ -237,14 +237,12 @@ describe('<SourceTable />', () => {
             config: {},
             headers: {},
         };
-        mockedAxios.get.mockResolvedValueOnce(axiosResponse);
+        axios.get.mockResolvedValueOnce(axiosResponse);
 
         // Load table
         render(<SourceTable />);
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/api/sources/?limit=10&page=1',
-        );
+        expect(axios.get).toHaveBeenCalledTimes(1);
+        expect(axios.get).toHaveBeenCalledWith('/api/sources/?limit=10&page=1');
         const row = await screen.findByText('origin url');
         expect(row).toBeInTheDocument();
 
@@ -280,17 +278,17 @@ describe('<SourceTable />', () => {
             config: {},
             headers: {},
         };
-        mockedAxios.put.mockResolvedValueOnce(axiosEditResponse);
-        mockedAxios.get.mockResolvedValueOnce(axiosGetAfterEditResponse);
+        axios.put.mockResolvedValueOnce(axiosEditResponse);
+        axios.get.mockResolvedValueOnce(axiosGetAfterEditResponse);
 
         const editButton = screen.getByTestId(/edit/);
         fireEvent.click(editButton);
         const confirmButton = screen.getByTestId(/check/);
         fireEvent.click(confirmButton);
-        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
+        expect(axios.put).toHaveBeenCalledTimes(1);
 
         // Check table data is reloaded
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(axios.get).toHaveBeenCalledTimes(1);
         const editedRow = await screen.findByText('new source url');
         expect(editedRow).toBeInTheDocument();
         const oldRow = screen.queryByText('origin url');
@@ -321,14 +319,12 @@ describe('<SourceTable />', () => {
             config: {},
             headers: {},
         };
-        mockedAxios.get.mockResolvedValueOnce(axiosResponse);
+        axios.get.mockResolvedValueOnce(axiosResponse);
 
         // Load table
         render(<SourceTable />);
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/api/sources/?limit=10&page=1',
-        );
+        expect(axios.get).toHaveBeenCalledTimes(1);
+        expect(axios.get).toHaveBeenCalledWith('/api/sources/?limit=10&page=1');
         const row = await screen.findByText('origin url');
         expect(row).toBeInTheDocument();
 
@@ -366,17 +362,17 @@ describe('<SourceTable />', () => {
             config: {},
             headers: {},
         };
-        mockedAxios.put.mockResolvedValueOnce(axiosEditResponse);
-        mockedAxios.get.mockResolvedValueOnce(axiosGetAfterEditResponse);
+        axios.put.mockResolvedValueOnce(axiosEditResponse);
+        axios.get.mockResolvedValueOnce(axiosGetAfterEditResponse);
 
         const editButton = screen.getByTestId(/edit/);
         fireEvent.click(editButton);
         const confirmButton = screen.getByTestId(/check/);
         fireEvent.click(confirmButton);
-        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
+        expect(axios.put).toHaveBeenCalledTimes(1);
 
         // Check table data is reloaded
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(axios.get).toHaveBeenCalledTimes(1);
 
         await waitFor(() => {
             const editedRow = screen.getByText('origin url');
@@ -406,14 +402,12 @@ describe('<SourceTable />', () => {
             config: {},
             headers: {},
         };
-        mockedAxios.get.mockResolvedValueOnce(axiosResponse);
+        axios.get.mockResolvedValueOnce(axiosResponse);
 
         // Load table
         render(<SourceTable />);
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-        expect(mockedAxios.get).toHaveBeenCalledWith(
-            '/api/sources/?limit=10&page=1',
-        );
+        expect(axios.get).toHaveBeenCalledTimes(1);
+        expect(axios.get).toHaveBeenCalledWith('/api/sources/?limit=10&page=1');
         const row = await screen.findByText('origin url');
         expect(row).toBeInTheDocument();
 
@@ -450,17 +444,17 @@ describe('<SourceTable />', () => {
             config: {},
             headers: {},
         };
-        mockedAxios.put.mockResolvedValueOnce(axiosEditResponse);
-        mockedAxios.get.mockResolvedValueOnce(axiosGetAfterEditResponse);
+        axios.put.mockResolvedValueOnce(axiosEditResponse);
+        axios.get.mockResolvedValueOnce(axiosGetAfterEditResponse);
 
         const editButton = screen.getByTestId(/edit/);
         fireEvent.click(editButton);
         const confirmButton = screen.getByTestId(/check/);
         fireEvent.click(confirmButton);
-        expect(mockedAxios.put).toHaveBeenCalledTimes(1);
+        expect(axios.put).toHaveBeenCalledTimes(1);
 
         // Check table data is reloaded
-        expect(mockedAxios.get).toHaveBeenCalledTimes(1);
+        expect(axios.get).toHaveBeenCalledTimes(1);
         const editedRow = await screen.findByText('new_source_name');
         expect(editedRow).toBeInTheDocument();
         const oldRow = screen.queryByText('old_source_name');

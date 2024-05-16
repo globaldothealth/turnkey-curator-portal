@@ -3,12 +3,18 @@ import '@testing-library/jest-dom/extend-expect';
 import { MemoryRouter } from 'react-router-dom';
 import UploadsTable from './UploadsTable';
 import axios from 'axios';
+import { vi } from 'vitest';
 import { render } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import { theme } from '../theme/theme';
 
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+beforeAll(() => {
+    vi.mock('axios');
+});
+
+afterAll(() => {
+    vi.clearAllMocks();
+});
 
 afterEach(() => {
     jest.clearAllMocks();
@@ -43,7 +49,7 @@ it('loads and displays uploads', async () => {
         config: {},
         headers: {},
     };
-    mockedAxios.get.mockResolvedValueOnce(axiosResponse);
+    axios.get.mockResolvedValueOnce(axiosResponse);
 
     const { findByText } = render(
         <MemoryRouter>
@@ -54,8 +60,8 @@ it('loads and displays uploads', async () => {
     );
 
     // Verify backend calls.
-    expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-    expect(mockedAxios.get).toHaveBeenCalledWith(
+    expect(axios.get).toHaveBeenCalledTimes(1);
+    expect(axios.get).toHaveBeenCalledWith(
         '/api/sources/uploads?limit=10&page=1&changes_only=false',
     );
 
@@ -70,7 +76,7 @@ it('loads and displays uploads', async () => {
 });
 
 it('API errors are displayed', async () => {
-    mockedAxios.get.mockRejectedValueOnce(new Error('Request failed'));
+    axios.get.mockRejectedValueOnce(new Error('Request failed'));
 
     const { findByText } = render(
         <MemoryRouter>
@@ -79,8 +85,8 @@ it('API errors are displayed', async () => {
             </ThemeProvider>
         </MemoryRouter>,
     );
-    expect(mockedAxios.get).toHaveBeenCalledTimes(1);
-    expect(mockedAxios.get).toHaveBeenCalledWith(
+    expect(axios.get).toHaveBeenCalledTimes(1);
+    expect(axios.get).toHaveBeenCalledWith(
         '/api/sources/uploads?limit=10&page=1&changes_only=false',
     );
 

@@ -1,14 +1,13 @@
 import { fireEvent, render, waitFor, screen } from './util/test-utils';
 import CaseForm from './CaseForm';
 import axios from 'axios';
+import { vi } from 'vitest';
 import { ThemeProvider } from '@mui/material/styles';
 import { theme } from '../theme/theme';
 import { initialLoggedInState } from '../redux/store';
 import mediaQuery from 'css-mediaquery';
 import validateEnv from '../util/validate-env';
 
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
 const env = validateEnv();
 
 const createMatchMedia = (width: string) => {
@@ -28,6 +27,14 @@ const createMatchMedia = (width: string) => {
 };
 
 describe('<CaseForm />', () => {
+    beforeAll(() => {
+        vi.mock('axios');
+    });
+
+    afterAll(() => {
+        vi.clearAllMocks();
+    });
+
     beforeEach(() => {
         const axiosSourcesResponse = {
             data: { sources: [] },
@@ -36,7 +43,7 @@ describe('<CaseForm />', () => {
             config: {},
             headers: {},
         };
-        mockedAxios.get.mockResolvedValueOnce(axiosSourcesResponse);
+        axios.get.mockResolvedValueOnce(axiosSourcesResponse);
         const axiosSymptomsResponse = {
             data: { symptoms: [] },
             status: 200,
@@ -44,7 +51,7 @@ describe('<CaseForm />', () => {
             config: {},
             headers: {},
         };
-        mockedAxios.get.mockResolvedValueOnce(axiosSymptomsResponse);
+        axios.get.mockResolvedValueOnce(axiosSymptomsResponse);
         const axiosOccupationResponse = {
             data: { occupations: [] },
             status: 200,
@@ -52,7 +59,7 @@ describe('<CaseForm />', () => {
             config: {},
             headers: {},
         };
-        mockedAxios.get.mockResolvedValueOnce(axiosOccupationResponse);
+        axios.get.mockResolvedValueOnce(axiosOccupationResponse);
         const axiosLocationCommentsResponse = {
             data: { locationComments: [] },
             status: 200,
@@ -60,7 +67,7 @@ describe('<CaseForm />', () => {
             config: {},
             headers: {},
         };
-        mockedAxios.get.mockResolvedValueOnce(axiosLocationCommentsResponse);
+        axios.get.mockResolvedValueOnce(axiosLocationCommentsResponse);
     });
 
     afterEach(() => {
@@ -73,14 +80,14 @@ describe('<CaseForm />', () => {
                 onModalClose={(): void => {
                     return;
                 }}
-                diseaseName={env.REACT_APP_DISEASE_NAME}
+                diseaseName={env.VITE_APP_DISEASE_NAME}
             />,
             {
                 initialState: initialLoggedInState,
                 initialRoute: '/cases/new',
             },
         );
-        await waitFor(() => expect(mockedAxios.get).toHaveBeenCalledTimes(4));
+        await waitFor(() => expect(axios.get).toHaveBeenCalledTimes(4));
         expect(
             screen.getByText('Enter the details for a new case'),
         ).toBeInTheDocument();
@@ -102,7 +109,7 @@ describe('<CaseForm />', () => {
                     onModalClose={(): void => {
                         return;
                     }}
-                    diseaseName={env.REACT_APP_DISEASE_NAME}
+                    diseaseName={env.VITE_APP_DISEASE_NAME}
                 />
             </ThemeProvider>,
             { initialState: initialLoggedInState, initialRoute: '/cases/new' },

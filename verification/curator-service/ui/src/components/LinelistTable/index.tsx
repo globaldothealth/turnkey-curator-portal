@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import VerifiedIcon from '@mui/icons-material/CheckCircleOutline';
 import Button from '@mui/material/Button';
@@ -53,17 +53,10 @@ import { URLToSearchQuery } from '../util/searchQuery';
 
 const dataLimit = 10000;
 
-interface LocationState {
-    lastLocation: string;
-    newCaseIds: string[];
-    editedCaseIds: string[];
-    bulkMessage: string;
-}
-
 const LinelistTable = () => {
     const dispatch = useAppDispatch();
-    const history = useHistory();
-    const location = useLocation<LocationState>();
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const isLoading = useAppSelector(selectIsLoading);
     const cases = useAppSelector(selectCases);
@@ -164,8 +157,10 @@ const LinelistTable = () => {
     };
 
     const handleCaseClick = (caseId: string) => {
-        history.push(`/cases/view/${caseId}`, {
-            lastLocation: location.pathname,
+        navigate(`/cases/view/${caseId}`, {
+            state: {
+                lastLocation: location.pathname,
+            },
         });
     };
 

@@ -62,7 +62,10 @@ const Footer = ({ drawerOpen }: FooterProps): JSX.Element => {
 
             <section>
                 <a
-                    href={process.env.REACT_APP_DATA_DICTIONARY_LINK}
+                    href={
+                        import.meta.env.VITE_APP_DATA_DICTIONARY_LINK ||
+                        'https://global.health/data-dictionary'
+                    }
                     rel="noopener noreferrer"
                     target="_blank"
                     data-testid="dictionaryButton"

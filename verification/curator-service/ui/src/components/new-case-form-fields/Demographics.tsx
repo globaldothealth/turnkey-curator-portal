@@ -144,7 +144,7 @@ export default function Demographics(): JSX.Element {
                                         key={occupation}
                                         className={classes.chip}
                                         label={occupation}
-                                        onClick={(): void =>
+                                        onClick={() =>
                                             setFieldValue(
                                                 'occupation',
                                                 occupation,

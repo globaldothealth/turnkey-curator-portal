@@ -29,7 +29,7 @@ import Transmission from './new-case-form-fields/Transmission';
 import TravelHistory from './new-case-form-fields/TravelHistory';
 import Vaccines from './new-case-form-fields/Vaccines';
 import { hasKey } from './Utils';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { Day0Case, Day0CaseFormValues } from '../api/models/Day0Case';
@@ -284,9 +284,10 @@ const NewCaseValidation = Yup.object().shape(
                 .when('demographics.maxAge', {
                     is: (maxAge: number | string) =>
                         maxAge !== undefined && maxAge !== '',
-                    then: Yup.number().required(
-                        'Min age required in range. Minimum value is 0.',
-                    ),
+                    then: () =>
+                        Yup.number().required(
+                            'Min age required in range. Minimum value is 0.',
+                        ),
                 }),
             maxAge: Yup.number()
                 .min(0, 'Age must be between 0 and 120')
@@ -294,14 +295,15 @@ const NewCaseValidation = Yup.object().shape(
                 .when('demographics.minAge', {
                     is: (minAge: number | string) =>
                         minAge !== undefined && minAge !== '',
-                    then: Yup.number()
-                        .min(
-                            Yup.ref('demographics.minAge'),
-                            'Max age must be greater than than min age',
-                        )
-                        .required(
-                            'Max age required in range. Maximum value is 120.',
-                        ),
+                    then: () =>
+                        Yup.number()
+                            .min(
+                                Yup.ref('demographics.minAge'),
+                                'Max age must be greater than than min age',
+                            )
+                            .required(
+                                'Max age required in range. Maximum value is 120.',
+                            ),
                 }),
             age: Yup.number()
                 .min(0, 'Age must be between 0 and 120')
@@ -309,18 +311,20 @@ const NewCaseValidation = Yup.object().shape(
                 .when('demographics.minAge', {
                     is: (minAge: number | string) =>
                         minAge !== undefined && minAge !== '',
-                    then: Yup.number().oneOf(
-                        [undefined],
-                        'Cannot enter age and age range',
-                    ),
+                    then: () =>
+                        Yup.number().oneOf(
+                            [undefined],
+                            'Cannot enter age and age range',
+                        ),
                 })
                 .when('demographics.maxAge', {
                     is: (maxAge: number | string) =>
                         maxAge !== undefined && maxAge !== '',
-                    then: Yup.number().oneOf(
-                        [undefined],
-                        'Cannot enter age and age range',
-                    ),
+                    then: () =>
+                        Yup.number().oneOf(
+                            [undefined],
+                            'Cannot enter age and age range',
+                        ),
                 }),
         }),
         numCases: Yup.number()
@@ -349,7 +353,7 @@ export default function CaseForm(props: Props): JSX.Element {
     const { initialCase } = props;
     const theme = useTheme();
     const showTableOfContents = useMediaQuery(theme.breakpoints.up('sm'));
-    const history = useHistory();
+    const navigate = useNavigate();
     const [errorMessage, setErrorMessage] = React.useState('');
     const diseaseName = useAppSelector(selectDiseaseName);
 
@@ -521,8 +525,7 @@ export default function CaseForm(props: Props): JSX.Element {
             return;
         }
         // Navigate to cases after successful submit
-        history.push({
-            pathname: '/cases',
+        navigate('/cases', {
             state: {
                 newCaseIds: newCaseIds,
                 editedCaseIds: props.initialCase?._id

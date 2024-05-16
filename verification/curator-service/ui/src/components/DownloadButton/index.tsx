@@ -249,7 +249,7 @@ export function DownloadButton(): JSX.Element {
 
                     <Typography variant="body2">
                         <a
-                            href={process.env.REACT_APP_DATA_DICTIONARY_LINK}
+                            href={import.meta.env.VITE_APP_DATA_DICTIONARY_LINK}
                             target="_blank"
                             rel="noreferrer"
                         >

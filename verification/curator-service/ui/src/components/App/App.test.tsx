@@ -1,5 +1,6 @@
 import App from '.';
 import axios from 'axios';
+import { vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { render, fireEvent, screen, waitFor, within } from '../util/test-utils';
 import { initialLoggedInState } from '../../redux/store';
@@ -7,18 +8,25 @@ import { MapLink } from '../../constants/types';
 import validateEnv from '../../util/validate-env';
 import { Role } from '../../api/models/User';
 
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
 const mockedDataDictionaryLink = 'https://global.health/data-dictionary';
+
 const env = validateEnv();
 
-beforeEach(() => {
-    jest.clearAllMocks();
+beforeAll(() => {
+    vi.mock('axios');
 });
 
-beforeAll(() => {
-    process.env.REACT_APP_DATA_DICTIONARY_LINK = mockedDataDictionaryLink;
+afterAll(() => {
+    vi.clearAllMocks();
 });
+
+beforeEach(() => {
+    vi.clearAllMocks();
+});
+
+// beforeAll(() => {
+//     process.env.VITE_APP_DATA_DICTIONARY_LINK = mockedDataDictionaryLink;
+// });
 
 describe('<App />', () => {
     it('renders without crashing when logged in', async () => {
@@ -35,13 +43,13 @@ describe('<App />', () => {
             config: {},
             headers: {},
         };
-        mockedAxios.get.mockImplementation((url) => {
+        axios.get.mockImplementation((url) => {
             if (url === '/version') {
                 return Promise.resolve({ status: 200, data: '1.10.1' });
             } else if (url === '/diseaseName') {
                 return Promise.resolve({
                     status: 200,
-                    data: env.REACT_APP_DISEASE_NAME,
+                    data: env.VITE_APP_DISEASE_NAME,
                 });
             } else if (url.includes('/api/cases')) {
                 return Promise.resolve({
@@ -54,11 +62,11 @@ describe('<App />', () => {
         });
 
         render(<App />, { initialState: initialLoggedInState });
-        expect(mockedAxios.get).toHaveBeenCalledTimes(6);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/auth/profile');
-        expect(mockedAxios.get).toHaveBeenCalledWith('/version');
-        expect(mockedAxios.get).toHaveBeenCalledWith('/env');
-        expect(mockedAxios.get).toHaveBeenCalledWith('/diseaseName');
+        expect(axios.get).toHaveBeenCalledTimes(6);
+        expect(axios.get).toHaveBeenCalledWith('/auth/profile');
+        expect(axios.get).toHaveBeenCalledWith('/version');
+        expect(axios.get).toHaveBeenCalledWith('/env');
+        expect(axios.get).toHaveBeenCalledWith('/diseaseName');
         expect(await screen.findByTestId('profile-menu')).toBeInTheDocument();
     });
 
@@ -69,24 +77,24 @@ describe('<App />', () => {
             config: {},
             headers: {},
         };
-        mockedAxios.get.mockImplementation((url) => {
+        axios.get.mockImplementation((url) => {
             if (url === '/version') {
                 return Promise.resolve({ status: 200, data: '1.10.1' });
             } else if (url === '/diseaseName') {
                 return Promise.resolve({
                     status: 200,
-                    data: env.REACT_APP_DISEASE_NAME,
+                    data: env.VITE_APP_DISEASE_NAME,
                 });
             } else {
                 return Promise.resolve(axiosResponse);
             }
         });
         render(<App />);
-        expect(mockedAxios.get).toHaveBeenCalledTimes(5);
-        expect(mockedAxios.get).toHaveBeenCalledWith('/auth/profile');
-        expect(mockedAxios.get).toHaveBeenCalledWith('/version');
-        expect(mockedAxios.get).toHaveBeenCalledWith('/env');
-        expect(mockedAxios.get).toHaveBeenCalledWith('/diseaseName');
+        expect(axios.get).toHaveBeenCalledTimes(4);
+        expect(axios.get).toHaveBeenCalledWith('/auth/profile');
+        expect(axios.get).toHaveBeenCalledWith('/version');
+        expect(axios.get).toHaveBeenCalledWith('/env');
+        expect(axios.get).toHaveBeenCalledWith('/diseaseName');
         expect(screen.queryByTestId('profile-menu')).not.toBeInTheDocument();
     });
 
@@ -104,7 +112,7 @@ describe('<App />', () => {
             config: {},
             headers: {},
         };
-        mockedAxios.get.mockImplementation((url) => {
+        axios.get.mockImplementation((url) => {
             if (url === '/env') {
                 return Promise.resolve({ status: 200, data: 'local' });
             } else if (url === '/version') {
@@ -112,7 +120,7 @@ describe('<App />', () => {
             } else if (url === '/diseaseName') {
                 return Promise.resolve({
                     status: 200,
-                    data: env.REACT_APP_DISEASE_NAME,
+                    data: env.VITE_APP_DISEASE_NAME,
                 });
             } else if (url.includes('/api/cases')) {
                 return Promise.resolve({
@@ -159,13 +167,13 @@ describe('<App />', () => {
             config: {},
             headers: {},
         };
-        mockedAxios.get.mockImplementation((url) => {
+        axios.get.mockImplementation((url) => {
             if (url === '/version') {
                 return Promise.resolve({ status: 200, data: '1.10.1' });
             } else if (url === '/diseaseName') {
                 return Promise.resolve({
                     status: 200,
-                    data: env.REACT_APP_DISEASE_NAME,
+                    data: env.VITE_APP_DISEASE_NAME,
                 });
             } else if (url.includes('/api/cases')) {
                 return Promise.resolve({
@@ -219,13 +227,13 @@ describe('<App />', () => {
             config: {},
             headers: {},
         };
-        mockedAxios.get.mockImplementation((url) => {
+        axios.get.mockImplementation((url) => {
             if (url === '/version') {
                 return Promise.resolve({ status: 200, data: '1.10.1' });
             } else if (url === '/diseaseName') {
                 return Promise.resolve({
                     status: 200,
-                    data: env.REACT_APP_DISEASE_NAME,
+                    data: env.VITE_APP_DISEASE_NAME,
                 });
             } else if (url.includes('/api/cases')) {
                 return Promise.resolve({
@@ -264,13 +272,13 @@ describe('Download dataset', () => {
             config: {},
             headers: {},
         };
-        mockedAxios.get.mockImplementation((url) => {
+        axios.get.mockImplementation((url) => {
             if (url === '/version') {
                 return Promise.resolve({ status: 200, data: '1.10.1' });
             } else if (url === '/diseaseName') {
                 return Promise.resolve({
                     status: 200,
-                    data: env.REACT_APP_DISEASE_NAME,
+                    data: env.VITE_APP_DISEASE_NAME,
                 });
             } else if (url.includes('/api/cases')) {
                 return Promise.resolve({

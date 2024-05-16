@@ -7,11 +7,10 @@ import {
     FormControl,
     FormHelperText,
     MenuItem,
-    TextField as MuiTextField,
 } from '@mui/material';
 import { createFilterOptions } from '@mui/material/Autocomplete';
 import { makeStyles } from 'tss-react/mui';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import React, { BaseSyntheticEvent } from 'react';
@@ -121,10 +120,10 @@ export function FormikAutocomplete(
                 return filtered;
             }}
             loading={loading}
-            onChange={(_, values): void =>
+            onChange={(_, values) =>
                 setFieldValue(props.name, values ?? undefined)
             }
-            onBlur={(): void => setTouched({ [props.name]: true })}
+            onBlur={() => setTouched({ [props.name]: true })}
             defaultValue={props.initialValue}
             renderInput={(params): JSX.Element => (
                 // Do not use FastField here
@@ -196,7 +195,8 @@ interface DateFieldProps {
 export function DateField(props: DateFieldProps): JSX.Element {
     const { classes } = useStyles();
 
-    const dateValue = props.value || 'yyyy/MM/dd';
+    const dateValue =
+        typeof props.value === 'string' ? new Date(props.value) : props.value;
 
     return (
         <div className={classes.fieldRow}>
@@ -205,22 +205,19 @@ export function DateField(props: DateFieldProps): JSX.Element {
                     className={classes.field}
                     data-testid={props.name}
                     label={props.label}
-                    inputFormat="yyyy/MM/dd"
-                    mask="____/__/__"
+                    format="yyyy/MM/dd"
                     minDate={new Date('2019/12/01')}
                     disableFuture
                     value={dateValue}
+                    name={props.name}
                     onChange={props.onChange}
-                    renderInput={(params) => (
-                        <MuiTextField
-                            {...params}
-                            name={props.name}
-                            fullWidth
-                            // Non formik component needs different error handling
-                            error={!!props.errorMessage}
-                            helperText={props.errorMessage}
-                        />
-                    )}
+                    slotProps={{
+                        textField: {
+                            name: props.name,
+                            error: !!props.errorMessage,
+                            helperText: props.errorMessage,
+                        },
+                    }}
                 />
             </LocalizationProvider>
             {props.required && <RequiredHelperText name={props.name} />}

@@ -31,11 +31,6 @@ import { getReleaseNotesUrl } from '../util/helperFunctions';
 import { getDiseaseName } from '../../redux/app/thunk';
 import ReCAPTCHA from 'react-google-recaptcha';
 
-interface UrlParams {
-    token?: string;
-    id?: string;
-}
-
 interface StylesProps {
     smallHeight: boolean;
 }
@@ -160,7 +155,7 @@ const MoreInformationLinks = ({
                 </div>
                 <div className={classes.link}>
                     <a
-                        href={process.env.REACT_APP_DATA_DICTIONARY_LINK}
+                        href={import.meta.env.VITE_APP_DATA_DICTIONARY_LINK}
                         rel="noopener noreferrer"
                         target="_blank"
                     >
@@ -203,8 +198,8 @@ const MoreInformationLinks = ({
 
 const RECAPTCHA_SITE_KEY = window.Cypress
     ? '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
-    : ((process.env.RECAPTCHA_SITE_KEY ||
-          process.env.REACT_APP_RECAPTCHA_SITE_KEY) as string);
+    : ((import.meta.env.RECAPTCHA_SITE_KEY ||
+          import.meta.env.VITE_APP_RECAPTCHA_SITE_KEY) as string);
 
 const LandingPage = (): JSX.Element => {
     const dispatch = useAppDispatch();
@@ -225,7 +220,7 @@ const LandingPage = (): JSX.Element => {
     const env = useAppSelector(selectEnv);
 
     // Url parameters from reset password link
-    const { token, id } = useParams<UrlParams>();
+    const { token, id } = useParams();
 
     useEffect(() => {
         if (!token || !id) {

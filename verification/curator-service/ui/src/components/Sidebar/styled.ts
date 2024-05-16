@@ -21,6 +21,7 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         backgroundColor: '#ECF3F0',
         border: 'none',
         width: theme.drawerWidth,
+        marginTop: '64px',
     },
     drawerContents: {
         display: 'flex',

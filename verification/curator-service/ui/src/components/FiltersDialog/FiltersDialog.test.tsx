@@ -4,23 +4,30 @@ import App from '../App';
 import { format } from 'date-fns';
 import { initialLoggedInState } from '../../redux/store';
 import axios from 'axios';
+import { vi } from 'vitest';
 import validateEnv from '../../util/validate-env';
 import { Role } from '../../api/models/User';
 
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
 const env = validateEnv();
+
+beforeAll(() => {
+    vi.mock('axios');
+});
+
+afterAll(() => {
+    vi.clearAllMocks();
+});
 
 beforeEach(() => {
     jest.clearAllMocks();
 
-    mockedAxios.get.mockImplementation((url) => {
+    axios.get.mockImplementation((url) => {
         if (url === '/version') {
             return Promise.resolve({ status: 200, data: '1.10.1' });
         } else if (url === '/diseaseName') {
             return Promise.resolve({
                 status: 200,
-                data: env.REACT_APP_DISEASE_NAME,
+                data: env.VITE_APP_DISEASE_NAME,
             });
         } else if (url.includes('/api/cases')) {
             return Promise.resolve({

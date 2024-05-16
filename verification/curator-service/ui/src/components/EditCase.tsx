@@ -3,15 +3,16 @@ import CaseForm from './CaseForm';
 import { LinearProgress } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 import { Day0Case } from '../api/models/Day0Case';
 
 interface Props {
-    id: string;
     onModalClose: () => void;
     diseaseName: string;
 }
 
 export default function EditCase(props: Props): JSX.Element {
+    const { id } = useParams();
     const [c, setCase] = useState<Day0Case>();
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>();
@@ -19,7 +20,7 @@ export default function EditCase(props: Props): JSX.Element {
     useEffect(() => {
         setLoading(true);
         axios
-            .get<Day0Case[]>(`/api/cases/${props.id}`)
+            .get<Day0Case[]>(`/api/cases/${id}`)
             .then((resp) => {
                 setCase(resp.data[0]);
                 setErrorMessage(undefined);
@@ -29,7 +30,7 @@ export default function EditCase(props: Props): JSX.Element {
                 setErrorMessage(e.response?.data?.message || e.toString());
             })
             .finally(() => setLoading(false));
-    }, [props.id]);
+    }, [id]);
 
     return (
         <div>

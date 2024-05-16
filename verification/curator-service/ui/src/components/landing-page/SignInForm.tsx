@@ -222,7 +222,7 @@ export default function SignInForm({
                             disabled={disabled}
                             onClick={() => {
                                 window.location.href = `${
-                                    process.env.REACT_APP_LOGIN_URL ?? ''
+                                    import.meta.env.VITE_APP_LOGIN_URL ?? ''
                                 }`;
                             }}
                         />

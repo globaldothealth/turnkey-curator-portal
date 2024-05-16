@@ -202,7 +202,7 @@ export function PlacesAutocomplete(
                 setValue(newValue);
                 setFieldValue(props.name, newValue);
             }}
-            onBlur={(): void => setTouched({ [props.name]: true })}
+            onBlur={() => setTouched({ [props.name]: true })}
             onInputChange={(_, newInputValue): void => {
                 setInputValue(newInputValue);
             }}

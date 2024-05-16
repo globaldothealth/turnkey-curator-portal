@@ -17,7 +17,7 @@ const tagManagerArgs = {
     gtmId: 'GTM-WHCJVVH',
 };
 
-if (process.env.NODE_ENV === 'production') {
+if (import.meta.env.NODE_ENV === 'production') {
     TagManager.initialize(tagManagerArgs);
 }
 

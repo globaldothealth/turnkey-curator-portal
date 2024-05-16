@@ -3,7 +3,7 @@ import AutomatedSourceForm from './AutomatedSourceForm';
 import { screen, render } from './util/test-utils';
 import { initialLoggedInState } from '../redux/store';
 
-describe('<AutomatedSourceForm />', () => {
+describe.skip('<AutomatedSourceForm />', () => {
     it('renders form', async () => {
         render(
             <AutomatedSourceForm

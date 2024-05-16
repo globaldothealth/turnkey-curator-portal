@@ -1,14 +1,14 @@
 import { useTheme, Theme } from '@mui/material/styles';
 
-const POLICY_ID = process.env.REACT_APP_POLICY_PUBLIC_ID;
-const SITE_ID = process.env.REACT_APP_COOKIE_CONSENT_PUBLIC_ID;
+const POLICY_ID = import.meta.env.VITE_APP_POLICY_PUBLIC_ID;
+const SITE_ID = import.meta.env.VITE_APP_COOKIE_CONSENT_PUBLIC_ID;
 
 interface CookieInitialiser {
     initCookieBanner: () => void;
 }
 
 const useCookieBanner: () => CookieInitialiser = () => {
-    const env = process.env.NODE_ENV;
+    const env = import.meta.env.NODE_ENV;
 
     const theme = useTheme<Theme>();
     const configuration = {
