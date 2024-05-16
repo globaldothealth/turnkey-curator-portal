@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e467a2cf-1d8d-4d50-9e0f-afe8b6e8f416" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/components/landing-page/ChangePassword.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../data-serving/data-service/src/controllers/case.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../../../data-serving/data-service/src/controllers/case.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../data-serving/scripts/setup-db/migrations/20210902121948-initial.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../../data-serving/scripts/setup-db/migrations/20210902121948-initial.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../data-serving/scripts/setup-db/migrations/20210922082905-additional-case-indexes.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../../data-serving/scripts/setup-db/migrations/20210922082905-additional-case-indexes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../data-serving/scripts/setup-db/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../../data-serving/scripts/setup-db/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../data-serving/scripts/setup-db/schemas/day0cases.indexes.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../../data-serving/scripts/setup-db/schemas/day0cases.indexes.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../data-serving/scripts/setup-db/schemas/day0cases.schema.json" beforeDir="false" afterPath="$PROJECT_DIR$/../../../data-serving/scripts/setup-db/schemas/day0cases.schema.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../dev/docker-compose.dev.full.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../../../dev/docker-compose.dev.full.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../dev/docker-compose.dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../../../dev/docker-compose.dev.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../../dev/run_stack.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../../../dev/run_stack.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/../Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cypress/e2e/components/AppTest.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/cypress/e2e/components/AppTest.spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/App/App.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/App/App.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/AutomatedBackfill.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/AutomatedBackfill.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/AutomatedSourceForm.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/AutomatedSourceForm.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/AutomatedSourceForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/AutomatedSourceForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/DataGuideDialog.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/DataGuideDialog.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/DownloadButton/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/DownloadButton/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/EditCase.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/EditCase.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/FiltersDialog/FiltersDialog.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/FiltersDialog/FiltersDialog.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Footer/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Footer/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/LinelistTable/styled.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/LinelistTable/styled.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Profile.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Profile.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Sidebar/styled.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Sidebar/styled.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/SourceTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/SourceTable.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/Users.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/Users.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/VerificationStatusIndicator.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/VerificationStatusIndicator.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/VerificationStatusIndicator.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/VerificationStatusIndicator.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ViewCase.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ViewCase.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/common-form-fields/Source.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/common-form-fields/Source.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/landing-page/LandingPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/landing-page/LandingPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/new-case-form-fields/Location.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/new-case-form-fields/Location.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/new-case-form-fields/Location.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/new-case-form-fields/Location.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/redux/store.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/redux/store.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/vite.config.ts" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 2
+}</component>
+  <component name="ProjectId" id="2fDekHFLvv5egJHGOKcHhtzbwc2" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.standard": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.standard": "",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "settings.javascript.linters.eslint",
+    "ts.external.directory.path": "/Users/stz/Documents/GitHub/turnkey-curator-portal/verification/curator-service/ui/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="ReactDesignerToolWindowState">
+    <option name="myId2Visible">
+      <map>
+        <entry key="com.haulmont.rcb.reactComponents" value="false" />
+        <entry key="com.haulmont.rcb.reactInspector" value="false" />
+      </map>
+    </option>
+  </component>
+  <component name="RunManager" selected="Vitest.displays spinner and status post backfill">
+    <configuration name="&lt;Profile /&gt;.checks if the old password is right" type="JavaScriptTestRunnerVitest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <vitest-package value="$PROJECT_DIR$/node_modules/vitest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <vitest-options value="--run" />
+      <envs />
+      <scope-kind value="TEST" />
+      <test-file value="$PROJECT_DIR$/src/components/Profile.test.tsx" />
+      <test-names>
+        <test-name value="&lt;Profile /&gt;" />
+        <test-name value="checks if the old password is right" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="&lt;Profile /&gt;.resets the API key on request" type="JavaScriptTestRunnerVitest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <vitest-package value="$PROJECT_DIR$/node_modules/vitest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <vitest-options value="--run" />
+      <envs />
+      <scope-kind value="TEST" />
+      <test-file value="$PROJECT_DIR$/src/components/Profile.test.tsx" />
+      <test-names>
+        <test-name value="&lt;Profile /&gt;" />
+        <test-name value="resets the API key on request" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="&lt;Users /&gt;.lists users" type="JavaScriptTestRunnerVitest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <vitest-package value="$PROJECT_DIR$/node_modules/vitest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <vitest-options value="--run" />
+      <envs />
+      <scope-kind value="TEST" />
+      <test-file value="$PROJECT_DIR$/src/components/Users.test.tsx" />
+      <test-names>
+        <test-name value="&lt;Users /&gt;" />
+        <test-name value="lists users" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="&lt;Users /&gt;.updates roles on selection" type="JavaScriptTestRunnerVitest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <vitest-package value="$PROJECT_DIR$/node_modules/vitest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <vitest-options value="--run" />
+      <envs />
+      <scope-kind value="TEST" />
+      <test-file value="$PROJECT_DIR$/src/components/Users.test.tsx" />
+      <test-names>
+        <test-name value="&lt;Users /&gt;" />
+        <test-name value="updates roles on selection" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="displays spinner and status post backfill" type="JavaScriptTestRunnerVitest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <vitest-package value="$PROJECT_DIR$/node_modules/vitest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <vitest-options value="--run" />
+      <envs />
+      <scope-kind value="TEST" />
+      <test-file value="$PROJECT_DIR$/src/components/AutomatedBackfill.test.tsx" />
+      <test-names>
+        <test-name value="displays spinner and status post backfill" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Vitest.&lt;Profile /&gt;.checks if the old password is right" />
+      <item itemvalue="Vitest.&lt;Profile /&gt;.resets the API key on request" />
+      <item itemvalue="Vitest.&lt;Users /&gt;.lists users" />
+      <item itemvalue="Vitest.&lt;Users /&gt;.updates roles on selection" />
+      <item itemvalue="Vitest.displays spinner and status post backfill" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Vitest.displays spinner and status post backfill" />
+        <item itemvalue="Vitest.&lt;Profile /&gt;.checks if the old password is right" />
+        <item itemvalue="Vitest.&lt;Profile /&gt;.resets the API key on request" />
+        <item itemvalue="Vitest.&lt;Users /&gt;.updates roles on selection" />
+        <item itemvalue="Vitest.&lt;Users /&gt;.lists users" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e467a2cf-1d8d-4d50-9e0f-afe8b6e8f416" name="Changes" comment="" />
+      <created>1713340216703</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1713340216703</updated>
+      <workItem from="1713340218069" duration="11289000" />
+      <workItem from="1713795412728" duration="34817000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

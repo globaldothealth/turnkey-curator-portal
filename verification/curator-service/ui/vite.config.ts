@@ -6,6 +6,9 @@ export default defineConfig({
     // depending on your application, base can also be "/"
     base: '',
     plugins: [react(), viteTsconfigPaths()],
+    build: {
+        outDir: './build'
+    },
     test: {
         globals: true,
         environment: 'jsdom',
