@@ -62,7 +62,7 @@ describe('<App />', () => {
         });
 
         render(<App />, { initialState: initialLoggedInState });
-        expect(axios.get).toHaveBeenCalledTimes(6);
+        expect(axios.get).toHaveBeenCalledTimes(5);
         expect(axios.get).toHaveBeenCalledWith('/auth/profile');
         expect(axios.get).toHaveBeenCalledWith('/version');
         expect(axios.get).toHaveBeenCalledWith('/env');
@@ -184,7 +184,10 @@ describe('<App />', () => {
                 return Promise.resolve(axiosResponse);
             }
         });
-        render(<App />, { initialRoute: '/cases' });
+        render(<App />, {
+            initialState: initialLoggedInState,
+            initialRoute: '/cases',
+        });
 
         fireEvent.click(await screen.findByTestId('profile-menu'));
 

@@ -180,13 +180,14 @@ function ProfileMenu(props: { user: User; version: string }): JSX.Element {
                 onClose={handleClose}
                 data-testid="profile-menu-dropdown"
             >
-                <Link
+                <MenuItem
+                    component={Link}
                     to="/profile"
                     onClick={handleClose}
                     className={classes.link}
                 >
-                    <MenuItem>Profile</MenuItem>
-                </Link>
+                    Profile
+                </MenuItem>
 
                 <MenuItem
                     onClick={() => {

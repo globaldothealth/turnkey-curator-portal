@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, waitFor } from './util/test-utils';
+import { act } from 'react-dom/test-utils';
 import userEvent from '@testing-library/user-event';
 import Profile from './Profile';
 import { RootState, initialLoggedInState } from '../redux/store';
@@ -75,7 +76,11 @@ describe('<Profile />', () => {
             }),
         );
         render(<Profile />, { initialState: initialLoggedInState });
-        userEvent.click(screen.getByRole('button', { name: 'Reset API Key' }));
+        await act(async () => {
+            userEvent.click(
+                screen.getByRole('button', { name: 'Reset API Key' }),
+            );
+        });
         await waitFor(
             () => {
                 expect(
@@ -106,16 +111,21 @@ describe('<Profile />', () => {
         );
         render(<Profile />, { initialState: noUserInfoState });
 
-        await user.type(screen.getByLabelText('Old Password'), '1234567');
-        await user.type(screen.getByLabelText('New password'), 'asdD?234df');
-        await user.type(
-            screen.getByLabelText('Repeat new password'),
-            'asdD?234df',
-        );
+        await act(async () => {
+            await user.type(screen.getByLabelText('Old Password'), '1234567');
+            await user.type(
+                screen.getByLabelText('New password'),
+                'asdD?234df',
+            );
+            await user.type(
+                screen.getByLabelText('Repeat new password'),
+                'asdD?234df',
+            );
 
-        await user.click(
-            screen.getByRole('button', { name: 'Change password' }),
-        );
+            await user.click(
+                screen.getByRole('button', { name: 'Change password' }),
+            );
+        });
 
         expect(
             await screen.findByText(/Old password is incorrect/i),
@@ -136,16 +146,21 @@ describe('<Profile />', () => {
 
         render(<Profile />, { initialState: noUserInfoState });
 
-        await user.type(screen.getByLabelText('Old Password'), '1234567');
-        await user.type(screen.getByLabelText('New password'), 'asdD?234df');
-        await user.type(
-            screen.getByLabelText('Repeat new password'),
-            'asdD?234df',
-        );
+        await act(async () => {
+            await user.type(screen.getByLabelText('Old Password'), '1234567');
+            await user.type(
+                screen.getByLabelText('New password'),
+                'asdD?234df',
+            );
+            await user.type(
+                screen.getByLabelText('Repeat new password'),
+                'asdD?234df',
+            );
 
-        await user.click(
-            screen.getByRole('button', { name: 'Change password' }),
-        );
+            await user.click(
+                screen.getByRole('button', { name: 'Change password' }),
+            );
+        });
 
         expect(
             await screen.findByText(/Password changed successfully/i),

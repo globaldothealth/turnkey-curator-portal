@@ -94,7 +94,7 @@ export default function Source(props: SourceProps) {
                 name={`caseReference.isGovernmentSource`}
                 component={CheckboxWithLabel}
                 type="checkbox"
-                helperText="Whether cases from this source can appear in the line list"
+                // helperText="Whether cases from this source can appear in the line list"
                 required
                 data-testid="isGovernmentSource"
                 Label={{
@@ -156,7 +156,7 @@ export default function Source(props: SourceProps) {
                                                         CheckboxWithLabel
                                                     }
                                                     type="checkbox"
-                                                    helperText="Whether cases from this source can appear in the line list"
+                                                    // helperText="Whether cases from this source can appear in the line list"
                                                     required
                                                     data-testid="governmentSource"
                                                     Label={{

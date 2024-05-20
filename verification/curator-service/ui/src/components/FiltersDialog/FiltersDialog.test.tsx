@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import { initialLoggedInState } from '../../redux/store';
 import axios from 'axios';
 import { vi } from 'vitest';
+import { act } from 'react-dom/test-utils';
 import validateEnv from '../../util/validate-env';
 import { Role } from '../../api/models/User';
 
@@ -63,7 +64,9 @@ describe('<FiltersDialog />', () => {
             initialRoute: '/cases',
         });
 
-        await user.click(screen.getByRole('button', { name: /FILTER/i }));
+        await act(async () => {
+            await user.click(screen.getByRole('button', { name: /FILTER/i }));
+        });
 
         expect(await screen.findByText(/Apply filters/i)).toBeInTheDocument();
     });
@@ -76,7 +79,9 @@ describe('<FiltersDialog />', () => {
             initialRoute: '/cases',
         });
 
-        await user.click(screen.getByRole('button', { name: /FILTER/i }));
+        await act(async () => {
+            await user.click(screen.getByRole('button', { name: /FILTER/i }));
+        });
 
         expect(await screen.findByText(/Apply filters/i)).toBeInTheDocument();
 
@@ -88,10 +93,12 @@ describe('<FiltersDialog />', () => {
         const toDateInput = screen.getByLabelText(/Date confirmed to/i);
         const fromDateInput = screen.getByLabelText(/Date confirmed from/i);
 
-        await user.type(toDateInput, futureDate);
-        await user.type(fromDateInput, futureDate);
+        await act(async () => {
+            await user.type(toDateInput, futureDate);
+            await user.type(fromDateInput, futureDate);
 
-        await user.click(screen.getByRole('button', { name: 'Apply' }));
+            await user.click(screen.getByRole('button', { name: 'Apply' }));
+        });
 
         // Check if the modal is still open
         expect(await screen.findByText(/Apply filters/i)).toBeInTheDocument();

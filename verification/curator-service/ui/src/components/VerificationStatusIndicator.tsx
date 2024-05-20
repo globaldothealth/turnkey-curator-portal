@@ -1,9 +1,9 @@
 import React from 'react';
 import { Tooltip } from '@mui/material';
 
-import { ReactComponent as UnverifiedIcon } from './assets/unverified_icon.svg';
-import { ReactComponent as VerifiedIcon } from './assets/verified_icon.svg';
-import { ReactComponent as ExcludedIcon } from './assets/excluded_icon.svg';
+import UnverifiedIcon from './assets/unverified_icon.svg';
+import VerifiedIcon from './assets/verified_icon.svg';
+import ExcludedIcon from './assets/excluded_icon.svg';
 import { VerificationStatus } from '../api/models/Case';
 import renderDate from './util/date';
 
@@ -20,7 +20,13 @@ export default function VerificationStatusIndicator(props: Props): JSX.Element {
     let iconElement;
     if (props.status === VerificationStatus.Verified) {
         helpText = 'Verified';
-        iconElement = <VerifiedIcon data-testid="verified-svg" />;
+        iconElement = (
+            <img
+                src={VerifiedIcon}
+                alt="Verified Icon"
+                data-testid="verified-svg"
+            />
+        );
     } else if (props.status === VerificationStatus.Excluded) {
         if (props.exclusionData) {
             const { date, note } = props.exclusionData;
@@ -29,10 +35,22 @@ export default function VerificationStatusIndicator(props: Props): JSX.Element {
             helpText = 'Excluded';
         }
 
-        iconElement = <ExcludedIcon data-testid="excluded-svg" />;
+        iconElement = (
+            <img
+                src={ExcludedIcon}
+                alt="Exclude Icon"
+                data-testid="excluded-svg"
+            />
+        );
     } else {
         helpText = 'Unverified';
-        iconElement = <UnverifiedIcon data-testid="unverified-svg" />;
+        iconElement = (
+            <img
+                src={UnverifiedIcon}
+                alt="Unverified Icon"
+                data-testid="unverified-svg"
+            />
+        );
     }
 
     return (

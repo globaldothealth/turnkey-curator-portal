@@ -162,24 +162,24 @@ const Sidebar = ({ drawerOpen }: SidebarProps): JSX.Element => {
                             <MenuItem>New bulk upload</MenuItem>
                         </Link>
                         {hasAnyRole(user, [Role.Curator]) && (
-                            <>
-                                <Link
-                                    to="/sources/automated"
-                                    onClick={closeCreateNewPopup}
-                                    className={classes.link}
-                                >
-                                    <MenuItem>New automated source</MenuItem>
-                                </Link>
-                                <Link
-                                    to="/sources/backfill"
-                                    onClick={closeCreateNewPopup}
-                                    className={classes.link}
-                                >
-                                    <MenuItem>
-                                        New automated source backfill
-                                    </MenuItem>
-                                </Link>
-                            </>
+                            <Link
+                                to="/sources/automated"
+                                onClick={closeCreateNewPopup}
+                                className={classes.link}
+                            >
+                                <MenuItem>New automated source</MenuItem>
+                            </Link>
+                        )}
+                        {hasAnyRole(user, [Role.Curator]) && (
+                            <Link
+                                to="/sources/backfill"
+                                onClick={closeCreateNewPopup}
+                                className={classes.link}
+                            >
+                                <MenuItem>
+                                    New automated source backfill
+                                </MenuItem>
+                            </Link>
                         )}
                     </Menu>
                 </>

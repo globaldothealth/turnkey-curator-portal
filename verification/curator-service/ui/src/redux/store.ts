@@ -68,11 +68,11 @@ export const initialLoggedInState: RootState = {
     linelist: {
         isLoading: false,
         cases: [],
-        currentPage: 1,
+        currentPage: 0,
         nextPage: 1,
         rowsPerPage: 50,
         sort: {
-            value: SortBy.ConfirmationDate,
+            value: SortBy.Identifier,
             order: SortByOrder.Descending,
         },
         searchQuery: '',

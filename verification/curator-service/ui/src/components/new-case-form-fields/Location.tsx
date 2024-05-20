@@ -786,7 +786,7 @@ export default function Location(): JSX.Element {
                         type="number"
                         // Workaround for formik + MUI issue
                         InputLabelProps={{
-                            shrink: values.location.geometry?.latitude,
+                            shrink: !!values.location.geometry?.latitude,
                         }}
                         component={TextField}
                         sx={{ minWidth: '13rem' }}
@@ -801,7 +801,7 @@ export default function Location(): JSX.Element {
                         type="number"
                         // Workaround for formik + MUI issue
                         InputLabelProps={{
-                            shrink: values.location.geometry?.longitude,
+                            shrink: !!values.location.geometry?.longitude,
                         }}
                         component={TextField}
                         sx={{ minWidth: '13rem' }}

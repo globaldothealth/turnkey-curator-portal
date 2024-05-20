@@ -8,7 +8,6 @@ import {
     MenuItem,
     Paper,
     Switch,
-    TablePagination,
     TextField,
     Theme,
     Typography,
@@ -227,511 +226,449 @@ class SourceTable extends React.Component<Props, SourceTableState> {
     render(): JSX.Element {
         const { classes } = this.props;
         return (
-            <div>
-                <Paper className={classes?.sourcesSection}>
-                    {this.state.error && (
-                        <MuiAlert
-                            classes={{ root: classes?.alert }}
-                            variant="filled"
-                            severity="error"
-                        >
-                            {this.state.error}
-                        </MuiAlert>
-                    )}
-                    <MaterialTable
-                        tableRef={this.tableRef}
-                        columns={[
-                            { title: 'ID', field: '_id', editable: 'never' },
-                            {
-                                title: 'Name',
-                                field: 'name',
-                                editComponent: (props): JSX.Element => (
-                                    <TextField
-                                        type="text"
-                                        size="small"
-                                        fullWidth
-                                        placeholder="Name"
-                                        error={
-                                            !this.validateRequired(props.value)
-                                        }
-                                        helperText={
-                                            this.validateRequired(props.value)
-                                                ? ''
-                                                : 'Required field'
-                                        }
-                                        onChange={(event): void =>
-                                            props.onChange(event.target.value)
-                                        }
-                                        defaultValue={props.value}
-                                    />
+            <Paper className={classes?.sourcesSection}>
+                {this.state.error && (
+                    <MuiAlert
+                        classes={{ root: classes?.alert }}
+                        variant="filled"
+                        severity="error"
+                    >
+                        {this.state.error}
+                    </MuiAlert>
+                )}
+                <MaterialTable
+                    tableRef={this.tableRef}
+                    title={<Typography>Ingestion sources</Typography>}
+                    columns={[
+                        { title: 'ID', field: '_id', editable: 'never' },
+                        {
+                            title: 'Name',
+                            field: 'name',
+                            editComponent: (props): JSX.Element => (
+                                <TextField
+                                    type="text"
+                                    size="small"
+                                    fullWidth
+                                    placeholder="Name"
+                                    error={!this.validateRequired(props.value)}
+                                    helperText={
+                                        this.validateRequired(props.value)
+                                            ? ''
+                                            : 'Required field'
+                                    }
+                                    onChange={(event): void =>
+                                        props.onChange(event.target.value)
+                                    }
+                                    defaultValue={props.value}
+                                />
+                            ),
+                        },
+                        {
+                            title: 'Government Source',
+                            field: 'isGovernmentSource',
+                            type: 'boolean',
+                            editComponent: (props): JSX.Element => (
+                                <Checkbox
+                                    onChange={(): void =>
+                                        props.onChange(!props.value)
+                                    }
+                                    checked={props.value}
+                                />
+                            ),
+                        },
+                        {
+                            title: 'Country Codes',
+                            field: 'countryCodes',
+                            editComponent: (props): JSX.Element => (
+                                <TextField
+                                    type="text"
+                                    size="small"
+                                    fullWidth
+                                    placeholder="ISO 3166-1 alpha-2, comma separated"
+                                    error={
+                                        !this.validateCountryCodes(props.value)
+                                    }
+                                    helperText={
+                                        this.validateCountryCodes(props.value)
+                                            ? ''
+                                            : 'Required: two letter country codes'
+                                    }
+                                    onChange={(event): void =>
+                                        props.onChange(event.target.value)
+                                    }
+                                    defaultValue={props.value}
+                                />
+                            ),
+                        },
+                        {
+                            title: 'URL',
+                            field: 'url',
+                            editComponent: (props): JSX.Element => (
+                                <TextField
+                                    type="text"
+                                    size="small"
+                                    fullWidth
+                                    placeholder="URL"
+                                    error={!this.validateRequired(props.value)}
+                                    helperText={
+                                        this.validateRequired(props.value)
+                                            ? ''
+                                            : 'Required field'
+                                    }
+                                    onChange={(event): void =>
+                                        props.onChange(event.target.value)
+                                    }
+                                    defaultValue={props.value}
+                                />
+                            ),
+                        },
+                        {
+                            title: 'Format',
+                            field: 'format',
+                            editComponent: (props): JSX.Element => (
+                                <TextField
+                                    select
+                                    size="small"
+                                    fullWidth
+                                    data-testid="format-select"
+                                    placeholder="Format"
+                                    onChange={(event): void =>
+                                        props.onChange(event.target.value)
+                                    }
+                                    defaultValue={props.value || ''}
+                                >
+                                    {['', 'JSON', 'CSV', 'XLSX'].map(
+                                        (value) => (
+                                            <MenuItem
+                                                key={`format-${value}`}
+                                                value={value || ''}
+                                            >
+                                                {value || 'Unknown'}
+                                            </MenuItem>
+                                        ),
+                                    )}
+                                </TextField>
+                            ),
+                        },
+                        {
+                            title: 'License',
+                            field: 'license',
+                            tooltip: 'MIT, Apache V2, ...',
+                            editComponent: (props): JSX.Element => (
+                                <TextField
+                                    type="text"
+                                    size="small"
+                                    fullWidth
+                                    placeholder="License"
+                                    error={!this.validateRequired(props.value)}
+                                    helperText={
+                                        this.validateRequired(props.value)
+                                            ? ''
+                                            : 'Required field'
+                                    }
+                                    onChange={(event): void =>
+                                        props.onChange(event.target.value)
+                                    }
+                                    defaultValue={props.value}
+                                />
+                            ),
+                        },
+                        {
+                            title: 'Provider Name',
+                            field: 'providerName',
+                            tooltip:
+                                'Miskatonic University Department of Medecine',
+                            editComponent: (props): JSX.Element => (
+                                <TextField
+                                    type="text"
+                                    size="small"
+                                    fullWidth
+                                    placeholder="Provider Name"
+                                    error={!this.validateRequired(props.value)}
+                                    helperText={
+                                        this.validateRequired(props.value)
+                                            ? ''
+                                            : 'Required field'
+                                    }
+                                    onChange={(event): void =>
+                                        props.onChange(event.target.value)
+                                    }
+                                    defaultValue={props.value}
+                                />
+                            ),
+                        },
+                        {
+                            title: 'Provider Website',
+                            field: 'providerWebsiteUrl',
+                            tooltip: 'https://medsci.miskatonic.edu/',
+                            editComponent: (props): JSX.Element => (
+                                <TextField
+                                    type="text"
+                                    size="small"
+                                    fullWidth
+                                    placeholder="Provider Website"
+                                    error={!this.validateRequired(props.value)}
+                                    helperText={
+                                        this.validateRequired(props.value)
+                                            ? ''
+                                            : 'Required field'
+                                    }
+                                    onChange={(event): void =>
+                                        props.onChange(event.target.value)
+                                    }
+                                    defaultValue={props.value}
+                                />
+                            ),
+                        },
+                        {
+                            title: 'Notification recipients',
+                            field: 'notificationRecipients',
+                            tooltip:
+                                'Email addresses of parties to be notified of critical changes',
+                            render: (rowData): string =>
+                                rowData.notificationRecipients
+                                    ? rowData.notificationRecipients?.join('\n')
+                                    : '',
+                            editComponent: (props): JSX.Element => (
+                                <ChipInput
+                                    label="Notification recipients"
+                                    placeholder="Email address(es)"
+                                    values={props.value}
+                                    defaultValue={props.value || []}
+                                    onChange={(values) =>
+                                        props.onChange(values)
+                                    }
+                                />
+                            ),
+                        },
+                        {
+                            title: 'Date filtering',
+                            field: 'dateFilter',
+                            render: (rowData): JSX.Element =>
+                                rowData.dateFilter?.op === 'EQ' ? (
+                                    <div>
+                                        Only parse data from{' '}
+                                        {rowData.dateFilter?.numDaysBeforeToday}{' '}
+                                        day(s) ago
+                                    </div>
+                                ) : rowData.dateFilter?.op === 'LT' ? (
+                                    <div>
+                                        Parse all data up to{' '}
+                                        {rowData.dateFilter?.numDaysBeforeToday}{' '}
+                                        day(s) ago
+                                    </div>
+                                ) : rowData.dateFilter?.op === 'GT' ? (
+                                    <div>
+                                        Parse all data after{' '}
+                                        {rowData.dateFilter?.numDaysBeforeToday}{' '}
+                                        day(s) ago
+                                    </div>
+                                ) : (
+                                    <div>None</div>
                                 ),
-                            },
-                            {
-                                title: 'Government Source',
-                                field: 'isGovernmentSource',
-                                type: 'boolean',
-                                editComponent: (props): JSX.Element => (
-                                    <Checkbox
-                                        onChange={(): void =>
-                                            props.onChange(!props.value)
-                                        }
-                                        checked={props.value}
-                                    />
-                                ),
-                            },
-                            {
-                                title: 'Country Codes',
-                                field: 'countryCodes',
-                                editComponent: (props): JSX.Element => (
-                                    <TextField
-                                        type="text"
-                                        size="small"
-                                        fullWidth
-                                        placeholder="ISO 3166-1 alpha-2, comma separated"
-                                        error={
-                                            !this.validateCountryCodes(
-                                                props.value,
-                                            )
-                                        }
-                                        helperText={
-                                            this.validateCountryCodes(
-                                                props.value,
-                                            )
-                                                ? ''
-                                                : 'Required: two letter country codes'
-                                        }
-                                        onChange={(event): void =>
-                                            props.onChange(event.target.value)
-                                        }
-                                        defaultValue={props.value}
-                                    />
-                                ),
-                            },
-                            {
-                                title: 'URL',
-                                field: 'url',
-                                editComponent: (props): JSX.Element => (
-                                    <TextField
-                                        type="text"
-                                        size="small"
-                                        fullWidth
-                                        placeholder="URL"
-                                        error={
-                                            !this.validateRequired(props.value)
-                                        }
-                                        helperText={
-                                            this.validateRequired(props.value)
-                                                ? ''
-                                                : 'Required field'
-                                        }
-                                        onChange={(event): void =>
-                                            props.onChange(event.target.value)
-                                        }
-                                        defaultValue={props.value}
-                                    />
-                                ),
-                            },
-                            {
-                                title: 'Format',
-                                field: 'format',
-                                editComponent: (props): JSX.Element => (
+                            editComponent: (props): JSX.Element => (
+                                <>
+                                    Only parse data
                                     <TextField
                                         select
-                                        size="small"
                                         fullWidth
-                                        data-testid="format-select"
-                                        placeholder="Format"
+                                        size="small"
+                                        data-testid="op-select"
+                                        placeholder="Operator"
                                         onChange={(event): void =>
-                                            props.onChange(event.target.value)
+                                            props.onChange({
+                                                numDaysBeforeToday:
+                                                    props.value
+                                                        ?.numDaysBeforeToday,
+                                                op: event.target.value,
+                                            })
                                         }
-                                        defaultValue={props.value || ''}
+                                        value={props.value?.op || ''}
                                     >
-                                        {['', 'JSON', 'CSV', 'XLSX'].map(
-                                            (value) => (
-                                                <MenuItem
-                                                    key={`format-${value}`}
-                                                    value={value || ''}
-                                                >
-                                                    {value || 'Unknown'}
-                                                </MenuItem>
-                                            ),
-                                        )}
+                                        {[
+                                            { text: 'Unknown', value: '' },
+                                            {
+                                                text: 'from exactly',
+                                                value: 'EQ',
+                                            },
+                                            { text: 'up to', value: 'LT' },
+                                            { text: 'after', value: 'GT' },
+                                        ].map((pair) => (
+                                            <MenuItem
+                                                key={`op-${pair.value}`}
+                                                value={pair.value || ''}
+                                            >
+                                                {pair.text}
+                                            </MenuItem>
+                                        ))}
                                     </TextField>
-                                ),
-                            },
-                            {
-                                title: 'License',
-                                field: 'license',
-                                tooltip: 'MIT, Apache V2, ...',
-                                editComponent: (props): JSX.Element => (
                                     <TextField
-                                        type="text"
                                         size="small"
                                         fullWidth
-                                        placeholder="License"
-                                        error={
-                                            !this.validateRequired(props.value)
-                                        }
-                                        helperText={
-                                            this.validateRequired(props.value)
-                                                ? ''
-                                                : 'Required field'
-                                        }
+                                        data-testid="num-days"
+                                        placeholder="days"
                                         onChange={(event): void =>
-                                            props.onChange(event.target.value)
+                                            props.onChange({
+                                                numDaysBeforeToday: Number(
+                                                    event.target.value,
+                                                ),
+                                                op: props.value?.op,
+                                            })
                                         }
-                                        defaultValue={props.value}
+                                        value={
+                                            props.value?.numDaysBeforeToday ||
+                                            ''
+                                        }
+                                    ></TextField>
+                                    days ago
+                                    <Divider
+                                        variant="middle"
+                                        className={classes?.divider}
                                     />
-                                ),
-                            },
-                            {
-                                title: 'Provider Name',
-                                field: 'providerName',
-                                tooltip:
-                                    'Miskatonic University Department of Medecine',
-                                editComponent: (props): JSX.Element => (
-                                    <TextField
-                                        type="text"
-                                        size="small"
-                                        fullWidth
-                                        placeholder="Provider Name"
-                                        error={
-                                            !this.validateRequired(props.value)
-                                        }
-                                        helperText={
-                                            this.validateRequired(props.value)
-                                                ? ''
-                                                : 'Required field'
-                                        }
-                                        onChange={(event): void =>
-                                            props.onChange(event.target.value)
-                                        }
-                                        defaultValue={props.value}
-                                    />
-                                ),
-                            },
-                            {
-                                title: 'Provider Website',
-                                field: 'providerWebsiteUrl',
-                                tooltip: 'https://medsci.miskatonic.edu/',
-                                editComponent: (props): JSX.Element => (
-                                    <TextField
-                                        type="text"
-                                        size="small"
-                                        fullWidth
-                                        placeholder="Provider Website"
-                                        error={
-                                            !this.validateRequired(props.value)
-                                        }
-                                        helperText={
-                                            this.validateRequired(props.value)
-                                                ? ''
-                                                : 'Required field'
-                                        }
-                                        onChange={(event): void =>
-                                            props.onChange(event.target.value)
-                                        }
-                                        defaultValue={props.value}
-                                    />
-                                ),
-                            },
-                            {
-                                title: 'Notification recipients',
-                                field: 'notificationRecipients',
-                                tooltip:
-                                    'Email addresses of parties to be notified of critical changes',
-                                render: (rowData): string =>
-                                    rowData.notificationRecipients
-                                        ? rowData.notificationRecipients?.join(
-                                              '\n',
-                                          )
-                                        : '',
-                                editComponent: (props): JSX.Element => (
-                                    <ChipInput
-                                        label="Notification recipients"
-                                        placeholder="Email address(es)"
-                                        values={props.value}
-                                        defaultValue={props.value || []}
-                                        onChange={(values) =>
-                                            props.onChange(values)
-                                        }
-                                    />
-                                ),
-                            },
-                            {
-                                title: 'Date filtering',
-                                field: 'dateFilter',
-                                render: (rowData): JSX.Element =>
-                                    rowData.dateFilter?.op === 'EQ' ? (
-                                        <div>
-                                            Only parse data from{' '}
-                                            {
-                                                rowData.dateFilter
-                                                    ?.numDaysBeforeToday
-                                            }{' '}
-                                            day(s) ago
-                                        </div>
-                                    ) : rowData.dateFilter?.op === 'LT' ? (
-                                        <div>
-                                            Parse all data up to{' '}
-                                            {
-                                                rowData.dateFilter
-                                                    ?.numDaysBeforeToday
-                                            }{' '}
-                                            day(s) ago
-                                        </div>
-                                    ) : rowData.dateFilter?.op === 'GT' ? (
-                                        <div>
-                                            Parse all data after{' '}
-                                            {
-                                                rowData.dateFilter
-                                                    ?.numDaysBeforeToday
-                                            }{' '}
-                                            day(s) ago
-                                        </div>
-                                    ) : (
-                                        <div>None</div>
-                                    ),
-                                editComponent: (props): JSX.Element => (
-                                    <>
-                                        Only parse data
-                                        <TextField
-                                            select
-                                            fullWidth
-                                            size="small"
-                                            data-testid="op-select"
-                                            placeholder="Operator"
-                                            onChange={(event): void =>
-                                                props.onChange({
-                                                    numDaysBeforeToday:
-                                                        props.value
-                                                            ?.numDaysBeforeToday,
-                                                    op: event.target.value,
-                                                })
-                                            }
-                                            value={props.value?.op || ''}
-                                        >
-                                            {[
-                                                { text: 'Unknown', value: '' },
-                                                {
-                                                    text: 'from exactly',
-                                                    value: 'EQ',
-                                                },
-                                                { text: 'up to', value: 'LT' },
-                                                { text: 'after', value: 'GT' },
-                                            ].map((pair) => (
-                                                <MenuItem
-                                                    key={`op-${pair.value}`}
-                                                    value={pair.value || ''}
-                                                >
-                                                    {pair.text}
-                                                </MenuItem>
-                                            ))}
-                                        </TextField>
-                                        <TextField
-                                            size="small"
-                                            fullWidth
-                                            data-testid="num-days"
-                                            placeholder="days"
-                                            onChange={(event): void =>
-                                                props.onChange({
-                                                    numDaysBeforeToday: Number(
-                                                        event.target.value,
-                                                    ),
-                                                    op: props.value?.op,
-                                                })
-                                            }
-                                            value={
-                                                props.value
-                                                    ?.numDaysBeforeToday || ''
-                                            }
-                                        ></TextField>
-                                        days ago
-                                        <Divider
-                                            variant="middle"
-                                            className={classes?.divider}
-                                        />
-                                        <Button
-                                            variant="contained"
-                                            data-testid="clear-date-filter"
-                                            onClick={() => {
-                                                props.onChange({});
-                                            }}
-                                        >
-                                            Clear
-                                        </Button>
-                                    </>
-                                ),
-                            },
-                            {
-                                title: 'Curation actions',
-                                render: (row): JSX.Element => (
-                                    <SourceRetrievalButton sourceId={row._id} />
-                                ),
-                                editable: 'never',
-                            },
-                            {
-                                title: 'Exclude from line list?',
-                                field: 'excludeFromLineList',
-                                render: (row): JSX.Element => (
-                                    <Switch
-                                        disabled
-                                        checked={
-                                            row.excludeFromLineList ?? false
-                                        }
-                                    />
-                                ),
-                                editComponent: (props): JSX.Element => (
-                                    <Switch
-                                        checked={props.value ?? false}
-                                        onChange={(event): void => {
-                                            props.onChange(
-                                                event.target.checked,
-                                            );
+                                    <Button
+                                        variant="contained"
+                                        data-testid="clear-date-filter"
+                                        onClick={() => {
+                                            props.onChange({});
                                         }}
-                                    />
-                                ),
-                            },
-                            {
-                                title: 'Source has stable case identifiers?',
-                                field: 'hasStableIdentifiers',
-                                render: (row): JSX.Element => (
-                                    <Switch
-                                        disabled
-                                        checked={
-                                            row.hasStableIdentifiers ?? false
-                                        }
-                                    />
-                                ),
-                                editComponent: (props): JSX.Element => (
-                                    // assume false because that's the more likely case
-                                    <Switch
-                                        checked={props.value ?? false}
-                                        onChange={(event): void => {
-                                            props.onChange(
-                                                event.target.checked,
-                                            );
-                                        }}
-                                    />
-                                ),
-                            },
-                        ]}
-                        data={(query): Promise<QueryResult<TableRow>> =>
-                            new Promise((resolve, reject) => {
-                                let listUrl = this.state.url;
-                                listUrl += '?limit=' + this.state.pageSize;
-                                listUrl += '&page=' + (query.page + 1);
-                                this.setState({ error: '' });
-                                const response =
-                                    axios.get<ListResponse>(listUrl);
-                                response
-                                    .then((result) => {
-                                        const flattenedSources: TableRow[] = [];
-                                        const sources = result.data.sources;
-                                        for (const s of sources) {
-                                            flattenedSources.push({
-                                                _id: s._id,
-                                                name: s.name,
-                                                isGovernmentSource:
-                                                    s.origin.isGovernmentSource,
-                                                countryCodes:
-                                                    s.countryCodes?.join(',') ??
-                                                    '',
-                                                format: s.format,
-                                                url: s.origin.url,
-                                                license: s.origin.license,
-                                                providerName:
-                                                    s.origin.providerName,
-                                                providerWebsiteUrl:
-                                                    s.origin.providerWebsiteUrl,
-                                                dateFilter: s.dateFilter,
-                                                notificationRecipients:
-                                                    s.notificationRecipients,
-                                                excludeFromLineList:
-                                                    s.excludeFromLineList,
-                                                hasStableIdentifiers:
-                                                    s.hasStableIdentifiers,
-                                            });
-                                        }
-                                        resolve({
-                                            data: flattenedSources,
-                                            page: query.page,
-                                            totalCount: result.data.total,
-                                        });
-                                    })
-                                    .catch((e) => {
-                                        this.setState({
-                                            error:
-                                                e.response?.data?.message ||
-                                                e.toString(),
-                                        });
-                                        reject(e);
-                                    });
-                            })
-                        }
-                        components={{
-                            Container: (props): JSX.Element => (
-                                <Paper elevation={0} {...props}></Paper>
-                            ),
-                            Pagination: (props): JSX.Element => {
-                                return (
-                                    <div
-                                        className={classes?.tablePaginationBar}
                                     >
-                                        <Typography
-                                            classes={{
-                                                root: classes?.tableTitle,
-                                            }}
-                                        >
-                                            Ingestion sources
-                                        </Typography>
-                                        <span
-                                            className={classes?.spacer}
-                                        ></span>
-                                        <TablePagination
-                                            {...props}
-                                        ></TablePagination>
-                                    </div>
-                                );
-                            },
-                        }}
-                        style={{ fontFamily: 'Inter' }}
-                        options={{
-                            // TODO: Create text indexes and support search queries.
-                            // https://docs.mongodb.com/manual/text-search/
-                            search: false,
-                            filtering: false,
-                            sorting: false,
-                            emptyRowsWhenPaging: false,
-                            padding: 'dense',
-                            draggable: false, // No need to be able to drag and drop headers.
-                            pageSize: this.state.pageSize,
-                            pageSizeOptions: [5, 10, 20, 50, 100],
-                            paginationPosition: 'top',
-                            toolbar: false,
-                            maxBodyHeight: 'calc(100vh - 15em)',
-                            headerStyle: {
-                                zIndex: 1,
-                            },
-                        }}
-                        // TODO unmock this
-                        // onChangeRowsPerPage={(newPageSize: number) => {
-                        //     this.setState({ pageSize: newPageSize });
-                        //     this.tableRef.current.onQueryChange();
-                        // }}
-                        editable={{
-                            onRowUpdate: (
-                                newRowData: TableRow,
-                                oldRowData: TableRow | undefined,
-                            ): Promise<unknown> =>
-                                this.editSource(newRowData, oldRowData),
-                            onRowDelete: (
-                                rowData: TableRow,
-                            ): Promise<unknown> => this.deleteSource(rowData),
-                        }}
-                    />
-                </Paper>
-            </div>
+                                        Clear
+                                    </Button>
+                                </>
+                            ),
+                        },
+                        {
+                            title: 'Curation actions',
+                            render: (row): JSX.Element => (
+                                <SourceRetrievalButton sourceId={row._id} />
+                            ),
+                            editable: 'never',
+                        },
+                        {
+                            title: 'Exclude from line list?',
+                            field: 'excludeFromLineList',
+                            render: (row): JSX.Element => (
+                                <Switch
+                                    disabled
+                                    checked={row.excludeFromLineList ?? false}
+                                />
+                            ),
+                            editComponent: (props): JSX.Element => (
+                                <Switch
+                                    checked={props.value ?? false}
+                                    onChange={(event): void => {
+                                        props.onChange(event.target.checked);
+                                    }}
+                                />
+                            ),
+                        },
+                        {
+                            title: 'Source has stable case identifiers?',
+                            field: 'hasStableIdentifiers',
+                            render: (row): JSX.Element => (
+                                <Switch
+                                    disabled
+                                    checked={row.hasStableIdentifiers ?? false}
+                                />
+                            ),
+                            editComponent: (props): JSX.Element => (
+                                // assume false because that's the more likely case
+                                <Switch
+                                    checked={props.value ?? false}
+                                    onChange={(event): void => {
+                                        props.onChange(event.target.checked);
+                                    }}
+                                />
+                            ),
+                        },
+                    ]}
+                    data={(query): Promise<QueryResult<TableRow>> =>
+                        new Promise((resolve, reject) => {
+                            let listUrl = this.state.url;
+                            listUrl += '?limit=' + this.state.pageSize;
+                            listUrl += '&page=' + (query.page + 1);
+                            this.setState({ error: '' });
+                            const response = axios.get<ListResponse>(listUrl);
+                            response
+                                .then((result) => {
+                                    const flattenedSources: TableRow[] = [];
+                                    const sources = result.data.sources;
+                                    for (const s of sources) {
+                                        flattenedSources.push({
+                                            _id: s._id,
+                                            name: s.name,
+                                            isGovernmentSource:
+                                                s.origin.isGovernmentSource,
+                                            countryCodes:
+                                                s.countryCodes?.join(',') ?? '',
+                                            format: s.format,
+                                            url: s.origin.url,
+                                            license: s.origin.license,
+                                            providerName: s.origin.providerName,
+                                            providerWebsiteUrl:
+                                                s.origin.providerWebsiteUrl,
+                                            dateFilter: s.dateFilter,
+                                            notificationRecipients:
+                                                s.notificationRecipients,
+                                            excludeFromLineList:
+                                                s.excludeFromLineList,
+                                            hasStableIdentifiers:
+                                                s.hasStableIdentifiers,
+                                        });
+                                    }
+                                    resolve({
+                                        data: flattenedSources,
+                                        page: query.page,
+                                        totalCount: result.data.total,
+                                    });
+                                })
+                                .catch((e) => {
+                                    this.setState({
+                                        error:
+                                            e.response?.data?.message ||
+                                            e.toString(),
+                                    });
+                                    reject(e);
+                                });
+                        })
+                    }
+                    components={{
+                        Container: (props): JSX.Element => (
+                            <Paper elevation={0} {...props}></Paper>
+                        ),
+                    }}
+                    style={{ fontFamily: 'Inter' }}
+                    options={{
+                        // TODO: Create text indexes and support search queries.
+                        // https://docs.mongodb.com/manual/text-search/
+                        search: false,
+                        filtering: false,
+                        emptyRowsWhenPaging: false,
+                        padding: 'dense',
+                        draggable: false, // No need to be able to drag and drop headers.
+                        pageSize: this.state.pageSize,
+                        pageSizeOptions: [5, 10, 20, 50, 100],
+                        paginationPosition: 'bottom',
+                        maxBodyHeight: 'calc(100vh - 15em)',
+                        headerStyle: {
+                            zIndex: 1,
+                        },
+                    }}
+                    onRowsPerPageChange={(newPageSize: number) => {
+                        this.setState({ pageSize: newPageSize });
+                        this.tableRef.current.onQueryChange();
+                    }}
+                    editable={{
+                        onRowUpdate: (
+                            newRowData: TableRow,
+                            oldRowData: TableRow | undefined,
+                        ): Promise<unknown> =>
+                            this.editSource(newRowData, oldRowData),
+                        onRowDelete: (rowData: TableRow): Promise<unknown> =>
+                            this.deleteSource(rowData),
+                    }}
+                />
+            </Paper>
         );
     }
 }
@@ -757,7 +694,10 @@ const SourceTableStyled = withStyles(SourceTable, (theme: Theme) => ({
         height: '64px',
     },
     tableTitle: {
-        width: '100%',
+        width: '10%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     sourcesSection: {
         marginTop: '64px',

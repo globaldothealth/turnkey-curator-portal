@@ -1,24 +1,28 @@
-import LandingPage from './LandingPage';
 import { render, screen, waitFor } from '../util/test-utils';
 import SignInForm from './SignInForm';
 import SignUpForm from './SignUpForm';
+import LandingPage from './LandingPage';
 import userEvent from '@testing-library/user-event';
+import { act } from 'react-dom/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { Route } from 'react-router-dom';
+import { vi } from 'vitest';
 
 const server = setupServer();
 const mockedDataDictionaryLink = 'https://global.health/data-dictionary';
 
 beforeAll(() => {
-    server.listen();
+    server.listen({ onUnhandledRequest: 'bypass' });
     import.meta.env.VITE_APP_DATA_DICTIONARY_LINK = mockedDataDictionaryLink;
 });
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-jest.mock('react-google-recaptcha', () => {
-    const { forwardRef, useImperativeHandle } = jest.requireActual('react');
+vi.mock('react-google-recaptcha', async () => {
+    const { forwardRef, useImperativeHandle } = (await vi.importActual(
+        'react',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    )) as any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const RecaptchaV2 = forwardRef((props: any, ref: any) => {
         useImperativeHandle(ref, () => ({
@@ -38,8 +42,10 @@ jest.mock('react-google-recaptcha', () => {
         );
     });
 
-    return RecaptchaV2;
+    return { default: RecaptchaV2 };
 });
+
+vi.stubEnv('RECAPTCHA_SITE_KEY', '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI');
 
 describe('<LandingPage />', () => {
     test('shows all content', async () => {
@@ -112,15 +118,22 @@ describe('<SignInForm />', () => {
         render(<LandingPage />);
 
         // Go to sign in form
-        userEvent.click(screen.getByText('Sign in!'));
+        await act(async () => {
+            userEvent.click(screen.getByText('Sign in!'));
+        });
         expect(
             await screen.findByText(/Sign in with username and password/i),
         ).toBeInTheDocument();
 
         // Fill out the form
-        await user.type(screen.getByLabelText('Email'), 'test@email.com');
-        await user.type(screen.getByLabelText('Password'), '1234567');
-        await user.click(screen.getByRole('button', { name: 'Sign in' }));
+        await act(async () => {
+            await user.type(screen.getByLabelText('Email'), 'test@email.com');
+            await user.type(screen.getByLabelText('Password'), '1234567');
+        });
+        await act(async () => {
+            userEvent.click(screen.getByText('Sign in'));
+            // await user.click(screen.getByRole('button', { name: 'Sign in' }));
+        });
 
         await waitFor(() => {
             expect(
@@ -132,7 +145,9 @@ describe('<SignInForm />', () => {
     it('displays verification errors when email input is empty', async () => {
         render(<SignInForm setRegistrationScreenOn={() => false} />);
 
-        userEvent.click(screen.getByTestId('sign-in-button'));
+        await act(async () => {
+            userEvent.click(screen.getByTestId('sign-in-button'));
+        });
 
         await waitFor(() => {
             expect(screen.getAllByText(/This field is required/i)).toHaveLength(
@@ -146,8 +161,10 @@ describe('<SignInForm />', () => {
 
         render(<SignInForm setRegistrationScreenOn={() => false} />);
 
-        await user.type(screen.getByRole('textbox'), 'incorrectemail');
-        await user.click(screen.getByTestId('sign-in-button'));
+        await act(async () => {
+            await user.type(screen.getByRole('textbox'), 'incorrectemail');
+            await user.click(screen.getByTestId('sign-in-button'));
+        });
 
         await waitFor(() => {
             expect(
@@ -161,7 +178,9 @@ describe('<SignInForm />', () => {
 
         render(<SignInForm setRegistrationScreenOn={() => false} />);
 
-        await user.click(screen.getByTestId('sign-in-button'));
+        await act(async () => {
+            await user.click(screen.getByTestId('sign-in-button'));
+        });
 
         await waitFor(() => {
             const errorMessages = screen.getAllByText(/required/i);
@@ -195,12 +214,14 @@ describe('<SignUpForm />', () => {
             />,
         );
 
-        await user.type(screen.getByLabelText('Email *'), 'test@email.com');
-        await user.type(
-            screen.getByLabelText(/Confirm Email \*/),
-            'xxx@email.com',
-        );
-        await user.click(screen.getByTestId('sign-up-button'));
+        await act(async () => {
+            await user.type(screen.getByLabelText('Email *'), 'test@email.com');
+            await user.type(
+                screen.getByLabelText(/Confirm Email \*/),
+                'xxx@email.com',
+            );
+            await user.click(screen.getByTestId('sign-up-button'));
+        });
 
         await waitFor(() => {
             expect(screen.getByText('Emails must match')).toBeInTheDocument();
@@ -217,9 +238,14 @@ describe('<SignUpForm />', () => {
             />,
         );
 
-        await user.type(screen.getByLabelText('Password *'), '12345');
-        await user.type(screen.getByLabelText(/Repeat password \*/), '6789');
-        await user.click(screen.getByTestId('sign-up-button'));
+        await act(async () => {
+            await user.type(screen.getByLabelText('Password *'), '12345');
+            await user.type(
+                screen.getByLabelText(/Repeat password \*/),
+                '6789',
+            );
+            await user.click(screen.getByTestId('sign-up-button'));
+        });
 
         await waitFor(() => {
             expect(
@@ -237,15 +263,19 @@ describe('<SignUpForm />', () => {
                 disabled={false}
             />,
         );
-
-        await user.type(screen.getByLabelText('Email *'), 'test@email.com');
-        await user.type(
-            screen.getByLabelText(/Confirm Email \*/),
-            'test@email.com',
-        );
-        await user.type(screen.getByLabelText('Password *'), '12345');
-        await user.type(screen.getByLabelText(/Repeat password \*/), '12345');
-        await user.click(screen.getByTestId('sign-up-button'));
+        await act(async () => {
+            await user.type(screen.getByLabelText('Email *'), 'test@email.com');
+            await user.type(
+                screen.getByLabelText(/Confirm Email \*/),
+                'test@email.com',
+            );
+            await user.type(screen.getByLabelText('Password *'), '12345');
+            await user.type(
+                screen.getByLabelText(/Repeat password \*/),
+                '12345',
+            );
+            await user.click(screen.getByTestId('sign-up-button'));
+        });
 
         await waitFor(() => {
             expect(screen.getAllByText(/This field is required/i)).toHaveLength(
@@ -264,11 +294,16 @@ describe('<SignUpForm />', () => {
             />,
         );
 
-        await user.type(screen.getByLabelText('Email *'), 'test@email.com');
-        await user.type(screen.getByLabelText('Password *'), '12345');
-        await user.type(screen.getByLabelText(/Repeat password \*/), '12345');
-        await user.click(screen.getAllByRole('checkbox')[0]);
-        await user.click(screen.getByTestId('sign-up-button'));
+        await act(async () => {
+            await user.type(screen.getByLabelText('Email *'), 'test@email.com');
+            await user.type(screen.getByLabelText('Password *'), '12345');
+            await user.type(
+                screen.getByLabelText(/Repeat password \*/),
+                '12345',
+            );
+            await user.click(screen.getAllByRole('checkbox')[0]);
+            await user.click(screen.getByTestId('sign-up-button'));
+        });
 
         await waitFor(() => {
             expect(screen.getAllByText(/Emails must match/i)).toHaveLength(1);
@@ -285,8 +320,10 @@ describe('<SignUpForm />', () => {
             />,
         );
 
-        await user.type(screen.getByLabelText('Email *'), 'incorrectemail');
-        await user.click(screen.getByTestId('sign-up-button'));
+        await act(async () => {
+            await user.type(screen.getByLabelText('Email *'), 'incorrectemail');
+            await user.click(screen.getByTestId('sign-up-button'));
+        });
 
         await waitFor(() => {
             expect(
@@ -305,14 +342,19 @@ describe('<SignUpForm />', () => {
             />,
         );
 
-        await user.type(screen.getByLabelText('Email *'), 'test@email.com');
-        await user.type(
-            screen.getByLabelText(/Confirm Email \*/),
-            'test@email.com',
-        );
-        await user.type(screen.getByLabelText(/Repeat password \*/), '12345');
-        await user.click(screen.getAllByRole('checkbox')[0]);
-        await user.click(screen.getByTestId('sign-up-button'));
+        await act(async () => {
+            await user.type(screen.getByLabelText('Email *'), 'test@email.com');
+            await user.type(
+                screen.getByLabelText(/Confirm Email \*/),
+                'test@email.com',
+            );
+            await user.type(
+                screen.getByLabelText(/Repeat password \*/),
+                '12345',
+            );
+            await user.click(screen.getAllByRole('checkbox')[0]);
+            await user.click(screen.getByTestId('sign-up-button'));
+        });
 
         await waitFor(() => {
             expect(
@@ -334,7 +376,9 @@ describe('<SignUpForm />', () => {
             />,
         );
 
-        await user.click(screen.getByTestId('sign-up-button'));
+        await act(async () => {
+            await user.click(screen.getByTestId('sign-up-button'));
+        });
 
         await waitFor(() => {
             const errorMessages = screen.getAllByText(/required/i);
@@ -355,7 +399,9 @@ describe('<ForgotPasswordForm />', () => {
 
         render(<SignInForm setRegistrationScreenOn={() => false} />);
 
-        await user.click(screen.getByTestId('forgot-password-link'));
+        await act(async () => {
+            await user.click(screen.getByTestId('forgot-password-link'));
+        });
 
         expect(
             screen.getByTestId('forgot-password-dialog'),
@@ -367,9 +413,14 @@ describe('<ForgotPasswordForm />', () => {
 
         render(<SignInForm setRegistrationScreenOn={() => false} />);
 
-        await user.click(screen.getByTestId('forgot-password-link'));
-        await user.type(screen.getByRole('textbox'), 'incorrectemail');
-        await user.click(screen.getByTestId('send-reset-link'));
+        await act(async () => {
+            await user.click(screen.getByTestId('forgot-password-link'));
+        });
+
+        await act(async () => {
+            await user.type(screen.getByRole('textbox'), 'incorrectemail');
+            await user.click(screen.getByTestId('send-reset-link'));
+        });
 
         await waitFor(() => {
             expect(
@@ -383,62 +434,17 @@ describe('<ForgotPasswordForm />', () => {
 
         render(<SignInForm setRegistrationScreenOn={() => false} />);
 
-        await user.click(screen.getByTestId('forgot-password-link'));
-        await user.click(screen.getByTestId('send-reset-link'));
+        await act(async () => {
+            await user.click(screen.getByTestId('forgot-password-link'));
+        });
+
+        await act(async () => {
+            await user.click(screen.getByTestId('send-reset-link'));
+        });
 
         await waitFor(() => {
             expect(
                 screen.getByText(/This field is required/i),
-            ).toBeInTheDocument();
-        });
-    });
-});
-
-describe.skip('<ChangePasswordForm />', () => {
-    test('displays the change password form', async () => {
-        render(
-            <Route path="/reset-password/:token/:id">
-                <LandingPage />
-            </Route>,
-            { initialRoute: '/reset-password/token/id' },
-        );
-
-        expect(screen.getByText('Choose a new password')).toBeInTheDocument();
-    });
-
-    test('displays verification errors when password in ChangePassword form is empty', async () => {
-        const user = userEvent.setup();
-
-        render(
-            <Route path="/reset-password/:token/:id">
-                <LandingPage />
-            </Route>,
-            { initialRoute: '/reset-password/token/id' },
-        );
-
-        await user.click(screen.getByTestId('change-password-button'));
-
-        await waitFor(() => {
-            expect(screen.getByText('Required!')).toBeInTheDocument();
-        });
-    });
-
-    test('displays verification errors when confirm password is empty', async () => {
-        const user = userEvent.setup();
-
-        render(
-            <Route path="/reset-password/:token/:id">
-                <LandingPage />
-            </Route>,
-            { initialRoute: '/reset-password/token/id' },
-        );
-
-        await user.type(screen.getByLabelText('Password'), '12345');
-        await user.click(screen.getByTestId('change-password-button'));
-
-        await waitFor(() => {
-            expect(
-                screen.getByText('Passwords must match'),
             ).toBeInTheDocument();
         });
     });

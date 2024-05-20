@@ -1,28 +1,16 @@
 import MaterialTable, { QueryResult } from '@material-table/core';
-import { Paper, TablePagination, Typography } from '@mui/material';
+import { Paper, Typography } from '@mui/material';
 import { useRef, useState } from 'react';
-
 import { styled } from '@mui/material/styles';
-
 import { Link } from 'react-router-dom';
 import MuiAlert from '@mui/material/Alert';
 import axios from 'axios';
 import renderDate from './util/date';
+import { makeStyles } from 'tss-react/mui';
 
 const Alert = styled(MuiAlert)(({ theme }) => ({
     borderRadius: theme.spacing(1),
     marginTop: theme.spacing(2),
-}));
-
-const Spacer = styled('span')(() => ({
-    flex: 1,
-}));
-
-const TablePaginationBar = styled('div')(({ theme }) => ({
-    alignItems: 'center',
-    backgroundColor: theme.palette.background.default,
-    display: 'flex',
-    height: '64px',
 }));
 
 interface UploadSummary {
@@ -64,6 +52,12 @@ interface TableRow {
     accepted: boolean;
 }
 
+const useStyles = makeStyles()(() => ({
+    uploadsSection: {
+        marginTop: '66px',
+    },
+}));
+
 const UploadsTable = () => {
     // eslint-disable-next-line
     const tableRef = useRef<any>(null);
@@ -72,9 +66,11 @@ const UploadsTable = () => {
     const [error, setError] = useState('');
     const [pageSize, setPageSize] = useState(10);
 
+    const { classes } = useStyles();
+
     return (
         <div>
-            <Paper>
+            <Paper className={classes?.uploadsSection}>
                 {error && (
                     <Alert variant="filled" severity="error">
                         {error}
@@ -82,6 +78,7 @@ const UploadsTable = () => {
                 )}
                 <MaterialTable
                     tableRef={tableRef}
+                    title={<Typography>Uploads</Typography>}
                     columns={[
                         {
                             title: 'ID',
@@ -203,15 +200,6 @@ const UploadsTable = () => {
                         Container: (props): JSX.Element => (
                             <Paper elevation={0} {...props}></Paper>
                         ),
-                        Pagination: (props): JSX.Element => {
-                            return (
-                                <TablePaginationBar>
-                                    <Typography>Uploads</Typography>
-                                    <Spacer />
-                                    <TablePagination {...props} />
-                                </TablePaginationBar>
-                            );
-                        },
                     }}
                     style={{ fontFamily: 'Inter' }}
                     options={{
@@ -225,8 +213,7 @@ const UploadsTable = () => {
                         draggable: false, // No need to be able to drag and drop headers.
                         pageSize: pageSize,
                         pageSizeOptions: [5, 10, 20, 50, 100],
-                        paginationPosition: 'top',
-                        toolbar: false,
+                        paginationPosition: 'bottom',
                         maxBodyHeight: 'calc(100vh - 15em)',
                         headerStyle: {
                             zIndex: 1,

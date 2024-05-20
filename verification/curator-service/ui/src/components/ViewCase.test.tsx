@@ -8,11 +8,34 @@ import { createMemoryHistory } from 'history';
 import { render, fireEvent, screen } from './util/test-utils';
 import { initialLoggedInState } from '../redux/store';
 import validateEnv from '../util/validate-env';
+import { act } from 'react-dom/test-utils';
+import { waitFor } from '@testing-library/dom';
 
 const env = validateEnv();
 
 beforeAll(() => {
     vi.mock('axios');
+});
+
+beforeEach(() => {
+    vi.mock('react-router-dom', async () => {
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        const mod = (await vi.importActual('react-router-dom')) as {};
+        return {
+            ...mod,
+            useParams: () => ({
+                id: '5ef8e943dfe6e00030892d58',
+            }),
+        };
+    });
+});
+
+afterAll(() => {
+    vi.clearAllMocks();
+});
+
+afterEach(() => {
+    vi.clearAllMocks();
 });
 
 afterAll(() => {
@@ -33,18 +56,20 @@ it.skip('loads and displays case', async () => {
     };
     axios.get.mockResolvedValueOnce(axiosResponse);
 
-    render(
-        <ViewCase
-            onModalClose={(): void => {
-                return;
-            }}
-            id="5ef8e943dfe6e00030892d58"
-        />,
-        {
-            initialState: initialLoggedInState,
-            initialRoute: '/cases/5ef8e943dfe6e00030892d58',
-        },
-    );
+    await act(() => {
+        render(
+            <ViewCase
+                onModalClose={(): void => {
+                    return;
+                }}
+                id="5ef8e943dfe6e00030892d58"
+            />,
+            {
+                initialState: initialLoggedInState,
+                initialRoute: '/cases/5ef8e943dfe6e00030892d58',
+            },
+        );
+    });
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(
         '/api/cases/5ef8e943dfe6e00030892d58',
@@ -96,25 +121,28 @@ it.skip('can go to the edit page', async () => {
     };
     axios.get.mockResolvedValueOnce(axiosResponse);
 
-    const history = createMemoryHistory();
-    const { findByText } = render(
-        <Router>
+    // const history = createMemoryHistory();
+    await act(() => {
+        render(
             <ViewCase
                 enableEdit={true}
                 onModalClose={(): void => {
                     return;
                 }}
-            />
-        </Router>,
-    );
+            />,
+            { initialRoute: '/cases/5ef8e943dfe6e00030892d58' },
+        );
+    });
     expect(axios.get).toHaveBeenCalledTimes(1);
     expect(axios.get).toHaveBeenCalledWith(
         '/api/cases/5ef8e943dfe6e00030892d58',
     );
-    fireEvent.click(await findByText('Edit'));
-    expect(history.location.pathname).toBe(
-        '/cases/edit/5ef8e943dfe6e00030892d58',
-    );
+    await waitFor(() => {
+        expect(screen.getByRole('link', { name: 'Edit' })).toHaveAttribute(
+            'href',
+            '/cases/edit/5ef8e943dfe6e00030892d58',
+        );
+    });
 });
 
 it.skip('does not show the edit button when not enabled', async () => {
@@ -135,7 +163,9 @@ it.skip('does not show the edit button when not enabled', async () => {
         />,
     );
     expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenCalledWith('/api/cases/abc123');
+    expect(axios.get).toHaveBeenCalledWith(
+        '/api/cases/5ef8e943dfe6e00030892d58',
+    );
 
     expect(
         await findByText(/Case 5ef8e943dfe6e00030892d58/),
@@ -143,7 +173,7 @@ it.skip('does not show the edit button when not enabled', async () => {
     expect(queryByText('Edit')).toBeNull();
 });
 
-it.skip('displays API errors', async () => {
+it('displays API errors', async () => {
     axios.get.mockRejectedValueOnce(new Error('Request failed'));
 
     const { findByText } = render(
@@ -155,6 +185,8 @@ it.skip('displays API errors', async () => {
     );
 
     expect(axios.get).toHaveBeenCalledTimes(1);
-    expect(axios.get).toHaveBeenCalledWith('/api/cases/abc123');
+    expect(axios.get).toHaveBeenCalledWith(
+        '/api/cases/5ef8e943dfe6e00030892d58',
+    );
     expect(await findByText(/Request failed/)).toBeInTheDocument();
 });

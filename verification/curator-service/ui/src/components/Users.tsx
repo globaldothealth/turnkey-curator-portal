@@ -10,7 +10,6 @@ import {
     DialogTitle,
     Menu,
     Paper,
-    TablePagination,
     Typography,
     FormControl,
     MenuItem,
@@ -66,6 +65,9 @@ const useStyles = makeStyles()((theme: Theme) => ({
         backgroundColor: theme.palette.background.default,
         display: 'flex',
         height: '64px',
+    },
+    usersSection: {
+        marginTop: '66px',
     },
 }));
 
@@ -284,7 +286,7 @@ const Users = ({ onUserChange }: UsersProps) => {
     };
 
     return (
-        <Paper>
+        <Paper className={classes?.usersSection}>
             {error && (
                 <MuiAlert
                     classes={{ root: classes.alert }}
@@ -296,6 +298,7 @@ const Users = ({ onUserChange }: UsersProps) => {
             )}
             <MaterialTable
                 tableRef={tableRef}
+                title={<Typography>Users</Typography>}
                 columns={[
                     ...((user?.roles ?? []).includes(Role.Admin)
                         ? [
@@ -390,30 +393,21 @@ const Users = ({ onUserChange }: UsersProps) => {
                     Container: (props): JSX.Element => (
                         <Paper elevation={0} {...props}></Paper>
                     ),
-                    Pagination: (props): JSX.Element => {
-                        return (
-                            <div className={classes.tablePaginationBar}>
-                                <Typography>Users</Typography>
-                                <span className={classes.spacer}></span>
-                                <TablePagination {...props}></TablePagination>
-                            </div>
-                        );
-                    },
                 }}
                 style={{ fontFamily: 'Inter' }}
                 options={{
                     search: false,
                     filtering: false,
-                    sorting: false,
                     padding: 'dense',
                     draggable: false, // No need to be able to drag and drop headers.
                     pageSize: pageSize,
                     pageSizeOptions: [5, 10, 20, 50, 100],
-                    paginationPosition: 'top',
-                    toolbar: false,
+                    paginationPosition: 'bottom',
+                    // toolbar: false,
                     headerStyle: {
                         zIndex: 1,
                     },
+                    emptyRowsWhenPaging: false,
                 }}
                 onRowsPerPageChange={(newPageSize: number) => {
                     setPageSize(newPageSize);

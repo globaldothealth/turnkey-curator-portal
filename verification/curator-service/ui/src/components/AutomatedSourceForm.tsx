@@ -281,7 +281,7 @@ export default function AutomatedSourceForm(props: Props): JSX.Element {
                                                 name="excludeFromLineList"
                                                 component={CheckboxWithLabel}
                                                 type="checkbox"
-                                                helperText="Whether cases from this source can appear in the line list"
+                                                // helperText="Whether cases from this source can appear in the line list"
                                                 required
                                                 data-testid="excludeFromLineList"
                                                 Label={{
@@ -294,7 +294,7 @@ export default function AutomatedSourceForm(props: Props): JSX.Element {
                                                 name="hasStableIdentifiers"
                                                 component={CheckboxWithLabel}
                                                 type="checkbox"
-                                                helperText="Whether cases from this source have unique, unchanging identifiers"
+                                                // helperText="Whether cases from this source have unique, unchanging identifiers"
                                                 required
                                                 data-testid="hasStableIdentifiers"
                                                 Label={{

@@ -315,7 +315,11 @@ const LandingPage = (): JSX.Element => {
                 <PartnerLogos />
             </StyledPaper>
             <ReCAPTCHA
-                sitekey={RECAPTCHA_SITE_KEY}
+                sitekey={
+                    RECAPTCHA_SITE_KEY ||
+                    ((import.meta.env.RECAPTCHA_SITE_KEY ||
+                        import.meta.env.VITE_APP_RECAPTCHA_SITE_KEY) as string)
+                }
                 size="invisible"
                 ref={recaptchaRef}
             />
