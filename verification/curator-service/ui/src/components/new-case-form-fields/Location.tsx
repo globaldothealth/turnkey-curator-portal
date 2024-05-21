@@ -703,7 +703,7 @@ export default function Location(): JSX.Element {
                             if (newInputValue === values.location.admin3)
                                 return;
                             if (reason === 'clear') {
-                                setFieldValue('location.admin3', 'aaa');
+                                setFieldValue('location.admin3', '');
                                 setSelectedAdmin3({ name: '', wiki: '' });
                             } else {
                                 setFieldValue('location.admin3', newInputValue);
