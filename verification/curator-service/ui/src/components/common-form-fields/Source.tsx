@@ -131,6 +131,7 @@ export default function Source(props: SourceProps) {
                                                     label="Additional source"
                                                     name={`caseReference.additionalSources.${index}.sourceUrl`}
                                                     type="text"
+                                                    data-testid={`additional-source-${index}`}
                                                     component={TextField}
                                                     sx={{ minWidth: '13rem' }}
                                                 />
@@ -158,7 +159,7 @@ export default function Source(props: SourceProps) {
                                                     type="checkbox"
                                                     // helperText="Whether cases from this source can appear in the line list"
                                                     required
-                                                    data-testid="governmentSource"
+                                                    data-testid={`government-source-${index}`}
                                                     Label={{
                                                         label: 'Government Source',
                                                     }}
@@ -173,6 +174,7 @@ export default function Source(props: SourceProps) {
                                 type="button"
                                 variant="outlined"
                                 id="add-additional-source"
+                                data-testid="add-additional-source"
                                 startIcon={<AddIcon />}
                                 onClick={() =>
                                     arrayHelpers.push({

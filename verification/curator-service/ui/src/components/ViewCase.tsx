@@ -994,7 +994,7 @@ function RowContent(props: {
                         autoEscape={true}
                         textToHighlight={props.content ?? ''}
                     />
-                    {props.linkComment && `\t(${props.linkComment})`}
+                    {props.linkComment && ` (${props.linkComment})`}
                 </a>
             ) : (
                 <Highlighter
