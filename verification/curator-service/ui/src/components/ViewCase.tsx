@@ -538,13 +538,13 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             <RowContent
                                 content={`${props.c.location.geometry?.latitude?.toFixed(
                                     4,
-                                )}`}
+                                ) || ''}`}
                             />
                             <RowHeader title="Longitude" />
                             <RowContent
                                 content={`${props.c.location.geometry?.longitude?.toFixed(
                                     4,
-                                )}`}
+                                ) || ''}`}
                             />
 
                             <RowHeader title="Comment" />

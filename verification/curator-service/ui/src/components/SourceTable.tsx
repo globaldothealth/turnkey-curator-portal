@@ -700,7 +700,7 @@ const SourceTableStyled = withStyles(SourceTable, (theme: Theme) => ({
         justifyContent: 'center',
     },
     sourcesSection: {
-        marginTop: '66px',
+        marginTop: '64px',
     },
 }));
 

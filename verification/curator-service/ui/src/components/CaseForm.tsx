@@ -179,7 +179,16 @@ const initialValuesFromCase = (
                     : undefined,
         },
         location: {
-            ...c.location,
+            geoResolution: c.location.geoResolution || '',
+            country: c.location.country || '',
+            countryISO3: c.location.countryISO3 || '',
+            location: c.location.location || '',
+            admin1: c.location.admin1 || '',
+            admin1WikiId: c.location.admin1WikiId || '',
+            admin2: c.location.admin2 || '',
+            admin2WikiId: c.location.admin2WikiId || '',
+            admin3: c.location.admin3 || '',
+            admin3WikiId: c.location.admin3WikiId || '',
             geocodeLocation: {
                 country: c.location.country,
                 countryISO3: c.location.countryISO3,
@@ -190,6 +199,12 @@ const initialValuesFromCase = (
                 admin3: c.location.admin3 || '',
                 location: c.location.location || '',
             },
+            query: c.location.query || '',
+            geometry: c.location.geometry || {
+                latitude: undefined,
+                longitude: undefined,
+            },
+            comment: c.location.comment || '',
         },
         pathogen,
         symptoms: c.symptoms ? c.symptoms.split(', ') : [],
@@ -403,6 +418,9 @@ export default function CaseForm(props: Props): JSX.Element {
         } else {
             query = [admin3, admin2, admin1, country].filter(Boolean).join(',');
         }
+        const location = [admin3, admin2, admin1, country]
+            .filter(Boolean)
+            .join(', ');
 
         const newCase: Day0Case = {
             ...values,
@@ -491,6 +509,7 @@ export default function CaseForm(props: Props): JSX.Element {
             },
             location: {
                 ...values.location,
+                location,
                 country,
                 query,
             },

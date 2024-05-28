@@ -26,3 +26,7 @@ amplify-build-config.json
 amplify-gradle-config.json
 amplifytools.xcconfig
 .secret-*
+
+.idea/modules.xml
+.idea/vcs.xml
+.idea/inspectionProfiles

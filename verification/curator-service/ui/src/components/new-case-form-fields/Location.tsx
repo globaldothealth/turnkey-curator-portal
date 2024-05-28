@@ -486,10 +486,10 @@ export default function Location(): JSX.Element {
                             _: unknown,
                             newValue: adminEntry | null,
                         ): void => {
-                            setFieldValue('location.admin1', newValue?.name);
+                            setFieldValue('location.admin1', newValue?.name || '');
                             setFieldValue(
                                 'location.admin1WikiId',
-                                newValue?.wiki,
+                                newValue?.wiki || '',
                             );
                             setSelectedAdmin1(
                                 newValue || { name: '', wiki: '' },
@@ -588,10 +588,10 @@ export default function Location(): JSX.Element {
                             _: unknown,
                             newValue: adminEntry | null,
                         ): void => {
-                            setFieldValue('location.admin2', newValue?.name);
+                            setFieldValue('location.admin2', newValue?.name || '');
                             setFieldValue(
                                 'location.admin2WikiId',
-                                newValue?.wiki,
+                                newValue?.wiki || '',
                             );
                             setSelectedAdmin2(
                                 newValue || { name: '', wiki: '' },
@@ -690,10 +690,10 @@ export default function Location(): JSX.Element {
                             _: unknown,
                             newValue: adminEntry | null,
                         ): void => {
-                            setFieldValue('location.admin3', newValue?.name);
+                            setFieldValue('location.admin3', newValue?.name || '');
                             setFieldValue(
                                 'location.admin3WikiId',
-                                newValue?.wiki,
+                                newValue?.wiki || '',
                             );
                             setSelectedAdmin3(
                                 newValue || { name: '', wiki: '' },
