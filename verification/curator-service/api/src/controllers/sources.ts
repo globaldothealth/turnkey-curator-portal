@@ -183,7 +183,7 @@ export default class SourcesController {
             const updatedSource = await sources().findOneAndUpdate(
                 { _id: sourceId },
                 update,
-                { returnDocument: 'after' },
+                { returnDocument: 'after', includeResultMetadata: true },
             );
             if (!updatedSource.ok) {
                 logger.error(

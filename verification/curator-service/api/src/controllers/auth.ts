@@ -400,6 +400,7 @@ export class AuthController {
                     const result = await users().findOneAndUpdate(
                         { _id: new ObjectId(req.params.id) },
                         { $unset: { apiKey: '' } },
+                        { includeResultMetadata: true }
                     );
                     if (!result.ok) {
                         logger.warn(
@@ -673,7 +674,7 @@ export class AuthController {
                     const result = await users().findOneAndUpdate(
                         { _id: new ObjectId(userId) },
                         { $set: { password: hashedPassword } },
-                        { returnDocument: 'after' },
+                        { returnDocument: 'after', includeResultMetadata: true },
                     );
 
                     if (!result.ok) {
@@ -989,7 +990,7 @@ export class AuthController {
                             const update = await users().findOneAndUpdate(
                                 { googleID: googleProfile.id },
                                 { $set: { picture } },
-                                { returnDocument: 'after' },
+                                { returnDocument: 'after', includeResultMetadata: true },
                             );
                             user = update.value;
                         }
@@ -1003,7 +1004,7 @@ export class AuthController {
                             const update = await users().findOneAndUpdate(
                                 { googleID: googleProfile.id },
                                 { $set: { newsletterAccepted: true } },
-                                { returnDocument: 'after' },
+                                { returnDocument: 'after', includeResultMetadata: true },
                             );
                             user = update.value;
                         }

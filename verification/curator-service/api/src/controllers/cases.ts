@@ -92,6 +92,7 @@ export default class CasesController {
                         },
                     },
                 },
+                { includeResultMetadata: true },
             );
             this.logOutcomeOfAppendingDownloadToUser(user.id, result);
 
@@ -160,6 +161,7 @@ export default class CasesController {
                         },
                     },
                 },
+                { includeResultMetadata: true },
             );
 
             this.logOutcomeOfAppendingDownloadToUser(user.id, result);
@@ -230,6 +232,7 @@ export default class CasesController {
                         },
                     },
                 },
+                { includeResultMetadata: true },
             );
             this.logOutcomeOfAppendingDownloadToUser(user.id, result);
 
@@ -280,6 +283,7 @@ export default class CasesController {
                         },
                     },
                 },
+                { includeResultMetadata: true },
             );
             this.logOutcomeOfAppendingDownloadToUser(user.id, result);
 
