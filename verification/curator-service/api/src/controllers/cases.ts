@@ -329,10 +329,12 @@ export default class CasesController {
             );
             res.status(response.status).json(response.data);
         } catch (err) {
-            logger.error(err);
-            if (err.response?.status && err.response?.data) {
-                res.status(err.response.status).send(err.response.data);
-                return;
+            if (err instanceof Error) logger.error(err);
+            if (axios.isAxiosError(err)) {
+                if (err.response?.status && err.response?.data) {
+                    res.status(err.response.status).send(err.response.data);
+                    return;
+                }
             }
             res.status(500).send(err);
         }
@@ -346,10 +348,12 @@ export default class CasesController {
             );
             res.status(response.status).json(response.data);
         } catch (err) {
-            logger.error(err);
-            if (err.response?.status && err.response?.data) {
-                res.status(err.response.status).send(err.response.data);
-                return;
+            if (err instanceof Error) logger.error(err);
+            if (axios.isAxiosError(err)) {
+                if (err.response?.status && err.response?.data) {
+                    res.status(err.response.status).send(err.response.data);
+                    return;
+                }
             }
             res.status(500).send(err);
         }
@@ -402,10 +406,12 @@ export default class CasesController {
             );
             res.status(response.status).json(response.data);
         } catch (err) {
-            logger.error(err);
-            if (err.response?.status && err.response?.data) {
-                res.status(err.response.status).send(err.response.data);
-                return;
+            if (err instanceof Error) logger.error(err);
+            if (axios.isAxiosError(err)) {
+                if (err.response?.status && err.response?.data) {
+                    res.status(err.response.status).send(err.response.data);
+                    return;
+                }
             }
             res.status(500).send(err);
         }
