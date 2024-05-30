@@ -98,7 +98,7 @@ export const mustBeAuthenticated = (
         res.status(200);
         return next();
     } else {
-        passport.authenticate('bearer', (err, user) => {
+        passport.authenticate('bearer', (err: any, user: Express.User | false | null) => {
             if (err) {
                 return next(err);
             }
@@ -145,7 +145,7 @@ export const mustHaveAnyRole = (requiredRoles: string[]) => {
             res.status(200);
             return next();
         } else {
-            passport.authenticate('bearer', (err, user) => {
+            passport.authenticate('bearer', (err: any, user: Express.User | false | null) => {
                 if (err) {
                     return next(err);
                 } else if (
@@ -176,7 +176,7 @@ interface GoogleProfile extends Profile {
     displayName: string;
     // List of emails belonging to the profile.
     // Unclear as to when multiple ones are possible.
-    emails: [{ value: string; verified: 'true' | 'false' }];
+    emails: [{ value: string; verified: boolean }];
 }
 
 /**
@@ -286,16 +286,18 @@ export class AuthController {
                         req.logIn(user, (err) => {
                             if (err) return next(err);
                         });
-                        loginLimiter.resetKey(req.ip);
+                        if (req.ip) loginLimiter.resetKey(req.ip);
                         res.status(200).json(user);
                     },
                 )(req, res, next);
             },
         );
 
-        this.router.get('/logout', (req: Request, res: Response): void => {
-            req.logout();
-            res.redirect('/');
+        this.router.get('/logout', (req: Request, res: Response, next: NextFunction): void => {
+            req.logout(function(err) {
+                if (err) { return next(err); }
+                res.redirect('/');
+            });
         });
 
         // Starts the authentication flow with Google OAuth.
@@ -480,7 +482,7 @@ export class AuthController {
                             .json({ message: 'Old password is incorrect' });
                     }
 
-                    resetPasswordLimiter.resetKey(req.ip);
+                    if (req.ip) resetPasswordLimiter.resetKey(req.ip);
 
                     updateFailedAttempts(
                         currentUser._id,
@@ -677,7 +679,7 @@ export class AuthController {
                         { returnDocument: 'after', includeResultMetadata: true },
                     );
 
-                    if (!result.ok) {
+                    if (!result.ok || !req.ip) {
                         logger.error(
                             `error resetting password for user ${userId}`,
                             result.lastErrorObject,
