@@ -94,26 +94,26 @@ export interface Location {
 }
 
 export interface Events {
-    dateEntry: string | null;
-    dateReported: string | null;
-    dateLastModified: string | null;
-    dateOnset?: string | null;
-    dateConfirmation?: string | null;
+    dateEntry: Date | string | null;
+    dateReported: Date | string | null;
+    dateLastModified: Date | string | null;
+    dateOnset?: Date | string | null;
+    dateConfirmation?: Date | string | null;
     confirmationMethod?: string;
-    dateOfFirstConsult?: string | null;
+    dateOfFirstConsult?: Date | string | null;
     hospitalized?: YesNo | '';
     reasonForHospitalization?: HospitalizationReason | '';
-    dateHospitalization?: string | null;
-    dateDischargeHospital?: string | null;
+    dateHospitalization?: Date | string | null;
+    dateDischargeHospital?: Date | string | null;
     intensiveCare?: YesNo | '';
-    dateAdmissionICU?: string | null;
-    dateDischargeICU?: string | null;
+    dateAdmissionICU?: Date | string | null;
+    dateDischargeICU?: Date | string | null;
     homeMonitoring?: YesNo | '';
     isolated?: YesNo | '';
-    dateIsolation?: string | null;
+    dateIsolation?: Date | string | null;
     outcome?: Outcome | '';
-    dateDeath?: string | null;
-    dateRecovered?: string | null;
+    dateDeath?: Date | string | null;
+    dateRecovered?: Date | string | null;
 }
 
 export interface PreexistingConditions {
@@ -134,7 +134,7 @@ export interface Transmission {
 
 export interface TravelHistory {
     travelHistory?: YesNo | '';
-    travelHistoryEntry?: string | null;
+    travelHistoryEntry?: Date | string | null;
     travelHistoryStart?: string;
     travelHistoryLocation?: string;
     travelHistoryCountry?: string;
@@ -237,7 +237,7 @@ interface PreexistingConditionsFormValues {
 interface VaccinationFormValues {
     vaccination?: YesNo | '';
     vaccineName?: string;
-    vaccineDate?: string | null;
+    vaccineDate?: Date | string | null;
     vaccineSideEffects?: string[];
 }
 

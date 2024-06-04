@@ -73,7 +73,7 @@ export default function TravelHistory(): JSX.Element {
                                 travelHistory: {
                                     ...values.travelHistory,
                                     travelHistoryEntry:
-                                        newValue?.toDateString() || undefined,
+                                        newValue || null,
                                 },
                             });
                         }}

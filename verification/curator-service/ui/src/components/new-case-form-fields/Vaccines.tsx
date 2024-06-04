@@ -70,7 +70,7 @@ export default function Vaccines(): JSX.Element {
                                 vaccination: {
                                     ...values.vaccination,
                                     vaccineDate:
-                                        newValue?.toDateString() || undefined,
+                                        newValue || null,
                                 },
                             });
                         }}
