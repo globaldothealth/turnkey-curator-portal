@@ -250,10 +250,14 @@
                         "additionalProperties": false,
                         "properties": {
                             "latitude": {
-                                "bsonType": "double"
+                                "bsonType": "number",
+                                "minimum": -90,
+                                "maximum": 90
                             },
                             "longitude": {
-                                "bsonType": "double"
+                                "bsonType": "number",
+                                "minimum": -180,
+                                "maximum": 180
                             }
                         }
                     },
