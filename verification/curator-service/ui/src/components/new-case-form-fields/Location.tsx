@@ -120,7 +120,6 @@ export default function Location(): JSX.Element {
                 setSelectedAdmin1(foundAdmin1Entry);
             }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [values.location.countryISO3, admin1Entries]);
 
     useEffect(() => {
@@ -177,8 +176,6 @@ export default function Location(): JSX.Element {
 
         // Update mapbox indicator for admin1
         setAdmin1AvailableOnMap(!!values.location.admin1WikiId);
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [values.location.admin1WikiId, values.location.admin1, admin2Entries]);
 
     useEffect(() => {
@@ -235,8 +232,6 @@ export default function Location(): JSX.Element {
 
         // Update mapbox indicator for admin2
         setAdmin2AvailableOnMap(!!values.location.admin2WikiId);
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [values.location.admin2WikiId, values.location.admin2, admin3Entries]);
 
     useEffect(() => {
@@ -258,8 +253,6 @@ export default function Location(): JSX.Element {
 
         // Update mapbox indicator for admin3
         setAdmin3AvailableOnMap(!!values.location.admin3WikiId);
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [values.location.admin3WikiId, values.location.admin3]);
 
     useEffect(() => {
@@ -326,15 +319,14 @@ export default function Location(): JSX.Element {
             'location.geometry.latitude',
             values.location.geocodeLocation.geometry?.latitude ||
                 values.location.geometry?.latitude ||
-                '',
+                undefined,
         );
         setFieldValue(
             'location.geometry.longitude',
             values.location.geocodeLocation.geometry?.longitude ||
                 values.location.geometry?.longitude ||
-                '',
+                undefined,
         );
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [values.location.geocodeLocation]);
 
     return (
@@ -486,7 +478,10 @@ export default function Location(): JSX.Element {
                             _: unknown,
                             newValue: adminEntry | null,
                         ): void => {
-                            setFieldValue('location.admin1', newValue?.name || '');
+                            setFieldValue(
+                                'location.admin1',
+                                newValue?.name || '',
+                            );
                             setFieldValue(
                                 'location.admin1WikiId',
                                 newValue?.wiki || '',
@@ -588,7 +583,10 @@ export default function Location(): JSX.Element {
                             _: unknown,
                             newValue: adminEntry | null,
                         ): void => {
-                            setFieldValue('location.admin2', newValue?.name || '');
+                            setFieldValue(
+                                'location.admin2',
+                                newValue?.name || '',
+                            );
                             setFieldValue(
                                 'location.admin2WikiId',
                                 newValue?.wiki || '',
@@ -690,7 +688,10 @@ export default function Location(): JSX.Element {
                             _: unknown,
                             newValue: adminEntry | null,
                         ): void => {
-                            setFieldValue('location.admin3', newValue?.name || '');
+                            setFieldValue(
+                                'location.admin3',
+                                newValue?.name || '',
+                            );
                             setFieldValue(
                                 'location.admin3WikiId',
                                 newValue?.wiki || '',
