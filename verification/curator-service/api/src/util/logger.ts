@@ -1,4 +1,5 @@
 import pino from 'pino';
+import pretty from 'pino-pretty'
 
 // The Pino team recommends against using pino-pretty/prettyPrint in
 // production. Without a prettifier, Pino logs JSON messages. This is faster,
@@ -7,6 +8,4 @@ import pino from 'pino';
 //
 // Instead, prettifying programmatically, since we only use it for HTTP errors,
 // as opposed to all requests.
-export const logger = pino({
-    prettyPrint: { colorize: process.env.NODE_ENV !== 'production' },
-});
+export const logger = pino(pretty({colorize: process.env.NODE_ENV !== 'production'}));

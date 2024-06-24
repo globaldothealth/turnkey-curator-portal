@@ -85,6 +85,7 @@ export const updateRoles = async (
             {
                 // Return the updated object.
                 returnDocument: 'after',
+                 includeResultMetadata: true,
             },
         );
         if (!result.ok || !result.value) {
