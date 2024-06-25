@@ -19,7 +19,7 @@ import {
     SortByOrder,
 } from '../util/case';
 import { logger } from '../util/logger';
-import stringify from 'csv-stringify/lib/sync';
+import { stringify } from 'csv-stringify/sync';
 import _, { forEach } from 'lodash';
 import { AgeBucket } from '../model/age-bucket';
 import { COUNTER_DOCUMENT_ID, IdCounter } from '../model/id-counter';
@@ -59,23 +59,26 @@ const caseFromDTO = async (receivedCase: CaseDTO) => {
 
     const user = await User.findOne({ email: receivedCase.curator?.email });
     if (user) {
-        logger.info(`User: ${JSON.stringify(user)}`)
+        logger.info(`User: ${JSON.stringify(user)}`);
         if (user.roles.includes(Role.JuniorCurator)) {
             aCase.curators = {
                 createdBy: {
                     name: user.name || '',
-                    email: user.email
+                    email: user.email,
                 },
             };
-        } else if (user.roles.includes(Role.Curator) || user.roles.includes(Role.Admin)) {
+        } else if (
+            user.roles.includes(Role.Curator) ||
+            user.roles.includes(Role.Admin)
+        ) {
             aCase.curators = {
                 createdBy: {
                     name: user.name || '',
-                    email: user.email
+                    email: user.email,
                 },
                 verifiedBy: {
                     name: user.name || '',
-                    email: user.email
+                    email: user.email,
                 },
             };
         }
@@ -99,7 +102,7 @@ const dtoFromCase = async (storedCase: CaseDocument) => {
     }
 
     if (ageRange) {
-        if(creator) {
+        if (creator) {
             if (verifier) {
                 dto = {
                     ...dto,
@@ -131,10 +134,8 @@ const dtoFromCase = async (storedCase: CaseDocument) => {
             demographics: {
                 ...dto.demographics!,
                 ageRange,
-            }
+            },
         };
-
-
 
         // although the type system can't see it, there's an ageBuckets property on the demographics DTO now
         delete ((dto as unknown) as {
@@ -516,8 +517,8 @@ export class CasesController {
             // Get total case cardinality
             const grandTotalCount = await Day0Case.countDocuments({
                 caseStatus: {
-                    $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
-                }
+                    $nin: [CaseStatus.OmitError, CaseStatus.Discarded],
+                },
             });
             if (grandTotalCount === 0) {
                 res.status(200).json({});
@@ -529,9 +530,9 @@ export class CasesController {
                 {
                     $match: {
                         caseStatus: {
-                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
-                        }
-                    }
+                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded],
+                        },
+                    },
                 },
                 {
                     $group: {
@@ -584,9 +585,9 @@ export class CasesController {
                             $ne: null,
                         },
                         caseStatus: {
-                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
-                        }
-                    }
+                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded],
+                        },
+                    },
                 },
                 {
                     $group: {
@@ -656,9 +657,9 @@ export class CasesController {
                 {
                     $match: {
                         caseStatus: {
-                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
-                        }
-                    }
+                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded],
+                        },
+                    },
                 },
                 {
                     $group: {
@@ -690,9 +691,9 @@ export class CasesController {
                 {
                     $match: {
                         caseStatus: {
-                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
-                        }
-                    }
+                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded],
+                        },
+                    },
                 },
                 {
                     $match: {

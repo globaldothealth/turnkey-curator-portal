@@ -24,12 +24,6 @@ let mongoServer: MongoMemoryServer;
 
 const curatorName = 'Casey Curatorio';
 const curatorUserEmail = 'case_curator@global.health';
-// const curatorMetadata = { 
-//     curator: {
-//         name: curatorName,
-//         email: curatorUserEmail
-//     }
-// };
 const curatorMetadata = { curator: { email: curatorUserEmail } };
 
 const minimalRequest = {
@@ -77,13 +71,11 @@ beforeAll(async () => {
     mockLocationServer.listen();
     mongoServer = new MongoMemoryServer();
     await createAgeBuckets();
-    curator = await User.create(
-        { 
-            name: curatorName,
-            email: curatorUserEmail,
-            roles: [Role.Curator]
-        }
-    );
+    curator = await User.create({
+        name: curatorName,
+        email: curatorUserEmail,
+        roles: [Role.Curator],
+    });
     minimalDay0CaseData = {
         ...minimalDay0CaseData,
         ...{ curators: { createdBy: curatorMetadata.curator } },
@@ -787,14 +779,12 @@ describe('POST', () => {
         newCaseWithEntryId.caseReference.sourceEntryId = 'newId';
 
         const changedCaseWithEntryId = new Day0Case(fullCase);
-        await changedCaseWithEntryId.save();
         changedCaseWithEntryId.pathogen = 'Pneumonia';
 
         const unchangedCaseWithEntryId = new Day0Case(fullCase);
         unchangedCaseWithEntryId.caseReference.sourceEntryId =
             'unchangedEntryId';
         unchangedCaseWithEntryId.location.country = 'FR';
-        await unchangedCaseWithEntryId.save();
 
         const res = await request(app)
             .post('/api/cases/batchUpsert')
@@ -1013,10 +1003,7 @@ describe('POST', () => {
         const res = await request(app)
             .post('/api/cases/batchUpsert')
             .send({
-                cases: [
-                    minimalDay0CaseData,
-                    invalidRequest,
-                ],
+                cases: [minimalDay0CaseData, invalidRequest],
                 ...curatorMetadata,
             })
             .expect(207, /Day0Case validation failed/);
