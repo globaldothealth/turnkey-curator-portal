@@ -778,9 +778,16 @@ describe('POST', () => {
         const newCaseWithEntryId = new Day0Case(fullCase);
         newCaseWithEntryId.caseReference.sourceEntryId = 'newId';
 
+        const changedCaseWithEntryId_ = new Day0Case(fullCase);
+        await changedCaseWithEntryId_.save()
         const changedCaseWithEntryId = new Day0Case(fullCase);
         changedCaseWithEntryId.pathogen = 'Pneumonia';
 
+        const unchangedCaseWithEntryId_ = new Day0Case(fullCase);
+        unchangedCaseWithEntryId_.caseReference.sourceEntryId =
+            'unchangedEntryId';
+        unchangedCaseWithEntryId_.location.country = 'FR';
+        await unchangedCaseWithEntryId_.save()
         const unchangedCaseWithEntryId = new Day0Case(fullCase);
         unchangedCaseWithEntryId.caseReference.sourceEntryId =
             'unchangedEntryId';
@@ -800,10 +807,10 @@ describe('POST', () => {
             .expect(200);
 
         const unchangedDbCase = await Day0Case.findById(
-            unchangedCaseWithEntryId._id,
+            unchangedCaseWithEntryId_._id,
         );
         expect(unchangedDbCase?.toJSON()).toEqual(
-            unchangedCaseWithEntryId.toJSON(),
+            unchangedCaseWithEntryId_.toJSON(),
         );
         expect(res.body.numCreated).toBe(2); // Both new cases were created.
         expect(res.body.numUpdated).toBe(1); // Only changed case was updated.
