@@ -68,7 +68,7 @@ async function createAgeBuckets() {
 }
 
 beforeAll(async () => {
-    mockLocationServer.listen();
+    mockLocationServer.listen({ onUnhandledRequest: 'bypass' });
     mongoServer = new MongoMemoryServer();
     await createAgeBuckets();
     curator = await User.create({
@@ -540,8 +540,7 @@ describe('POST', () => {
                 admin1: 'Florida',
                 admin2: 'Collier County',
                 admin3: 'Naples',
-                query:
-                    'Naples, Collier County, Florida, United States of America',
+                query: 'Naples, Collier County, Florida, United States of America',
             },
         };
 
@@ -579,8 +578,7 @@ describe('POST', () => {
                     latitude: 26.1295,
                     longitude: -81.8056,
                 },
-                query:
-                    'Naples, Collier County, Florida, United States of America',
+                query: 'Naples, Collier County, Florida, United States of America',
             },
         };
 
@@ -779,7 +777,7 @@ describe('POST', () => {
         newCaseWithEntryId.caseReference.sourceEntryId = 'newId';
 
         const changedCaseWithEntryId_ = new Day0Case(fullCase);
-        await changedCaseWithEntryId_.save()
+        await changedCaseWithEntryId_.save();
         const changedCaseWithEntryId = new Day0Case(fullCase);
         changedCaseWithEntryId.pathogen = 'Pneumonia';
 
@@ -787,7 +785,7 @@ describe('POST', () => {
         unchangedCaseWithEntryId_.caseReference.sourceEntryId =
             'unchangedEntryId';
         unchangedCaseWithEntryId_.location.country = 'FR';
-        await unchangedCaseWithEntryId_.save()
+        await unchangedCaseWithEntryId_.save();
         const unchangedCaseWithEntryId = new Day0Case(fullCase);
         unchangedCaseWithEntryId.caseReference.sourceEntryId =
             'unchangedEntryId';
