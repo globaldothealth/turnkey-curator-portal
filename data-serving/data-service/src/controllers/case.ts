@@ -88,7 +88,7 @@ const caseFromDTO = async (receivedCase: CaseDTO) => {
 };
 
 const dtoFromCase = async (storedCase: CaseDocument) => {
-    let dto = (storedCase as unknown) as CaseDTO;
+    let dto = storedCase as unknown as CaseDTO;
     const ageRange = await caseAgeRange(storedCase);
     const creator = await User.findOne({
         _id: storedCase.curators?.createdBy,
@@ -138,9 +138,11 @@ const dtoFromCase = async (storedCase: CaseDocument) => {
         };
 
         // although the type system can't see it, there's an ageBuckets property on the demographics DTO now
-        delete ((dto as unknown) as {
-            demographics: { ageBuckets?: [ObjectId] };
-        }).demographics.ageBuckets;
+        delete (
+            dto as unknown as {
+                demographics: { ageBuckets?: [ObjectId] };
+            }
+        ).demographics.ageBuckets;
     }
 
     return dto;
@@ -1416,13 +1418,11 @@ export const casesMatchingSearchQuery = (opts: {
     }
 
     // Always search with case-insensitivity.
-    const casesQuery: Query<CaseDocument[], CaseDocument> = Day0Case.find(
-        queryOpts,
-    );
+    const casesQuery: Query<CaseDocument[], CaseDocument> =
+        Day0Case.find(queryOpts);
 
-    const countQuery: Query<number, CaseDocument> = Day0Case.countDocuments(
-        queryOpts,
-    ).limit(countLimit);
+    const countQuery: Query<number, CaseDocument> =
+        Day0Case.countDocuments(queryOpts).limit(countLimit);
 
     // Fill in keyword filters.
     parsedSearch.filters.forEach((f) => {
