@@ -41,11 +41,11 @@ services:
       # We can't use curator:3001 here because that's an internal DNS,
       # not accessible from the user's browser.
       # In production simply /auth/google would work.
-      REACT_APP_LOGIN_URL: "http://localhost:3001/auth/google"
-      REACT_APP_PUBLIC_MAPBOX_TOKEN: "${REACT_APP_PUBLIC_MAPBOX_TOKEN}"
-      REACT_APP_POLICY_PUBLIC_ID: "${REACT_APP_POLICY_PUBLIC_ID}"
-      REACT_APP_COOKIE_CONSENT_PUBLIC_ID: "${REACT_APP_COOKIE_CONSENT_PUBLIC_ID}"
-      REACT_APP_DATA_DICTIONARY_LINK: "${REACT_APP_DATA_DICTIONARY_LINK}"
+      VITE_APP_LOGIN_URL: "http://localhost:3001/auth/google"
+      VITE_APP_PUBLIC_MAPBOX_TOKEN: "${VITE_APP_PUBLIC_MAPBOX_TOKEN}"
+      VITE_APP_POLICY_PUBLIC_ID: "${VITE_APP_POLICY_PUBLIC_ID}"
+      VITE_APP_COOKIE_CONSENT_PUBLIC_ID: "${VITE_APP_COOKIE_CONSENT_PUBLIC_ID}"
+      VITE_APP_DATA_DICTIONARY_LINK: "${VITE_APP_DATA_DICTIONARY_LINK}"
       ENABLE_LOCAL_AUTH: "true"
   localstack:
     image: localstack/localstack-pro

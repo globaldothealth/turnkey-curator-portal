@@ -225,6 +225,8 @@ const initialValuesFromCase = (
         },
         events: {
             ...c.events,
+            dateEntry: toLocalDate(c.events.dateEntry),
+            dateReported: toLocalDate(c.events.dateReported),
             dateOnset: toLocalDate(c.events.dateOnset),
             dateConfirmation: toLocalDate(c.events.dateConfirmation),
             dateOfFirstConsult: toLocalDate(c.events.dateOfFirstConsult),
@@ -438,45 +440,31 @@ export default function CaseForm(props: Props): JSX.Element {
             },
             events: {
                 ...values.events,
-                dateEntry:
-                    toUTCDate(values.events.dateEntry || undefined) || null,
-                dateReported:
-                    toUTCDate(values.events.dateReported || undefined) || null,
-                dateOnset: toUTCDate(values.events.dateOnset || undefined),
-                dateConfirmation: toUTCDate(
-                    values.events.dateConfirmation || undefined,
-                ),
+                dateEntry: toUTCDate(values.events.dateEntry) || null,
+                dateReported: toUTCDate(values.events.dateReported) || null,
+                dateOnset: toUTCDate(values.events.dateOnset),
+                dateConfirmation: toUTCDate(values.events.dateConfirmation),
                 confirmationMethod:
                     values.events.confirmationMethod || undefined,
-                dateOfFirstConsult: toUTCDate(
-                    values.events.dateOfFirstConsult || undefined,
-                ),
+                dateOfFirstConsult: toUTCDate(values.events.dateOfFirstConsult),
                 hospitalized: values.events.hospitalized || undefined,
                 reasonForHospitalization:
                     values.events.reasonForHospitalization || undefined,
                 dateHospitalization: toUTCDate(
-                    values.events.dateHospitalization || undefined,
+                    values.events.dateHospitalization,
                 ),
                 dateDischargeHospital: toUTCDate(
-                    values.events.dateDischargeHospital || undefined,
+                    values.events.dateDischargeHospital,
                 ),
                 intensiveCare: values.events.intensiveCare || undefined,
-                dateAdmissionICU: toUTCDate(
-                    values.events.dateAdmissionICU || undefined,
-                ),
-                dateDischargeICU: toUTCDate(
-                    values.events.dateDischargeICU || undefined,
-                ),
+                dateAdmissionICU: toUTCDate(values.events.dateAdmissionICU),
+                dateDischargeICU: toUTCDate(values.events.dateDischargeICU),
                 homeMonitoring: values.events.homeMonitoring || undefined,
                 isolated: values.events.isolated || undefined,
-                dateIsolation: toUTCDate(
-                    values.events.dateIsolation || undefined,
-                ),
+                dateIsolation: toUTCDate(values.events.dateIsolation),
                 outcome: values.events.outcome || undefined,
-                dateDeath: toUTCDate(values.events.dateDeath || undefined),
-                dateRecovered: toUTCDate(
-                    values.events.dateRecovered || undefined,
-                ),
+                dateDeath: toUTCDate(values.events.dateDeath),
+                dateRecovered: toUTCDate(values.events.dateRecovered),
             },
             preexistingConditions: {
                 ...values.preexistingConditions,
@@ -490,9 +478,7 @@ export default function CaseForm(props: Props): JSX.Element {
                 ...values.vaccination,
                 vaccineSideEffects: vaccineSideEffects.join(', '),
                 vaccination: values.vaccination.vaccination || undefined,
-                vaccineDate: toUTCDate(
-                    values.vaccination.vaccineDate || undefined,
-                ),
+                vaccineDate: toUTCDate(values.vaccination.vaccineDate),
             },
             transmission: {
                 ...values.transmission,
@@ -504,7 +490,7 @@ export default function CaseForm(props: Props): JSX.Element {
                 ...values.travelHistory,
                 travelHistory: values.travelHistory.travelHistory || undefined,
                 travelHistoryEntry: toUTCDate(
-                    values.travelHistory.travelHistoryEntry || undefined,
+                    values.travelHistory.travelHistoryEntry,
                 ),
             },
             location: {

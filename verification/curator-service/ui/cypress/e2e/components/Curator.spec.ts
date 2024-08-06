@@ -62,6 +62,11 @@ describe('Curator', function () {
         cy.get('div[data-testid="caseReference"]').type('www.example.com');
         cy.contains('www.example.com').click();
         cy.get('input[name="caseReference.isGovernmentSource"]').click()
+        cy.get('button[data-testid="add-additional-source"]').click();
+        cy.get('div[data-testid="additional-source-0"]').type('www.example2.com');
+        cy.get('button[data-testid="add-additional-source"]').click();
+        cy.get('div[data-testid="additional-source-1"]').type('www.example3.com');
+        cy.get('span[data-testid="government-source-1"]').click();
 
         // LOCATION
         cy.get('div[data-testid="location.geocodeLocation"]').type('France', { delay: 0});
@@ -221,6 +226,18 @@ describe('Curator', function () {
                 cy.get('input[type="text"]').should(
                     'have.value',
                     'www.example.com',
+                );
+            });
+            cy.get('div[data-testid="additional-source-0"]').within(() => {
+                cy.get('input[type="text"]').should(
+                    'have.value',
+                    'www.example2.com',
+                );
+            });
+            cy.get('div[data-testid="additional-source-1"]').within(() => {
+                cy.get('input[type="text"]').should(
+                    'have.value',
+                    'www.example3.com',
                 );
             });
 
@@ -430,7 +447,9 @@ describe('Curator', function () {
             // Curator's comment.
             cy.contains('This case should be consulted with Supervisor.');
             // Case data.
-            cy.contains('www.example.com');
+            cy.contains('www.example.com (Government Source)');
+            cy.contains('www.example2.com');
+            cy.contains('www.example3.com (Government Source)');
             // Demographics.
             // TODO UI for demographics.age needs redesigning
             cy.contains('male');
