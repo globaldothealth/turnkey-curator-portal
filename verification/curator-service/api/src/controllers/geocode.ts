@@ -89,7 +89,7 @@ export default class GeocodeProxy {
                     this.locationServiceURL + `/geocode/countryName?c=${code}`,
                 );
                 const geocodeName = res.data;
-                if (names.indexOf(geocodeName) < 0) {
+                if (names && names.indexOf(geocodeName) < 0) {
                     names.push(geocodeName);
                 }
             } catch (err) {
