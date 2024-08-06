@@ -3,6 +3,7 @@ import * as core from 'express-serve-static-core';
 import { AuthController, mustHaveAnyRole } from '../src/controllers/auth';
 import { Request, Response } from 'express';
 import { sessions, users } from '../src/model/user';
+import session from 'express-session';
 
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import makeApp from '../src/index';
@@ -160,6 +161,7 @@ describe('mustHaveAnyRole', () => {
         );
         authController.configurePassport('foo', 'bar');
         authController.configureLocalAuth();
+        localApp.use(session({secret: 'foo'}));
         localApp.use(passport.initialize());
         localApp.use(passport.session());
         localApp.use('/auth', authController.router);

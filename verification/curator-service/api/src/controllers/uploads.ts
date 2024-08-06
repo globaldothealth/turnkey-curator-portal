@@ -59,7 +59,7 @@ export default class UploadsController {
                         uploads: upload,
                     },
                 },
-                { returnDocument: 'after' },
+                { returnDocument: 'after', includeResultMetadata: true },
             );
             const updatedSource = result.value!;
             const update =
@@ -125,7 +125,7 @@ export default class UploadsController {
                         [`uploads.${uploadIndex}`]: upload,
                     },
                 },
-                { returnDocument: 'after' },
+                { returnDocument: 'after', includeResultMetadata: true },
             );
             if (upload.status === 'ERROR') {
                 this.sendErrorNotification(result.value!, upload);

@@ -1,4 +1,5 @@
 import { parse } from 'date-fns';
+import dayjs from "dayjs";
 
 export default function renderDate(
     date: string | Date | undefined | null,
@@ -14,8 +15,13 @@ export default function renderDate(
 }
 
 // Changes the date to be in UTC while maintaining the current date values
-export function toUTCDate(dateString: string | undefined): string | undefined {
+export function toUTCDate(dateString: Date | string | undefined | null): string | undefined {
     if (!dateString) return undefined;
+    if (dateString instanceof Date) {
+        return new Date(
+            Date.UTC(dateString.getFullYear(), dateString.getMonth(), dateString.getDate()),
+        ).toString();
+    }
 
     const date = new Date(dateString);
     // The datepicker sometimes returns the date at the
@@ -29,14 +35,13 @@ export function toUTCDate(dateString: string | undefined): string | undefined {
 }
 
 export function toLocalDate(
-    dateString: string | null | undefined,
-): string | undefined {
-    if (!dateString) return undefined;
+    dateString: Date | string | null | undefined,
+): Date | null {
+    if (!dateString) return null;
+    if (dateString instanceof Date) return dateString;
 
     // Parse date as local timezone to properly display it
-    const date = parse(dateString.slice(0, 10), 'yyyy-MM-dd', new Date());
-
-    return date.toString();
+    return dayjs(dateString.split('T')[0]).toDate()
 }
 
 export function renderDateRange(range?: {
