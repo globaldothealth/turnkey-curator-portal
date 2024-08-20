@@ -54,9 +54,9 @@ interface IMapLink {
  * supply that value for the map link here.
  */
 export const MapLink: IMapLink = {
-    local: env.VITE_APP_MAP_LINK_LOCAL,
-    locale2e: env.VITE_APP_MAP_LINK_LOCAL_E2E,
-    dev: env.VITE_APP_MAP_LINK_DEV,
-    qa: env.VITE_APP_MAP_LINK_QA,
-    prod: env.VITE_APP_MAP_LINK_PROD,
+    local: 'https://map.mpox-2024.global.health/',
+    locale2e: 'https://map.mpox-2024.global.health/',
+    dev: 'https://map.mpox-2024.global.health/',
+    qa: 'https://map.mpox-2024.global.health/',
+    prod: 'https://map.mpox-2024.global.health/',
 };
