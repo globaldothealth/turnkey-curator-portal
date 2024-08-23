@@ -38,10 +38,6 @@
     "@types/lodash": "^4.17.4",
     "@types/node": "^20.12.13",
     "@types/nodemailer": "^6.4.15",
-    "@types/passport": "^1.0.16",
-    "@types/passport-google-oauth20": "^2.0.16",
-    "@types/passport-http-bearer": "^1.0.41",
-    "@types/passport-local": "^1.0.38",
     "@types/pino": "^7.0.5",
     "@types/supertest": "^6.0.2",
     "@types/yamljs": "^0.2.34",
@@ -63,6 +59,10 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "@types/passport": "^1.0.4",
+    "@types/passport-google-oauth20": "^2.0.4",
+    "@types/passport-http-bearer": "^1.0.36",
+    "@types/passport-local": "^1.0.33",
     "@types/swagger-ui-express": "^4.1.6",
     "aws-sdk": "^2.1631.0",
     "axios": "^1.7.2",
