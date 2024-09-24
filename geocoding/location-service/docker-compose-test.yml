@@ -6,6 +6,6 @@ services:
       context: .
       dockerfile: Dockerfile-test
   mongo:
-    image: mongo:5.0
+    image: mongo:6.0.17
     ports:
       - "27017:27017"
