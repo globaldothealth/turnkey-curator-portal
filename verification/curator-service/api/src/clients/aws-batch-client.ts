@@ -116,7 +116,7 @@ export default class AwsBatchClient {
             const ret = { jobName: res.jobName };
             return ret;
         } catch (e) {
-            logger.error(e);
+            if (e instanceof Error) logger.error(e);
             throw e;
         }
     };
@@ -135,7 +135,7 @@ export default class AwsBatchClient {
                     }) || []
             );
         } catch (e) {
-            logger.error(e);
+            if (e instanceof Error) logger.error(e);
             throw e;
         }
     };

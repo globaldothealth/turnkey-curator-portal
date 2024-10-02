@@ -49,7 +49,7 @@ describe('Bulk upload form', function () {
 
         // Case data
         cy.contains('www.bulksource.com');
-        cy.contains('NO');
+        cy.get('Government Source').should('not.exist');
         cy.contains('Data upload IDs')
             .parent()
             .parent()

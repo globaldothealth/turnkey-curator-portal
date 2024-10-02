@@ -433,17 +433,14 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             <RowHeader title="Case status" />
                             <RowContent content={props.c.caseStatus} />
 
-                            <RowHeader title="Data source URL" />
+                            <RowHeader title="Data source" />
                             <RowContent
                                 content={props.c.caseReference?.sourceUrl || ''}
                                 isLink
-                            />
-                            <RowHeader title="Government Source" />
-                            <RowContent
-                                content={
+                                linkComment={
                                     props.c.caseReference?.isGovernmentSource
-                                        ? 'YES'
-                                        : 'NO'
+                                        ? 'Government Source'
+                                        : undefined
                                 }
                             />
                             {props.c.caseReference.additionalSources &&
@@ -453,11 +450,16 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                                     (source, idx) => (
                                         <>
                                             <RowHeader
-                                                title={`Source ${idx + 2}`}
+                                                title={`Additional source ${idx + 2}`}
                                             />
                                             <RowContent
                                                 content={source.sourceUrl || ''}
                                                 isLink
+                                                linkComment={
+                                                    source.isGovernmentSource
+                                                        ? 'Government Source'
+                                                        : undefined
+                                                }
                                             />
                                         </>
                                     ),
@@ -536,15 +538,19 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
 
                             <RowHeader title="Latitude" />
                             <RowContent
-                                content={`${props.c.location.geometry?.latitude?.toFixed(
-                                    4,
-                                ) || ''}`}
+                                content={`${
+                                    props.c.location.geometry?.latitude?.toFixed(
+                                        4,
+                                    ) || ''
+                                }`}
                             />
                             <RowHeader title="Longitude" />
                             <RowContent
-                                content={`${props.c.location.geometry?.longitude?.toFixed(
-                                    4,
-                                ) || ''}`}
+                                content={`${
+                                    props.c.location.geometry?.longitude?.toFixed(
+                                        4,
+                                    ) || ''
+                                }`}
                             />
 
                             <RowHeader title="Comment" />
@@ -957,6 +963,7 @@ function RowContent(props: {
     content?: string;
     isLink?: boolean;
     isMultiline?: boolean;
+    linkComment?: string;
 }): JSX.Element {
     const searchQuery = useSelector(selectSearchQuery);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -987,6 +994,7 @@ function RowContent(props: {
                         autoEscape={true}
                         textToHighlight={props.content ?? ''}
                     />
+                    {props.linkComment && ` (${props.linkComment})`}
                 </a>
             ) : (
                 <Highlighter

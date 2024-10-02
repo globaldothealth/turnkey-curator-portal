@@ -146,6 +146,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
 
 function ProfileMenu(props: { user: User; version: string }): JSX.Element {
     const dispatch = useAppDispatch();
+    const user = useAppSelector(selectUser);
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
@@ -156,6 +157,10 @@ function ProfileMenu(props: { user: User; version: string }): JSX.Element {
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+    useCallback((): void => {
+        dispatch(getUserProfile());
+    }, [user]);
 
     const { classes } = menuStyles();
 

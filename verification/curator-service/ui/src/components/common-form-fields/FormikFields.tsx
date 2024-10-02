@@ -2,6 +2,7 @@ import axios from 'axios';
 import { FastField, Field, useFormikContext } from 'formik';
 import { Select, TextField } from 'formik-mui';
 import { get } from 'lodash';
+import dayjs from 'dayjs';
 import {
     Autocomplete,
     FormControl,
@@ -196,7 +197,8 @@ export function DateField(props: DateFieldProps): JSX.Element {
     const { classes } = useStyles();
 
     const dateValue =
-        typeof props.value === 'string' ? new Date(props.value) : props.value;
+        // We cut the time part of the date string to avoid timezone issues
+        typeof props.value === 'string' ? dayjs(props.value?.split('T')[0]).toDate() : props.value;
 
     return (
         <div className={classes.fieldRow}>

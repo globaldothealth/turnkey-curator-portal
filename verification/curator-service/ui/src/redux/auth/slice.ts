@@ -157,6 +157,7 @@ const authSlice = createSlice({
         // LOGOUT
         builder.addCase(logout.fulfilled, (state) => {
             state.user = undefined;
+            localStorage.removeItem('user');
         });
 
         // CHANGE PASSWORD
