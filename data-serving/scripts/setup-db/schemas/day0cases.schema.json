@@ -142,6 +142,9 @@
                             "properties": {
                                 "sourceUrl": {
                                     "bsonType": "string"
+                                },
+                                "isGovernmentSource": {
+                                    "bsonType": "bool"
                                 }
                             }
                         }
