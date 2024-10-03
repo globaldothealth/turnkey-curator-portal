@@ -203,7 +203,7 @@ export default function SearchBar({
                         }
                     }}
                     placeholder="Fulltext search"
-                    value={searchInput}
+                    value={decodeURI(searchInput)}
                     variant="outlined"
                     fullWidth
                     InputProps={{
@@ -254,6 +254,7 @@ export default function SearchBar({
                                     <IconButton
                                         color="primary"
                                         aria-label="clear search"
+                                        id="clear-search"
                                         onClick={(): void => {
                                             setSearchInput('');
                                             navigate({
