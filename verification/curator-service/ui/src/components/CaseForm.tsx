@@ -502,7 +502,7 @@ export default function CaseForm(props: Props): JSX.Element {
             symptoms: symptoms.join(', '),
         };
 
-        let newCaseIds = [];
+        let newCaseIds: number[] = [];
         try {
             // Update or create depending on the presence of the initial case ID.
             if (props.initialCase?._id) {
@@ -516,13 +516,14 @@ export default function CaseForm(props: Props): JSX.Element {
                     `/api/cases?num_cases=${numCases}`,
                     newCase,
                 );
-                if (numCases === 1) {
-                    newCaseIds = [postResponse.data._id];
-                } else {
-                    newCaseIds = postResponse.data.cases.map(
-                        (c: Day0Case) => c._id,
-                    );
-                }
+                newCaseIds = [postResponse.data._id];
+                // if (numCases === 1) {
+                //     newCaseIds = [postResponse.data._id];
+                // } else {
+                //     newCaseIds = postResponse.data.cases.map(
+                //         (c: Day0Case) => c._id,
+                //     );
+                // }
             }
             setErrorMessage('');
         } catch (e) {

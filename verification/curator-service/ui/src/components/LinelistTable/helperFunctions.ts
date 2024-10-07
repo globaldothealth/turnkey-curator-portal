@@ -1,5 +1,6 @@
 export const labels = [
     'Case ID',
+    'Case count',
     'Verified',
     'Date Modified',
     'Last Modified By',
@@ -17,6 +18,7 @@ export const labels = [
 
 export const createData = (
     caseId: string,
+    caseCount: number,
     verified: boolean,
     dateModified: string,
     lastModifiedBy: string,
@@ -38,6 +40,7 @@ export const createData = (
 ) => {
     return {
         age: age || '',
+        caseCount: caseCount || 1,
         caseId: caseId || '',
         caseStatus: caseStatus || '',
         comment: comment || '',

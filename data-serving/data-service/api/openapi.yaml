@@ -721,6 +721,11 @@ components:
                         - suspected
                         - discarded
                         - omit_error
+                caseCount:
+                    description: >
+                        Number of cases with the same data
+                    type: integer
+                    minimum: 1
                 comment:
                     type: string
                 caseReference:

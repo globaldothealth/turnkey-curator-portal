@@ -757,6 +757,7 @@ export class CasesController {
             const curator = req.body.curator.email;
             const receivedCase = {
                 ...req.body,
+                caseCount: numCases,
                 revisionMetadata: {
                     revisionNumber: 0,
                     creationMetadata: {
@@ -778,18 +779,19 @@ export class CasesController {
                 await c.validate();
                 result = c;
             } else {
-                if (numCases === 1) {
-                    result = await c.save();
-                } else {
-                    const newCases: CaseDocument[] = [];
-                    for (let i = 0; i < numCases; i++) {
-                        const multiCaseInstance = new Day0Case(
-                            await caseFromDTO(receivedCase),
-                        );
-                        newCases.push(await multiCaseInstance.save());
-                    }
-                    result = { cases: newCases };
-                }
+                result = await c.save();
+                // if (numCases === 1) {
+                //     result = await c.save();
+                // } else {
+                //     const newCases: CaseDocument[] = [];
+                //     for (let i = 0; i < numCases; i++) {
+                //         const multiCaseInstance = new Day0Case(
+                //             await caseFromDTO(receivedCase),
+                //         );
+                //         newCases.push(await multiCaseInstance.save());
+                //     }
+                //     result = { cases: newCases };
+                // }
             }
 
             res.status(201).json(result);

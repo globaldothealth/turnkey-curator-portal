@@ -104,6 +104,7 @@ const LinelistTable = () => {
         cases.map((data) => {
             return createData(
                 data._id || '',
+                data.caseCount || 1,
                 !!data.curators?.verifiedBy || false,
                 renderDate(data.revisionMetadata?.updateMetadata?.date) ||
                     renderDate(data.revisionMetadata?.creationMetadata?.date) ||
@@ -380,6 +381,9 @@ const LinelistTable = () => {
                                         )}
                                         <TableCell align="left">
                                             {row.caseId}
+                                        </TableCell>
+                                        <TableCell align="left">
+                                            {row.caseCount}
                                         </TableCell>
                                         <TableCell
                                             align="left"
