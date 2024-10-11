@@ -61,6 +61,40 @@ export default class CasesController {
         }
     };
 
+    /** List bundled simply forwards the request to the data service */
+    listBundled = async (req: Request, res: Response): Promise<void> => {
+        let query;
+        if (req.url === defaultInputQuery) {
+            query = defaultOutputQuery;
+        } else {
+            query = req.url;
+            logger.info(`Applying filter: ${query}`);
+        }
+        try {
+            const response = await axios.get(
+                this.dataServerURL + '/api' + query,
+            );
+            if (response.status >= 400) {
+                logger.error(
+                    `A server error occurred when trying to list bundled data using URL: ${query}. Response status code: ${response.status}`,
+                );
+            }
+            res.status(response.status).json(response.data);
+        } catch (e) {
+            const err = e as AxiosError;
+
+            logger.error(
+                `Exception thrown by axios accessing URL: ${query}`,
+                err,
+            );
+            if (err.response?.status && err.response?.data) {
+                res.status(err.response.status).send(err.response.data);
+                return;
+            }
+            res.status(501).send(err);
+        }
+    };
+
     private logOutcomeOfAppendingDownloadToUser(
         userId: string,
         result: ModifyResult<IUser>,
@@ -676,6 +710,32 @@ export default class CasesController {
                     curator: { email: (req.user as IUser).email },
                 },
             );
+            res.status(response.status).json(response.data);
+        } catch (e) {
+            const err = e as AxiosError;
+            if (err.response?.status && err.response?.data) {
+                res.status(err.response.status).send(err.response.data);
+                return;
+            }
+            res.status(500).send(err);
+        }
+    };
+
+    /**
+     * verify bundled forwards the query to the data service.
+     * It does set the curator in the request to the data service based on the
+     * currently logged-in user.
+     */
+    verifyBundled = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const response = await axios.post(
+                this.dataServerURL + '/api' + req.url,
+                {
+                    ...req.body,
+                    curator: { email: (req.user as IUser).email },
+                },
+            );
+
             res.status(response.status).json(response.data);
         } catch (e) {
             const err = e as AxiosError;

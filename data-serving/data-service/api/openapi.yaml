@@ -368,6 +368,91 @@ paths:
                     $ref: '#/components/responses/403'
                 '500':
                     $ref: '#/components/responses/500'
+    /cases/bundled:
+        get:
+            summary: Lists cases
+            tags: [Case]
+            operationId: listCases
+            parameters:
+                - name: page
+                  in: query
+                  description: The pages of cases to skip before starting to collect the result set
+                  required: false
+                  schema:
+                      type: integer
+                      format: int32
+                      minimum: 1
+                      default: 1
+                - name: limit
+                  in: query
+                  description: The number of items to return
+                  required: false
+                  schema:
+                      type: integer
+                      format: int32
+                      minimum: 1
+                      maximum: 100
+                      default: 10
+                - name: count_limit
+                  in: query
+                  description: The maximum number of documents that will be counted in mongoDB to make queries faster
+                  required: false
+                  schema:
+                      type: integer
+                      format: int32
+                      minimum: 100
+                      default: 10000
+                      maximum: 50000
+                - name: sort_by
+                  in: query
+                  description: Keyword to sort by
+                  required: false
+                  schema:
+                      type: string
+                - name: order
+                  in: query
+                  description: Sorting order
+                  required: false
+                  schema:
+                      type: string
+                - name: verification_status
+                  in: query
+                  description: Verification status of bundled cases
+                  required: false
+                  schema:
+                      type: boolean
+                - name: q
+                  in: query
+                  description: The search query
+                  required: false
+                  schema:
+                      type: string
+                  examples:
+                      'full text search':
+                          value: 'this -butnotthis'
+                          summary: Full text search with items that must or must not be present.
+                      keywords:
+                          value: 'curator:foo@bar.com,baz@meh.com country:fr'
+                          summary: >
+                              values are OR'ed for the same keyword and all keywords are AND'ed.
+                              Keyword values can be quoted for multi-words matches and concatenated
+                              with a comma to union them. Bare words are compared for equality, e.g.
+                              country:de. The special character '*' matches any value, e.g. 
+                              variant:* returns any case where the variant is not empty.
+                              Supported keywords are: curator, gender, nationality, occupation,
+                              country, outcome, caseid, uploadid, sourceid, sourceurl, verificationstatus,
+                              admin1, admin2, admin3, variant
+            responses:
+                '200':
+                    $ref: '#/components/responses/200CaseBundleArray'
+                '400':
+                    $ref: '#/components/responses/400'
+                '403':
+                    $ref: '#/components/responses/403'
+                '422':
+                    $ref: '#/components/responses/422'
+                '500':
+                    $ref: '#/components/responses/500'
     /cases/symptoms:
         get:
             summary: Lists most frequently used symptoms
@@ -561,6 +646,36 @@ paths:
                     $ref: '#/components/responses/403'
                 '404':
                     $ref: '#/components/responses/404'
+                '422':
+                    $ref: '#/components/responses/422'
+                '500':
+                    $ref: '#/components/responses/500'
+    /cases/verify/bundled:
+        post:
+            summary: >
+                Verifies multiple case bundles.
+            tags: [Case]
+            operationId: verifyBundled
+            requestBody:
+                description: Case bundles to verify
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                caseBundleIds:
+                                    description: Ids of case bundles to verify
+                                    type: array
+                                    items:
+                                        type: string
+            responses:
+                '200':
+                    $ref: '#/components/responses/200Case'
+                '400':
+                    $ref: '#/components/responses/400'
+                '403':
+                    $ref: '#/components/responses/403'
                 '422':
                     $ref: '#/components/responses/422'
                 '500':
@@ -885,6 +1000,73 @@ components:
                             type: string
                 pathogen:
                     type: string
+        CaseBundle:
+            description: A single line-list case.
+            properties:
+                _id:
+                    type: object
+                caseCount:
+                    type: number
+                    minimum: 1
+                dateModified:
+                    $ref: '#/components/schemas/Date'
+                dateCreated:
+                    $ref: '#/components/schemas/Date'
+                modifiedBy:
+                    type: string
+                createdBy:
+                    type: string
+                caseStatus:
+                    description: >
+                        Status of the case
+                    type: string
+                    enum:
+                        - confirmed
+                        - suspected
+                        - discarded
+                        - omit_error
+                dateEntry:
+                    $ref: '#/components/schemas/Date'
+                dateReported:
+                    $ref: '#/components/schemas/Date'
+                countryISO3:
+                    type: string
+                    minLength: 3
+                    maxLength: 3
+                    description: ISO 3166-1 alpha-3 code for a country.
+                    example: GBR
+                country:
+                    type: string
+                    description: name of a country
+                admin1:
+                    type: string
+                admin2:
+                    type: string
+                admin3:
+                    type: string
+                location:
+                    type: string
+                    description: exact location
+                ageRange:
+                    type: object
+                    nullable: true
+                    properties:
+                        start:
+                            type: number
+                        end:
+                            type: number
+                gender:
+                    type: string
+                    nullable: true
+                    enum: [ null, male, female, other ]
+                outcome:
+                    type: string
+                    nullable: true
+                    enum: [ null, recovered, death ]
+                dateHospitalization:
+                    $ref: '#/components/schemas/Date'
+                sourceUrl:
+                    type: string
         CaseArray:
             type: object
             properties:
@@ -894,6 +1076,15 @@ components:
                         $ref: '#/components/schemas/Case'
             required:
                 - cases
+        CaseBundleArray:
+            type: object
+            properties:
+                caseBundles:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/CaseBundle'
+            required:
+                - caseBundles
         CaseIdsArray:
             type: object
             properties:
@@ -970,6 +1161,7 @@ components:
                 - type: string
                 - type: object
                 - type: number
+                  nullable: true
         DateRange:
             type: object
             properties:
@@ -1154,6 +1346,12 @@ components:
                 application/json:
                     schema:
                         $ref: '#/components/schemas/CaseArray'
+        '200CaseBundleArray':
+            description: OK
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/CaseBundleArray'
         '200CaseIdsArray':
             description: OK
             content:

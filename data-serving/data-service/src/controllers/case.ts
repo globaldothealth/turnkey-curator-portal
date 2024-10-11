@@ -7,7 +7,7 @@ import {
 } from '../model/day0-case';
 import caseFields from '../model/fields.json';
 import { CaseStatus, Role } from '../types/enums';
-import { Error, Query } from 'mongoose';
+import mongoose, { Error, Query } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { GeocodeOptions, Geocoder, Resolution } from '../geocoding/geocoder';
 import { NextFunction, Request, Response } from 'express';
@@ -503,6 +503,97 @@ export class CasesController {
     };
 
     /**
+     * List all case bundles.
+     *
+     * Handles HTTP GET /api/cases/bundled.
+     */
+    listBundled = async (req: Request, res: Response): Promise<void> => {
+        logger.debug('List method entrypoint');
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+        const countLimit = Number(req.query.count_limit) || 10000;
+        const sortBy = String(req.query.sort_by) || 'default';
+        const sortByOrder = String(req.query.order) || 'ascending';
+        const verificationStatus =
+            req.query.verification_status !== undefined ? Boolean(req.query.verification_status) : undefined;
+
+        logger.debug('Got query params');
+
+        if (page < 1) {
+            res.status(422).json({ message: 'page must be > 0' });
+            return;
+        }
+        if (limit < 1) {
+            res.status(422).json({ message: 'limit must be > 0' });
+            return;
+        }
+        // Filter query param looks like &q=some%20search%20query
+        if (
+            typeof req.query.q !== 'string' &&
+            typeof req.query.q !== 'undefined'
+        ) {
+            res.status(422).json({ message: 'q must be a unique string' });
+            return;
+        }
+
+        logger.debug('Got past 422s');
+        try {
+            const pipeline = [];
+            const totalCountPipeline = [];
+            if (verificationStatus !== undefined) {
+                pipeline.push({
+                    $match: {'curators.verifiedBy': {$exists: verificationStatus}}
+                });
+                totalCountPipeline.push({
+                    $match: {'curators.verifiedBy': {$exists: verificationStatus}}
+                });
+            }
+            pipeline.push({
+                $group: {
+                    _id: '$bundleId',
+                    caseCount: {$sum: 1},
+                    caseIds: {$push: '$_id'},
+                    dateModified: { $first: '$revisionMetadata.updateMetadata.date' },
+                    dateCreated: { $first: '$revisionMetadata.creationMetadata.date' },
+                    modifiedBy: { $first: '$revisionMetadata.updateMetadata.curator' },
+                    createdBy: { $first: '$revisionMetadata.creationMetadata.curator' },
+                    caseStatus: { $first: '$caseStatus' }, //addToSet can be used instead of first for edited cases
+                    dateEntry: { $first: '$events.dateEntry' },
+                    dateReported: { $first: '$events.dateReported' },
+                    countryISO3: { $first: '$location.countryISO3' },
+                    country: { $first: '$location.country' },
+                    admin1: { $first: '$location.admin1' },
+                    admin2: { $first: '$location.admin2' },
+                    admin3: { $first: '$location.admin3' },
+                    location: { $first: '$location.location' },
+                    ageRange: { $first: '$demographics.ageRange' },
+                    gender: { $first: '$demographics.gender' },
+                    outcome: { $first: '$events.outcome' },
+                    dateHospitalization: { $first: '$events.dateHospitalization' },
+                    dateOnset: { $first: '$events.dateOnset' },
+                    sourceUrl: { $first: '$caseReference.sourceUrl' },
+                },
+            })
+            totalCountPipeline.push({$group: {_id: '$bundleId'}});
+            const bundledCases = await Day0Case.aggregate(pipeline).skip(limit * (page - 1)).limit(limit);
+            const totalCount = (await Day0Case.aggregate(totalCountPipeline)).length;
+
+            res.json({ caseBundles: bundledCases, total: totalCount });
+        } catch (e) {
+            if (e instanceof ParsingError) {
+                logger.error(`Parsing error ${e.message}`);
+                res.status(422).json({ message: e.message });
+                return;
+            }
+            logger.error('non-parsing error for query:');
+            logger.error(req.query);
+            if (e instanceof Error) logger.error(e);
+            res.status(500).json(e);
+            return;
+        }
+    };
+
+    /**
      * Get table data for Cases by Country.
      *
      * Handles HTTP GET /api/cases/countryData.
@@ -755,8 +846,10 @@ export class CasesController {
             this.addGeoResolution(req);
             const currentDate = Date.now();
             const curator = req.body.curator.email;
+            const bundleId = new mongoose.Types.ObjectId()
             const receivedCase = {
                 ...req.body,
+                bundleId,
                 revisionMetadata: {
                     revisionNumber: 0,
                     creationMetadata: {
@@ -854,6 +947,60 @@ export class CasesController {
                 ),
             });
             await c.save();
+            const responseCase = await Day0Case.find({
+                _id: req.params.id,
+            }).lean();
+            res.json(
+                await Promise.all(
+                    responseCase.map((aCase) => dtoFromCase(aCase)),
+                ),
+            );
+            return;
+        }
+    };
+
+    /**
+     * Verify case bundle.
+     *
+     * Handles HTTP POST /api/cases/verify/bundled/:id.
+     */
+    verifyBundled = async (req: Request, res: Response): Promise<void> => {
+        const caseBundleIds = req.body.data.caseBundleIds.map((caseBundleId: string) => new mongoose.Types.ObjectId(caseBundleId));
+        const c = await Day0Case.find({
+            bundleId: {$in: caseBundleIds}
+        });
+
+        if (!c) {
+            res.status(404).send({
+                message: `Day0Case with ID ${req.params.id} not found.`,
+            });
+            return;
+        }
+
+        const verifier = await User.findOne({
+            email: req.body.curator.email,
+        });
+
+        if (!verifier) {
+            res.status(404).send({
+                message: `Verifier with email ${req.body.curator.email} not found.`,
+            });
+            return;
+        } else {
+            const updateData = Date.now();
+            await Day0Case.updateMany({bundleId: {$in: caseBundleIds}},
+                {
+                    $set:
+                        {
+                        'curators.verifiedBy': verifier,
+                        'revisionMetadata.updateMetadata':  {
+                            curator: verifier.email,
+                            note: 'Case Verification',
+                            date: updateData,
+                        },
+                        },
+                    $inc: {'revisionMetadata.revisionNumber': 1}
+                });
             const responseCase = await Day0Case.find({
                 _id: req.params.id,
             }).lean();
@@ -1417,6 +1564,81 @@ export const casesMatchingSearchQuery = (opts: {
     // Always search with case-insensitivity.
     const casesQuery: Query<CaseDocument[], CaseDocument> = Day0Case.find(
         queryOpts,
+    );
+
+    const countQuery: Query<number, CaseDocument> = Day0Case.countDocuments(
+        queryOpts,
+    ).limit(countLimit);
+
+    // Fill in keyword filters.
+    parsedSearch.filters.forEach((f) => {
+        if (f.values.length == 1) {
+            const searchTerm = f.values[0];
+            if (searchTerm === '*') {
+                casesQuery.where(f.path).exists(true);
+                countQuery.where(f.path).exists(true);
+            } else if (f.dateOperator) {
+                casesQuery.where({
+                    [f.path]: {
+                        [f.dateOperator]: f.values[0],
+                    },
+                });
+                countQuery.where({
+                    [f.path]: {
+                        [f.dateOperator]: f.values[0],
+                    },
+                });
+            } else if (
+                f.path === 'demographics.gender' &&
+                f.values[0] === 'notProvided'
+            ) {
+                casesQuery.where(f.path).exists(false);
+                countQuery.where(f.path).exists(false);
+            } else {
+                casesQuery.where(f.path).equals(f.values[0]);
+                countQuery.where(f.path).equals(f.values[0]);
+            }
+        } else {
+            casesQuery.where(f.path).in(f.values);
+            countQuery.where(f.path).in(f.values);
+        }
+    });
+    return opts.count ? countQuery : casesQuery.lean();
+};
+
+// Returns a mongoose query for all cases matching the given search query.
+// If count is true, it returns a query for the number of cases matching
+// the search query.
+export const bundledCasesMatchingSearchQuery = (opts: {
+    searchQuery: string;
+    count: boolean;
+    limit?: number;
+    verificationStatus?: boolean;
+    // Goofy Mongoose types require this.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+}): any => {
+    // set data limit to 10K by default
+    const countLimit = opts.limit ? opts.limit : 10000;
+    const parsedSearch = parseSearchQuery(opts.searchQuery);
+    let queryOpts;
+    if (opts.verificationStatus) {
+        queryOpts = parsedSearch.fullTextSearch
+            ? {
+                $text: { $search: parsedSearch.fullTextSearch },
+                'curators.verifiedBy': { $exists: opts.verificationStatus },
+            }
+            : { 'curators.verifiedBy': { $exists: opts.verificationStatus } };
+    } else {
+        queryOpts = parsedSearch.fullTextSearch
+            ? {
+                $text: { $search: parsedSearch.fullTextSearch },
+            }
+            : {};
+    }
+
+    // Always search with case-insensitivity.
+    const casesQuery: Query<CaseDocument[], CaseDocument> = Day0Case.find(
+        queryOpts
     );
 
     const countQuery: Query<number, CaseDocument> = Day0Case.countDocuments(

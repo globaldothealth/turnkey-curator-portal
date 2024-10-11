@@ -5,6 +5,7 @@ import authReducer from './auth/slice';
 import filtersReducer from './filters/slice';
 import acknowledgmentDataReducer from './acknowledgmentData/slice';
 import linelistTableReducer from './linelistTable/slice';
+import bundledCasesTableReducer from './bundledCases/slice';
 import pivotTablesReducer from './pivotTables/slice';
 import { SortBy, SortByOrder } from '../constants/types';
 import validateEnv from '../util/validate-env';
@@ -18,6 +19,7 @@ export const rootReducer = combineReducers({
     filters: filtersReducer,
     acknowledgment: acknowledgmentDataReducer,
     linelist: linelistTableReducer,
+    bundledCases: bundledCasesTableReducer,
     pivotTables: pivotTablesReducer,
 });
 
@@ -66,6 +68,27 @@ export const initialLoggedInState: RootState = {
         isLoading: false,
     },
     linelist: {
+        isLoading: false,
+        cases: [],
+        currentPage: 0,
+        nextPage: 1,
+        rowsPerPage: 50,
+        sort: {
+            value: SortBy.Identifier,
+            order: SortByOrder.Descending,
+        },
+        searchQuery: '',
+        total: 0,
+        error: undefined,
+        excludeCasesDialogOpen: false,
+        deleteCasesDialogOpen: false,
+        reincludeCasesDialogOpen: false,
+        casesSelected: [],
+        refetchData: false,
+        verificationStatus: undefined,
+        rowsAcrossPagesSelected: false,
+    },
+    bundledCases: {
         isLoading: false,
         cases: [],
         currentPage: 0,
