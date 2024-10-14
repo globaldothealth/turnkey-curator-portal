@@ -670,8 +670,8 @@ paths:
                                     items:
                                         type: string
             responses:
-                '200':
-                    $ref: '#/components/responses/200Case'
+                '204':
+                    $ref: '#/components/responses/204'
                 '400':
                     $ref: '#/components/responses/400'
                 '403':

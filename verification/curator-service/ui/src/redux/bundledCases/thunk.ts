@@ -49,7 +49,7 @@ export const verifyCaseBundle = createAsyncThunk<
             data: { caseBundleIds, query: parsedQuery },
         });
 
-        if (response.status !== 200) throw new Error(response.data.message);
+        if (response.status !== 204) throw new Error(response.data.message);
 
         return;
     } catch (error) {

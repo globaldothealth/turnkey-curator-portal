@@ -91,7 +91,7 @@ export default class CasesController {
                 res.status(err.response.status).send(err.response.data);
                 return;
             }
-            res.status(501).send(err);
+            res.status(500).send(err);
         }
     };
 
@@ -736,7 +736,7 @@ export default class CasesController {
                 },
             );
 
-            res.status(response.status).json(response.data);
+            res.status(response.status).end();
         } catch (e) {
             const err = e as AxiosError;
             if (err.response?.status && err.response?.data) {

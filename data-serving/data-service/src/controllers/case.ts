@@ -966,6 +966,7 @@ export class CasesController {
      */
     verifyBundled = async (req: Request, res: Response): Promise<void> => {
         const caseBundleIds = req.body.data.caseBundleIds.map((caseBundleId: string) => new mongoose.Types.ObjectId(caseBundleId));
+        const verifierEmail = req.body.curator.email;
         const c = await Day0Case.find({
             bundleId: {$in: caseBundleIds}
         });
@@ -977,39 +978,28 @@ export class CasesController {
             return;
         }
 
-        const verifier = await User.findOne({
-            email: req.body.curator.email,
-        });
+        const verifier = await User.findOne({email: verifierEmail});
 
         if (!verifier) {
             res.status(404).send({
-                message: `Verifier with email ${req.body.curator.email} not found.`,
+                message: `Verifier with email ${verifierEmail} not found.`,
             });
-            return;
         } else {
             const updateData = Date.now();
             await Day0Case.updateMany({bundleId: {$in: caseBundleIds}},
                 {
                     $set:
                         {
-                        'curators.verifiedBy': verifier,
-                        'revisionMetadata.updateMetadata':  {
-                            curator: verifier.email,
-                            note: 'Case Verification',
-                            date: updateData,
-                        },
+                            'curators.verifiedBy': verifier,
+                            'revisionMetadata.updateMetadata': {
+                                curator: verifierEmail,
+                                note: 'Case Verification',
+                                date: updateData,
+                            },
                         },
                     $inc: {'revisionMetadata.revisionNumber': 1}
                 });
-            const responseCase = await Day0Case.find({
-                _id: req.params.id,
-            }).lean();
-            res.json(
-                await Promise.all(
-                    responseCase.map((aCase) => dtoFromCase(aCase)),
-                ),
-            );
-            return;
+            res.status(204).end();
         }
     };
 
