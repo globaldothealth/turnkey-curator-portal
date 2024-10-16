@@ -1130,6 +1130,7 @@ export class CasesController {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const upsertLambda = async (c: any) => {
                 delete c.caseCount;
+                c.bundleId = new mongoose.Types.ObjectId();
                 c = await caseFromDTO(c as CaseDTO);
 
                 if (

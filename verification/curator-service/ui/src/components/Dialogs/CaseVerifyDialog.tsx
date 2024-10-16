@@ -86,6 +86,7 @@ export const CaseVerifyDialog = ({
                             onClick={() =>
                                 dispatch(verifyCaseBundle({ caseBundleIds, query }))
                             }
+                            data-testid="confirm-case-bundles-verification-button"
                             color="primary"
                         >
                             {verificationLoading ? <CircularProgress size='1rem'/> : 'Yes'}

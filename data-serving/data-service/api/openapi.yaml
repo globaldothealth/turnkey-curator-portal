@@ -1040,12 +1040,16 @@ components:
                     description: name of a country
                 admin1:
                     type: string
+                    nullable: true
                 admin2:
                     type: string
+                    nullable: true
                 admin3:
                     type: string
+                    nullable: true
                 location:
                     type: string
+                    nullable: true
                     description: exact location
                 ageRange:
                     type: object

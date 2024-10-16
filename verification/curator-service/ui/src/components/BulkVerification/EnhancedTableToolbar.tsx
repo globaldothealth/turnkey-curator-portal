@@ -103,6 +103,7 @@ const EnhancedTableToolbar = () => {
                         <Tooltip title="Verify selected rows">
                             <IconButton
                                 sx={{ color: 'white' }}
+                                data-testid="verify-case-bundles-button"
                                 onClick={() =>
                                     dispatch(setVerifyCasesDialogOpen(true))
                                 }
