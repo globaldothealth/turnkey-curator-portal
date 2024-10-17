@@ -970,12 +970,39 @@ function RowContent(props: {
     const searchQueryArray: any[] = [];
 
     function words(s: string) {
-        const regex = /"([^"]+)"|(\w{3,})/g;
-        let match;
-        while ((match = regex.exec(s))) {
-            searchQueryArray.push(match[match[1] ? 1 : 2]);
+        if (s.startsWith('?q=')) {
+            s = s.substring(3)
         }
-        return searchQueryArray;
+        const quoted: string[] = []
+        const notQuoted: string[] = []
+        if (s.includes('"') && s.replace(/[^"]/g, "").length % 2 !== 1) {
+            s.split('"').map((subs: string, i: number) => {
+                if (i % 2) {
+                    if (subs != "") quoted.push(subs)
+                } else {
+                    if (subs != "") notQuoted.push(subs)
+                }
+
+            });
+        } else {
+            notQuoted.push(s)
+        }
+        const regex = /"([^"]+)"|(\w{3,})/g;
+
+        for (const quotedEntry of quoted) {
+            let match;
+            let accumulator = [];
+            while ((match = regex.exec(quotedEntry))) {
+                accumulator.push(match[match[1] ? 1 : 2]);
+            }
+            searchQueryArray.push(accumulator.join(' '))
+        }
+        for (const notQuotedEntry of notQuoted) {
+            let match;
+            while ((match = regex.exec(notQuotedEntry))) {
+                searchQueryArray.push(match[match[1] ? 1 : 2]);
+            }
+        }
     }
     words(searchQuery);
 
