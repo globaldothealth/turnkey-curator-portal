@@ -1,36 +1,31 @@
 import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import CheckIcon from '@mui/icons-material/CheckCircleOutline';
 
-
-import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import CircularProgress from '@mui/material/CircularProgress';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableFooter from '@mui/material/TableFooter';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
-import Accordion from '@mui/material/Accordion';
-import AccordionActions from '@mui/material/AccordionActions';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Button,
+    Checkbox,
+    CircularProgress,
+    Paper,
+    Stack,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableFooter,
+    TableHead,
+    TablePagination,
+    TableRow
+} from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import { Role } from '../../api/models/User';
 import { CaseVerifyDialog } from '../Dialogs/CaseVerifyDialog';
-import EnhancedTableToolbar from './EnhancedTableToolbar';
-import { createData, labels } from './helperFunctions';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import Pagination from './Pagination';
 import { selectUser } from '../../redux/auth/selectors';
-import { fetchBulkVerificationData } from '../../redux/bundledCases/thunk';
 import {
     selectIsLoading,
     selectCases,
@@ -40,10 +35,10 @@ import {
     selectRowsPerPage,
     selectSort,
     selectCasesSelected,
-    selectVerificationStatus,
     selectRefetchData,
     selectRowsAcrossPages,
-    selectVerifyCasesDialogOpen, selectVerifyCasesSuccess
+    selectVerifyCasesDialogOpen,
+    selectVerifyCasesSuccess,
 } from '../../redux/bundledCases/selectors';
 import {
     setCurrentPage,
@@ -52,13 +47,20 @@ import {
     setVerifyCasesDialogOpen,
     setRowsAcrossPagesSelected,
 } from '../../redux/bundledCases/slice';
-import {BulkVerificationContainer, LoaderContainer, StyledAlert} from './styled';
+import { fetchBulkVerificationData } from '../../redux/bundledCases/thunk';
 import { nameCountry } from '../util/countryNames';
 import renderDate from '../util/date';
 import { hasAnyRole, parseAgeRange } from '../util/helperFunctions';
 import { URLToSearchQuery } from '../util/searchQuery';
-import {Typography} from "@mui/material";
-import {maxWidth} from "@mui/system";
+
+import EnhancedTableToolbar from './EnhancedTableToolbar';
+import { createData, labels } from './helperFunctions';
+import Pagination from './Pagination';
+import {
+    BulkVerificationContainer,
+    LoaderContainer,
+    StyledAlert,
+} from './styled';
 
 const dataLimit = 10000;
 
@@ -95,7 +97,15 @@ const BulkVerification = () => {
         }&order=${sort.order}&verification_status=${false}${query}`;
 
         dispatch(fetchBulkVerificationData(preparedQuery));
-    }, [dispatch, currentPage, rowsPerPage, sort, searchQuery, refetchData, verificationSuccess]);
+    }, [
+        dispatch,
+        currentPage,
+        rowsPerPage,
+        sort,
+        searchQuery,
+        refetchData,
+        verificationSuccess,
+    ]);
 
     // When user applies filters we should go back to the first page of results
     useEffect(() => {
@@ -387,23 +397,33 @@ const BulkVerification = () => {
                                             {row.caseCount}
                                         </TableCell>
                                         <TableCell align="left">
-                                            <Accordion                           >
+                                            <Accordion>
                                                 <AccordionSummary
-                                                    expandIcon={<ExpandMoreIcon />}
+                                                    expandIcon={
+                                                        <ExpandMoreIcon />
+                                                    }
                                                     aria-controls="panel1-content"
                                                     id="panel1-header"
-
                                                 >
                                                     Case IDs
                                                 </AccordionSummary>
-                                                <AccordionDetails  style={{width: '200px', whiteSpace: 'pre-wrap', wordBreak: 'normal'}} >
-                                                    {row.casesInBundle.map((caseId) => (
-                                                        <Link
-                                                            to={`/cases/view/${caseId}`}
-                                                            key={caseId}
-                                                        >
-                                                            {caseId + ' '}
-                                                        </Link>))}
+                                                <AccordionDetails
+                                                    style={{
+                                                        width: '200px',
+                                                        whiteSpace: 'pre-wrap',
+                                                        wordBreak: 'normal',
+                                                    }}
+                                                >
+                                                    {row.casesInBundle.map(
+                                                        (caseId) => (
+                                                            <Link
+                                                                to={`/cases/view/${caseId}`}
+                                                                key={caseId}
+                                                            >
+                                                                {caseId + ' '}
+                                                            </Link>
+                                                        ),
+                                                    )}
                                                 </AccordionDetails>
                                             </Accordion>
                                         </TableCell>
@@ -528,7 +548,9 @@ const BulkVerification = () => {
             <CaseVerifyDialog
                 isOpen={verifyCasesDialogOpen}
                 handleClose={() => dispatch(setVerifyCasesDialogOpen(false))}
-                caseBundleIds={rowsAcrossPagesSelected ? undefined : casesSelected}
+                caseBundleIds={
+                    rowsAcrossPagesSelected ? undefined : casesSelected
+                }
                 query={rowsAcrossPagesSelected ? searchQuery : undefined}
             />
         </BulkVerificationContainer>
