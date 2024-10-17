@@ -795,6 +795,13 @@ export class CasesController {
             res.status(201).json(result);
         } catch (e) {
             const err = e as Error;
+            if  (err.name === 'MongoServerError') {
+                logger.error((e as any).errInfo);
+                res.status(422).json({
+                    message: (err as any).errInfo,
+                });
+                return;
+            }
             if (err instanceof GeocodeNotFoundError) {
                 res.status(404).json({
                     message: err.message,

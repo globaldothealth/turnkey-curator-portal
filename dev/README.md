@@ -52,6 +52,11 @@ For local development, it's fine to use your own values for these
 secrets if you have them. For instance, if you have a developer Mapbox API
 token, or if you'd like to use a different GMail account for mailing notifications, or different OAuth client values.
 
+#### Database Schema
+
+Before inputting any case data to the local portal instance a database schema migration needs to be run.
+Navigate to the `data-serving/scripts/setup-db/` and follow instructions in the [README](../data-serving/scripts/setup-db/README.md) to set up the database schema.
+
 #### Permissions
 
 Give your user all the permissions to access the portal and make CRUD updates.

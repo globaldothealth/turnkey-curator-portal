@@ -96,8 +96,16 @@ const SearchGuideDialog = ({
                             the left and choose ascending or descending.
                         </Typography>
                         <Typography className={classes?.textSection}>
-                            <strong>For full-text search</strong>, enter any
-                            combination of search terms.
+                            <strong>For full-text search</strong>, enter any combination of search terms.
+                            <br/>
+                            Full-text search covers: occupation, admin0, admin1, admin2, admin3, sourceUrl and caseStatus.
+                            <br/>
+                            Search terms must be exact (example: "German" will not match "Germany").
+                            <br/>
+                            Full-text search matches cases that contain any ot the search terms, not a combination.
+                            <br/>
+                            No special characters apart from "." are allowed and if the "." is used in a search term
+                            given search term must be contained within quotation marks.
                         </Typography>
                         <Typography>
                             You can use the icons on the right to navigate
