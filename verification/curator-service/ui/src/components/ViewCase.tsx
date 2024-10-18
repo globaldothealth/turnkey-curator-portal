@@ -987,7 +987,7 @@ function RowContent(props: {
         } else {
             notQuoted.push(s)
         }
-        const regex = /"([^"]+)"|(\w{3,})/g;
+        const regex = /"([^"]+)"|(\w{1,})/g;
 
         for (const quotedEntry of quoted) {
             let match;

@@ -1,18 +1,7 @@
 import React, { useEffect } from 'react';
-import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-    Box,
-    Portal,
-    Theme,
-    Typography,
-} from '@mui/material';
+import { Box, Portal, Theme, Typography } from '@mui/material';
 import { withStyles } from 'tss-react/mui';
-import {
-    Close as CloseIcon,
-    ExpandMore as ExpandMoreIcon,
-} from '@mui/icons-material';
+import { Close as CloseIcon } from '@mui/icons-material';
 import Draggable, { ControlPosition } from 'react-draggable';
 
 // As per this issue from react-draggable library: https://github.com/react-grid-layout/react-draggable/pull/648
@@ -108,8 +97,8 @@ const SearchGuideDialog = ({
                         </Typography>
                         <Typography className={classes?.textSection}>
                             <strong>For full-text search</strong>, enter any
-                            combination of search terms.
-                            Rules for full-text search:
+                            combination of search terms. Rules for full-text
+                            search:
                             <br />
                             <ul>
                                 <li>
