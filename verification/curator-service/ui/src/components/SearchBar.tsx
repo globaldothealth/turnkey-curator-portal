@@ -174,16 +174,25 @@ export default function SearchBar({
         return searchStringStrippedOutColon;
     }
 
+    const renderSearchErrorMessage = () => {
+        if (searchError) {
+            return 'Incorrect entry. ":" characters have been removed. Please use filters instead.';
+        } else {
+            const quoteCount = decodeURI(searchInput).split('"').length - 1;
+            console.log(searchInput, quoteCount);
+            if (quoteCount % 2 !== 0) {
+                return 'Incorrect entry. Please make sure you have an even number of quotes.';
+            }
+        }
+    };
+
     return (
         <>
             <div className={classes.searchRoot}>
                 <StyledSearchTextField
                     size="small"
                     error={searchError}
-                    helperText={
-                        searchError &&
-                        'Incorrect entry. ":" characters have been removed. Please use filters instead.'
-                    }
+                    helperText={renderSearchErrorMessage()}
                     id="search-field"
                     data-testid="searchbar"
                     name="searchbar"
