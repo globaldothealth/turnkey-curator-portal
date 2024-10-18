@@ -966,36 +966,28 @@ function RowContent(props: {
     linkComment?: string;
 }): JSX.Element {
     const searchQuery = useSelector(selectSearchQuery);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const searchQueryArray: any[] = [];
+    const searchQueryArray: string[] = [];
 
     function words(s: string) {
-        if (s.startsWith('?q=')) {
-            s = s.substring(3)
-        }
-        const quoted: string[] = []
-        const notQuoted: string[] = []
-        if (s.includes('"') && s.replace(/[^"]/g, "").length % 2 !== 1) {
+        if (s.startsWith('?q=')) s = s.substring(3);
+
+        const quoted: string[] = [];
+        const notQuoted: string[] = [];
+        if (s.includes('"') && s.replace(/[^"]/g, '').length % 2 !== 1) {
             s.split('"').map((subs: string, i: number) => {
-                if (i % 2) {
-                    if (subs != "") quoted.push(subs)
-                } else {
-                    if (subs != "") notQuoted.push(subs)
-                }
-
+                subs != '' && i % 2 ? quoted.push(subs) : notQuoted.push(subs);
             });
-        } else {
-            notQuoted.push(s)
-        }
-        const regex = /"([^"]+)"|(\w{1,})/g;
+        } else notQuoted.push(s);
 
+        const regex = /"([^"]+)"|(\w{1,})/g;
+        // Make sure that terms in quotes will be highlighted as one search term
         for (const quotedEntry of quoted) {
             let match;
-            let accumulator = [];
+            let accumulator: string[] = [];
             while ((match = regex.exec(quotedEntry))) {
                 accumulator.push(match[match[1] ? 1 : 2]);
             }
-            searchQueryArray.push(accumulator.join(' '))
+            searchQueryArray.push(accumulator.join(' '));
         }
         for (const notQuotedEntry of notQuoted) {
             let match;

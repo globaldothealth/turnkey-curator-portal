@@ -179,7 +179,6 @@ export default function SearchBar({
             return 'Incorrect entry. ":" characters have been removed. Please use filters instead.';
         } else {
             const quoteCount = decodeURI(searchInput).split('"').length - 1;
-            console.log(searchInput, quoteCount);
             if (quoteCount % 2 !== 0) {
                 return 'Incorrect entry. Please make sure you have an even number of quotes.';
             }
