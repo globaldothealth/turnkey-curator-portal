@@ -8,7 +8,8 @@
             "location.admin2": "text",
             "location.admin3": "text",
             "caseReference.sourceUrl": "text",
-            "caseStatus": "text"
+            "caseStatus": "text",
+            "comment": "text"
         }
     },
     {
@@ -139,6 +140,16 @@
         "name": "caseStatusIdx",
         "key": {
             "caseStatus": -1
+        },
+        "collation": {
+            "locale": "en_US",
+            "strength": 2
+        }
+    },
+    {
+        "name": "commentIdx",
+        "key": {
+            "comment": -1
         },
         "collation": {
             "locale": "en_US",
