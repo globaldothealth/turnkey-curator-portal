@@ -421,16 +421,16 @@ describe('Case', () => {
         const denormalizedCase = await denormalizeFields(caseDoc);
 
         expect(denormalizedCase['events.dateEntry']).toEqual(
-            eventsDoc.dateEntry.toDateString(),
+            eventsDoc.dateEntry.toISOString().split('T')[0],
         );
         expect(denormalizedCase['events.dateReported']).toEqual(
-            eventsDoc.dateReported.toDateString(),
+            eventsDoc.dateReported.toISOString().split('T')[0],
         );
         expect(denormalizedCase['events.dateOnset']).toEqual(
-            eventsDoc.dateOnset?.toDateString(),
+            eventsDoc.dateOnset?.toISOString().split('T')[0],
         );
         expect(denormalizedCase['events.dateConfirmation']).toEqual(
-            eventsDoc.dateConfirmation?.toDateString(),
+            eventsDoc.dateConfirmation?.toISOString().split('T')[0],
         );
         expect(denormalizedCase['events.confirmationMethod']).toEqual('');
         expect(denormalizedCase['events.dateOfFirstConsult']).toEqual('');
@@ -612,7 +612,7 @@ describe('Case', () => {
 
         expect(denormalizedCase['travelHistory.travelHistory']).toEqual('Y');
         expect(denormalizedCase['travelHistory.travelHistoryEntry']).toEqual(
-            travelHistoryDoc.travelHistoryEntry.toDateString(),
+            travelHistoryDoc.travelHistoryEntry.toISOString().split('T')[0],
         );
         expect(denormalizedCase['travelHistory.travelHistoryStart']).toEqual(
             'start',
@@ -652,7 +652,7 @@ describe('Case', () => {
         expect(denormalizedCase['vaccination.vaccination']).toEqual('Y');
         expect(denormalizedCase['vaccination.vaccineName']).toEqual('Pfizer');
         expect(denormalizedCase['vaccination.vaccineDate']).toEqual(
-            vaccinationDoc.vaccineDate.toDateString(),
+            vaccinationDoc.vaccineDate.toISOString().split('T')[0],
         );
         expect(denormalizedCase['vaccination.vaccineSideEffects']).toEqual(
             'cough',
