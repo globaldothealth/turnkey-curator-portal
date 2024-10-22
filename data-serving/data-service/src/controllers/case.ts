@@ -436,12 +436,12 @@ export class CasesController {
         logger.debug('Got past 422s');
         try {
             const casesQuery = casesMatchingSearchQuery({
-                searchQuery: req.query.q || '',
+                searchQuery: decodeURIComponent(req.query.q || ''),
                 count: false,
                 verificationStatus: verificationStatus,
             }) as Query<CaseDocument[], CaseDocument, unknown>;
             const countQuery = casesMatchingSearchQuery({
-                searchQuery: req.query.q || '',
+                searchQuery: decodeURIComponent(req.query.q || ''),
                 count: true,
                 verificationStatus: verificationStatus,
             });

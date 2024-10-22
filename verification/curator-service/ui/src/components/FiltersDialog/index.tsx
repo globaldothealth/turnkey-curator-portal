@@ -153,7 +153,12 @@ export default function FiltersDialog({
             handleSetModalAlert();
             dispatch(setModalOpen(false));
 
-            const searchQuery = filtersToURL(values);
+            let searchQuery = filtersToURL(values);
+
+            if (location.search.includes('?q=')) {
+                const q = new URLSearchParams(location.search).get('q');
+                searchQuery = `${searchQuery}&q=${q}`
+            }
 
             sendCustomGtmEvent('filters_applied', { query: searchQuery });
 

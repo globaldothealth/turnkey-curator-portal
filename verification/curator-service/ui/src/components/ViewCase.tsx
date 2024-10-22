@@ -969,7 +969,9 @@ function RowContent(props: {
     const searchQueryArray: string[] = [];
 
     function words(s: string) {
-        if (s.startsWith('?q=')) s = s.substring(3);
+        if (s.includes('&q=')) {
+            s = s.split('&q=')[1];
+        } else if (s.includes('?q=')) s = s.substring(3);
 
         const quoted: string[] = [];
         const notQuoted: string[] = [];
@@ -979,7 +981,7 @@ function RowContent(props: {
             });
         } else notQuoted.push(s);
 
-        const regex = /"([^"]+)"|(\w{1,})/g;
+        const regex = /"([^"]+)"|(\S{1,})/g;
         // Make sure that terms in quotes will be highlighted as one search term
         for (const quotedEntry of quoted) {
             let match;

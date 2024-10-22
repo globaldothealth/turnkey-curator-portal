@@ -86,8 +86,10 @@ export default function SearchBar({
     const [isDataGuideOpen, setIsDataGuideOpen] = useState<boolean>(false);
     const [searchInput, setSearchInput] = useState<string>(
         location.search.includes('?q=')
-            ? URLToSearchQuery(location.search)
-            : '',
+            ? location.search.split('?q=')[1]
+            : location.search?.includes('&q=')
+              ? location.search.split('&q=')[1]
+              : '',
     );
     const [modalAlert, setModalAlert] = useState<boolean>(false);
     const guideButtonRef = React.useRef<HTMLButtonElement>(null);
@@ -103,28 +105,67 @@ export default function SearchBar({
         }
     }, [filtersBreadcrumb]);
 
+    useEffect(() => {
+        const q = location.search.includes('?q=')
+            ? location.search.split('?q=')[1]
+            : location.search?.includes('&q=')
+              ? location.search.split('&q=')[1]
+              : '';
+        const decodedQ = decodeURIComponent(q);
+        if (decodedQ !== searchInput) {
+            setSearchInput(decodedQ);
+        }
+    }, [location.search]);
+
     // Set search query debounce to 1000ms
     const debouncedSearch = useDebounce(searchInput, 2000);
 
-    // Update search input based on search query
-    useEffect(() => {
-        if (!location.search.includes('?q=')) {
-            setSearchInput('');
-            return;
-        }
 
-        setSearchInput(URLToSearchQuery(location.search));
-    }, [location.search]);
+    const handleNavigating = (q: string) => {
+        const encodedQ = encodeURIComponent(q);
+        if (encodedQ === '') {
+            if (location.search.includes('?q=')) {
+                navigate({
+                    pathname: '/cases',
+                    search: '',
+                });
+            } else if(location.search.includes('&q=')) {
+                navigate({
+                    pathname: '/cases',
+                    search: location.search.split('&q=')[0],
+                });
+            } else {
+                navigate({
+                    pathname: '/cases',
+                    search: location.search,
+                });
+            }
+        } else {
+            if (location.search.includes('?q=') || location.search === '') {
+                navigate({
+                    pathname: '/cases',
+                    search: `?q=${encodedQ}`,
+                });
+            } else if(location.search.includes('&q=')) {
+                navigate({
+                    pathname: '/cases',
+                    search: `${location.search.split('&q=')[0]}&q=${encodedQ}`,
+                });
+            } else {
+                navigate({
+                    pathname: '/cases',
+                    search: `${location.search}&q=${encodedQ}`,
+                });
+            }
+        }
+    }
 
     // Apply filter parameters after delay
     useEffect(() => {
         if (!isUserTyping) return;
-
         setIsUserTyping(false);
-        navigate({
-            pathname: '/cases',
-            search: searchQueryToURL(debouncedSearch),
-        });
+
+        handleNavigating(debouncedSearch);
         //eslint-disable-next-line
     }, [debouncedSearch]);
 
@@ -136,10 +177,8 @@ export default function SearchBar({
         if (ev.key === 'Enter') {
             ev.preventDefault();
             setIsUserTyping(false);
-            navigate({
-                pathname: '/cases',
-                search: searchQueryToURL(searchInput),
-            });
+
+            handleNavigating(searchInput);
         }
     };
 
@@ -178,7 +217,7 @@ export default function SearchBar({
         if (searchError) {
             return 'Incorrect entry. ":" characters have been removed. Please use filters instead.';
         } else {
-            const quoteCount = decodeURI(searchInput).split('"').length - 1;
+            const quoteCount = decodeURIComponent(searchInput).split('"').length - 1;
             if (quoteCount % 2 !== 0) {
                 return 'Incorrect entry. Please make sure you have an even number of quotes.';
             }
@@ -211,7 +250,7 @@ export default function SearchBar({
                         }
                     }}
                     placeholder="Fulltext search"
-                    value={decodeURI(searchInput)}
+                    value={searchInput}
                     variant="outlined"
                     fullWidth
                     InputProps={{
