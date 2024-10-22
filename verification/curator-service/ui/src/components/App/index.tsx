@@ -380,6 +380,7 @@ export default function App(): JSX.Element {
         )
             return;
 
+        dispatch(setSearchQuery(decodeURIComponent(location.search)));
 
         // Save searchQuery to local storage not to lost it when user goes through auth process
         localStorage.setItem('searchQuery', location.search);
