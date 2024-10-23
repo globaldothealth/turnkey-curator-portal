@@ -153,18 +153,18 @@ export default function FiltersDialog({
             handleSetModalAlert();
             dispatch(setModalOpen(false));
 
-            let searchQuery = filtersToURL(values);
 
-            if (location.search.includes('?q=')) {
-                const q = new URLSearchParams(location.search).get('q');
-                searchQuery = `${searchQuery}&q=${q}`
+            const searchParams = new URLSearchParams();
+            for (const [key, value] of Object.entries(values)) {
+                if (value) searchParams.set(key, value);
             }
+            const searchParamsString = searchParams.toString();
 
-            sendCustomGtmEvent('filters_applied', { query: searchQuery });
+            sendCustomGtmEvent('filters_applied', { query: searchParamsString });
 
             navigate({
                 pathname: '/cases',
-                search: searchQuery,
+                search: searchParamsString,
             });
         },
     });

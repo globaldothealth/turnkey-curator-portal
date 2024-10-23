@@ -328,7 +328,6 @@ export default function App(): JSX.Element {
 
     const onModalClose = (): void => {
         const searchQueryObject = new URLSearchParams(searchQuery);
-
         navigate(
             {
                 pathname:
