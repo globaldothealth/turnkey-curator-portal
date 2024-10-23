@@ -436,7 +436,7 @@ export class CasesController {
         logger.debug('Got past 422s');
         try {
             const casesQuery = casesMatchingSearchQuery({
-                searchQuery: decodeURIComponent(req.query.q || ''),
+                searchQuery: req.query.q || '',
                 count: false,
                 verificationStatus: verificationStatus,
             }) as Query<CaseDocument[], CaseDocument, unknown>;

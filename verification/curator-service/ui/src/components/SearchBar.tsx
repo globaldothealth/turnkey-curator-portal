@@ -106,15 +106,8 @@ export default function SearchBar({
     }, [filtersBreadcrumb]);
 
     useEffect(() => {
-        const q = location.search.includes('?q=')
-            ? location.search.split('?q=')[1]
-            : location.search?.includes('&q=')
-              ? location.search.split('&q=')[1]
-              : '';
-        const decodedQ = decodeURIComponent(q);
-        if (decodedQ !== searchInput) {
-            setSearchInput(decodedQ);
-        }
+        const q = (new URLSearchParams(location.search)).get('q') || '';
+        if (q !== searchInput) setSearchInput(q);
     }, [location.search]);
 
     // Set search query debounce to 1000ms
@@ -123,11 +116,8 @@ export default function SearchBar({
 
     const handleNavigating = (q: string) => {
         const searchParams = new URLSearchParams(location.search);
-        if (q !== '') {
-            searchParams.set('q', q);
-        } else {
-            searchParams.delete('q');
-        }
+        q !== '' ? searchParams.set('q', q) : searchParams.delete('q');
+
         navigate({
             pathname: '/cases',
             search: searchParams.toString(),

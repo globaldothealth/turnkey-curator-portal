@@ -969,17 +969,16 @@ function RowContent(props: {
     const searchQueryArray: string[] = [];
 
     function words(s: string) {
-        if (s.includes('&q=')) {
-            s = s.split('&q=')[1];
-        } else if (s.includes('?q=')) s = s.substring(3);
+        const q =  (new URLSearchParams(s)).get('q');
+        if (!q) return;
 
         const quoted: string[] = [];
         const notQuoted: string[] = [];
-        if (s.includes('"') && s.replace(/[^"]/g, '').length % 2 !== 1) {
-            s.split('"').map((subs: string, i: number) => {
+        if (q.includes('"') && q.replace(/[^"]/g, '').length % 2 !== 1) {
+            q.split('"').map((subs: string, i: number) => {
                 subs != '' && i % 2 ? quoted.push(subs) : notQuoted.push(subs);
             });
-        } else notQuoted.push(s);
+        } else notQuoted.push(q);
 
         const regex = /"([^"]+)"|(\S{1,})/g;
         // Make sure that terms in quotes will be highlighted as one search term
