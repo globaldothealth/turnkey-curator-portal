@@ -327,14 +327,7 @@ export default function App(): JSX.Element {
     };
 
     const onModalClose = (): void => {
-        let parsedSearchQuery: string = '';
-        if (searchQuery.includes('?q=')) {
-            parsedSearchQuery = `?q=${encodeURIComponent(searchQuery.split('?q=')[1])}`;
-        } else if (searchQuery.includes('&q=')) {
-            parsedSearchQuery = `${searchQuery.split('&q=')[0]}&q=${encodeURIComponent(searchQuery.split('&q=')[1])}`;
-        } else {
-            parsedSearchQuery = searchQuery;
-        }
+        const searchQueryObject = new URLSearchParams(searchQuery);
 
         navigate(
             {
@@ -342,7 +335,7 @@ export default function App(): JSX.Element {
                     location.state && location.state.lastLocation
                         ? location.state.lastLocation
                         : '/cases',
-                search: parsedSearchQuery,
+                search: searchQueryObject.toString(),
             },
             { state: { lastLocation: '/case/view' } },
         );
@@ -380,7 +373,8 @@ export default function App(): JSX.Element {
         )
             return;
 
-        dispatch(setSearchQuery(decodeURIComponent(location.search)));
+        const searchParams = new URLSearchParams(location.search);
+        dispatch(setSearchQuery(searchParams.toString()));
 
         // Save searchQuery to local storage not to lost it when user goes through auth process
         localStorage.setItem('searchQuery', location.search);
