@@ -122,42 +122,16 @@ export default function SearchBar({
 
 
     const handleNavigating = (q: string) => {
-        const encodedQ = encodeURIComponent(q);
-        if (encodedQ === '') {
-            if (location.search.includes('?q=')) {
-                navigate({
-                    pathname: '/cases',
-                    search: '',
-                });
-            } else if(location.search.includes('&q=')) {
-                navigate({
-                    pathname: '/cases',
-                    search: location.search.split('&q=')[0],
-                });
-            } else {
-                navigate({
-                    pathname: '/cases',
-                    search: location.search,
-                });
-            }
+        const searchParams = new URLSearchParams(location.search);
+        if (q !== '') {
+            searchParams.set('q', q);
         } else {
-            if (location.search.includes('?q=') || location.search === '') {
-                navigate({
-                    pathname: '/cases',
-                    search: `?q=${encodedQ}`,
-                });
-            } else if(location.search.includes('&q=')) {
-                navigate({
-                    pathname: '/cases',
-                    search: `${location.search.split('&q=')[0]}&q=${encodedQ}`,
-                });
-            } else {
-                navigate({
-                    pathname: '/cases',
-                    search: `${location.search}&q=${encodedQ}`,
-                });
-            }
+            searchParams.delete('q');
         }
+        navigate({
+            pathname: '/cases',
+            search: searchParams.toString(),
+        });
     }
 
     // Apply filter parameters after delay
