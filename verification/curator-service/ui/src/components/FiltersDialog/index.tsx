@@ -155,7 +155,6 @@ export default function FiltersDialog({
 
             const searchParams = new URLSearchParams();
             for (const [key, value] of Object.entries(values)) {
-                console.log(key, value)
                 if (value) searchParams.set(key, value);
             }
             const q = (new URLSearchParams(location.search)).get('q')
