@@ -17,7 +17,7 @@ import {
     useMediaQuery,
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
-import { filtersToURL, URLToFilters } from '../util/searchQuery';
+import { URLToFilters } from '../util/searchQuery';
 import { hasAnyRole } from '../util/helperFunctions';
 import { useAppSelector, useAppDispatch } from '../../hooks/redux';
 import { fetchCountries } from '../../redux/filters/thunk';
@@ -153,13 +153,19 @@ export default function FiltersDialog({
             handleSetModalAlert();
             dispatch(setModalOpen(false));
 
-            const searchQuery = filtersToURL(values);
+            const searchParams = new URLSearchParams();
+            for (const [key, value] of Object.entries(values)) {
+                if (value) searchParams.set(key, value);
+            }
+            const q = (new URLSearchParams(location.search)).get('q')
+            if (q) searchParams.set('q', q);
+            const searchParamsString = searchParams.toString();
 
-            sendCustomGtmEvent('filters_applied', { query: searchQuery });
+            sendCustomGtmEvent('filters_applied', { query: searchParamsString });
 
             navigate({
                 pathname: '/cases',
-                search: searchQuery,
+                search: searchParamsString,
             });
         },
     });
