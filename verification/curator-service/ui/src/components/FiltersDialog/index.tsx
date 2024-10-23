@@ -17,7 +17,7 @@ import {
     useMediaQuery,
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
-import { filtersToURL, URLToFilters } from '../util/searchQuery';
+import { URLToFilters } from '../util/searchQuery';
 import { hasAnyRole } from '../util/helperFunctions';
 import { useAppSelector, useAppDispatch } from '../../hooks/redux';
 import { fetchCountries } from '../../redux/filters/thunk';

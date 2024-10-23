@@ -441,7 +441,7 @@ export class CasesController {
                 verificationStatus: verificationStatus,
             }) as Query<CaseDocument[], CaseDocument, unknown>;
             const countQuery = casesMatchingSearchQuery({
-                searchQuery: decodeURIComponent(req.query.q || ''),
+                searchQuery: req.query.q || '',
                 count: true,
                 verificationStatus: verificationStatus,
             });

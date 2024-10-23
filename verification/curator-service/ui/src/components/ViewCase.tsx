@@ -1,6 +1,19 @@
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import Highlighter from 'react-highlight-words';
+import { useSelector } from 'react-redux';
+import { Link, useParams } from 'react-router-dom';
+import Scroll from 'react-scroll';
+import { makeStyles } from 'tss-react/mui';
 import {
+    CheckCircleOutline as CheckIcon,
+    Close as CloseIcon,
+    EditOutlined as EditIcon,
+} from '@mui/icons-material';
+import {
+    Alert,
     Button,
+    Chip,
     Dialog,
     DialogContent,
     DialogTitle,
@@ -9,30 +22,20 @@ import {
     LinearProgress,
     Paper,
     Typography,
+    useMediaQuery,
 } from '@mui/material';
-import { Day0Case, Outcome, YesNo } from '../api/models/Day0Case';
-import AppModal from './AppModal';
-import EditIcon from '@mui/icons-material/EditOutlined';
-import CheckIcon from '@mui/icons-material/CheckCircleOutline';
-import { Link, useParams } from 'react-router-dom';
-import MuiAlert from '@mui/material/Alert';
-import Scroll from 'react-scroll';
-import axios from 'axios';
-import createHref from './util/links';
-import { makeStyles } from 'tss-react/mui';
-import renderDate from './util/date';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import Highlighter from 'react-highlight-words';
-import { useSelector } from 'react-redux';
+
+import { Day0Case, Outcome, YesNo } from '../api/models/Day0Case';
+import { Role } from '../api/models/User';
+import AppModal from './AppModal';
+import renderDate from './util/date';
+import createHref from './util/links';
 import { selectFilterBreadcrumbs } from '../redux/app/selectors';
+import { selectUser } from '../redux/auth/selectors';
 import { selectSearchQuery } from '../redux/linelistTable/selectors';
-import Chip from '@mui/material/Chip';
 import { nameCountry } from './util/countryNames';
 import { parseAgeRange } from './util/helperFunctions';
-import CloseIcon from '@mui/icons-material/Close';
-import { selectUser } from '../redux/auth/selectors';
-import { Role } from '../api/models/User';
 
 const styles = makeStyles()(() => ({
     errorMessage: {
@@ -98,14 +101,14 @@ export default function ViewCase(props: Props): JSX.Element {
         <AppModal title="Case details" onModalClose={props.onModalClose}>
             {loading && <LinearProgress />}
             {errorMessage && (
-                <MuiAlert
+                <Alert
                     className={classes.errorMessage}
                     elevation={6}
                     variant="filled"
                     severity="error"
                 >
                     {errorMessage}
-                </MuiAlert>
+                </Alert>
             )}
             {c && (
                 <CaseDetails
@@ -969,7 +972,7 @@ function RowContent(props: {
     const searchQueryArray: string[] = [];
 
     function words(s: string) {
-        const q =  (new URLSearchParams(s)).get('q');
+        const q = new URLSearchParams(s).get('q');
         if (!q) return;
 
         const quoted: string[] = [];

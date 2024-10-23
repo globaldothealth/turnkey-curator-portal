@@ -15,7 +15,6 @@ import clsx from 'clsx';
 import DataGuideDialog from './DataGuideDialog';
 import { useDebounce } from '../hooks/useDebounce';
 import FiltersDialog from './FiltersDialog';
-import { searchQueryToURL, URLToSearchQuery } from './util/searchQuery';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { KeyboardEvent, ChangeEvent } from 'react';
 import { useAppSelector, useAppDispatch } from '../hooks/redux';
