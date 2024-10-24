@@ -694,7 +694,7 @@ describe('Case', () => {
         );
     });
 
-    it.only('formatsDateWithoutTimeCorrectly', async () => {
+    it('formatsDateWithoutTimeCorrectly', async () => {
         const correctDateString = '2024-01-01';
         const correctDate = new Date(`${correctDateString}T03:24:00`);
         const missingDate = undefined;
