@@ -13,7 +13,11 @@ import { RevisionMetadataDocument } from '../model/revision-metadata';
 import { TransmissionDocument } from '../model/transmission';
 import { TravelHistoryDocument } from '../model/travel-history';
 import { VaccineDocument } from '../model/vaccine';
-import { removeBlankHeader, denormalizeFields } from '../../src/util/case';
+import {
+    removeBlankHeader,
+    denormalizeFields,
+    formatDateWithoutTime,
+} from '../../src/util/case';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { GenomeSequenceDocument } from '../../src/model/genome-sequence';
@@ -421,16 +425,16 @@ describe('Case', () => {
         const denormalizedCase = await denormalizeFields(caseDoc);
 
         expect(denormalizedCase['events.dateEntry']).toEqual(
-            eventsDoc.dateEntry.toDateString(),
+            formatDateWithoutTime(eventsDoc.dateEntry),
         );
         expect(denormalizedCase['events.dateReported']).toEqual(
-            eventsDoc.dateReported.toDateString(),
+            formatDateWithoutTime(eventsDoc.dateReported),
         );
         expect(denormalizedCase['events.dateOnset']).toEqual(
-            eventsDoc.dateOnset?.toDateString(),
+            formatDateWithoutTime(eventsDoc.dateOnset),
         );
         expect(denormalizedCase['events.dateConfirmation']).toEqual(
-            eventsDoc.dateConfirmation?.toDateString(),
+            formatDateWithoutTime(eventsDoc.dateConfirmation),
         );
         expect(denormalizedCase['events.confirmationMethod']).toEqual('');
         expect(denormalizedCase['events.dateOfFirstConsult']).toEqual('');
@@ -612,7 +616,7 @@ describe('Case', () => {
 
         expect(denormalizedCase['travelHistory.travelHistory']).toEqual('Y');
         expect(denormalizedCase['travelHistory.travelHistoryEntry']).toEqual(
-            travelHistoryDoc.travelHistoryEntry.toDateString(),
+            formatDateWithoutTime(travelHistoryDoc.travelHistoryEntry),
         );
         expect(denormalizedCase['travelHistory.travelHistoryStart']).toEqual(
             'start',
@@ -652,7 +656,7 @@ describe('Case', () => {
         expect(denormalizedCase['vaccination.vaccination']).toEqual('Y');
         expect(denormalizedCase['vaccination.vaccineName']).toEqual('Pfizer');
         expect(denormalizedCase['vaccination.vaccineDate']).toEqual(
-            vaccinationDoc.vaccineDate.toDateString(),
+            formatDateWithoutTime(vaccinationDoc.vaccineDate),
         );
         expect(denormalizedCase['vaccination.vaccineSideEffects']).toEqual(
             'cough',
@@ -688,5 +692,14 @@ describe('Case', () => {
         expect(denormalizedCase['genomeSequences.accessionNumber']).toEqual(
             '1234',
         );
+    });
+
+    it('formatsDateWithoutTimeCorrectly', async () => {
+        const correctDateString = '2024-01-01';
+        const correctDate = new Date(`${correctDateString}T03:24:00`);
+        const missingDate = undefined;
+
+        expect(formatDateWithoutTime(correctDate)).toEqual(correctDateString);
+        expect(formatDateWithoutTime(missingDate)).toEqual('');
     });
 });
