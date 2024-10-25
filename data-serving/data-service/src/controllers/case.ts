@@ -193,14 +193,14 @@ const updatedRevisionMetadata = (
     day0Case: CaseDocument,
     curator: string,
     note?: string,
-    date?: Date,
+    date?: Date | number,
 ) => {
     return {
         creationMetadata: day0Case.revisionMetadata.creationMetadata,
         updateMetadata: {
             curator: curator,
             note: note,
-            date: date || new Date(),
+            date: date || Date.now(),
         },
         revisionNumber: day0Case.revisionMetadata.revisionNumber + 1,
     };
@@ -757,7 +757,7 @@ export class CasesController {
 
         try {
             this.addGeoResolution(req);
-            const currentDate: Date = new Date();
+            const currentDate = Date.now();
             const curator = req.body.curator.email;
             const receivedCase = {
                 ...req.body,
@@ -774,9 +774,9 @@ export class CasesController {
                     },
                 },
             } as CaseDTO;
-            receivedCase.events.dateLastModified = currentDate;
 
             const c = fillEmpty(new Day0Case(await caseFromDTO(receivedCase)));
+            c.set({'events.dateLastModified': currentDate});
 
             let result;
             if (req.query.validate_only) {
@@ -854,7 +854,7 @@ export class CasesController {
             });
             return;
         } else {
-            const updateDate = new Date();
+            const updateDate = Date.now();
             c.set({
                 curators: {
                     createdBy: c.curators.createdBy,
@@ -1096,7 +1096,7 @@ export class CasesController {
                 return;
             }
             const caseDetails = await caseFromDTO(req.body);
-            const updateDate = new Date();
+            const updateDate = Date.now();
             c.set({
                 ...caseDetails,
                 revisionMetadata: updatedRevisionMetadata(
