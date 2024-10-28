@@ -327,13 +327,14 @@ export default function App(): JSX.Element {
     };
 
     const onModalClose = (): void => {
+        const searchQueryObject = new URLSearchParams(searchQuery);
         navigate(
             {
                 pathname:
                     location.state && location.state.lastLocation
                         ? location.state.lastLocation
                         : '/cases',
-                search: searchQuery,
+                search: searchQueryObject.toString(),
             },
             { state: { lastLocation: '/case/view' } },
         );
@@ -371,7 +372,8 @@ export default function App(): JSX.Element {
         )
             return;
 
-        dispatch(setSearchQuery(location.search));
+        const searchParams = new URLSearchParams(location.search);
+        dispatch(setSearchQuery(searchParams.toString()));
 
         // Save searchQuery to local storage not to lost it when user goes through auth process
         localStorage.setItem('searchQuery', location.search);

@@ -501,6 +501,7 @@ describe('Linelist table', function () {
             sourceUrl: 'www.example.com',
             caseStatus: CaseStatus.Confirmed,
             occupation: 'Actor',
+            comment: 'note',
         });
         cy.addCase({
             country: 'Germany',
@@ -524,6 +525,7 @@ describe('Linelist table', function () {
         cy.intercept('GET', getDefaultQuery({ limit: 50 })).as('getCases');
         cy.intercept('GET', getDefaultQuery({ limit: 50, query: 'Argentina' })).as('getCasesWithSearch1');
         cy.intercept('GET', getDefaultQuery({ limit: 50, query: 'Doctor' })).as('getCasesWithSearch2');
+        cy.intercept('GET', getDefaultQuery({ limit: 50, query: 'note' })).as('getCasesWithSearch3');
 
         cy.visit('/cases');
         cy.wait('@getCases');
@@ -549,5 +551,30 @@ describe('Linelist table', function () {
         cy.contains('Argentina').should('not.exist');
         cy.contains('France').should('not.exist');
         cy.contains('Germany').should('exist');
+
+        cy.get('#clear-search').click();
+        cy.wait('@getCases');
+        cy.contains('Argentina').should('exist');
+        cy.contains('France').should('exist');
+        cy.contains('Germany').should('exist');
+
+        cy.get('#search-field').type('note');
+        cy.wait('@getCasesWithSearch3');
+        cy.contains('Argentina').should('not.exist');
+        cy.contains('France').should('exist');
+        cy.contains('Germany').should('not.exist');
+    });
+
+    it('Informs user when uneven number of quotes is present in free-text search', () => {
+        cy.intercept('GET', getDefaultQuery({ limit: 50, query: '"Bus driver"' })).as('getCasesWithSearch');
+        cy.visit('/cases');
+        cy.contains('Please make sure you have an even number of quotes.').should('not.exist');
+
+        cy.get('#search-field').type('"Bus driver');
+        cy.contains('Please make sure you have an even number of quotes.').should('exist');
+
+        cy.get('#search-field').type('"');
+        cy.wait('@getCasesWithSearch');
+        cy.contains('Please make sure you have an even number of quotes.').should('not.exist');
     });
 });
