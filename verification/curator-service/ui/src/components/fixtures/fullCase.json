@@ -37,7 +37,7 @@
     "symptoms": "Severe pneumonia, Dyspnea, Weakness",
     "preexistingConditions": {
         "previousInfection": "N",
-        "pregnancyStatus": "NA"
+        "pregnancyStatus": ""
     },
     "transmission": {
         "contactWithCase": "N"

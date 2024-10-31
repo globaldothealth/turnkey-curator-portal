@@ -1,4 +1,6 @@
 // Case definitions as defined by the /api/cases endpoint.
+import {YesNo} from "./Day0Case";
+
 export enum VerificationStatus {
     Unverified = 'UNVERIFIED',
     Verified = 'VERIFIED',
@@ -132,7 +134,7 @@ export interface Vaccine {
     batch: string;
     date: Date;
     sideEffects: Symptoms;
-    previousInfection: 'yes' | 'no' | 'NA';
+    previousInfection: YesNo;
     previousInfectionDetectionMethod: string;
 }
 

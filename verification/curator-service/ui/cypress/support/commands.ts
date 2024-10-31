@@ -12,7 +12,7 @@ export enum Outcome {
 export enum YesNo {
     Y = 'Y',
     N = 'N',
-    NA = 'NA',
+    None = '',
 }
 
 export enum Gender {

@@ -656,6 +656,9 @@ paths:
                     $ref: '#/components/responses/500'
 components:
     schemas:
+        YesNo:
+            type: string
+            enum: ['Y', 'N', '']
         BatchUpdateResponse:
             description: Response to batch update cases API requests
             properties:
@@ -766,8 +769,7 @@ components:
                         occupation:
                             type: string
                         healthcareWorker:
-                            type: string
-                            enum: ['Y', 'N', 'NA']
+                            $ref: '#/components/schemas/YesNo'
                 location:
                     $ref: '#/components/schemas/Location'
                 events:
@@ -788,8 +790,7 @@ components:
                         dateOfFirstConsult:
                             $ref: '#/components/schemas/Date'
                         hospitalized:
-                            type: string
-                            enum: ['Y', 'N', 'NA']
+                            $ref: '#/components/schemas/YesNo'
                         reasonForHospitalization:
                             type: string
                             enum: [monitoring, treatment, unknown]
@@ -798,18 +799,15 @@ components:
                         dateDischargeHospital:
                             $ref: '#/components/schemas/Date'
                         intensiveCare:
-                            type: string
-                            enum: ['Y', 'N', 'NA']
+                            $ref: '#/components/schemas/YesNo'
                         dateAdmissionICU:
                             $ref: '#/components/schemas/Date'
                         dateDischargeICU:
                             $ref: '#/components/schemas/Date'
                         homeMonitoring:
-                            type: string
-                            enum: ['Y', 'N', 'NA']
+                            $ref: '#/components/schemas/YesNo'
                         isolated:
-                            type: string
-                            enum: ['Y', 'N', 'NA']
+                            $ref: '#/components/schemas/YesNo'
                         dateIsolation:
                             $ref: '#/components/schemas/Date'
                         outcome:
@@ -825,21 +823,18 @@ components:
                     type: object
                     properties:
                         previousInfection:
-                            type: string
-                            enum: ['Y', 'N', 'NA']
+                            $ref: '#/components/schemas/YesNo'
                         coInfection:
                             type: string
                         preexistingCondition:
                             type: string
                         pregnancyStatus:
-                            type: string
-                            enum: ['Y', 'N', 'NA']
+                            $ref: '#/components/schemas/YesNo'
                 transmission:
                     type: object
                     properties:
                         contactWithCase:
-                            type: string
-                            enum: ['Y', 'N', 'NA']
+                            $ref: '#/components/schemas/YesNo'
                         contactId:
                             type: string
                         contactSetting:
@@ -854,8 +849,7 @@ components:
                     type: object
                     properties:
                         travelHistory:
-                            type: string
-                            enum: ['Y', 'N', 'NA']
+                            $ref: '#/components/schemas/YesNo'
                         travelHistoryEntry:
                             $ref: '#/components/schemas/Date'
                         travelHistoryStart:
@@ -875,8 +869,7 @@ components:
                     type: object
                     properties:
                         vaccination:
-                            type: string
-                            enum: ['Y', 'N', 'NA']
+                            $ref: '#/components/schemas/YesNo'
                         vaccineName:
                             type: string
                         vaccineDate:

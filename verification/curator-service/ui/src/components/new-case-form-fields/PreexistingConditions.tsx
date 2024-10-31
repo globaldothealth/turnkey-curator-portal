@@ -3,7 +3,7 @@ import { FastField, useFormikContext } from 'formik';
 import { TextField } from 'formik-mui';
 import Scroll from 'react-scroll';
 
-import { Day0CaseFormValues } from '../../api/models/Day0Case';
+import { Day0CaseFormValues, YesNo } from '../../api/models/Day0Case';
 import {
     FormikAutocomplete,
     SelectField,
@@ -11,8 +11,6 @@ import {
 import FieldTitle from '../common-form-fields/FieldTitle';
 import { useStyles } from './styled';
 import { StyledTooltip } from './StyledTooltip';
-
-const hasPreexistingConditionsValues = ['Y', 'N', 'NA'];
 
 const TooltipText = () => (
     <StyledTooltip>
@@ -60,7 +58,7 @@ export default function PreexistingConditions(): JSX.Element {
             <SelectField
                 name="preexistingConditions.previousInfection"
                 label="Previous infection"
-                values={hasPreexistingConditionsValues}
+                values={Object.values(YesNo)}
             />
 
             <div className={clsx([classes.fieldRow, classes.halfWidth])}>
@@ -87,7 +85,7 @@ export default function PreexistingConditions(): JSX.Element {
             <SelectField
                 name="preexistingConditions.pregnancyStatus"
                 label="Pregnancy status"
-                values={hasPreexistingConditionsValues}
+                values={Object.values(YesNo)}
             />
         </Scroll.Element>
     );

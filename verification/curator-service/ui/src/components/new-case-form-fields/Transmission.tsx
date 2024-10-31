@@ -3,7 +3,7 @@ import { FastField, useFormikContext } from 'formik';
 import { TextField } from 'formik-mui';
 import Scroll from 'react-scroll';
 
-import { Day0CaseFormValues } from '../../api/models/Day0Case';
+import { Day0CaseFormValues, YesNo } from '../../api/models/Day0Case';
 import FieldTitle from '../common-form-fields/FieldTitle';
 import {
     FormikAutocomplete,
@@ -54,7 +54,7 @@ export default function Transmission(): JSX.Element {
             <SelectField
                 name="transmission.contactWithCase"
                 label="Contact with case"
-                values={['Y', 'N', 'NA']}
+                values={Object.values(YesNo)}
             />
             <div className={clsx([classes.fieldRow, classes.halfWidth])}>
                 <FastField

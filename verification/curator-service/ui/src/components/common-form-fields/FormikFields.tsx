@@ -173,7 +173,7 @@ export function SelectField(props: SelectFieldProps): JSX.Element {
             >
                 {props.values.map((value) => (
                     <MenuItem key={value} value={value}>
-                        {value}
+                        {value === '' ? <i>None</i> : value}
                     </MenuItem>
                 ))}
             </FastField>

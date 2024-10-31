@@ -1,15 +1,13 @@
 import clsx from 'clsx';
-import { FastField, useFormikContext } from 'formik';
-import { TextField } from 'formik-mui';
+import {FastField, useFormikContext} from 'formik';
+import {TextField} from 'formik-mui';
 import Scroll from 'react-scroll';
 
-import { Outcome, Day0CaseFormValues } from '../../api/models/Day0Case';
-import { DateField, SelectField } from '../common-form-fields/FormikFields';
+import {Day0CaseFormValues, Outcome, YesNo} from '../../api/models/Day0Case';
+import {DateField, SelectField} from '../common-form-fields/FormikFields';
 import FieldTitle from '../common-form-fields/FieldTitle';
-import { useStyles } from './styled';
-import { StyledTooltip } from './StyledTooltip';
-
-const yesNoUndefined = ['Y', 'N', 'NA'];
+import {useStyles} from './styled';
+import {StyledTooltip} from './StyledTooltip';
 
 const outcomes = ['recovered', 'death'];
 
@@ -184,14 +182,14 @@ export default function Events(): JSX.Element {
             <SelectField
                 name="events.homeMonitoring"
                 label="Home monitoring"
-                values={yesNoUndefined}
+                values={Object.values(YesNo)}
             />
             <SelectField
                 name="events.isolated"
                 label="Isolated"
-                values={yesNoUndefined}
+                values={Object.values(YesNo)}
             />
-            {values.events.isolated === 'Y' && (
+            {values.events.isolated === YesNo.Y && (
                 <DateField
                     name="events.dateIsolation"
                     label="Date of isolation"
@@ -206,9 +204,9 @@ export default function Events(): JSX.Element {
             <SelectField
                 name="events.hospitalized"
                 label="Hospital admission"
-                values={yesNoUndefined}
+                values={Object.values(YesNo)}
             />
-            {values.events.hospitalized === 'Y' && (
+            {values.events.hospitalized === YesNo.Y && (
                 <>
                     <DateField
                         name="events.dateHospitalization"
@@ -241,9 +239,9 @@ export default function Events(): JSX.Element {
             <SelectField
                 name="events.intensiveCare"
                 label="Intensive care"
-                values={yesNoUndefined}
+                values={Object.values(YesNo)}
             />
-            {values.events.intensiveCare === 'Y' && (
+            {values.events.intensiveCare === YesNo.Y && (
                 <>
                     <DateField
                         name="events.dateAdmissionICU"
