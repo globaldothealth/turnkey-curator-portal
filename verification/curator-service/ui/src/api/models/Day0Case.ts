@@ -14,7 +14,7 @@ export enum Gender {
 export enum YesNo {
     Y = 'Y',
     N = 'N',
-    NA = 'NA',
+    None = '',
 }
 
 export enum HospitalizationReason {
