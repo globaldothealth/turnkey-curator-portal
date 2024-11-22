@@ -11,6 +11,9 @@
             "__v": {
                 "bsonType": "int"
             },
+            "bundleId": {
+                "bsonType": "objectId"
+            },
             "list": {
                 "bsonType": "bool"
             },

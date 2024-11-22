@@ -80,6 +80,7 @@ const caseFromDTO = async (receivedCase: CaseDTO) => {
             };
         }
     }
+    aCase.bundleId = new ObjectId(aCase.bundleId)
 
     return aCase;
 };
