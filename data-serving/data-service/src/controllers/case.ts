@@ -57,6 +57,9 @@ const caseFromDTO = async (receivedCase: CaseDTO) => {
             .map((b) => b._id);
     }
 
+    const geometry = aCase.location?.geometry;
+    if (!geometry.latitude || !geometry.longitude) delete aCase.location.geometry;
+
     const user = await User.findOne({ email: receivedCase.curator?.email });
     if (user) {
         logger.info(`User: ${JSON.stringify(user)}`)
@@ -80,7 +83,6 @@ const caseFromDTO = async (receivedCase: CaseDTO) => {
             };
         }
     }
-    aCase.bundleId = new ObjectId(aCase.bundleId)
 
     return aCase;
 };
@@ -1252,10 +1254,12 @@ export class CasesController {
                 if (err.name === 'ValidationError') {
                     res.status(422).json(err);
                     return;
+                } else {
+                    res.status(500).json(err);
                 }
+            } else {
                 res.status(500).json(err);
             }
-            res.status(500).json(err);
             return;
         }
     };
