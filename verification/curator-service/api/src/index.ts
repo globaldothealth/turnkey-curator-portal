@@ -254,6 +254,12 @@ async function makeApp() {
         casesController.list,
     );
     apiRouter.get(
+        '/cases/bundled',
+        authenticateByAPIKey,
+        mustBeAuthenticated,
+        casesController.listBundled,
+    );
+    apiRouter.get(
         '/cases/countryData',
         authenticateByAPIKey,
         mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
@@ -301,8 +307,13 @@ async function makeApp() {
         casesController.create,
     );
     apiRouter.post(
+        '/cases/verify/bundled',
+        mustHaveAnyRole([Role.Curator]),
+        casesController.verifyBundled,
+    );
+    apiRouter.post(
         '/cases/verify/:id(\\d+$)',
-        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
+        mustHaveAnyRole([Role.Curator]),
         casesController.verify,
     );
     apiRouter.post(

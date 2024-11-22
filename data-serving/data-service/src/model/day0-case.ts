@@ -81,6 +81,7 @@ export type CuratorsDocument = mongoose.Document & {
 export const caseSchema = new mongoose.Schema(
     {
         _id: Number,
+        bundleId: mongoose.Types.ObjectId,
         caseStatus: {
             type: String,
             enum: CaseStatus,
@@ -188,6 +189,7 @@ export interface ISource {
 
 export type ICase = {
     caseStatus: CaseStatus;
+    bundleId: mongoose.Types.ObjectId;
     comment?: string;
     pathogen: string;
     symptoms: string;
