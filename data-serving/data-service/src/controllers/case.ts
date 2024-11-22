@@ -58,7 +58,7 @@ const caseFromDTO = async (receivedCase: CaseDTO) => {
     }
 
     const geometry = aCase.location?.geometry;
-    if (!geometry.latitude || !geometry.longitude) delete aCase.location.geometry;
+    if (!geometry || !geometry.latitude || !geometry.longitude) delete aCase.location.geometry;
 
     const user = await User.findOne({ email: receivedCase.curator?.email });
     if (user) {
