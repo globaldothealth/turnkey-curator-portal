@@ -19,7 +19,7 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import {CheckCircleOutline as VerifyIcon} from '@mui/icons-material';
+import { CheckCircleOutline as VerifyIcon } from '@mui/icons-material';
 
 import Header from './Header';
 
@@ -101,15 +101,17 @@ const EnhancedTableToolbar = () => {
                         sx={{ marginLeft: '1rem' }}
                     >
                         <Tooltip title="Verify selected rows">
-                            <IconButton
-                                sx={{ color: 'white' }}
+                            <Button
+                                variant={'outlined'}
+                                startIcon={<VerifyIcon />}
+                                color={'light'}
                                 data-testid="verify-case-bundles-button"
                                 onClick={() =>
                                     dispatch(setVerifyCasesDialogOpen(true))
                                 }
                             >
-                                <VerifyIcon />
-                            </IconButton>
+                                Verify
+                            </Button>
                         </Tooltip>
                     </Stack>
                 </>
