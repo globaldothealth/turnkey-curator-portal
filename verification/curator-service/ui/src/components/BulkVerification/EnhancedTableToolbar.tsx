@@ -1,4 +1,7 @@
 import { useEffect, useState } from 'react';
+import { CheckCircleOutline as VerifyIcon } from '@mui/icons-material';
+import { Button, Stack, Toolbar, Tooltip, Typography } from '@mui/material';
+
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import {
     setVerifyCasesDialogOpen,
@@ -13,13 +16,7 @@ import {
     selectRowsAcrossPages,
 } from '../../redux/bundledCases/selectors';
 
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Tooltip from '@mui/material/Tooltip';
-import IconButton from '@mui/material/IconButton';
-import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
-import { CheckCircleOutline as VerifyIcon } from '@mui/icons-material';
+
 
 import Header from './Header';
 
