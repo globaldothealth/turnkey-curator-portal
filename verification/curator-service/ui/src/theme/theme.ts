@@ -53,6 +53,24 @@ declare module '@mui/material/styles' {
     }
 }
 
+// define custom colors: https://material-ui.com/customization/palette/
+declare module '@mui/material/styles/createPalette' {
+    interface Palette {
+        light: Palette['primary'];
+
+    }
+    interface PaletteOptions {
+        light: PaletteOptions['primary'];
+    }
+}
+
+// Extend color prop on components
+declare module '@mui/material/Button' {
+    export interface ButtonPropsColorOverrides {
+        light: true
+    }
+}
+
 export const theme = createTheme({
     palette: {
         background: {
@@ -71,6 +89,10 @@ export const theme = createTheme({
             main: '#FD685B',
             contrastText: '#454545',
         },
+        light: {
+            main: '#FFFFFF',
+            contrastText: '#0E7569',
+        }
     },
     typography: {
         fontFamily: 'Inter, sans-serif',

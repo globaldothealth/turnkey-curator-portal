@@ -14,6 +14,7 @@ import {
 import { DownloadButton } from '../DownloadButton';
 import LinelistTable from '../LinelistTable';
 import PivotTables from '../PivotTables';
+import BulkVerification from '../BulkVerification';
 import {
     Link,
     Route,
@@ -41,6 +42,7 @@ import SourceTable from '../SourceTable';
 import TermsOfUse from '../TermsOfUse';
 import UploadsTable from '../UploadsTable';
 import Users from '../Users';
+import ViewBundle from '../ViewBundle';
 import ViewCase from '../ViewCase';
 import clsx from 'clsx';
 import { useCookieBanner } from '../../hooks/useCookieBanner';
@@ -456,6 +458,9 @@ export default function App(): JSX.Element {
                     {user && (
                         <Route path="/cases" element={<LinelistTable />} />
                     )}
+                    {hasAnyRole(user, [Role.Curator]) && (
+                        <Route path="/bulk-verification" element={<BulkVerification />} />
+                    )}
                     {hasAnyRole(user, [Role.Curator, Role.JuniorCurator]) && (
                         <Route path="/sources" element={<SourceTable />} />
                     )}
@@ -536,6 +541,20 @@ export default function App(): JSX.Element {
                             path="/cases/view/:id"
                             element={
                                 <ViewCase
+                                    enableEdit={hasAnyRole(user, [
+                                        Role.Curator,
+                                        Role.JuniorCurator,
+                                    ])}
+                                    onModalClose={onModalClose}
+                                />
+                            }
+                        />
+                    )}
+                    {user && (
+                        <Route
+                            path="/cases/bundle/view/:id"
+                            element={
+                                <ViewBundle
                                     enableEdit={hasAnyRole(user, [
                                         Role.Curator,
                                         Role.JuniorCurator,

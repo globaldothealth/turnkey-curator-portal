@@ -114,17 +114,24 @@ if (remoteGeocodingLocation) {
 const caseController = new cases.CasesController(geocoders);
 
 apiRouter.get('/cases', caseController.list);
+apiRouter.get('/cases/bundled', caseController.listBundled);
 apiRouter.get('/cases/countryData', caseController.countryData);
 apiRouter.get('/cases/symptoms', cases.listSymptoms);
 apiRouter.get('/cases/placesOfTransmission', cases.listPlacesOfTransmission);
 apiRouter.get('/cases/occupations', cases.listOccupations);
 apiRouter.get('/cases/locationComments', cases.listLocationComments);
 apiRouter.post(
+    '/cases/verify/bundled',
+    createCaseRevision,
+    caseController.verifyBundled,
+);
+apiRouter.post(
     '/cases/verify/:id(\\d+$)',
     createCaseRevision,
     caseController.verify,
 );
 apiRouter.get('/cases/:id(\\d+$)', caseController.get);
+apiRouter.get('/cases/bundled/:id([a-z0-9]{24})', caseController.getBundled);
 apiRouter.post('/cases', caseController.create);
 apiRouter.post('/cases/download', caseController.download);
 apiRouter.post(

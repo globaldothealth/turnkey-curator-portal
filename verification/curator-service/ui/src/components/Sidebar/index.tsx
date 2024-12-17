@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import {
     Add as AddIcon,
+    DoneAll as BulkVerificationIcon,
     Link as LinkIcon,
     List as ListIcon,
     People as PeopleIcon,
@@ -72,6 +73,13 @@ const Sidebar = ({ drawerOpen }: SidebarProps): JSX.Element => {
                           icon: <ListIcon />,
                           to: { pathname: '/cases', search: '' },
                           displayCheck: (): boolean => true,
+                      },
+                      {
+                          text: 'Bulk Verification',
+                          icon: <BulkVerificationIcon />,
+                          to: '/bulk-verification',
+                          displayCheck: (): boolean =>
+                              hasAnyRole(user, [Role.Curator]),
                       },
                       {
                           text: 'Sources',
