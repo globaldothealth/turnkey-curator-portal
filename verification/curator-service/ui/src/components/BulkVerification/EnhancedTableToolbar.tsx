@@ -16,8 +16,6 @@ import {
     selectRowsAcrossPages,
 } from '../../redux/bundledCases/selectors';
 
-
-
 import Header from './Header';
 
 const EnhancedTableToolbar = () => {

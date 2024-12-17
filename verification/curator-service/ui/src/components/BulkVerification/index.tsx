@@ -18,7 +18,7 @@ import {
     TableFooter,
     TableHead,
     TablePagination,
-    TableRow
+    TableRow,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
@@ -171,8 +171,8 @@ const BulkVerification = () => {
         return `${from} - ${to} of ${count >= dataLimit ? 'many' : `${count}`}`;
     };
 
-    const handleCaseClick = (caseId: string) => {
-        navigate(`/cases/view/${caseId}`, {
+    const handleBundleClick = (bundleId: string) => {
+        navigate(`/cases/bundle/view/${bundleId}`, {
             state: {
                 lastLocation: location.pathname,
             },
@@ -363,6 +363,9 @@ const BulkVerification = () => {
                                             cursor: 'pointer',
                                         }}
                                         hover
+                                        onClick={() =>
+                                            handleBundleClick(row.caseBundleId)
+                                        }
                                     >
                                         {hasAnyRole(user, [
                                             Role.Admin,
@@ -397,7 +400,11 @@ const BulkVerification = () => {
                                             {row.caseCount}
                                         </TableCell>
                                         <TableCell align="left">
-                                            <Accordion>
+                                            <Accordion
+                                                onClick={(e) =>
+                                                    e.stopPropagation()
+                                                }
+                                            >
                                                 <AccordionSummary
                                                     expandIcon={
                                                         <ExpandMoreIcon />

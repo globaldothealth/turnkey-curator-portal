@@ -247,6 +247,30 @@ export class CasesController {
     };
 
     /**
+     * Get a specific case bundle.
+     *
+     * Handles HTTP GET /api/cases/bundled/:id.
+     */
+    getBundled = async (req: Request, res: Response): Promise<void> => {
+        const c = await Day0Case.find({
+            bundleId: req.params.id,
+        }).lean();
+
+        if (c.length === 0) {
+            res.status(404).send({
+                message: `Day0Case bundle with ID ${req.params.id} not found.`,
+            });
+            return;
+        }
+
+        c.forEach((aCase: CaseDocument) => {
+            delete aCase.caseReference.sourceEntryId;
+        });
+
+        res.json(await Promise.all(c.map((aCase) => dtoFromCase(aCase))));
+    };
+
+    /**
      * Streams requested cases to client (curator service).
      * Doesn't return cases from the restricted collection.
      *
@@ -1228,6 +1252,10 @@ export class CasesController {
      * Handles HTTP PUT /api/cases/:id.
      */
     update = async (req: Request, res: Response): Promise<void> => {
+        const numCases = req.query.numCases || 1;
+        logger.error('==========');
+        logger.error(`${numCases}`);
+        logger.error('==========');
         try {
             const c = await Day0Case.findById(req.params.id);
             if (!c) {

@@ -358,7 +358,7 @@ paths:
         get:
             summary: Data for cases by country table
             operationId: listCountryData
-            tags: [ Suggest ]
+            tags: [Suggest]
             responses:
                 '200':
                     $ref: '#/components/responses/200CasesByCountryObject'
@@ -532,7 +532,7 @@ paths:
         get:
             summary: Lists most frequently used location comments
             operationId: listLocationComments
-            tags: [ Suggest ]
+            tags: [Suggest]
             parameters:
                 - name: limit
                   in: query
@@ -625,18 +625,88 @@ paths:
                     $ref: '#/components/responses/404'
                 '500':
                     $ref: '#/components/responses/500'
+    /cases/bundled/{id}:
+        parameters:
+            - name: id
+              in: path
+              description: The case bundle ID
+              required: true
+              schema:
+                  type: string
+        get:
+            summary: Gets a specific case
+            operationId: getCase
+            tags: [Case]
+            responses:
+                '200':
+                    $ref: '#/components/responses/200Case'
+                '400':
+                    $ref: '#/components/responses/400'
+                '403':
+                    $ref: '#/components/responses/403'
+                '404':
+                    $ref: '#/components/responses/404'
+                '422':
+                    $ref: '#/components/responses/422'
+                '500':
+                    $ref: '#/components/responses/500'
+    #        put:
+    #            summary: Updates a specific case
+    #            operationId: updateCase
+    #            tags: [ Case ]
+    #            requestBody:
+    #                description: Case to update
+    #                required: true
+    #                content:
+    #                    application/json:
+    #                        schema:
+    #                            allOf:
+    #                                - $ref: '#/components/schemas/Case'
+    #                            properties:
+    #                                curator:
+    #                                    $ref: '#/components/schemas/Curator'
+    #                            required:
+    #                                - curator
+    #            responses:
+    #                '200':
+    #                    $ref: '#/components/responses/200Case'
+    #                '400':
+    #                    $ref: '#/components/responses/400'
+    #                '403':
+    #                    $ref: '#/components/responses/403'
+    #                '404':
+    #                    $ref: '#/components/responses/404'
+    #                '422':
+    #                    $ref: '#/components/responses/422'
+    #                '500':
+    #                    $ref: '#/components/responses/500'
+    #        delete:
+    #            summary: Deletes a specific case
+    #            operationId: deleteCase
+    #            tags: [ Case ]
+    #            responses:
+    #                '204':
+    #                    description: Case deleted
+    #                '400':
+    #                    $ref: '#/components/responses/400'
+    #                '403':
+    #                    $ref: '#/components/responses/403'
+    #                '404':
+    #                    $ref: '#/components/responses/404'
+    #                '500':
+    #                    $ref: '#/components/responses/500'
     /cases/verify/{id}:
         post:
             summary: Verify case
-#            tags: [ Case ]
-#            operationId: verifyCase
-#            requestBody:
-#                description: Case with verifier
-#                required: true
-#                content:
-#                    application/json:
-#                        schema:
-#                            $ref: '#/components/schemas/Verifier'
+            #            tags: [ Case ]
+            #            operationId: verifyCase
+            #            requestBody:
+            #                description: Case with verifier
+            #                required: true
+            #                content:
+            #                    application/json:
+            #                        schema:
+            #                            $ref: '#/components/schemas/Verifier'
             responses:
                 '200':
                     $ref: '#/components/responses/200Case'
@@ -1062,11 +1132,11 @@ components:
                 gender:
                     type: string
                     nullable: true
-                    enum: [ null, male, female, other ]
+                    enum: [null, male, female, other]
                 outcome:
                     type: string
                     nullable: true
-                    enum: [ null, recovered, death ]
+                    enum: [null, recovered, death]
                 dateHospitalization:
                     $ref: '#/components/schemas/Date'
                 sourceUrl:

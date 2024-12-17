@@ -295,6 +295,12 @@ async function makeApp() {
         mustBeAuthenticated,
         casesController.get,
     );
+    apiRouter.get(
+        '/cases/bundled/:id([a-z0-9]{24})',
+        authenticateByAPIKey,
+        mustBeAuthenticated,
+        casesController.getBundled,
+    );
     apiRouter.post(
         '/cases/getDownloadLink',
         authenticateByAPIKey,

@@ -131,6 +131,7 @@ apiRouter.post(
     caseController.verify,
 );
 apiRouter.get('/cases/:id(\\d+$)', caseController.get);
+apiRouter.get('/cases/bundled/:id([a-z0-9]{24})', caseController.getBundled);
 apiRouter.post('/cases', caseController.create);
 apiRouter.post('/cases/download', caseController.download);
 apiRouter.post(
