@@ -555,6 +555,29 @@ export default class CasesController {
         }
     };
 
+    /** update simply forwards the request to the data service */
+    updateBundled = async (req: Request, res: Response): Promise<void> => {
+        logger.error('updateBundled');
+        try {
+            const response = await axios.put(
+                this.dataServerURL + '/api' + req.url,
+                {
+                    ...req.body,
+                    curator: { email: (req.user as IUser).email },
+                },
+            );
+            res.status(response.status).json(response.data);
+        } catch (e) {
+            const err = e as AxiosError;
+            logger.error(err);
+            if (err.response?.status && err.response?.data) {
+                res.status(err.response.status).send(err.response.data);
+                return;
+            }
+            res.status(500).send(err);
+        }
+    };
+
     /**
      * upsert forwards the request to the data service.
      */

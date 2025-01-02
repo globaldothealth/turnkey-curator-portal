@@ -301,6 +301,12 @@ async function makeApp() {
         mustBeAuthenticated,
         casesController.getBundled,
     );
+    apiRouter.put(
+        '/cases/bundled/:id([a-z0-9]{24})',
+        authenticateByAPIKey,
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
+        casesController.updateBundled,
+    );
     apiRouter.post(
         '/cases/getDownloadLink',
         authenticateByAPIKey,

@@ -217,7 +217,7 @@ const BulkFormSchema = Yup.object().shape({
     file: Yup.mixed().required('Please upload a file'),
 });
 
-const BulkCaseForm = (props: BulkCaseFormProps) => {
+const CaseBundleForm = (props: BulkCaseFormProps) => {
     const { onModalClose } = props;
 
     const navigate = useNavigate();
@@ -588,4 +588,4 @@ const BulkCaseForm = (props: BulkCaseFormProps) => {
     );
 };
 
-export default BulkCaseForm;
+export default CaseBundleForm;

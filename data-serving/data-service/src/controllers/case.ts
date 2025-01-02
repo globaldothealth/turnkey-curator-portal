@@ -63,25 +63,25 @@ const caseFromDTO = async (receivedCase: CaseDTO) => {
     const user = await User.findOne({ email: receivedCase.curator?.email });
     if (user) {
         logger.info(`User: ${JSON.stringify(user)}`)
-        if (user.roles.includes(Role.JuniorCurator)) {
+        if (user.roles.includes(Role.JuniorCurator) || user.roles.includes(Role.Curator)) {
             aCase.curators = {
                 createdBy: {
                     name: user.name || '',
                     email: user.email
                 },
             };
-        } else if (user.roles.includes(Role.Curator) || user.roles.includes(Role.Admin)) {
-            aCase.curators = {
-                createdBy: {
-                    name: user.name || '',
-                    email: user.email
-                },
-                verifiedBy: {
-                    name: user.name || '',
-                    email: user.email
-                },
-            };
-        }
+        } //else if (user.roles.includes(Role.Curator) || user.roles.includes(Role.Admin)) {
+        //     aCase.curators = {
+        //         createdBy: {
+        //             name: user.name || '',
+        //             email: user.email
+        //         },
+        //         verifiedBy: {
+        //             name: user.name || '',
+        //             email: user.email
+        //         },
+        //     };
+        // }
     }
 
     return aCase;
@@ -1278,6 +1278,55 @@ export class CasesController {
 
             res.json(await dtoFromCase(c));
         } catch (err) {
+            if (err instanceof Error) {
+                if (err.name === 'ValidationError') {
+                    res.status(422).json(err);
+                    return;
+                } else {
+                    res.status(500).json(err);
+                }
+            } else {
+                res.status(500).json(err);
+            }
+            return;
+        }
+    };
+
+    /**
+     * Update a specific case bundle.
+     *
+     * Handles HTTP PUT /api/cases/bundled/:id.
+     */
+    updateBundled = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const cs = await Day0Case.find({bundleId: req.params.id});
+
+            if (!cs) {
+                res.status(404).send({
+                    message: `Day0Case bundle with ID ${req.params.id} not found.`,
+                });
+                return;
+            }
+            const caseDetails = await caseFromDTO(req.body);
+            delete caseDetails._id;
+            delete caseDetails.revisionMetadata;
+
+
+            for (const c of cs) {
+                c.set({
+                    ...caseDetails,
+                    revisionMetadata: updatedRevisionMetadata(
+                        c,
+                        req.body.curator.email,
+                        'Case Update',
+                    ),
+                });
+                await c.save();
+            }
+
+            res.json(await dtoFromCase(cs[0]));
+        } catch (err) {
+            logger.error(err as any);
             if (err instanceof Error) {
                 if (err.name === 'ValidationError') {
                     res.status(422).json(err);

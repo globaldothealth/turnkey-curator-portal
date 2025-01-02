@@ -8,7 +8,7 @@ import {
     createBatchDeleteCaseRevisions,
     createBatchUpdateCaseRevisions,
     createBatchUpsertCaseRevisions,
-    createCaseRevision,
+    createCaseRevision, createCaseRevisionForBundle,
     findCasesToUpdate,
     setBatchUpsertFields,
 } from './controllers/preprocessor';
@@ -155,6 +155,7 @@ apiRouter.post(
     caseController.batchUpdate,
 );
 apiRouter.put('/cases/:id', createCaseRevision, caseController.update);
+apiRouter.put('/cases/bundled/:id', createCaseRevisionForBundle, caseController.updateBundled);
 apiRouter.delete(
     '/cases',
     batchDeleteCheckThreshold,

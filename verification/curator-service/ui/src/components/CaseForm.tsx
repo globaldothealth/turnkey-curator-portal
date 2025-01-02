@@ -252,6 +252,7 @@ const initialValuesFromCase = (
 
 interface Props {
     initialCase?: Day0Case;
+    bundleId?: string;
     onModalClose: () => void;
     diseaseName: string;
 }
@@ -504,8 +505,12 @@ export default function CaseForm(props: Props): JSX.Element {
 
         let newCaseIds = [];
         try {
+            // Update case bundle
+            if (props.bundleId) {
+                await axios.put(`/api/cases/bundled/${props.bundleId}`, newCase);
+            }
             // Update or create depending on the presence of the initial case ID.
-            if (props.initialCase?._id) {
+            else if (props.initialCase?._id) {
                 await axios.put(
                     `/api/cases/${props.initialCase?._id}`,
                     newCase,
@@ -526,6 +531,7 @@ export default function CaseForm(props: Props): JSX.Element {
             }
             setErrorMessage('');
         } catch (e) {
+            console.log(e.response)
             setErrorMessage(e.response?.data?.message || e.toString());
             return;
         }

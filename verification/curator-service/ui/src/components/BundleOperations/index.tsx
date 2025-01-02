@@ -47,7 +47,7 @@ import {
     setVerifyCasesDialogOpen,
     setRowsAcrossPagesSelected,
 } from '../../redux/bundledCases/slice';
-import { fetchBulkVerificationData } from '../../redux/bundledCases/thunk';
+import { fetchBundlesData } from '../../redux/bundledCases/thunk';
 import { nameCountry } from '../util/countryNames';
 import renderDate from '../util/date';
 import { hasAnyRole, parseAgeRange } from '../util/helperFunctions';
@@ -57,14 +57,14 @@ import EnhancedTableToolbar from './EnhancedTableToolbar';
 import { createData, labels } from './helperFunctions';
 import Pagination from './Pagination';
 import {
-    BulkVerificationContainer,
+    BundleOperationsContainer,
     LoaderContainer,
     StyledAlert,
 } from './styled';
 
 const dataLimit = 10000;
 
-const BulkVerification = () => {
+const BundleOperations = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const location = useLocation();
@@ -94,9 +94,9 @@ const BulkVerification = () => {
             currentPage + 1
         }&limit=${rowsPerPage}&count_limit=${dataLimit}&sort_by=${
             sort.value
-        }&order=${sort.order}&verification_status=${false}${query}`;
+        }&order=${sort.order}${query}`; //&verification_status=${false}
 
-        dispatch(fetchBulkVerificationData(preparedQuery));
+        dispatch(fetchBundlesData(preparedQuery));
     }, [
         dispatch,
         currentPage,
@@ -213,7 +213,7 @@ const BulkVerification = () => {
     const isSelected = (id: string) => casesSelected.indexOf(id) !== -1;
 
     return (
-        <BulkVerificationContainer>
+        <BundleOperationsContainer>
             <Helmet>
                 <title>Global.health | Cases</title>
             </Helmet>
@@ -299,7 +299,7 @@ const BulkVerification = () => {
                     <Table
                         sx={{ minWidth: 650 }}
                         size="medium"
-                        aria-label="Bulk verification table"
+                        aria-label="Bundles table"
                         stickyHeader
                     >
                         <TableHead>
@@ -560,8 +560,8 @@ const BulkVerification = () => {
                 }
                 query={rowsAcrossPagesSelected ? searchQuery : undefined}
             />
-        </BulkVerificationContainer>
+        </BundleOperationsContainer>
     );
 };
 
-export default BulkVerification;
+export default BundleOperations;

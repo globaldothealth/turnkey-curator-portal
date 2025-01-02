@@ -14,7 +14,7 @@ import {
 import { DownloadButton } from '../DownloadButton';
 import LinelistTable from '../LinelistTable';
 import PivotTables from '../PivotTables';
-import BulkVerification from '../BulkVerification';
+import BundleOperations from '../BundleOperations';
 import {
     Link,
     Route,
@@ -29,10 +29,11 @@ import { makeStyles } from 'tss-react/mui';
 
 import AutomatedBackfill from '../AutomatedBackfill';
 import AutomatedSourceForm from '../AutomatedSourceForm';
-import BulkCaseForm from '../BulkCaseForm';
+import CaseBundleForm from '../BulkCaseForm';
 import CaseForm from '../CaseForm';
 import AcknowledgmentsPage from '../AcknowledgmentsPage';
 import EditCase from '../EditCase';
+import EditCaseBundle from '../EditCaseBundle';
 import GHListLogo from '../GHListLogo';
 import LandingPage from '../landing-page/LandingPage';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -459,7 +460,7 @@ export default function App(): JSX.Element {
                         <Route path="/cases" element={<LinelistTable />} />
                     )}
                     {hasAnyRole(user, [Role.Curator]) && (
-                        <Route path="/bulk-verification" element={<BulkVerification />} />
+                        <Route path="/bundles" element={<BundleOperations />} />
                     )}
                     {hasAnyRole(user, [Role.Curator, Role.JuniorCurator]) && (
                         <Route path="/sources" element={<SourceTable />} />
@@ -492,7 +493,7 @@ export default function App(): JSX.Element {
                             <Route
                                 path="/cases/bulk"
                                 element={
-                                    <BulkCaseForm onModalClose={onModalClose} />
+                                    <CaseBundleForm onModalClose={onModalClose} />
                                 }
                             />
                         )}
@@ -530,6 +531,21 @@ export default function App(): JSX.Element {
                                 path="/cases/edit/:id"
                                 element={
                                     <EditCase
+                                        onModalClose={onModalClose}
+                                        diseaseName={diseaseName}
+                                    />
+                                }
+                            />
+                        )}
+                    {user &&
+                        hasAnyRole(user, [
+                            Role.Curator,
+                            Role.JuniorCurator,
+                        ]) && (
+                            <Route
+                                path="/cases/bundle/edit/:id"
+                                element={
+                                    <EditCaseBundle
                                         onModalClose={onModalClose}
                                         diseaseName={diseaseName}
                                     />

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import {fetchBulkVerificationData, verifyCaseBundle} from './thunk';
+import {fetchBundlesData, verifyCaseBundle} from './thunk';
 import { VerificationStatus } from '../../api/models/Case';
 import { Day0Case } from '../../api/models/Day0Case';
 import { SortBy, SortByOrder } from '../../constants/types';
@@ -100,17 +100,17 @@ const bundledCasesTableSlice = createSlice({
     },
     extraReducers: (builder) => {
         // FETCH CASE BUNDLES
-        builder.addCase(fetchBulkVerificationData.pending, (state) => {
+        builder.addCase(fetchBundlesData.pending, (state) => {
             state.isLoading = true;
             state.error = undefined;
         });
-        builder.addCase(fetchBulkVerificationData.fulfilled, (state, { payload }) => {
+        builder.addCase(fetchBundlesData.fulfilled, (state, { payload }) => {
             state.isLoading = false;
             state.cases = payload.cases;
             state.nextPage = payload.nextPage;
             state.total = payload.total;
         });
-        builder.addCase(fetchBulkVerificationData.rejected, (state, action) => {
+        builder.addCase(fetchBundlesData.rejected, (state, action) => {
             state.isLoading = false;
             state.error = action.payload
                 ? action.payload

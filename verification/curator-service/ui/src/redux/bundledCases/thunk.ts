@@ -8,11 +8,11 @@ interface ListResponse {
     total: number;
 }
 
-export const fetchBulkVerificationData = createAsyncThunk<
+export const fetchBundlesData = createAsyncThunk<
     { cases: Day0Case[]; nextPage: number; total: number },
     string | undefined,
     { rejectValue: string }
->('bulkVerificationList/fetchBulkVerificationData', async (query, { rejectWithValue }) => {
+>('bundleOperationsList/fetchBundlesData', async (query, { rejectWithValue }) => {
 
     try {
         const response = await axios.get<ListResponse>(

@@ -40,6 +40,20 @@ export const getCase = async (
     return null;
 };
 
+export const getCasesForBundle = async (
+    request: Request,
+): Promise<CaseDocument[] | null> => {
+    if (
+        (request.method == 'PUT' || request.method == 'DELETE') &&
+        request.params?.id
+    ) {
+        // Update or delete.
+        return Day0Case.find({bundleId: request.params.id});
+    }
+
+    return null;
+};
+
 // Remove cases from the request that don't need to be updated.
 export const batchUpsertDropUnchangedCases = async (
     request: Request,
@@ -185,6 +199,24 @@ export const createCaseRevision = async (
         await new CaseRevision({
             case: c,
         }).save();
+    }
+
+    next();
+};
+
+export const createCaseRevisionForBundle = async (
+    request: Request,
+    response: Response,
+    next: NextFunction,
+): Promise<void> => {
+    const cs = await getCasesForBundle(request);
+
+    if (cs) {
+        for (const c of cs) {
+            await new CaseRevision({
+                case: c,
+            }).save();
+        }
     }
 
     next();

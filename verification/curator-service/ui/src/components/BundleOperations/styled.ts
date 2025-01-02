@@ -18,6 +18,6 @@ export const StyledAlert = styled(Alert)(() => ({
     marginTop: '2rem',
 }));
 
-export const BulkVerificationContainer = styled('div')(() => ({
+export const BundleOperationsContainer = styled('div')(() => ({
     marginTop: '64px',
 }));
