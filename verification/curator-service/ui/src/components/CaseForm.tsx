@@ -507,7 +507,10 @@ export default function CaseForm(props: Props): JSX.Element {
         try {
             // Update case bundle
             if (props.bundleId) {
-                await axios.put(`/api/cases/bundled/${props.bundleId}`, newCase);
+                await axios.put(
+                    `/api/cases/bundled/${props.bundleId}`,
+                    newCase,
+                );
             }
             // Update or create depending on the presence of the initial case ID.
             else if (props.initialCase?._id) {
@@ -531,19 +534,23 @@ export default function CaseForm(props: Props): JSX.Element {
             }
             setErrorMessage('');
         } catch (e) {
-            console.log(e.response)
             setErrorMessage(e.response?.data?.message || e.toString());
             return;
         }
-        // Navigate to cases after successful submit
-        navigate('/cases', {
-            state: {
-                newCaseIds: newCaseIds,
-                editedCaseIds: props.initialCase?._id
-                    ? [props.initialCase._id]
-                    : [],
-            },
-        });
+        if (props.bundleId) {
+            // Navigate to cases after successful submit
+            navigate('/bundles', { state: { editedBundleId: props.bundleId } });
+        } else {
+            // Navigate to cases after successful submit
+            navigate('/cases', {
+                state: {
+                    newCaseIds: newCaseIds,
+                    editedCaseIds: props.initialCase?._id
+                        ? [props.initialCase._id]
+                        : [],
+                },
+            });
+        }
     };
 
     const tableOfContentsIcon = (opts: {

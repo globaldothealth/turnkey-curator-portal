@@ -244,6 +244,14 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
         });
     };
 
+    const handleEditBundleClick = (bundleId: string) => {
+        navigate(`/cases/bundle/edit/${bundleId}`, {
+            state: {
+                lastLocation: location.pathname,
+            },
+        });
+    };
+
     const searchedKeywords = useSelector(selectSearchQuery);
     const filtersBreadcrumb = useSelector(selectFilterBreadcrumbs);
     const user = useSelector(selectUser);
@@ -348,20 +356,18 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                 <Typography className={classes.caseTitle} variant="h5">
                     Case bundle {bundleId}{' '}
                     {props.enableEdit && (
-                        <Link
-                            to={`/cases/bundle/edit/${props.bundleId}`}
-                            style={{ textDecoration: 'none' }}
+                        <Button
+                            data-testid="edit-button"
+                            variant="outlined"
+                            color="primary"
+                            className={classes.editBtn}
+                            endIcon={<EditIcon />}
+                            onClick={() =>
+                                handleEditBundleClick(props.bundleId || '')
+                            }
                         >
-                            <Button
-                                data-testid="edit-button"
-                                variant="outlined"
-                                color="primary"
-                                className={classes.editBtn}
-                                endIcon={<EditIcon />}
-                            >
-                                Edit
-                            </Button>
-                        </Link>
+                            Edit
+                        </Button>
                     )}
                     {props.cases.length > 0 &&
                         unverified &&
@@ -445,16 +451,15 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                         }}
                     >
                         {props.cases.map((c) => (
-                            <>
+                            <div key={c._id} style={{ display: 'inline' }}>
                                 <MuiLink
                                     onClick={() => handleCaseClick(c._id || '')}
-                                    key={c._id}
                                     className={classes.caseLink}
                                 >
                                     {c._id}
                                 </MuiLink>
                                 {'\t'}
-                            </>
+                            </div>
                         ))}
                     </AccordionDetails>
                 </Accordion>

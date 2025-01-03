@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import {
     Accordion,
     AccordionDetails,
     AccordionSummary,
-    Button,
     Checkbox,
     CircularProgress,
+    Link,
     Paper,
     Stack,
     Table,
@@ -212,6 +212,14 @@ const BundleOperations = () => {
 
     const isSelected = (id: string) => casesSelected.indexOf(id) !== -1;
 
+    const handleCaseClick = (caseId: number) => {
+        navigate(`/cases/view/${caseId}`, {
+            state: {
+                lastLocation: location.pathname,
+            },
+        });
+    };
+
     return (
         <BundleOperationsContainer>
             <Helmet>
@@ -224,53 +232,21 @@ const BundleOperations = () => {
                 </StyledAlert>
             )}
 
-            {!location.state?.bulkMessage &&
-                location.state?.newCaseIds &&
-                location.state?.newCaseIds.length > 0 &&
-                (location.state.newCaseIds.length === 1 ? (
-                    <StyledAlert
-                        variant="standard"
-                        action={
-                            <Link
-                                to={`/cases/view/${location.state.newCaseIds}`}
-                            >
-                                <Button
-                                    color="primary"
-                                    size="small"
-                                    data-testid="view-case-btn"
-                                >
-                                    VIEW
-                                </Button>
-                            </Link>
-                        }
-                    >
-                        {`Case ${location.state.newCaseIds} added`}
-                    </StyledAlert>
-                ) : (
-                    <StyledAlert variant="standard">
-                        {`${location.state.newCaseIds.length} cases added`}
-                    </StyledAlert>
-                ))}
-            {!location.state?.bulkMessage &&
-                (location.state?.editedCaseIds?.length ?? 0) > 0 && (
-                    <StyledAlert
-                        variant="standard"
-                        action={
-                            <Link
-                                to={`/cases/view/${location.state.editedCaseIds}`}
-                            >
-                                <Button color="primary" size="small">
-                                    VIEW
-                                </Button>
-                            </Link>
-                        }
-                    >
-                        {`Case ${location.state.editedCaseIds} edited`}
-                    </StyledAlert>
-                )}
-            {location.state?.bulkMessage && (
-                <StyledAlert variant="standard">
-                    {location.state.bulkMessage}
+            {!location.state?.bulkMessage && location.state?.editedBundleId && (
+                <StyledAlert
+                    variant="standard"
+                    action={
+                        <Link
+                            onClick={() =>
+                                handleBundleClick(location.state.editedBundleId)
+                            }
+                            style={{ cursor: 'pointer' }}
+                        >
+                            VIEW
+                        </Link>
+                    }
+                >
+                    {`Case bundle ${location.state.editedBundleId} edited`}
                 </StyledAlert>
             )}
 
@@ -423,12 +399,24 @@ const BundleOperations = () => {
                                                 >
                                                     {row.casesInBundle.map(
                                                         (caseId) => (
-                                                            <Link
-                                                                to={`/cases/view/${caseId}`}
+                                                            <div
+                                                                style={{
+                                                                    display:
+                                                                        'inline',
+                                                                }}
                                                                 key={caseId}
                                                             >
-                                                                {caseId + ' '}
-                                                            </Link>
+                                                                <Link
+                                                                    onClick={() =>
+                                                                        handleCaseClick(
+                                                                            caseId,
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    {caseId}
+                                                                </Link>
+                                                                {'\t'}
+                                                            </div>
                                                         ),
                                                     )}
                                                 </AccordionDetails>
