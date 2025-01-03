@@ -7,7 +7,7 @@ import {
     waitForElementToBeRemoved,
 } from './util/test-utils';
 
-import CaseBundleForm from './CaseBundleForm';
+import BulkCaseForm from './BulkCaseForm';
 import axios from 'axios';
 
 beforeAll(() => {
@@ -35,7 +35,7 @@ afterEach(() => {
 
 it('renders source and csv upload widgets', async () => {
     render(
-        <CaseBundleForm
+        <BulkCaseForm
             onModalClose={(): void => {
                 return;
             }}
@@ -78,7 +78,7 @@ it('renders source and csv upload widgets', async () => {
 
 it('displays spinner post upload', async () => {
     render(
-        <CaseBundleForm
+        <BulkCaseForm
             onModalClose={(): void => {
                 return;
             }}

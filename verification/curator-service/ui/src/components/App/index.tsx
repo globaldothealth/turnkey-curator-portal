@@ -29,7 +29,7 @@ import { makeStyles } from 'tss-react/mui';
 
 import AutomatedBackfill from '../AutomatedBackfill';
 import AutomatedSourceForm from '../AutomatedSourceForm';
-import CaseBundleForm from '../BulkCaseForm';
+import BulkCaseForm from '../BulkCaseForm';
 import CaseForm from '../CaseForm';
 import AcknowledgmentsPage from '../AcknowledgmentsPage';
 import EditCase from '../EditCase';
@@ -493,7 +493,7 @@ export default function App(): JSX.Element {
                             <Route
                                 path="/cases/bulk"
                                 element={
-                                    <CaseBundleForm onModalClose={onModalClose} />
+                                    <BulkCaseForm onModalClose={onModalClose} />
                                 }
                             />
                         )}
