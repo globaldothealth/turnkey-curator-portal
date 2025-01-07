@@ -38,7 +38,7 @@ export const verifyCaseBundle = createAsyncThunk<
     void,
     { caseBundleIds?: string[]; query?: string },
     { rejectValue: string }
->('linelist/deleteCases', async (args, { rejectWithValue }) => {
+>('bundleOperations/verifyCaseBundles', async (args, { rejectWithValue }) => {
     const { caseBundleIds, query } = args;
 
     try {
@@ -47,6 +47,34 @@ export const verifyCaseBundle = createAsyncThunk<
 
         const response = await axios.post('/api/cases/verify/bundled', {
             data: { caseBundleIds, query: parsedQuery },
+        });
+
+        if (response.status !== 204) throw new Error(response.data.message);
+
+        return;
+    } catch (error) {
+        if (!error.response) throw error;
+
+        return rejectWithValue(
+            `Error: Request failed with status code ${error.response.status}`,
+        );
+    }
+});
+
+
+export const deleteCaseBundles = createAsyncThunk<
+    void,
+    { bundleIds?: string[]; query?: string },
+    { rejectValue: string }
+>('bundleOperations/deleteCaseBundles', async (args, { rejectWithValue }) => {
+    const { bundleIds, query } = args;
+
+    try {
+        const parsedQuery =
+            query && query.replace('?', '').replaceAll('=', ':');
+
+        const response = await axios.delete('/api/cases/bundled', {
+            data: { bundleIds, query: parsedQuery },
         });
 
         if (response.status !== 204) throw new Error(response.data.message);

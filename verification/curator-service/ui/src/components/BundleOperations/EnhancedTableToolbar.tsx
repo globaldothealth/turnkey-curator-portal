@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react';
-import { CheckCircleOutline as VerifyIcon } from '@mui/icons-material';
+import {
+    CheckCircleOutline as VerifyIcon,
+    DeleteOutline as DeleteIcon,
+} from '@mui/icons-material';
 import { Button, Stack, Toolbar, Tooltip, Typography } from '@mui/material';
 
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import {
+    setDeleteCasesDialogOpen,
     setVerifyCasesDialogOpen,
     setRowsAcrossPagesSelected,
     setCasesSelected,
@@ -106,6 +110,19 @@ const EnhancedTableToolbar = () => {
                                 }
                             >
                                 Verify
+                            </Button>
+                        </Tooltip>
+                        <Tooltip title="Delete selected rows">
+                            <Button
+                                variant={'outlined'}
+                                startIcon={<DeleteIcon />}
+                                color={'light'}
+                                data-testid="delete-case-bundles-button"
+                                onClick={() =>
+                                    dispatch(setDeleteCasesDialogOpen(true))
+                                }
+                            >
+                                Delete
                             </Button>
                         </Tooltip>
                     </Stack>

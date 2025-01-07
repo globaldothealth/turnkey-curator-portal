@@ -18,6 +18,10 @@ export const selectCasesSelected = (state: RootState) =>
     state.bundledCases.casesSelected;
 export const selectDeleteCasesDialogOpen = (state: RootState) =>
     state.bundledCases.deleteCasesDialogOpen;
+export const selectDeleteCasesLoading = (state: RootState) =>
+    state.bundledCases.deleteCasesLoading;
+export const selectDeleteCasesSuccess = (state: RootState) =>
+    state.bundledCases.deleteCasesSuccess;
 export const selectVerifyCasesDialogOpen = (state: RootState) =>
     state.bundledCases.verifyCasesDialogOpen;
 export const selectVerifyCasesLoading = (state: RootState) =>

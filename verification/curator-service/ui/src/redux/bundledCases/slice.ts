@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import {fetchBundlesData, verifyCaseBundle} from './thunk';
+import {deleteCaseBundles, fetchBundlesData, verifyCaseBundle} from './thunk';
 import { VerificationStatus } from '../../api/models/Case';
 import { Day0Case } from '../../api/models/Day0Case';
 import { SortBy, SortByOrder } from '../../constants/types';
@@ -19,6 +19,8 @@ interface BundledCasesTableState {
     error: string | undefined;
     excludeCasesDialogOpen: boolean;
     deleteCasesDialogOpen: boolean;
+    deleteCasesLoading: boolean;
+    deleteCasesSuccess: boolean | undefined;
     verifyCasesDialogOpen: boolean;
     verifyCasesLoading: boolean;
     verifyCasesSuccess: boolean | undefined;
@@ -44,6 +46,8 @@ const initialState: BundledCasesTableState = {
     error: undefined,
     excludeCasesDialogOpen: false,
     deleteCasesDialogOpen: false,
+    deleteCasesLoading: false,
+    deleteCasesSuccess: false,
     verifyCasesDialogOpen: false,
     verifyCasesLoading: false,
     verifyCasesSuccess: undefined,
@@ -130,6 +134,21 @@ const bundledCasesTableSlice = createSlice({
         builder.addCase(verifyCaseBundle.rejected, (state, action) => {
             state.verifyCasesLoading = false;
             state.verifyCasesSuccess = false;
+        });
+        // DELETE CASE BUNDLES
+        builder.addCase(deleteCaseBundles.pending, (state) => {
+            state.deleteCasesLoading = true;
+            state.deleteCasesSuccess = undefined;
+        });
+        builder.addCase(deleteCaseBundles.fulfilled, (state, { payload }) => {
+            state.deleteCasesLoading = false;
+            state.deleteCasesSuccess = true;
+            state.deleteCasesDialogOpen = false;
+            state.casesSelected = [];
+        });
+        builder.addCase(deleteCaseBundles.rejected, (state, action) => {
+            state.deleteCasesLoading = false;
+            state.deleteCasesSuccess = false;
         });
     },
 

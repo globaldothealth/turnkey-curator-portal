@@ -705,6 +705,49 @@ paths:
                     $ref: '#/components/responses/422'
                 '500':
                     $ref: '#/components/responses/500'
+        delete:
+            summary: >
+                Deletes multiple case bundles. It is required to supply exactly one of either 
+                bundleIds or query in the request body. If bundleIds are supplied, cases 
+                corresponding to those caseIds will be deleted. If query is supplied, 
+                all cases that match the query will be deleted.
+            tags: [Case]
+            operationId: deleteCases
+            requestBody:
+                description: Cases to delete
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                bundleIds:
+                                    description: Cases corresponding to these ids will be deleted
+                                    type: array
+                                    items:
+                                        type: string
+                                query:
+                                    description: >
+                                        Cases matching this query will be deleted. Must contain
+                                        non-whitespace characters.
+                                    type: string
+                                    pattern: \S+
+                            oneOf:
+                                - required: [bundleIds]
+                                - required: [query]
+            responses:
+                '204':
+                    description: Cases deleted
+                '400':
+                    $ref: '#/components/responses/400'
+                '403':
+                    $ref: '#/components/responses/403'
+                '404':
+                    $ref: '#/components/responses/404'
+                '422':
+                    $ref: '#/components/responses/422'
+                '500':
+                    $ref: '#/components/responses/500'
     /cases/countryData:
         get:
             summary: Data for cases by country table
@@ -1015,9 +1058,9 @@ paths:
               schema:
                   type: string
         get:
-            summary: Gets a specific case
-            operationId: getCase
-            tags: [Case]
+            summary: Gets a specific case bundle
+            operationId: getCaseBundle
+            tags: [CaseBundle]
             responses:
                 '200':
                     $ref: '#/components/responses/200Case'
@@ -1032,11 +1075,11 @@ paths:
                 '500':
                     $ref: '#/components/responses/500'
         put:
-            tags: [Case]
+            tags: [CaseBundle]
             summary: Updates a specific case
-            operationId: updateCase
+            operationId: updateCaseBundle
             requestBody:
-                description: Case to update
+                description: Case bundle to update
                 required: true
                 content:
                     application/json:
@@ -1053,6 +1096,21 @@ paths:
                     $ref: '#/components/responses/404'
                 '422':
                     $ref: '#/components/responses/422'
+                '500':
+                    $ref: '#/components/responses/500'
+        delete:
+            tags: [CaseBundle]
+            summary: Deletes a specific case bundle
+            operationId: deleteCaseBundle
+            responses:
+                '204':
+                    description: Case bundle deleted
+                '400':
+                    $ref: '#/components/responses/400'
+                '403':
+                    $ref: '#/components/responses/403'
+                '404':
+                    $ref: '#/components/responses/404'
                 '500':
                     $ref: '#/components/responses/500'
     /cases/verify/{id}:

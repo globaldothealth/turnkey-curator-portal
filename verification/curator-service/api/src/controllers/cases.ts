@@ -533,6 +533,48 @@ export default class CasesController {
         }
     };
 
+    /** del simply forwards the request to the data service */
+    batchDelBundled = async (req: Request, res: Response): Promise<void> => {
+        try {
+            // Limit number of deletes a non-admin can do.
+            // Cf. https://github.com/globaldothealth/list/issues/937.
+            if (!(req.user as IUser)?.roles?.includes('admin')) {
+                req.body['maxCasesThreshold'] = 10000;
+            }
+            const response = await axios.delete(
+                this.dataServerURL + '/api' + req.url,
+                { data: req.body },
+            );
+            res.status(response.status).end();
+        } catch (e) {
+            const err = e as AxiosError;
+            logger.error(err);
+            if (err.response?.status && err.response?.data) {
+                res.status(err.response.status).send(err.response.data);
+                return;
+            }
+            res.status(500).send(err);
+        }
+    };
+
+    /** del simply forwards the request to the data service */
+    delBundled = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const response = await axios.delete(
+                this.dataServerURL + '/api' + req.url,
+            );
+            res.status(response.status).end();
+        } catch (e) {
+            const err = e as AxiosError;
+            logger.error(err);
+            if (err.response?.status && err.response?.data) {
+                res.status(err.response.status).send(err.response.data);
+                return;
+            }
+            res.status(500).send(err);
+        }
+    };
+
     /** update simply forwards the request to the data service */
     update = async (req: Request, res: Response): Promise<void> => {
         try {

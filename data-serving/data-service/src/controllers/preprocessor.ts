@@ -48,7 +48,7 @@ export const getCasesForBundle = async (
         request.params?.id
     ) {
         // Update or delete.
-        return Day0Case.find({bundleId: request.params.id});
+        return Day0Case.find({ bundleId: request.params.id });
     }
 
     return null;
@@ -258,6 +258,18 @@ export const createBatchDeleteCaseRevisions = async (
             await Day0Case.find({
                 _id: {
                     $in: request.body.caseIds,
+                },
+            }).exec()
+        ).map((c) => {
+            return {
+                case: c,
+            };
+        });
+    } else if (request.body.bundleIds !== undefined) {
+        casesToDelete = (
+            await Day0Case.find({
+                bundleId: {
+                    $in: request.body.bundleIds,
                 },
             }).exec()
         ).map((c) => {

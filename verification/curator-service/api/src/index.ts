@@ -387,7 +387,18 @@ async function makeApp() {
         mustHaveAnyRole([Role.Curator]),
         casesController.del,
     );
-
+    apiRouter.delete(
+        '/cases/bundled',
+        authenticateByAPIKey,
+        mustHaveAnyRole([Role.Curator]),
+        casesController.batchDelBundled,
+    );
+    apiRouter.delete(
+        '/cases/bundled/:id([a-z0-9]{24})',
+        authenticateByAPIKey,
+        mustHaveAnyRole([Role.Curator]),
+        casesController.delBundled,
+    );
     // Configure users controller.
     apiRouter.get(
         '/users',

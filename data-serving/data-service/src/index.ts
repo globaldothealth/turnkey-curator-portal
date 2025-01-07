@@ -162,6 +162,11 @@ apiRouter.delete(
     createBatchDeleteCaseRevisions,
     caseController.batchDel,
 );
+apiRouter.delete(
+    '/cases/bundled',
+    createBatchDeleteCaseRevisions,
+    caseController.batchDelBundled,
+);
 apiRouter.delete('/cases/:id(\\d+$)', createCaseRevision, caseController.del);
 
 app.use('/api', apiRouter);

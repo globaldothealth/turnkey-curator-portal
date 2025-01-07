@@ -38,6 +38,8 @@ import {
     selectRefetchData,
     selectRowsAcrossPages,
     selectVerifyCasesDialogOpen,
+    selectDeleteCasesDialogOpen,
+    selectDeleteCasesSuccess,
     selectVerifyCasesSuccess,
 } from '../../redux/bundledCases/selectors';
 import {
@@ -46,6 +48,7 @@ import {
     setCasesSelected,
     setVerifyCasesDialogOpen,
     setRowsAcrossPagesSelected,
+    setDeleteCasesDialogOpen,
 } from '../../redux/bundledCases/slice';
 import { fetchBundlesData } from '../../redux/bundledCases/thunk';
 import { nameCountry } from '../util/countryNames';
@@ -61,6 +64,7 @@ import {
     LoaderContainer,
     StyledAlert,
 } from './styled';
+import { CaseBundleDeleteDialog } from '../Dialogs/CaseBundleDeleteDialog';
 
 const dataLimit = 10000;
 
@@ -79,9 +83,13 @@ const BundleOperations = () => {
     const user = useAppSelector(selectUser);
     const casesSelected = useAppSelector(selectCasesSelected);
     const verifyCasesDialogOpen = useAppSelector(selectVerifyCasesDialogOpen);
+    const deleteCaseBundlesDialogOpen = useAppSelector(
+        selectDeleteCasesDialogOpen,
+    );
     const refetchData = useAppSelector(selectRefetchData);
     const rowsAcrossPagesSelected = useAppSelector(selectRowsAcrossPages);
     const verificationSuccess = useAppSelector(selectVerifyCasesSuccess);
+    const deletionSuccess = useAppSelector(selectDeleteCasesSuccess);
 
     const searchQuery = location.search;
 
@@ -105,6 +113,7 @@ const BundleOperations = () => {
         searchQuery,
         refetchData,
         verificationSuccess,
+        deletionSuccess,
     ]);
 
     // When user applies filters we should go back to the first page of results
@@ -546,6 +555,13 @@ const BundleOperations = () => {
                 caseBundleIds={
                     rowsAcrossPagesSelected ? undefined : casesSelected
                 }
+                query={rowsAcrossPagesSelected ? searchQuery : undefined}
+            />
+
+            <CaseBundleDeleteDialog
+                isOpen={deleteCaseBundlesDialogOpen}
+                handleClose={() => dispatch(setDeleteCasesDialogOpen(false))}
+                bundleIds={rowsAcrossPagesSelected ? undefined : casesSelected}
                 query={rowsAcrossPagesSelected ? searchQuery : undefined}
             />
         </BundleOperationsContainer>
