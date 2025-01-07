@@ -134,6 +134,7 @@ const BundleOperations = () => {
             return createData(
                 data._id || '',
                 data.caseCount,
+                data.verificationStatus,
                 data.caseIds,
                 renderDate(data.dateModified) || renderDate(data.dateCreated),
                 data.modifiedBy || data.createdBy,
@@ -383,6 +384,9 @@ const BundleOperations = () => {
                                         </TableCell>
                                         <TableCell align="left">
                                             {row.caseCount}
+                                        </TableCell>
+                                        <TableCell align="left">
+                                            {row.verificationStatus.filter(Boolean).length}/{row.verificationStatus.length}
                                         </TableCell>
                                         <TableCell align="left">
                                             <Accordion

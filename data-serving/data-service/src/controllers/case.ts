@@ -58,16 +58,20 @@ const caseFromDTO = async (receivedCase: CaseDTO) => {
     }
 
     const geometry = aCase.location?.geometry;
-    if (!geometry || !geometry.latitude || !geometry.longitude) delete aCase.location.geometry;
+    if (!geometry || !geometry.latitude || !geometry.longitude)
+        delete aCase.location.geometry;
 
     const user = await User.findOne({ email: receivedCase.curator?.email });
     if (user) {
-        logger.info(`User: ${JSON.stringify(user)}`)
-        if (user.roles.includes(Role.JuniorCurator) || user.roles.includes(Role.Curator)) {
+        logger.info(`User: ${JSON.stringify(user)}`);
+        if (
+            user.roles.includes(Role.JuniorCurator) ||
+            user.roles.includes(Role.Curator)
+        ) {
             aCase.curators = {
                 createdBy: {
                     name: user.name || '',
-                    email: user.email
+                    email: user.email,
                 },
             };
         } //else if (user.roles.includes(Role.Curator) || user.roles.includes(Role.Admin)) {
@@ -102,7 +106,7 @@ const dtoFromCase = async (storedCase: CaseDocument) => {
     }
 
     if (ageRange) {
-        if(creator) {
+        if (creator) {
             if (verifier) {
                 dto = {
                     ...dto,
@@ -134,10 +138,8 @@ const dtoFromCase = async (storedCase: CaseDocument) => {
             demographics: {
                 ...dto.demographics!,
                 ageRange,
-            }
+            },
         };
-
-
 
         // although the type system can't see it, there's an ageBuckets property on the demographics DTO now
         delete ((dto as unknown) as {
@@ -382,11 +384,13 @@ export class CasesController {
                         cast: {
                             date: (value: Date) => {
                                 if (value) {
-                                    return new Date(value).toISOString().split('T')[0];
+                                    return new Date(value)
+                                        .toISOString()
+                                        .split('T')[0];
                                 }
                                 return value;
                             },
-                        }
+                        },
                     });
                     res.write(stringifiedCase);
                     doc = await cursor.next();
@@ -550,7 +554,9 @@ export class CasesController {
         const sortBy = String(req.query.sort_by) || 'default';
         const sortByOrder = String(req.query.order) || 'ascending';
         const verificationStatus =
-            req.query.verification_status !== undefined ? Boolean(req.query.verification_status) : undefined;
+            req.query.verification_status !== undefined
+                ? Boolean(req.query.verification_status)
+                : undefined;
 
         logger.debug('Got query params');
 
@@ -577,21 +583,42 @@ export class CasesController {
             const totalCountPipeline = [];
             if (verificationStatus !== undefined) {
                 pipeline.push({
-                    $match: {'curators.verifiedBy': {$exists: verificationStatus}}
+                    $match: {
+                        'curators.verifiedBy': { $exists: verificationStatus },
+                    },
                 });
                 totalCountPipeline.push({
-                    $match: {'curators.verifiedBy': {$exists: verificationStatus}}
+                    $match: {
+                        'curators.verifiedBy': { $exists: verificationStatus },
+                    },
                 });
             }
             pipeline.push({
                 $group: {
                     _id: '$bundleId',
-                    caseCount: {$sum: 1},
-                    caseIds: {$push: '$_id'},
-                    dateModified: { $first: '$revisionMetadata.updateMetadata.date' },
-                    dateCreated: { $first: '$revisionMetadata.creationMetadata.date' },
-                    modifiedBy: { $first: '$revisionMetadata.updateMetadata.curator' },
-                    createdBy: { $first: '$revisionMetadata.creationMetadata.curator' },
+                    caseCount: { $sum: 1 },
+                    caseIds: { $push: '$_id' },
+                    verificationStatus: {
+                        $push: {
+                            $cond: {
+                                if: { $ifNull: ['$curators.verifiedBy', false] },
+                                then: true,
+                                else: false,
+                            },
+                        },
+                    },
+                    dateModified: {
+                        $first: '$revisionMetadata.updateMetadata.date',
+                    },
+                    dateCreated: {
+                        $first: '$revisionMetadata.creationMetadata.date',
+                    },
+                    modifiedBy: {
+                        $first: '$revisionMetadata.updateMetadata.curator',
+                    },
+                    createdBy: {
+                        $first: '$revisionMetadata.creationMetadata.curator',
+                    },
                     caseStatus: { $first: '$caseStatus' }, //addToSet can be used instead of first for edited cases
                     dateEntry: { $first: '$events.dateEntry' },
                     dateReported: { $first: '$events.dateReported' },
@@ -604,14 +631,19 @@ export class CasesController {
                     ageRange: { $first: '$demographics.ageRange' },
                     gender: { $first: '$demographics.gender' },
                     outcome: { $first: '$events.outcome' },
-                    dateHospitalization: { $first: '$events.dateHospitalization' },
+                    dateHospitalization: {
+                        $first: '$events.dateHospitalization',
+                    },
                     dateOnset: { $first: '$events.dateOnset' },
                     sourceUrl: { $first: '$caseReference.sourceUrl' },
                 },
-            })
-            totalCountPipeline.push({$group: {_id: '$bundleId'}});
-            const bundledCases = await Day0Case.aggregate(pipeline).skip(limit * (page - 1)).limit(limit);
-            const totalCount = (await Day0Case.aggregate(totalCountPipeline)).length;
+            });
+            totalCountPipeline.push({ $group: { _id: '$bundleId' } });
+            const bundledCases = await Day0Case.aggregate(pipeline)
+                .skip(limit * (page - 1))
+                .limit(limit);
+            const totalCount = (await Day0Case.aggregate(totalCountPipeline))
+                .length;
 
             res.json({ caseBundles: bundledCases, total: totalCount });
         } catch (e) {
@@ -642,8 +674,8 @@ export class CasesController {
             // Get total case cardinality
             const grandTotalCount = await Day0Case.countDocuments({
                 caseStatus: {
-                    $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
-                }
+                    $nin: [CaseStatus.OmitError, CaseStatus.Discarded],
+                },
             });
             if (grandTotalCount === 0) {
                 res.status(200).json({});
@@ -655,9 +687,9 @@ export class CasesController {
                 {
                     $match: {
                         caseStatus: {
-                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
-                        }
-                    }
+                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded],
+                        },
+                    },
                 },
                 {
                     $group: {
@@ -710,9 +742,9 @@ export class CasesController {
                             $ne: null,
                         },
                         caseStatus: {
-                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
-                        }
-                    }
+                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded],
+                        },
+                    },
                 },
                 {
                     $group: {
@@ -782,9 +814,9 @@ export class CasesController {
                 {
                     $match: {
                         caseStatus: {
-                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
-                        }
-                    }
+                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded],
+                        },
+                    },
                 },
                 {
                     $group: {
@@ -816,9 +848,9 @@ export class CasesController {
                 {
                     $match: {
                         caseStatus: {
-                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
-                        }
-                    }
+                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded],
+                        },
+                    },
                 },
                 {
                     $match: {
@@ -881,7 +913,7 @@ export class CasesController {
             this.addGeoResolution(req);
             const currentDate = Date.now();
             const curator = req.body.curator.email;
-            const bundleId = new mongoose.Types.ObjectId()
+            const bundleId = new mongoose.Types.ObjectId();
             const receivedCase = {
                 ...req.body,
                 bundleId,
@@ -923,7 +955,7 @@ export class CasesController {
             res.status(201).json(result);
         } catch (e) {
             const err = e as Error;
-            if  (err.name === 'MongoServerError') {
+            if (err.name === 'MongoServerError') {
                 logger.error((e as any).errInfo);
                 res.status(422).json({
                     message: (err as any).errInfo,
@@ -1007,10 +1039,12 @@ export class CasesController {
      * Handles HTTP POST /api/cases/verify/bundled/:id.
      */
     verifyBundled = async (req: Request, res: Response): Promise<void> => {
-        const caseBundleIds = req.body.data.caseBundleIds.map((caseBundleId: string) => new mongoose.Types.ObjectId(caseBundleId));
+        const caseBundleIds = req.body.data.caseBundleIds.map(
+            (caseBundleId: string) => new mongoose.Types.ObjectId(caseBundleId),
+        );
         const verifierEmail = req.body.curator.email;
         const c = await Day0Case.find({
-            bundleId: {$in: caseBundleIds}
+            bundleId: { $in: caseBundleIds },
         });
 
         if (!c) {
@@ -1020,7 +1054,7 @@ export class CasesController {
             return;
         }
 
-        const verifier = await User.findOne({email: verifierEmail});
+        const verifier = await User.findOne({ email: verifierEmail });
 
         if (!verifier) {
             res.status(404).send({
@@ -1028,19 +1062,20 @@ export class CasesController {
             });
         } else {
             const updateData = Date.now();
-            await Day0Case.updateMany({bundleId: {$in: caseBundleIds}},
+            await Day0Case.updateMany(
+                { bundleId: { $in: caseBundleIds } },
                 {
-                    $set:
-                        {
-                            'curators.verifiedBy': verifier,
-                            'revisionMetadata.updateMetadata': {
-                                curator: verifierEmail,
-                                note: 'Case Verification',
-                                date: updateData,
-                            },
+                    $set: {
+                        'curators.verifiedBy': verifier,
+                        'revisionMetadata.updateMetadata': {
+                            curator: verifierEmail,
+                            note: 'Case Verification',
+                            date: updateData,
                         },
-                    $inc: {'revisionMetadata.revisionNumber': 1}
-                });
+                    },
+                    $inc: { 'revisionMetadata.revisionNumber': 1 },
+                },
+            );
             res.status(204).end();
         }
     };
@@ -1299,7 +1334,7 @@ export class CasesController {
      */
     updateBundled = async (req: Request, res: Response): Promise<void> => {
         try {
-            const cs = await Day0Case.find({bundleId: req.params.id});
+            const cs = await Day0Case.find({ bundleId: req.params.id });
 
             if (!cs) {
                 res.status(404).send({
@@ -1310,7 +1345,6 @@ export class CasesController {
             const caseDetails = await caseFromDTO(req.body);
             delete caseDetails._id;
             delete caseDetails.revisionMetadata;
-
 
             for (const c of cs) {
                 c.set({
@@ -1503,10 +1537,10 @@ export class CasesController {
      */
     batchDelBundled = async (req: Request, res: Response): Promise<void> => {
         if (req.body.bundleIds !== undefined) {
-            logger.error(req.body)
-            const deleted = await Day0Case.deleteMany(
-                {bundleId: {$in: req.body.bundleIds}}
-            );
+            logger.error(req.body);
+            const deleted = await Day0Case.deleteMany({
+                bundleId: { $in: req.body.bundleIds },
+            });
             if (!deleted) {
                 res.status(404).send({
                     message: `Day0Case with specified bundle IDs not found.`,
@@ -1517,8 +1551,8 @@ export class CasesController {
             res.status(204).end();
             return;
         }
-        logger.error(req.body)
-        res.status(500).end()
+        logger.error(req.body);
+        res.status(500).end();
     };
 
     /**
@@ -1738,21 +1772,21 @@ export const bundledCasesMatchingSearchQuery = (opts: {
     if (opts.verificationStatus) {
         queryOpts = parsedSearch.fullTextSearch
             ? {
-                $text: { $search: parsedSearch.fullTextSearch },
-                'curators.verifiedBy': { $exists: opts.verificationStatus },
-            }
+                  $text: { $search: parsedSearch.fullTextSearch },
+                  'curators.verifiedBy': { $exists: opts.verificationStatus },
+              }
             : { 'curators.verifiedBy': { $exists: opts.verificationStatus } };
     } else {
         queryOpts = parsedSearch.fullTextSearch
             ? {
-                $text: { $search: parsedSearch.fullTextSearch },
-            }
+                  $text: { $search: parsedSearch.fullTextSearch },
+              }
             : {};
     }
 
     // Always search with case-insensitivity.
     const casesQuery: Query<CaseDocument[], CaseDocument> = Day0Case.find(
-        queryOpts
+        queryOpts,
     );
 
     const countQuery: Query<number, CaseDocument> = Day0Case.countDocuments(

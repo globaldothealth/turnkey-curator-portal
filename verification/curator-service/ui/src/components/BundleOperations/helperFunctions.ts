@@ -1,6 +1,7 @@
 export const labels = [
     'Bundle ID',
     'Case Count',
+    'Verification Status',
     'Cases In Bundle',
     'Date Modified',
     'Last Modified By',
@@ -23,6 +24,7 @@ export const labels = [
 export const createData = (
     caseBundleId: string,
     caseCount: number,
+    verificationStatus: boolean[],
     casesInBundle: number[],
     dateModified: string,
     lastModifiedBy: string,
@@ -44,6 +46,7 @@ export const createData = (
     return {
         caseBundleId: caseBundleId || '',
         caseCount: caseCount,
+        verificationStatus: verificationStatus || [],
         casesInBundle: casesInBundle || [],
         dateModified: dateModified || '',
         lastModifiedBy: lastModifiedBy || '',
