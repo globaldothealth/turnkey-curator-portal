@@ -325,7 +325,6 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                         </Link>
                     )}
                     {props.c._id &&
-                        false && // Hide verification for a single case
                         !props.c.curators?.verifiedBy &&
                         user?.roles.includes(Role.Curator) && (
                             <>

@@ -965,6 +965,9 @@ export default function CaseForm(props: Props): JSX.Element {
                                     Complete all available data for the case.
                                     Required fields are marked.
                                 </Typography>
+                                {props.initialCase && <Typography variant="body2" style={{fontWeight: 'bold'}}>
+                                    Editing the individual case that is part of the bundle will cause it to be removed from the bundle.
+                                </Typography>}
                                 <Form>
                                     <FormSection>
                                         <General />

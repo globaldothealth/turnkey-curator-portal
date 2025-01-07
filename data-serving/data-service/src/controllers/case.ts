@@ -1287,10 +1287,6 @@ export class CasesController {
      * Handles HTTP PUT /api/cases/:id.
      */
     update = async (req: Request, res: Response): Promise<void> => {
-        const numCases = req.query.numCases || 1;
-        logger.error('==========');
-        logger.error(`${numCases}`);
-        logger.error('==========');
         try {
             const c = await Day0Case.findById(req.params.id);
             if (!c) {
@@ -1308,6 +1304,7 @@ export class CasesController {
                     req.body.curator.email,
                     'Case Update',
                 ),
+                bundleId: new mongoose.Types.ObjectId(),
             });
             await c.save();
 
