@@ -1036,9 +1036,64 @@ export class CasesController {
     /**
      * Verify case bundle.
      *
+     * Handles HTTP POST /api/cases/verify/:id.
+     */
+    verifyBundle = async (req: Request, res: Response): Promise<void> => {
+        const cs = await Day0Case.find({
+            bundleId: req.params.id,
+        });
+
+        if (cs.length == 0) {
+            res.status(404).send({
+                message: `Case bundle with ID ${req.params.id} not found.`,
+            });
+            return;
+        }
+
+        const verifierEmail = req.body.curator.email;
+        const verifier = await User.findOne({
+            email: verifierEmail,
+        });
+        if (!verifier) {
+            res.status(404).send({
+                message: `Verifier with email ${req.body.curator.email} not found.`,
+            });
+            return;
+        } else {
+            const updateData = Date.now();
+            await Day0Case.updateMany(
+                { bundleId: req.params.id },
+                {
+                    $set: {
+                        'curators.verifiedBy': verifier,
+                        'revisionMetadata.updateMetadata': {
+                            curator: verifierEmail,
+                            note: 'Case Verification',
+                            date: updateData,
+                        },
+                    },
+                    $inc: { 'revisionMetadata.revisionNumber': 1 },
+                },
+            );
+
+            const responseCases = await Day0Case.find({
+                bundleId: req.params.id,
+            }).lean();
+            res.json(
+                await Promise.all(
+                    responseCases.map((aCase) => dtoFromCase(aCase)),
+                ),
+            );
+            return;
+        }
+    };
+
+    /**
+     * Verify case bundle.
+     *
      * Handles HTTP POST /api/cases/verify/bundled/:id.
      */
-    verifyBundled = async (req: Request, res: Response): Promise<void> => {
+    verifyBundles = async (req: Request, res: Response): Promise<void> => {
         const caseBundleIds = req.body.data.caseBundleIds.map(
             (caseBundleId: string) => new mongoose.Types.ObjectId(caseBundleId),
         );

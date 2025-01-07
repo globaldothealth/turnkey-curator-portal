@@ -321,12 +321,18 @@ async function makeApp() {
     apiRouter.post(
         '/cases/verify/bundled',
         mustHaveAnyRole([Role.Curator]),
-        casesController.verifyBundled,
+        casesController.verifyBundles,
     );
     apiRouter.post(
         '/cases/verify/:id(\\d+$)',
         mustHaveAnyRole([Role.Curator]),
         casesController.verify,
+    );
+    apiRouter.post(
+        '/cases/verify/bundled/:id([a-z0-9]{24})',
+        authenticateByAPIKey,
+        mustHaveAnyRole([Role.Curator]),
+        casesController.verifyBundle,
     );
     apiRouter.post(
         '/cases/download',

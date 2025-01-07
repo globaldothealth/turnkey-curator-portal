@@ -1136,6 +1136,29 @@ paths:
                     $ref: '#/components/responses/422'
                 '500':
                     $ref: '#/components/responses/500'
+    /cases/verify/bundled/{id}:
+        post:
+            tags: [Case]
+            #            summary: Creates one (or multiple identical) new cases
+            #            operationId: verifyCase
+            #            requestBody:
+            #                description: Case with verifier
+            #                required: true
+            #                content:
+            #                    application/json:
+            #                        schema:
+            #                            $ref: '#/components/schemas/Verifier'
+            responses:
+                '200':
+                    $ref: '#/components/responses/200Case'
+                '400':
+                    $ref: '#/components/responses/400'
+                '403':
+                    $ref: '#/components/responses/403'
+                '422':
+                    $ref: '#/components/responses/422'
+                '500':
+                    $ref: '#/components/responses/500'
     /cases/verify/bundled:
         post:
             summary: >

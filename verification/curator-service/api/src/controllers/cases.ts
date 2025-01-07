@@ -805,11 +805,36 @@ export default class CasesController {
     };
 
     /**
+     * verify forwards the query to the data service.
+     * It does set the curator in the request to the data service based on the
+     * currently logged-in user.
+     */
+    verifyBundle = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const response = await axios.post(
+                this.dataServerURL + '/api' + req.url,
+                {
+                    ...req.body,
+                    curator: { email: (req.user as IUser).email },
+                },
+            );
+            res.status(response.status).json(response.data);
+        } catch (e) {
+            const err = e as AxiosError;
+            if (err.response?.status && err.response?.data) {
+                res.status(err.response.status).send(err.response.data);
+                return;
+            }
+            res.status(500).send(err);
+        }
+    };
+
+    /**
      * verify bundled forwards the query to the data service.
      * It does set the curator in the request to the data service based on the
      * currently logged-in user.
      */
-    verifyBundled = async (req: Request, res: Response): Promise<void> => {
+    verifyBundles = async (req: Request, res: Response): Promise<void> => {
         try {
             const response = await axios.post(
                 this.dataServerURL + '/api' + req.url,

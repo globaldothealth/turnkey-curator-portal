@@ -2,13 +2,14 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useSelector } from 'react-redux';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Scroll from 'react-scroll';
 import { makeStyles } from 'tss-react/mui';
 import {
-    CheckCircleOutline as CheckIcon,
     Close as CloseIcon,
     EditOutlined as EditIcon,
+    CheckCircleOutline as VerifyIcon,
+    DeleteOutline as DeleteIcon,
 } from '@mui/icons-material';
 import {
     Accordion,
@@ -23,7 +24,7 @@ import {
     Grid,
     IconButton,
     LinearProgress,
-    Link as MuiLink,
+    Link,
     Paper,
     Typography,
     useMediaQuery,
@@ -91,7 +92,7 @@ export default function ViewBundle(props: Props): JSX.Element {
         if (caseId && verifierEmail) {
             setLoading(true);
             axios
-                .post(`/api/cases/verify/${caseId}`, {
+                .post(`/api/cases/verify/bundled/${caseId}`, {
                     email: verifierEmail,
                 })
                 .then((resp) => {
@@ -169,7 +170,7 @@ const useStyles = makeStyles()((theme) => ({
         marginTop: '1em',
         marginBottom: '1em',
     },
-    editBtn: {
+    actionButton: {
         marginLeft: '1em',
     },
     verifyBtn: {
@@ -250,6 +251,14 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                 lastLocation: location.pathname,
             },
         });
+    };
+
+    const handleDeleteBundleClick = (bundleId: string) => {
+        // navigate(`/cases/bundle/edit/${bundleId}`, {
+        //     state: {
+        //         lastLocation: location.pathname,
+        //     },
+        // });
     };
 
     const searchedKeywords = useSelector(selectSearchQuery);
@@ -354,21 +363,7 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                     </>
                 )}
                 <Typography className={classes.caseTitle} variant="h5">
-                    Case bundle {bundleId}{' '}
-                    {props.enableEdit && (
-                        <Button
-                            data-testid="edit-button"
-                            variant="outlined"
-                            color="primary"
-                            className={classes.editBtn}
-                            endIcon={<EditIcon />}
-                            onClick={() =>
-                                handleEditBundleClick(props.bundleId || '')
-                            }
-                        >
-                            Edit
-                        </Button>
-                    )}
+                    Case bundle {bundleId}
                     {props.cases.length > 0 &&
                         unverified &&
                         user?.roles.includes(Role.Curator) && (
@@ -406,15 +401,16 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                                         variant="contained"
                                         color="primary"
                                         className={classes.verifyDialogBtn}
-                                        endIcon={<CheckIcon />}
+                                        endIcon={<VerifyIcon />}
                                         onClick={() =>
-                                            dispatch(
-                                                verifyCaseBundle({
-                                                    caseBundleIds: [
-                                                        props.bundleId,
-                                                    ],
-                                                    query: undefined,
-                                                }),
+                                            props.verifyCase(
+                                                () =>
+                                                    setVerifyDialogOpen(false),
+                                                (errorMessage: string) => {
+                                                    console.log(errorMessage);
+                                                },
+                                                bundleId || '',
+                                                user.email || '',
                                             )
                                         }
                                         loading={verificationLoading}
@@ -427,13 +423,41 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                                     variant="outlined"
                                     color="primary"
                                     className={classes.verifyBtn}
-                                    endIcon={<CheckIcon />}
+                                    endIcon={<VerifyIcon />}
                                     onClick={() => setVerifyDialogOpen(true)}
                                 >
                                     Verify
                                 </Button>
                             </>
                         )}
+                    {props.enableEdit && (
+                        <Button
+                            data-testid="edit-button"
+                            variant="outlined"
+                            color="primary"
+                            className={classes.actionButton}
+                            endIcon={<EditIcon />}
+                            onClick={() =>
+                                handleEditBundleClick(props.bundleId || '')
+                            }
+                        >
+                            Edit
+                        </Button>
+                    )}
+                    {props.enableEdit && (
+                        <Button
+                            data-testid="delete-button"
+                            variant="outlined"
+                            color="primary"
+                            className={classes.actionButton}
+                            endIcon={<DeleteIcon />}
+                            onClick={() =>
+                                handleDeleteBundleClick(props.bundleId || '')
+                            }
+                        >
+                            Delete
+                        </Button>
+                    )}
                 </Typography>
                 <Accordion onClick={(e) => e.stopPropagation()}>
                     <AccordionSummary
@@ -452,12 +476,12 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                     >
                         {props.cases.map((c) => (
                             <div key={c._id} style={{ display: 'inline' }}>
-                                <MuiLink
+                                <Link
                                     onClick={() => handleCaseClick(c._id || '')}
                                     className={classes.caseLink}
                                 >
                                     {c._id}
-                                </MuiLink>
+                                </Link>
                                 {'\t'}
                             </div>
                         ))}

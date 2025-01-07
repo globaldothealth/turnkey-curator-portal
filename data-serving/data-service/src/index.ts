@@ -123,12 +123,17 @@ apiRouter.get('/cases/locationComments', cases.listLocationComments);
 apiRouter.post(
     '/cases/verify/bundled',
     createCaseRevision,
-    caseController.verifyBundled,
+    caseController.verifyBundles,
 );
 apiRouter.post(
     '/cases/verify/:id(\\d+$)',
     createCaseRevision,
     caseController.verify,
+);
+apiRouter.post(
+    '/cases/verify/bundled/:id([a-z0-9]{24})',
+    createCaseRevision,
+    caseController.verifyBundle,
 );
 apiRouter.get('/cases/:id(\\d+$)', caseController.get);
 apiRouter.get('/cases/bundled/:id([a-z0-9]{24})', caseController.getBundled);
