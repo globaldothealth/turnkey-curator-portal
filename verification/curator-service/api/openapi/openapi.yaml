@@ -635,7 +635,7 @@ paths:
                     $ref: '#/components/responses/500'
     /cases/bundled:
         get:
-            tags: [Case]
+            tags: [CaseBundle]
             summary: Lists bundled cases
             operationId: listBundledCases
             parameters:
@@ -708,13 +708,13 @@ paths:
         delete:
             summary: >
                 Deletes multiple case bundles. It is required to supply exactly one of either 
-                bundleIds or query in the request body. If bundleIds are supplied, cases 
+                bundleIds or query in the request body. If bundleIds are supplied, case bundles
                 corresponding to those caseIds will be deleted. If query is supplied, 
-                all cases that match the query will be deleted.
-            tags: [Case]
-            operationId: deleteCases
+                all case bundles that match the query will be deleted.
+            tags: [CaseBundle]
+            operationId: deleteCaseBundles
             requestBody:
-                description: Cases to delete
+                description: Case bundles to delete
                 required: true
                 content:
                     application/json:
@@ -728,7 +728,7 @@ paths:
                                         type: string
                                 query:
                                     description: >
-                                        Cases matching this query will be deleted. Must contain
+                                        Case bundles matching this query will be deleted. Must contain
                                         non-whitespace characters.
                                     type: string
                                     pattern: \S+
@@ -737,7 +737,7 @@ paths:
                                 - required: [query]
             responses:
                 '204':
-                    description: Cases deleted
+                    description: Case bundles deleted
                 '400':
                     $ref: '#/components/responses/400'
                 '403':
@@ -1063,7 +1063,7 @@ paths:
             tags: [CaseBundle]
             responses:
                 '200':
-                    $ref: '#/components/responses/200Case'
+                    $ref: '#/components/responses/200CaseBundle'
                 '400':
                     $ref: '#/components/responses/400'
                 '403':
@@ -1076,7 +1076,7 @@ paths:
                     $ref: '#/components/responses/500'
         put:
             tags: [CaseBundle]
-            summary: Updates a specific case
+            summary: Updates a specific case bundle
             operationId: updateCaseBundle
             requestBody:
                 description: Case bundle to update
@@ -1114,51 +1114,28 @@ paths:
                 '500':
                     $ref: '#/components/responses/500'
     /cases/verify/{id}:
-        post:
-            tags: [Case]
-            #            summary: Creates one (or multiple identical) new cases
-            #            operationId: verifyCase
-            #            requestBody:
-            #                description: Case with verifier
-            #                required: true
-            #                content:
-            #                    application/json:
-            #                        schema:
-            #                            $ref: '#/components/schemas/Verifier'
-            responses:
-                '200':
-                    $ref: '#/components/responses/200Case'
-                '400':
-                    $ref: '#/components/responses/400'
-                '403':
-                    $ref: '#/components/responses/403'
-                '422':
-                    $ref: '#/components/responses/422'
-                '500':
-                    $ref: '#/components/responses/500'
-    /cases/verify/bundled/{id}:
-        post:
-            tags: [Case]
-            #            summary: Creates one (or multiple identical) new cases
-            #            operationId: verifyCase
-            #            requestBody:
-            #                description: Case with verifier
-            #                required: true
-            #                content:
-            #                    application/json:
-            #                        schema:
-            #                            $ref: '#/components/schemas/Verifier'
-            responses:
-                '200':
-                    $ref: '#/components/responses/200Case'
-                '400':
-                    $ref: '#/components/responses/400'
-                '403':
-                    $ref: '#/components/responses/403'
-                '422':
-                    $ref: '#/components/responses/422'
-                '500':
-                    $ref: '#/components/responses/500'
+      post:
+        tags: [ Case ]
+        summary: Verifies case
+        operationId: verifyCase
+        requestBody:
+            description: Case with verifier
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Verifier'
+        responses:
+          '200':
+            $ref: '#/components/responses/200Case'
+          '400':
+            $ref: '#/components/responses/400'
+          '403':
+            $ref: '#/components/responses/403'
+          '422':
+            $ref: '#/components/responses/422'
+          '500':
+            $ref: '#/components/responses/500'
     /cases/verify/bundled:
         post:
             summary: >
@@ -1189,6 +1166,29 @@ paths:
                     $ref: '#/components/responses/422'
                 '500':
                     $ref: '#/components/responses/500'
+    /cases/verify/bundled/{id}:
+      post:
+        tags: [ CaseBundle ]
+        summary: Verifies cases in a specific case bundle
+        operationId: verifyCaseBundle
+        requestBody:
+          description: Case bundle with verifier
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Verifier'
+        responses:
+          '200':
+            $ref: '#/components/responses/200Case'
+          '400':
+            $ref: '#/components/responses/400'
+          '403':
+            $ref: '#/components/responses/403'
+          '422':
+            $ref: '#/components/responses/422'
+          '500':
+            $ref: '#/components/responses/500'
     /geocode/seed:
         post:
             tags: [Geocode]
@@ -2475,6 +2475,12 @@ components:
                 application/json:
                     schema:
                         $ref: '#/components/schemas/CaseArray'
+        '200CaseBundle':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseBundle'
         '200CaseBundleArray':
             description: OK
             content:

@@ -800,8 +800,8 @@ paths:
         post:
             summary: >
                 Verifies multiple case bundles.
-            tags: [Case]
-            operationId: verifyBundled
+            tags: [CaseBundle]
+            operationId: verifyCaseBundles
             requestBody:
                 description: Case bundles to verify
                 required: true
