@@ -1000,23 +1000,24 @@ export class CasesController {
             return;
         }
 
+        const verifierEmail = req.body.curator.email;
         const verifier = await User.findOne({
-            email: req.body.curator.email,
+            email: verifierEmail,
         });
         if (!verifier) {
             res.status(404).send({
-                message: `Verifier with email ${req.body.curator.email} not found.`,
+                message: `Verifier with email ${verifierEmail} not found.`,
             });
             return;
         } else {
             c.set({
                 curators: {
                     createdBy: c.curators.createdBy,
-                    verifiedBy: verifier._id,
+                    verifiedBy: verifier,
                 },
                 revisionMetadata: updatedRevisionMetadata(
                     c,
-                    req.body.curator.email,
+                    verifierEmail,
                     'Case Verification',
                 ),
             });

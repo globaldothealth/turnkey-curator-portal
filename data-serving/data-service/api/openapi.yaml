@@ -370,9 +370,9 @@ paths:
                     $ref: '#/components/responses/500'
     /cases/bundled:
         get:
-            summary: Lists cases
-            tags: [Case]
-            operationId: listCases
+            summary: Lists case bundles
+            tags: [CaseBundle]
+            operationId: listCaseBundles
             parameters:
                 - name: page
                   in: query
@@ -470,22 +470,22 @@ paths:
                             type: object
                             properties:
                                 bundleIds:
-                                    description: Cases corresponding to these ids will be deleted
+                                    description: Case bundles corresponding to these ids will be deleted
                                     type: array
                                     items:
                                         type: string
                                 query:
                                     description: >
-                                        Cases matching this query will be deleted. Must contain
+                                        Case bundles matching this query will be deleted. Must contain
                                         non-whitespace characters.
                                     type: string
                                     pattern: \S+
                                 maxCasesThreshold:
                                     type: number
                                     description: >
-                                        An optional safeguard against deletion of too many cases.
+                                        An optional safeguard against deletion of too many case bundles.
                                         If you want to delete based on a query for example but fail
-                                        if the number of cases that's going to be deleted is more
+                                        if the number of case bundles that's going to be deleted is more
                                         than a given number, set this field to that desired number.
                                         Failure will be indicated by a 422 error status code.
                             oneOf:
@@ -685,12 +685,12 @@ paths:
               schema:
                   type: string
         get:
-            summary: Gets a specific case
-            operationId: getCase
-            tags: [Case]
+            summary: Gets a specific case bundle
+            operationId: getCaseBundle
+            tags: [CaseBundle]
             responses:
                 '200':
-                    $ref: '#/components/responses/200Case'
+                    $ref: '#/components/responses/200CaseBundle'
                 '400':
                     $ref: '#/components/responses/400'
                 '403':
@@ -702,11 +702,11 @@ paths:
                 '500':
                     $ref: '#/components/responses/500'
         put:
-            summary: Updates a specific case
-            operationId: updateCase
-            tags: [Case]
+            summary: Updates a specific case bundle
+            operationId: updateCaseBundle
+            tags: [CaseBundle]
             requestBody:
-                description: Case to update
+                description: Case bundle to update
                 required: true
                 content:
                     application/json:
@@ -732,12 +732,12 @@ paths:
                 '500':
                     $ref: '#/components/responses/500'
         delete:
-            summary: Deletes a specific case
-            operationId: deleteCase
-            tags: [Case]
+            summary: Deletes a specific case bundle
+            operationId: deleteCaseBundle
+            tags: [CaseBundle]
             responses:
                 '204':
-                    description: Case deleted
+                    description: Case bundle deleted
                 '400':
                     $ref: '#/components/responses/400'
                 '403':
@@ -749,15 +749,15 @@ paths:
     /cases/verify/{id}:
         post:
             summary: Verify case
-            #            tags: [ Case ]
-            #            operationId: verifyCase
-            #            requestBody:
-            #                description: Case with verifier
-            #                required: true
-            #                content:
-            #                    application/json:
-            #                        schema:
-            #                            $ref: '#/components/schemas/Verifier'
+            tags: [ Case ]
+            operationId: verifyCase
+            requestBody:
+                description: Case with verifier
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Verifier'
             responses:
                 '200':
                     $ref: '#/components/responses/200Case'
@@ -773,16 +773,16 @@ paths:
                     $ref: '#/components/responses/500'
     /cases/verify/bundled/{id}:
         post:
-            summary: Verify case
-            #            tags: [ Case ]
-            #            operationId: verifyCase
-            #            requestBody:
-            #                description: Case with verifier
-            #                required: true
-            #                content:
-            #                    application/json:
-            #                        schema:
-            #                            $ref: '#/components/schemas/Verifier'
+            summary: Verify case bundle
+            tags: [ CaseBundle ]
+            operationId: verifyCaseBundle
+            requestBody:
+                description: Case bundle with verifier
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Verifier'
             responses:
                 '200':
                     $ref: '#/components/responses/200Case'
@@ -1490,6 +1490,12 @@ components:
                 application/json:
                     schema:
                         $ref: '#/components/schemas/Case'
+        '200CaseBundle':
+            description: OK
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/CaseBundle'
         '200CaseArray':
             description: OK
             content:
