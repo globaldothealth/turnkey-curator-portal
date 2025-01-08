@@ -9,6 +9,7 @@ import {
     createBatchUpdateCaseRevisions,
     createBatchUpsertCaseRevisions,
     createCaseRevision,
+    createCaseRevisionForBundle,
     findCasesToUpdate,
     setBatchUpsertFields,
 } from './controllers/preprocessor';
@@ -119,11 +120,13 @@ apiRouter.get('/cases/symptoms', cases.listSymptoms);
 apiRouter.get('/cases/placesOfTransmission', cases.listPlacesOfTransmission);
 apiRouter.get('/cases/occupations', cases.listOccupations);
 apiRouter.get('/cases/locationComments', cases.listLocationComments);
+
 apiRouter.post(
     '/cases/verify/:id(\\d+$)',
     createCaseRevision,
     caseController.verify,
 );
+
 apiRouter.get('/cases/:id(\\d+$)', caseController.get);
 apiRouter.post('/cases', caseController.create);
 apiRouter.post('/cases/download', caseController.download);
@@ -155,6 +158,34 @@ apiRouter.delete(
     caseController.batchDel,
 );
 apiRouter.delete('/cases/:id(\\d+$)', createCaseRevision, caseController.del);
+// BUNDLED CASES
+apiRouter.get('/cases/bundled', caseController.listBundled);
+apiRouter.get('/cases/bundled/:id([a-z0-9]{24})', caseController.getBundled);
+apiRouter.put(
+    '/cases/bundled/:id([a-z0-9]{24})',
+    createCaseRevisionForBundle,
+    caseController.updateBundled,
+);
+apiRouter.delete(
+    '/cases/bundled',
+    createBatchDeleteCaseRevisions,
+    caseController.batchDelBundled,
+);
+apiRouter.delete(
+    '/cases/bundled/:id([a-z0-9]{24})',
+    createCaseRevisionForBundle,
+    caseController.delBundled,
+);
+apiRouter.post(
+    '/cases/verify/bundled',
+    createCaseRevision,
+    caseController.verifyBundles,
+);
+apiRouter.post(
+    '/cases/verify/bundled/:id([a-z0-9]{24})',
+    createCaseRevision,
+    caseController.verifyBundle,
+);
 
 app.use('/api', apiRouter);
 

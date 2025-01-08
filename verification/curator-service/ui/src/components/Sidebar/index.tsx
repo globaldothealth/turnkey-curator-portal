@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import {
     Add as AddIcon,
+    ListAlt as BundleOperationsIcon,
     Link as LinkIcon,
     List as ListIcon,
     People as PeopleIcon,
@@ -72,6 +73,13 @@ const Sidebar = ({ drawerOpen }: SidebarProps): JSX.Element => {
                           icon: <ListIcon />,
                           to: { pathname: '/cases', search: '' },
                           displayCheck: (): boolean => true,
+                      },
+                      {
+                          text: 'Bundle Operations',
+                          icon: <BundleOperationsIcon />,
+                          to: '/bundles',
+                          displayCheck: (): boolean =>
+                              hasAnyRole(user, [Role.Curator]),
                       },
                       {
                           text: 'Sources',

@@ -14,6 +14,7 @@ import {
 import { DownloadButton } from '../DownloadButton';
 import LinelistTable from '../LinelistTable';
 import PivotTables from '../PivotTables';
+import BundleOperations from '../BundleOperations';
 import {
     Link,
     Route,
@@ -32,6 +33,7 @@ import BulkCaseForm from '../BulkCaseForm';
 import CaseForm from '../CaseForm';
 import AcknowledgmentsPage from '../AcknowledgmentsPage';
 import EditCase from '../EditCase';
+import EditCaseBundle from '../EditCaseBundle';
 import GHListLogo from '../GHListLogo';
 import LandingPage from '../landing-page/LandingPage';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -41,6 +43,7 @@ import SourceTable from '../SourceTable';
 import TermsOfUse from '../TermsOfUse';
 import UploadsTable from '../UploadsTable';
 import Users from '../Users';
+import ViewBundle from '../ViewBundle';
 import ViewCase from '../ViewCase';
 import clsx from 'clsx';
 import { useCookieBanner } from '../../hooks/useCookieBanner';
@@ -456,6 +459,9 @@ export default function App(): JSX.Element {
                     {user && (
                         <Route path="/cases" element={<LinelistTable />} />
                     )}
+                    {hasAnyRole(user, [Role.Curator]) && (
+                        <Route path="/bundles" element={<BundleOperations />} />
+                    )}
                     {hasAnyRole(user, [Role.Curator, Role.JuniorCurator]) && (
                         <Route path="/sources" element={<SourceTable />} />
                     )}
@@ -531,11 +537,40 @@ export default function App(): JSX.Element {
                                 }
                             />
                         )}
+                    {user &&
+                        hasAnyRole(user, [
+                            Role.Curator,
+                            Role.JuniorCurator,
+                        ]) && (
+                            <Route
+                                path="/cases/bundle/edit/:id"
+                                element={
+                                    <EditCaseBundle
+                                        onModalClose={onModalClose}
+                                        diseaseName={diseaseName}
+                                    />
+                                }
+                            />
+                        )}
                     {user && (
                         <Route
                             path="/cases/view/:id"
                             element={
                                 <ViewCase
+                                    enableEdit={hasAnyRole(user, [
+                                        Role.Curator,
+                                        Role.JuniorCurator,
+                                    ])}
+                                    onModalClose={onModalClose}
+                                />
+                            }
+                        />
+                    )}
+                    {user && (
+                        <Route
+                            path="/cases/bundle/view/:id"
+                            element={
+                                <ViewBundle
                                     enableEdit={hasAnyRole(user, [
                                         Role.Curator,
                                         Role.JuniorCurator,

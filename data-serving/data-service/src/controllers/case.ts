@@ -7,7 +7,7 @@ import {
 } from '../model/day0-case';
 import caseFields from '../model/fields.json';
 import { CaseStatus, Role } from '../types/enums';
-import { Error, Query } from 'mongoose';
+import { Error, Query, Types } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { GeocodeOptions, Geocoder, Resolution } from '../geocoding/geocoder';
 import { NextFunction, Request, Response } from 'express';
@@ -57,25 +57,21 @@ const caseFromDTO = async (receivedCase: CaseDTO) => {
             .map((b) => b._id);
     }
 
+    const geometry = aCase.location?.geometry;
+    if (!geometry || !geometry.latitude || !geometry.longitude)
+        delete aCase.location.geometry;
+
     const user = await User.findOne({ email: receivedCase.curator?.email });
     if (user) {
-        logger.info(`User: ${JSON.stringify(user)}`)
-        if (user.roles.includes(Role.JuniorCurator)) {
+        logger.info(`User: ${JSON.stringify(user)}`);
+        if (
+            user.roles.includes(Role.JuniorCurator) ||
+            user.roles.includes(Role.Curator)
+        ) {
             aCase.curators = {
                 createdBy: {
                     name: user.name || '',
-                    email: user.email
-                },
-            };
-        } else if (user.roles.includes(Role.Curator) || user.roles.includes(Role.Admin)) {
-            aCase.curators = {
-                createdBy: {
-                    name: user.name || '',
-                    email: user.email
-                },
-                verifiedBy: {
-                    name: user.name || '',
-                    email: user.email
+                    email: user.email,
                 },
             };
         }
@@ -99,7 +95,7 @@ const dtoFromCase = async (storedCase: CaseDocument) => {
     }
 
     if (ageRange) {
-        if(creator) {
+        if (creator) {
             if (verifier) {
                 dto = {
                     ...dto,
@@ -131,10 +127,8 @@ const dtoFromCase = async (storedCase: CaseDocument) => {
             demographics: {
                 ...dto.demographics!,
                 ageRange,
-            }
+            },
         };
-
-
 
         // although the type system can't see it, there's an ageBuckets property on the demographics DTO now
         delete ((dto as unknown) as {
@@ -232,6 +226,30 @@ export class CasesController {
         if (c.length === 0) {
             res.status(404).send({
                 message: `Day0Case with ID ${req.params.id} not found.`,
+            });
+            return;
+        }
+
+        c.forEach((aCase: CaseDocument) => {
+            delete aCase.caseReference.sourceEntryId;
+        });
+
+        res.json(await Promise.all(c.map((aCase) => dtoFromCase(aCase))));
+    };
+
+    /**
+     * Get a specific case bundle.
+     *
+     * Handles HTTP GET /api/cases/bundled/:id.
+     */
+    getBundled = async (req: Request, res: Response): Promise<void> => {
+        const c = await Day0Case.find({
+            bundleId: req.params.id,
+        }).lean();
+
+        if (c.length === 0) {
+            res.status(404).send({
+                message: `Day0Case bundle with ID ${req.params.id} not found.`,
             });
             return;
         }
@@ -355,11 +373,13 @@ export class CasesController {
                         cast: {
                             date: (value: Date) => {
                                 if (value) {
-                                    return new Date(value).toISOString().split('T')[0];
+                                    return new Date(value)
+                                        .toISOString()
+                                        .split('T')[0];
                                 }
                                 return value;
                             },
-                        }
+                        },
                     });
                     res.write(stringifiedCase);
                     doc = await cursor.next();
@@ -511,6 +531,125 @@ export class CasesController {
     };
 
     /**
+     * List all case bundles.
+     *
+     * Handles HTTP GET /api/cases/bundled.
+     */
+    listBundled = async (req: Request, res: Response): Promise<void> => {
+        logger.debug('List method entrypoint');
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+        const countLimit = Number(req.query.count_limit) || 10000;
+        const sortBy = String(req.query.sort_by) || 'default';
+        const sortByOrder = String(req.query.order) || 'ascending';
+        const verificationStatus =
+            req.query.verification_status !== undefined
+                ? Boolean(req.query.verification_status)
+                : undefined;
+
+        logger.debug('Got query params');
+
+        if (page < 1) {
+            res.status(422).json({ message: 'page must be > 0' });
+            return;
+        }
+        if (limit < 1) {
+            res.status(422).json({ message: 'limit must be > 0' });
+            return;
+        }
+        // Filter query param looks like &q=some%20search%20query
+        if (
+            typeof req.query.q !== 'string' &&
+            typeof req.query.q !== 'undefined'
+        ) {
+            res.status(422).json({ message: 'q must be a unique string' });
+            return;
+        }
+
+        logger.debug('Got past 422s');
+        try {
+            const pipeline = [];
+            const totalCountPipeline = [];
+            if (verificationStatus !== undefined) {
+                pipeline.push({
+                    $match: {
+                        'curators.verifiedBy': { $exists: verificationStatus },
+                    },
+                });
+                totalCountPipeline.push({
+                    $match: {
+                        'curators.verifiedBy': { $exists: verificationStatus },
+                    },
+                });
+            }
+            pipeline.push({
+                $group: {
+                    _id: '$bundleId',
+                    caseCount: { $sum: 1 },
+                    caseIds: { $push: '$_id' },
+                    verificationStatus: {
+                        $push: {
+                            $cond: {
+                                if: { $ifNull: ['$curators.verifiedBy', false] },
+                                then: true,
+                                else: false,
+                            },
+                        },
+                    },
+                    dateModified: {
+                        $first: '$revisionMetadata.updateMetadata.date',
+                    },
+                    dateCreated: {
+                        $first: '$revisionMetadata.creationMetadata.date',
+                    },
+                    modifiedBy: {
+                        $first: '$revisionMetadata.updateMetadata.curator',
+                    },
+                    createdBy: {
+                        $first: '$revisionMetadata.creationMetadata.curator',
+                    },
+                    caseStatus: { $first: '$caseStatus' },
+                    dateEntry: { $first: '$events.dateEntry' },
+                    dateReported: { $first: '$events.dateReported' },
+                    countryISO3: { $first: '$location.countryISO3' },
+                    country: { $first: '$location.country' },
+                    admin1: { $first: '$location.admin1' },
+                    admin2: { $first: '$location.admin2' },
+                    admin3: { $first: '$location.admin3' },
+                    location: { $first: '$location.location' },
+                    ageRange: { $first: '$demographics.ageRange' },
+                    gender: { $first: '$demographics.gender' },
+                    outcome: { $first: '$events.outcome' },
+                    dateHospitalization: {
+                        $first: '$events.dateHospitalization',
+                    },
+                    dateOnset: { $first: '$events.dateOnset' },
+                    sourceUrl: { $first: '$caseReference.sourceUrl' },
+                },
+            });
+            totalCountPipeline.push({ $group: { _id: '$bundleId' } });
+            const bundledCases = await Day0Case.aggregate(pipeline)
+                .skip(limit * (page - 1))
+                .limit(limit);
+            const totalCount = (await Day0Case.aggregate(totalCountPipeline))
+                .length;
+
+            res.json({ caseBundles: bundledCases, total: totalCount });
+        } catch (e) {
+            if (e instanceof ParsingError) {
+                logger.error(`Parsing error ${e.message}`);
+                res.status(422).json({ message: e.message });
+                return;
+            }
+            logger.error('non-parsing error for query:');
+            logger.error(req.query);
+            if (e instanceof Error) logger.error(e);
+            res.status(500).json(e);
+            return;
+        }
+    };
+
+    /**
      * Get table data for Cases by Country.
      *
      * Handles HTTP GET /api/cases/countryData.
@@ -524,8 +663,8 @@ export class CasesController {
             // Get total case cardinality
             const grandTotalCount = await Day0Case.countDocuments({
                 caseStatus: {
-                    $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
-                }
+                    $nin: [CaseStatus.OmitError, CaseStatus.Discarded],
+                },
             });
             if (grandTotalCount === 0) {
                 res.status(200).json({});
@@ -537,9 +676,9 @@ export class CasesController {
                 {
                     $match: {
                         caseStatus: {
-                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
-                        }
-                    }
+                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded],
+                        },
+                    },
                 },
                 {
                     $group: {
@@ -592,9 +731,9 @@ export class CasesController {
                             $ne: null,
                         },
                         caseStatus: {
-                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
-                        }
-                    }
+                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded],
+                        },
+                    },
                 },
                 {
                     $group: {
@@ -664,9 +803,9 @@ export class CasesController {
                 {
                     $match: {
                         caseStatus: {
-                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
-                        }
-                    }
+                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded],
+                        },
+                    },
                 },
                 {
                     $group: {
@@ -698,9 +837,9 @@ export class CasesController {
                 {
                     $match: {
                         caseStatus: {
-                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
-                        }
-                    }
+                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded],
+                        },
+                    },
                 },
                 {
                     $match: {
@@ -763,8 +902,10 @@ export class CasesController {
             this.addGeoResolution(req);
             const currentDate = Date.now();
             const curator = req.body.curator.email;
+            const bundleId = new Types.ObjectId();
             const receivedCase = {
                 ...req.body,
+                bundleId,
                 revisionMetadata: {
                     revisionNumber: 0,
                     creationMetadata: {
@@ -803,7 +944,7 @@ export class CasesController {
             res.status(201).json(result);
         } catch (e) {
             const err = e as Error;
-            if  (err.name === 'MongoServerError') {
+            if (err.name === 'MongoServerError') {
                 logger.error((e as any).errInfo);
                 res.status(422).json({
                     message: (err as any).errInfo,
@@ -848,23 +989,24 @@ export class CasesController {
             return;
         }
 
+        const verifierEmail = req.body.curator.email;
         const verifier = await User.findOne({
-            email: req.body.curator.email,
+            email: verifierEmail,
         });
         if (!verifier) {
             res.status(404).send({
-                message: `Verifier with email ${req.body.curator.email} not found.`,
+                message: `Verifier with email ${verifierEmail} not found.`,
             });
             return;
         } else {
             c.set({
                 curators: {
                     createdBy: c.curators.createdBy,
-                    verifiedBy: verifier._id,
+                    verifiedBy: verifier,
                 },
                 revisionMetadata: updatedRevisionMetadata(
                     c,
-                    req.body.curator.email,
+                    verifierEmail,
                     'Case Verification',
                 ),
             });
@@ -878,6 +1020,108 @@ export class CasesController {
                 ),
             );
             return;
+        }
+    };
+
+    /**
+     * Verify case bundle.
+     *
+     * Handles HTTP POST /api/cases/verify/:id.
+     */
+    verifyBundle = async (req: Request, res: Response): Promise<void> => {
+        const cs = await Day0Case.find({
+            bundleId: req.params.id,
+        });
+
+        if (cs.length == 0) {
+            res.status(404).send({
+                message: `Case bundle with ID ${req.params.id} not found.`,
+            });
+            return;
+        }
+
+        const verifierEmail = req.body.curator.email;
+        const verifier = await User.findOne({
+            email: verifierEmail,
+        });
+        if (!verifier) {
+            res.status(404).send({
+                message: `Verifier with email ${verifierEmail} not found.`,
+            });
+            return;
+        } else {
+            const updateData = Date.now();
+            await Day0Case.updateMany(
+                { bundleId: req.params.id },
+                {
+                    $set: {
+                        'curators.verifiedBy': verifier,
+                        'revisionMetadata.updateMetadata': {
+                            curator: verifierEmail,
+                            note: 'Case Verification',
+                            date: updateData,
+                        },
+                    },
+                    $inc: { 'revisionMetadata.revisionNumber': 1 },
+                },
+            );
+
+            const responseCases = await Day0Case.find({
+                bundleId: req.params.id,
+            }).lean();
+            res.json(
+                await Promise.all(
+                    responseCases.map((aCase) => dtoFromCase(aCase)),
+                ),
+            );
+            return;
+        }
+    };
+
+    /**
+     * Verify case bundle.
+     *
+     * Handles HTTP POST /api/cases/verify/bundled/:id.
+     */
+    verifyBundles = async (req: Request, res: Response): Promise<void> => {
+        const caseBundleIds = req.body.data.caseBundleIds.map(
+            (caseBundleId: string) => new Types.ObjectId(caseBundleId),
+        );
+        const verifierEmail = req.body.curator.email;
+        const c = await Day0Case.find({
+            bundleId: { $in: caseBundleIds },
+        });
+
+        if (!c) {
+            res.status(404).send({
+                message: `Day0Case with ID ${req.params.id} not found.`,
+            });
+            return;
+        }
+
+        const verifier = await User.findOne({ email: verifierEmail });
+
+        if (!verifier) {
+            res.status(404).send({
+                message: `Verifier with email ${verifierEmail} not found.`,
+            });
+        } else {
+            const updateData = Date.now();
+            await Day0Case.updateMany(
+                { bundleId: { $in: caseBundleIds } },
+                {
+                    $set: {
+                        'curators.verifiedBy': verifier,
+                        'revisionMetadata.updateMetadata': {
+                            curator: verifierEmail,
+                            note: 'Case Verification',
+                            date: updateData,
+                        },
+                    },
+                    $inc: { 'revisionMetadata.revisionNumber': 1 },
+                },
+            );
+            res.status(204).end();
         }
     };
 
@@ -1008,6 +1252,7 @@ export class CasesController {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const upsertLambda = async (c: any) => {
                 delete c.caseCount;
+                c.bundleId = new Types.ObjectId();
                 c = await caseFromDTO(c as CaseDTO);
 
                 if (
@@ -1104,6 +1349,7 @@ export class CasesController {
                     req.body.curator.email,
                     'Case Update',
                 ),
+                bundleId: new Types.ObjectId(),
             });
             await c.save();
 
@@ -1113,7 +1359,58 @@ export class CasesController {
                 if (err.name === 'ValidationError') {
                     res.status(422).json(err);
                     return;
+                } else {
+                    res.status(500).json(err);
                 }
+            } else {
+                res.status(500).json(err);
+            }
+            return;
+        }
+    };
+
+    /**
+     * Update a specific case bundle.
+     *
+     * Handles HTTP PUT /api/cases/bundled/:id.
+     */
+    updateBundled = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const cs = await Day0Case.find({ bundleId: req.params.id });
+
+            if (!cs) {
+                res.status(404).send({
+                    message: `Day0Case bundle with ID ${req.params.id} not found.`,
+                });
+                return;
+            }
+            const caseDetails = await caseFromDTO(req.body);
+            delete caseDetails._id;
+            delete caseDetails.revisionMetadata;
+
+            for (const c of cs) {
+                c.set({
+                    ...caseDetails,
+                    revisionMetadata: updatedRevisionMetadata(
+                        c,
+                        req.body.curator.email,
+                        'Case Update',
+                    ),
+                });
+                await c.save();
+            }
+
+            res.json(await dtoFromCase(cs[0]));
+        } catch (err) {
+            logger.error(err as any);
+            if (err instanceof Error) {
+                if (err.name === 'ValidationError') {
+                    res.status(422).json(err);
+                    return;
+                } else {
+                    res.status(500).json(err);
+                }
+            } else {
                 res.status(500).json(err);
             }
             return;
@@ -1276,6 +1573,46 @@ export class CasesController {
     };
 
     /**
+     * Deletes multiple case bundles.
+     *
+     * Handles HTTP DELETE /api/cases/bundled.
+     */
+    batchDelBundled = async (req: Request, res: Response): Promise<void> => {
+        if (req.body.bundleIds !== undefined) {
+            const deleted = await Day0Case.deleteMany({
+                bundleId: { $in: req.body.bundleIds },
+            });
+            if (!deleted) {
+                res.status(404).send({
+                    message: `Day0Case with specified bundle IDs not found.`,
+                });
+                return;
+            }
+
+            res.status(204).end();
+            return;
+        }
+
+        res.status(500).end();
+    };
+
+    /**
+     * Delete a specific case.
+     *
+     * Handles HTTP DELETE /api/cases/:id.
+     */
+    delBundled = async (req: Request, res: Response): Promise<void> => {
+        const c = await Day0Case.deleteMany({bundleId: req.params.id});
+        if (!c) {
+            res.status(404).send({
+                message: `Day0Case bundle with ID ${req.params.id} not found.`,
+            });
+            return;
+        }
+        res.status(204).end();
+    };
+
+    /**
      * Geocodes a single location.
      * @param location The location data.
      * @param canBeFuzzy The location is allowed to be "fuzzy", in which case it may not get geocoded.
@@ -1403,6 +1740,81 @@ export class CasesController {
 // If count is true, it returns a query for the number of cases matching
 // the search query.
 export const casesMatchingSearchQuery = (opts: {
+    searchQuery: string;
+    count: boolean;
+    limit?: number;
+    verificationStatus?: boolean;
+    // Goofy Mongoose types require this.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+}): any => {
+    // set data limit to 10K by default
+    const countLimit = opts.limit ? opts.limit : 10000;
+    const parsedSearch = parseSearchQuery(opts.searchQuery);
+    let queryOpts;
+    if (opts.verificationStatus) {
+        queryOpts = parsedSearch.fullTextSearch
+            ? {
+                  $text: { $search: parsedSearch.fullTextSearch },
+                  'curators.verifiedBy': { $exists: opts.verificationStatus },
+              }
+            : { 'curators.verifiedBy': { $exists: opts.verificationStatus } };
+    } else {
+        queryOpts = parsedSearch.fullTextSearch
+            ? {
+                  $text: { $search: parsedSearch.fullTextSearch },
+              }
+            : {};
+    }
+
+    // Always search with case-insensitivity.
+    const casesQuery: Query<CaseDocument[], CaseDocument> = Day0Case.find(
+        queryOpts,
+    );
+
+    const countQuery: Query<number, CaseDocument> = Day0Case.countDocuments(
+        queryOpts,
+    ).limit(countLimit);
+
+    // Fill in keyword filters.
+    parsedSearch.filters.forEach((f) => {
+        if (f.values.length == 1) {
+            const searchTerm = f.values[0];
+            if (searchTerm === '*') {
+                casesQuery.where(f.path).exists(true);
+                countQuery.where(f.path).exists(true);
+            } else if (f.dateOperator) {
+                casesQuery.where({
+                    [f.path]: {
+                        [f.dateOperator]: f.values[0],
+                    },
+                });
+                countQuery.where({
+                    [f.path]: {
+                        [f.dateOperator]: f.values[0],
+                    },
+                });
+            } else if (
+                f.path === 'demographics.gender' &&
+                f.values[0] === 'notProvided'
+            ) {
+                casesQuery.where(f.path).exists(false);
+                countQuery.where(f.path).exists(false);
+            } else {
+                casesQuery.where(f.path).equals(f.values[0]);
+                countQuery.where(f.path).equals(f.values[0]);
+            }
+        } else {
+            casesQuery.where(f.path).in(f.values);
+            countQuery.where(f.path).in(f.values);
+        }
+    });
+    return opts.count ? countQuery : casesQuery.lean();
+};
+
+// Returns a mongoose query for all cases matching the given search query.
+// If count is true, it returns a query for the number of cases matching
+// the search query.
+export const bundledCasesMatchingSearchQuery = (opts: {
     searchQuery: string;
     count: boolean;
     limit?: number;

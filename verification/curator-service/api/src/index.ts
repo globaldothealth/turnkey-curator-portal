@@ -302,7 +302,7 @@ async function makeApp() {
     );
     apiRouter.post(
         '/cases/verify/:id(\\d+$)',
-        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
+        mustHaveAnyRole([Role.Curator]),
         casesController.verify,
     );
     apiRouter.post(
@@ -364,7 +364,48 @@ async function makeApp() {
         mustHaveAnyRole([Role.Curator]),
         casesController.del,
     );
-
+    // BUNDLED CASES
+    apiRouter.get(
+        '/cases/bundled',
+        authenticateByAPIKey,
+        mustBeAuthenticated,
+        casesController.listBundled,
+    );
+    apiRouter.get(
+        '/cases/bundled/:id([a-z0-9]{24})',
+        authenticateByAPIKey,
+        mustBeAuthenticated,
+        casesController.getBundled,
+    );
+    apiRouter.put(
+        '/cases/bundled/:id([a-z0-9]{24})',
+        authenticateByAPIKey,
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
+        casesController.updateBundled,
+    );
+    apiRouter.post(
+        '/cases/verify/bundled',
+        mustHaveAnyRole([Role.Curator]),
+        casesController.verifyBundles,
+    );
+    apiRouter.post(
+        '/cases/verify/bundled/:id([a-z0-9]{24})',
+        authenticateByAPIKey,
+        mustHaveAnyRole([Role.Curator]),
+        casesController.verifyBundle,
+    );
+    apiRouter.delete(
+        '/cases/bundled',
+        authenticateByAPIKey,
+        mustHaveAnyRole([Role.Curator]),
+        casesController.batchDelBundled,
+    );
+    apiRouter.delete(
+        '/cases/bundled/:id([a-z0-9]{24})',
+        authenticateByAPIKey,
+        mustHaveAnyRole([Role.Curator]),
+        casesController.delBundled,
+    );
     // Configure users controller.
     apiRouter.get(
         '/users',

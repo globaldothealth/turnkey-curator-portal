@@ -47,6 +47,16 @@
         }
     },
     {
+        "name": "bundleIdIdx",
+        "key": {
+            "bundleId": -1
+        },
+        "collation": {
+            "locale": "en_US",
+            "strength": 2
+        }
+    },
+    {
         "name": "demographicsGenderIdx",
         "key": {
             "demographics.gender": -1

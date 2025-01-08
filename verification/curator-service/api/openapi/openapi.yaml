@@ -633,20 +633,135 @@ paths:
                     $ref: '#/components/responses/200FullDataSetDownload'
                 '500':
                     $ref: '#/components/responses/500'
+    /cases/bundled:
+        get:
+            tags: [CaseBundle]
+            summary: Lists bundled cases
+            operationId: listBundledCases
+            parameters:
+                - name: page
+                  in: query
+                  description: The pages of sources to skip before starting to collect the result set
+                  required: false
+                  schema:
+                      type: integer
+                      format: int32
+                      minimum: 1
+                      default: 1
+                - name: limit
+                  in: query
+                  description: The number of cases to return
+                  required: false
+                  schema:
+                      type: integer
+                      format: int32
+                      minimum: 1
+                      maximum: 100
+                      default: 10
+                - name: count_limit
+                  in: query
+                  description: The maximum number of documents that will be counted in mongoDB to make queries faster
+                  required: false
+                  schema:
+                      type: integer
+                      format: int32
+                      minimum: 100
+                      default: 10000
+                      maximum: 50000
+                - name: sort_by
+                  in: query
+                  description: Keyword to sort by
+                  required: false
+                  schema:
+                      type: string
+                - name: order
+                  in: query
+                  description: Sorting order
+                  required: false
+                  schema:
+                      type: string
+                - name: verification_status
+                  in: query
+                  description: Verification status of bundled cases
+                  required: false
+                  schema:
+                      type: boolean
+                - name: q
+                  in: query
+                  description: The search query
+                  required: false
+                  allowEmptyValue: true
+                  allowReserved: true
+                  schema:
+                      type: string
+            responses:
+                '200':
+                    $ref: '#/components/responses/200CaseBundleArray'
+                '400':
+                    $ref: '#/components/responses/400'
+                '403':
+                    $ref: '#/components/responses/403'
+                '422':
+                    $ref: '#/components/responses/422'
+                '500':
+                    $ref: '#/components/responses/500'
+        delete:
+            summary: >
+                Deletes multiple case bundles. It is required to supply exactly one of either 
+                bundleIds or query in the request body. If bundleIds are supplied, case bundles
+                corresponding to those caseIds will be deleted. If query is supplied, 
+                all case bundles that match the query will be deleted.
+            tags: [CaseBundle]
+            operationId: deleteCaseBundles
+            requestBody:
+                description: Case bundles to delete
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                bundleIds:
+                                    description: Cases corresponding to these ids will be deleted
+                                    type: array
+                                    items:
+                                        type: string
+                                query:
+                                    description: >
+                                        Case bundles matching this query will be deleted. Must contain
+                                        non-whitespace characters.
+                                    type: string
+                                    pattern: \S+
+                            oneOf:
+                                - required: [bundleIds]
+                                - required: [query]
+            responses:
+                '204':
+                    description: Case bundles deleted
+                '400':
+                    $ref: '#/components/responses/400'
+                '403':
+                    $ref: '#/components/responses/403'
+                '404':
+                    $ref: '#/components/responses/404'
+                '422':
+                    $ref: '#/components/responses/422'
+                '500':
+                    $ref: '#/components/responses/500'
     /cases/countryData:
-      get:
-        summary: Data for cases by country table
-        operationId: listCountryData
-        tags: [ Suggest ]
-        responses:
-          '200':
-            $ref: '#/components/responses/200CasesByCountryObject'
-          '400':
-            $ref: '#/components/responses/400'
-          '403':
-            $ref: '#/components/responses/403'
-          '500':
-            $ref: '#/components/responses/500'
+        get:
+            summary: Data for cases by country table
+            operationId: listCountryData
+            tags: [Suggest]
+            responses:
+                '200':
+                    $ref: '#/components/responses/200CasesByCountryObject'
+                '400':
+                    $ref: '#/components/responses/400'
+                '403':
+                    $ref: '#/components/responses/403'
+                '500':
+                    $ref: '#/components/responses/500'
     /cases/symptoms:
         get:
             summary: Lists most frequently used sypmtoms
@@ -725,7 +840,7 @@ paths:
     /cases/locationComments:
         get:
             summary: Lists most frequently used location comments
-            tags: [ Suggest ]
+            tags: [Suggest]
             operationId: listLocationComments
             parameters:
                 - name: limit
@@ -934,21 +1049,115 @@ paths:
                     $ref: '#/components/responses/404'
                 '500':
                     $ref: '#/components/responses/500'
-    /cases/verify/{id}:
-        post:
-            tags: [ Case ]
-#            summary: Creates one (or multiple identical) new cases
-#            operationId: verifyCase
-#            requestBody:
-#                description: Case with verifier
-#                required: true
-#                content:
-#                    application/json:
-#                        schema:
-#                            $ref: '#/components/schemas/Verifier'
+    /cases/bundled/{id}:
+        parameters:
+            - name: id
+              in: path
+              description: The case bundle ID
+              required: true
+              schema:
+                  type: string
+        get:
+            summary: Gets a specific case bundle
+            operationId: getCaseBundle
+            tags: [CaseBundle]
+            responses:
+                '200':
+                    $ref: '#/components/responses/200CaseBundle'
+                '400':
+                    $ref: '#/components/responses/400'
+                '403':
+                    $ref: '#/components/responses/403'
+                '404':
+                    $ref: '#/components/responses/404'
+                '422':
+                    $ref: '#/components/responses/422'
+                '500':
+                    $ref: '#/components/responses/500'
+        put:
+            tags: [CaseBundle]
+            summary: Updates a specific case bundle
+            operationId: updateCaseBundle
+            requestBody:
+                description: Case bundle to update
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Case'
             responses:
                 '200':
                     $ref: '#/components/responses/200Case'
+                '400':
+                    $ref: '#/components/responses/400'
+                '403':
+                    $ref: '#/components/responses/403'
+                '404':
+                    $ref: '#/components/responses/404'
+                '422':
+                    $ref: '#/components/responses/422'
+                '500':
+                    $ref: '#/components/responses/500'
+        delete:
+            tags: [CaseBundle]
+            summary: Deletes a specific case bundle
+            operationId: deleteCaseBundle
+            responses:
+                '204':
+                    description: Case bundle deleted
+                '400':
+                    $ref: '#/components/responses/400'
+                '403':
+                    $ref: '#/components/responses/403'
+                '404':
+                    $ref: '#/components/responses/404'
+                '500':
+                    $ref: '#/components/responses/500'
+    /cases/verify/{id}:
+      post:
+        tags: [ Case ]
+        summary: Verifies case
+        operationId: verifyCase
+        requestBody:
+            description: Case with verifier
+            required: true
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/Verifier'
+        responses:
+          '200':
+            $ref: '#/components/responses/200Case'
+          '400':
+            $ref: '#/components/responses/400'
+          '403':
+            $ref: '#/components/responses/403'
+          '422':
+            $ref: '#/components/responses/422'
+          '500':
+            $ref: '#/components/responses/500'
+    /cases/verify/bundled:
+        post:
+            summary: >
+                Verifies multiple case bundles.
+            tags: [Case]
+            operationId: verifyBundled
+            requestBody:
+                description: Case bundles to verify
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                caseBundleIds:
+                                    description: Ids of case bundles to verify
+                                    type: array
+                                    items:
+                                        type: string
+            responses:
+                '204':
+                    $ref: '#/components/responses/204'
                 '400':
                     $ref: '#/components/responses/400'
                 '403':
@@ -957,6 +1166,29 @@ paths:
                     $ref: '#/components/responses/422'
                 '500':
                     $ref: '#/components/responses/500'
+    /cases/verify/bundled/{id}:
+      post:
+        tags: [ CaseBundle ]
+        summary: Verifies cases in a specific case bundle
+        operationId: verifyCaseBundle
+        requestBody:
+          description: Case bundle with verifier
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Verifier'
+        responses:
+          '200':
+            $ref: '#/components/responses/200Case'
+          '400':
+            $ref: '#/components/responses/400'
+          '403':
+            $ref: '#/components/responses/403'
+          '422':
+            $ref: '#/components/responses/422'
+          '500':
+            $ref: '#/components/responses/500'
     /geocode/seed:
         post:
             tags: [Geocode]
@@ -1053,7 +1285,7 @@ paths:
                     $ref: '#/components/responses/500'
     /geocode/admin1:
         get:
-            tags: [ Suggest ]
+            tags: [Suggest]
             summary: Suggest list of Admin1 locations for ISO-3166-1 3-letter country code.
             operationId: countryName
             parameters:
@@ -1078,7 +1310,7 @@ paths:
 
     /geocode/admin2:
         get:
-            tags: [ Suggest ]
+            tags: [Suggest]
             summary: Suggest list of Admin2 locations for Admin1 location.
             operationId: countryName
             parameters:
@@ -1103,7 +1335,7 @@ paths:
 
     /geocode/admin3:
         get:
-            tags: [ Suggest ]
+            tags: [Suggest]
             summary: Suggest list of Admin3 locations for Admin2 location.
             operationId: countryName
             parameters:
@@ -1519,11 +1751,11 @@ components:
             items:
                 $ref: '#/components/schemas/AcknowledgmentSource'
         Verifier:
-          description: Verifier data.
-          properties:
-            email:
-              description: email address of verifier
-              type: string
+            description: Verifier data.
+            properties:
+                email:
+                    description: email address of verifier
+                    type: string
         Case:
             description: A single line-list case.
             properties:
@@ -1717,6 +1949,79 @@ components:
                             $ref: '#/components/schemas/Date'
                         vaccineSideEffects:
                             type: string
+        CaseBundle:
+            description: A single line-list case.
+            properties:
+                _id:
+                    oneOf:
+                        - type: string
+                        - type: object
+                caseCount:
+                    type: number
+                    minimum: 1
+                dateModified:
+                    $ref: '#/components/schemas/Date'
+                dateCreated:
+                    $ref: '#/components/schemas/Date'
+                modifiedBy:
+                    type: string
+                createdBy:
+                    type: string
+                caseStatus:
+                    description: >
+                        Status of the case
+                    type: string
+                    enum:
+                        - confirmed
+                        - suspected
+                        - discarded
+                        - omit_error
+                dateEntry:
+                    $ref: '#/components/schemas/Date'
+                dateReported:
+                    $ref: '#/components/schemas/Date'
+                countryISO3:
+                    type: string
+                    minLength: 3
+                    maxLength: 3
+                    description: ISO 3166-1 alpha-3 code for a country.
+                    example: GBR
+                country:
+                    type: string
+                    description: name of a country
+                admin1:
+                    type: string
+                    nullable: true
+                admin2:
+                    type: string
+                    nullable: true
+                admin3:
+                    type: string
+                    nullable: true
+                location:
+                    type: string
+                    nullable: true
+                    description: exact location
+                ageRange:
+                    type: object
+                    nullable: true
+                    properties:
+                        start:
+                            type: number
+                        end:
+                            type: number
+                gender:
+                    type: string
+                    nullable: true
+                    enum: [null, male, female, other]
+                outcome:
+                    type: string
+                    nullable: true
+                    enum: [null, recovered, death]
+                dateHospitalization:
+                    $ref: '#/components/schemas/Date'
+                sourceUrl:
+                    type: string
         CaseStatus:
             type: string
             enum: [confirmed, suspected, discarded, omit_error]
@@ -1729,6 +2034,15 @@ components:
                         $ref: '#/components/schemas/Case'
             required:
                 - cases
+        CaseBundleArray:
+            type: object
+            properties:
+                caseBundles:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/CaseBundle'
+            required:
+                - caseBundles
         CaseIdsArray:
             type: object
             properties:
@@ -1807,6 +2121,7 @@ components:
                 - type: string
                 - type: object
                 - type: number
+                  nullable: true
             example: '02/20/2020'
         DateRange:
             type: object
@@ -1910,7 +2225,7 @@ components:
             enum:
                 - admin
                 - curator
-                - "junior curator"
+                - 'junior curator'
         RoleArray:
             type: object
             properties:
@@ -1934,17 +2249,17 @@ components:
                     type: string
                     description: Name of a country
                 admin1:
-                  type: string
+                    type: string
                 admin1WikiID:
-                  type: string
+                    type: string
                 admin2:
-                  type: string
+                    type: string
                 admin2WikiId:
-                  type: string
+                    type: string
                 admin3:
                     type: string
                 admin3WikiId:
-                  type: string
+                    type: string
                 location:
                     type: string
                     description: Exact location
@@ -1990,26 +2305,26 @@ components:
                     description: Third administrative subdivision of a country
                     example: Any district in Costa Rica
                 admin1:
-                  type: string
-                  description: Name of the area in admin1 resolution
-                  example: Lodz Voivodeship
+                    type: string
+                    description: Name of the area in admin1 resolution
+                    example: Lodz Voivodeship
                 admin1WikiId:
-                  type: string
-                  description: Wiki identifier of the area in admin1 resolution
+                    type: string
+                    description: Wiki identifier of the area in admin1 resolution
                 admin2:
-                  type: string
-                  description: Name of the area in admin2 resolution
-                  example: Lodz County
+                    type: string
+                    description: Name of the area in admin2 resolution
+                    example: Lodz County
                 admin2WikiId:
-                  type: string
-                  description: Wiki identifier of the area in admin2 resolution
+                    type: string
+                    description: Wiki identifier of the area in admin2 resolution
                 admin3:
                     type: string
                     description: Name of the area in admin3 resolution
                     example: Lodz
                 admin3WikiId:
-                  type: string
-                  description: Wiki identifier of the area in admin3 resolution
+                    type: string
+                    description: Wiki identifier of the area in admin3 resolution
                 name:
                     type: string
                     description: >
@@ -2160,6 +2475,18 @@ components:
                 application/json:
                     schema:
                         $ref: '#/components/schemas/CaseArray'
+        '200CaseBundle':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseBundle'
+        '200CaseBundleArray':
+            description: OK
+            content:
+                application/json:
+                    schema:
+                        $ref: '#/components/schemas/CaseBundleArray'
         '200CaseIdsArray':
             description: OK
             content:

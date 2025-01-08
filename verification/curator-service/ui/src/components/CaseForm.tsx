@@ -252,6 +252,7 @@ const initialValuesFromCase = (
 
 interface Props {
     initialCase?: Day0Case;
+    bundleId?: string;
     onModalClose: () => void;
     diseaseName: string;
 }
@@ -504,8 +505,15 @@ export default function CaseForm(props: Props): JSX.Element {
 
         let newCaseIds = [];
         try {
+            // Update case bundle
+            if (props.bundleId) {
+                await axios.put(
+                    `/api/cases/bundled/${props.bundleId}`,
+                    newCase,
+                );
+            }
             // Update or create depending on the presence of the initial case ID.
-            if (props.initialCase?._id) {
+            else if (props.initialCase?._id) {
                 await axios.put(
                     `/api/cases/${props.initialCase?._id}`,
                     newCase,
@@ -529,15 +537,20 @@ export default function CaseForm(props: Props): JSX.Element {
             setErrorMessage(e.response?.data?.message || e.toString());
             return;
         }
-        // Navigate to cases after successful submit
-        navigate('/cases', {
-            state: {
-                newCaseIds: newCaseIds,
-                editedCaseIds: props.initialCase?._id
-                    ? [props.initialCase._id]
-                    : [],
-            },
-        });
+        if (props.bundleId) {
+            // Navigate to cases after successful submit
+            navigate('/bundles', { state: { editedBundleId: props.bundleId } });
+        } else {
+            // Navigate to cases after successful submit
+            navigate('/cases', {
+                state: {
+                    newCaseIds: newCaseIds,
+                    editedCaseIds: props.initialCase?._id
+                        ? [props.initialCase._id]
+                        : [],
+                },
+            });
+        }
     };
 
     const tableOfContentsIcon = (opts: {
@@ -952,6 +965,9 @@ export default function CaseForm(props: Props): JSX.Element {
                                     Complete all available data for the case.
                                     Required fields are marked.
                                 </Typography>
+                                {props.initialCase && <Typography variant="body2" style={{fontWeight: 'bold'}}>
+                                    Editing the individual case that is part of the bundle will cause it to be removed from the bundle.
+                                </Typography>}
                                 <Form>
                                     <FormSection>
                                         <General />
