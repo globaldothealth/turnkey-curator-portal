@@ -7,7 +7,7 @@ import {
 } from '../model/day0-case';
 import caseFields from '../model/fields.json';
 import { CaseStatus, Role } from '../types/enums';
-import mongoose, { Error, Query } from 'mongoose';
+import { Error, Query, Types } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { GeocodeOptions, Geocoder, Resolution } from '../geocoding/geocoder';
 import { NextFunction, Request, Response } from 'express';
@@ -74,18 +74,7 @@ const caseFromDTO = async (receivedCase: CaseDTO) => {
                     email: user.email,
                 },
             };
-        } //else if (user.roles.includes(Role.Curator) || user.roles.includes(Role.Admin)) {
-        //     aCase.curators = {
-        //         createdBy: {
-        //             name: user.name || '',
-        //             email: user.email
-        //         },
-        //         verifiedBy: {
-        //             name: user.name || '',
-        //             email: user.email
-        //         },
-        //     };
-        // }
+        }
     }
 
     return aCase;
@@ -619,7 +608,7 @@ export class CasesController {
                     createdBy: {
                         $first: '$revisionMetadata.creationMetadata.curator',
                     },
-                    caseStatus: { $first: '$caseStatus' }, //addToSet can be used instead of first for edited cases
+                    caseStatus: { $first: '$caseStatus' },
                     dateEntry: { $first: '$events.dateEntry' },
                     dateReported: { $first: '$events.dateReported' },
                     countryISO3: { $first: '$location.countryISO3' },
@@ -913,7 +902,7 @@ export class CasesController {
             this.addGeoResolution(req);
             const currentDate = Date.now();
             const curator = req.body.curator.email;
-            const bundleId = new mongoose.Types.ObjectId();
+            const bundleId = new Types.ObjectId();
             const receivedCase = {
                 ...req.body,
                 bundleId,
@@ -1057,7 +1046,7 @@ export class CasesController {
         });
         if (!verifier) {
             res.status(404).send({
-                message: `Verifier with email ${req.body.curator.email} not found.`,
+                message: `Verifier with email ${verifierEmail} not found.`,
             });
             return;
         } else {
@@ -1096,7 +1085,7 @@ export class CasesController {
      */
     verifyBundles = async (req: Request, res: Response): Promise<void> => {
         const caseBundleIds = req.body.data.caseBundleIds.map(
-            (caseBundleId: string) => new mongoose.Types.ObjectId(caseBundleId),
+            (caseBundleId: string) => new Types.ObjectId(caseBundleId),
         );
         const verifierEmail = req.body.curator.email;
         const c = await Day0Case.find({
@@ -1263,7 +1252,7 @@ export class CasesController {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const upsertLambda = async (c: any) => {
                 delete c.caseCount;
-                c.bundleId = new mongoose.Types.ObjectId();
+                c.bundleId = new Types.ObjectId();
                 c = await caseFromDTO(c as CaseDTO);
 
                 if (
@@ -1360,7 +1349,7 @@ export class CasesController {
                     req.body.curator.email,
                     'Case Update',
                 ),
-                bundleId: new mongoose.Types.ObjectId(),
+                bundleId: new Types.ObjectId(),
             });
             await c.save();
 
@@ -1590,7 +1579,6 @@ export class CasesController {
      */
     batchDelBundled = async (req: Request, res: Response): Promise<void> => {
         if (req.body.bundleIds !== undefined) {
-            logger.error(req.body);
             const deleted = await Day0Case.deleteMany({
                 bundleId: { $in: req.body.bundleIds },
             });
@@ -1604,7 +1592,7 @@ export class CasesController {
             res.status(204).end();
             return;
         }
-        logger.error(req.body);
+
         res.status(500).end();
     };
 
