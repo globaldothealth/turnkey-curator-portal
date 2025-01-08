@@ -44,6 +44,8 @@ import { parseAgeRange } from './util/helperFunctions';
 import { useAppDispatch } from '../hooks/redux';
 import { verifyCaseBundle } from '../redux/bundledCases/thunk';
 import {
+    selectDeleteCasesLoading,
+    selectDeleteCasesSuccess,
     selectVerifyCasesLoading,
     selectVerifyCasesSuccess,
 } from '../redux/bundledCases/selectors';
@@ -82,6 +84,28 @@ export default function ViewBundle(props: Props): JSX.Element {
             })
             .finally(() => setLoading(false));
     }, [id]);
+
+    const deleteCase = (
+        onSuccess: () => void,
+        onError: (errorMessage: string) => void,
+        caseId: string,
+        verifierEmail: string,
+    ) => {
+        if (caseId && verifierEmail) {
+            setLoading(true);
+            axios
+                .delete(`/api/cases/bundled/${caseId}`)
+                .then((resp) => {
+                    props.onModalClose();
+                })
+                .catch((e) => {
+                    onError(e.response?.data?.message || e.toString());
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
+        }
+    };
 
     const verifyCase = (
         onSuccess: () => void,
@@ -129,6 +153,7 @@ export default function ViewBundle(props: Props): JSX.Element {
                     cases={cases || []}
                     enableEdit={props.enableEdit}
                     verifyCase={verifyCase}
+                    deleteCase={deleteCase}
                 />
             )}
         </AppModal>
@@ -138,6 +163,12 @@ interface CaseDetailsProps {
     bundleId: string;
     cases: Day0Case[];
     verifyCase: (
+        onSuccess: () => void,
+        onError: (errorMessage: string) => void,
+        caseId: string,
+        userEmail: string,
+    ) => void;
+    deleteCase: (
         onSuccess: () => void,
         onError: (errorMessage: string) => void,
         caseId: string,
@@ -173,9 +204,6 @@ const useStyles = makeStyles()((theme) => ({
     actionButton: {
         marginLeft: '1em',
     },
-    verifyBtn: {
-        marginLeft: '1em',
-    },
     navMenu: {
         position: 'fixed',
         lineHeight: '2em',
@@ -206,7 +234,7 @@ const useStyles = makeStyles()((theme) => ({
         right: 8,
         top: 8,
     },
-    verifyDialogBtn: {
+    dialogButton: {
         margin: '1em',
     },
 }));
@@ -216,10 +244,15 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
     const navigate = useNavigate();
     const showNavMenu = useMediaQuery(theme.breakpoints.up('sm'));
     const [verifyDialogOpen, setVerifyDialogOpen] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const { classes } = useStyles();
     const dispatch = useAppDispatch();
     const verificationLoading = useSelector(selectVerifyCasesLoading);
     const verificationSuccess = useSelector(selectVerifyCasesSuccess);
+
+    const deleteLoading = useSelector(selectDeleteCasesLoading);
+    const deleteSuccess = useSelector(selectDeleteCasesSuccess);
+
     useEffect(() => {
         if (verificationSuccess) {
             setVerifyDialogOpen(false);
@@ -251,14 +284,6 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                 lastLocation: location.pathname,
             },
         });
-    };
-
-    const handleDeleteBundleClick = (bundleId: string) => {
-        // navigate(`/cases/bundle/edit/${bundleId}`, {
-        //     state: {
-        //         lastLocation: location.pathname,
-        //     },
-        // });
     };
 
     const searchedKeywords = useSelector(selectSearchQuery);
@@ -400,7 +425,7 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                                         data-testid="verify-dialog-confirm-button"
                                         variant="contained"
                                         color="primary"
-                                        className={classes.verifyDialogBtn}
+                                        className={classes.dialogButton}
                                         endIcon={<VerifyIcon />}
                                         onClick={() =>
                                             props.verifyCase(
@@ -422,7 +447,7 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                                     data-testid="verify-button"
                                     variant="outlined"
                                     color="primary"
-                                    className={classes.verifyBtn}
+                                    className={classes.actionButton}
                                     endIcon={<VerifyIcon />}
                                     onClick={() => setVerifyDialogOpen(true)}
                                 >
@@ -444,20 +469,70 @@ function CaseDetails(props: CaseDetailsProps): JSX.Element {
                             Edit
                         </Button>
                     )}
-                    {props.enableEdit && (
-                        <Button
-                            data-testid="delete-button"
-                            variant="outlined"
-                            color="primary"
-                            className={classes.actionButton}
-                            endIcon={<DeleteIcon />}
-                            onClick={() =>
-                                handleDeleteBundleClick(props.bundleId || '')
-                            }
-                        >
-                            Delete
-                        </Button>
-                    )}
+                    {props.cases.length > 0 &&
+                        user?.roles.includes(Role.Curator) && (
+                            <>
+                                <Dialog
+                                    open={deleteDialogOpen}
+                                    className={classes.dialogContainer}
+                                    id="popup-small-screens"
+                                >
+                                    <DialogTitle
+                                        className={classes.dialogTitle}
+                                    >
+                                        Are you sure?
+                                        <IconButton
+                                            aria-label="close"
+                                            onClick={() =>
+                                                setDeleteDialogOpen(false)
+                                            }
+                                            className={classes.closeButton}
+                                            id="small-screens-popup-close-btn"
+                                            size="large"
+                                            data-testid="delete-dialog-close-button"
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </DialogTitle>
+                                    <DialogContent dividers>
+                                        <Typography gutterBottom>
+                                            Before deleting make sure that correct bundle was selected.
+                                        </Typography>
+                                    </DialogContent>
+                                    <LoadingButton
+                                        data-testid="delete-dialog-confirm-button"
+                                        variant="contained"
+                                        color="primary"
+                                        className={classes.dialogButton}
+                                        endIcon={<DeleteIcon />}
+                                        onClick={() =>
+                                            props.deleteCase(
+                                                () =>
+                                                    setDeleteDialogOpen(false),
+                                                (errorMessage: string) => {
+                                                    console.log(errorMessage);
+                                                },
+                                                bundleId || '',
+                                                user.email || '',
+                                            )
+                                        }
+                                        loading={deleteLoading}
+                                    >
+                                        Delete
+                                    </LoadingButton>
+                                </Dialog>
+                                <Button
+                                    data-testid="delete-button"
+                                    variant="outlined"
+                                    color="primary"
+                                    className={classes.actionButton}
+                                    endIcon={<DeleteIcon />}
+                                    onClick={() => setDeleteDialogOpen(true)}
+                                >
+                                    Delete
+                                </Button>
+                            </>
+                        )}
                 </Typography>
                 <Accordion onClick={(e) => e.stopPropagation()}>
                     <AccordionSummary

@@ -254,12 +254,6 @@ async function makeApp() {
         casesController.list,
     );
     apiRouter.get(
-        '/cases/bundled',
-        authenticateByAPIKey,
-        mustBeAuthenticated,
-        casesController.listBundled,
-    );
-    apiRouter.get(
         '/cases/countryData',
         authenticateByAPIKey,
         mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
@@ -295,18 +289,6 @@ async function makeApp() {
         mustBeAuthenticated,
         casesController.get,
     );
-    apiRouter.get(
-        '/cases/bundled/:id([a-z0-9]{24})',
-        authenticateByAPIKey,
-        mustBeAuthenticated,
-        casesController.getBundled,
-    );
-    apiRouter.put(
-        '/cases/bundled/:id([a-z0-9]{24})',
-        authenticateByAPIKey,
-        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
-        casesController.updateBundled,
-    );
     apiRouter.post(
         '/cases/getDownloadLink',
         authenticateByAPIKey,
@@ -319,20 +301,9 @@ async function makeApp() {
         casesController.create,
     );
     apiRouter.post(
-        '/cases/verify/bundled',
-        mustHaveAnyRole([Role.Curator]),
-        casesController.verifyBundles,
-    );
-    apiRouter.post(
         '/cases/verify/:id(\\d+$)',
         mustHaveAnyRole([Role.Curator]),
         casesController.verify,
-    );
-    apiRouter.post(
-        '/cases/verify/bundled/:id([a-z0-9]{24})',
-        authenticateByAPIKey,
-        mustHaveAnyRole([Role.Curator]),
-        casesController.verifyBundle,
     );
     apiRouter.post(
         '/cases/download',
@@ -392,6 +363,36 @@ async function makeApp() {
         authenticateByAPIKey,
         mustHaveAnyRole([Role.Curator]),
         casesController.del,
+    );
+    // BUNDLED CASES
+    apiRouter.get(
+        '/cases/bundled',
+        authenticateByAPIKey,
+        mustBeAuthenticated,
+        casesController.listBundled,
+    );
+    apiRouter.get(
+        '/cases/bundled/:id([a-z0-9]{24})',
+        authenticateByAPIKey,
+        mustBeAuthenticated,
+        casesController.getBundled,
+    );
+    apiRouter.put(
+        '/cases/bundled/:id([a-z0-9]{24})',
+        authenticateByAPIKey,
+        mustHaveAnyRole([Role.Curator, Role.JuniorCurator]),
+        casesController.updateBundled,
+    );
+    apiRouter.post(
+        '/cases/verify/bundled',
+        mustHaveAnyRole([Role.Curator]),
+        casesController.verifyBundles,
+    );
+    apiRouter.post(
+        '/cases/verify/bundled/:id([a-z0-9]{24})',
+        authenticateByAPIKey,
+        mustHaveAnyRole([Role.Curator]),
+        casesController.verifyBundle,
     );
     apiRouter.delete(
         '/cases/bundled',

@@ -1608,6 +1608,22 @@ export class CasesController {
     };
 
     /**
+     * Delete a specific case.
+     *
+     * Handles HTTP DELETE /api/cases/:id.
+     */
+    delBundled = async (req: Request, res: Response): Promise<void> => {
+        const c = await Day0Case.deleteMany({bundleId: req.params.id});
+        if (!c) {
+            res.status(404).send({
+                message: `Day0Case bundle with ID ${req.params.id} not found.`,
+            });
+            return;
+        }
+        res.status(204).end();
+    };
+
+    /**
      * Geocodes a single location.
      * @param location The location data.
      * @param canBeFuzzy The location is allowed to be "fuzzy", in which case it may not get geocoded.
