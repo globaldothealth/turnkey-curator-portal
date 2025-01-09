@@ -14,7 +14,7 @@ WORKDIR /usr/src/app/geocoding/location-service
 USER flask
 
 # install dependencies
-RUN pip install poetry
+RUN pip install poetry==1.8.5
 COPY geocoding/location-service/pyproject.toml .
 COPY geocoding/location-service/poetry.lock .
 RUN /home/flask/.local/bin/poetry install
