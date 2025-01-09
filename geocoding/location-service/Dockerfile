@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM python:3.10-bullseye
 
 RUN apt-get update -y
 RUN apt-get install -y python3-pip
