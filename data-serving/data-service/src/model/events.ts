@@ -1,7 +1,5 @@
 import mongoose from 'mongoose';
 import { YesNo } from '../types/enums';
-import { dateFieldInfo } from './date';
-import validateEnv from '../util/validate-env';
 
 export enum HospitalizationReason {
     Monitoring = 'monitoring',
@@ -24,7 +22,7 @@ export const EventsSchema = new mongoose.Schema(
             type: Date,
             required: true,
         },
-        dateLastModified: { ...dateFieldInfo(validateEnv().OUTBREAK_DATE) },
+        dateLastModified: Date,
         dateOnset: Date,
         dateConfirmation: Date,
         confirmationMethod: String,
