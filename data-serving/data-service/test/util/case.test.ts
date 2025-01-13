@@ -22,6 +22,7 @@ import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { GenomeSequenceDocument } from '../../src/model/genome-sequence';
 import { EventsDocument } from '../../src/model/events';
+import { YesNo } from '../../src/types/enums';
 
 let mongoServer: MongoMemoryServer;
 
@@ -368,7 +369,7 @@ describe('Case', () => {
             ageBuckets: [anAgeBucket._id],
             gender: 'male',
             occupation: 'Anesthesiologist',
-            healthcareWorker: 'Y',
+            healthcareWorker: YesNo.Y,
         } as DemographicsDocument;
 
         const caseDoc = {
@@ -395,7 +396,7 @@ describe('Case', () => {
         expect(denormalizedCase['demographics.occupation']).toEqual(
             'Anesthesiologist',
         );
-        expect(denormalizedCase['demographics.healthcareWorker']).toEqual('Y');
+        expect(denormalizedCase['demographics.healthcareWorker']).toEqual(YesNo.Y);
     });
     it('denormalizes events fields', async () => {
         const eventsDoc = {
@@ -507,10 +508,10 @@ describe('Case', () => {
     });
     it('denormalizes preexisting conditions fields', async () => {
         const conditionsDoc = {
-            previousInfection: 'Y',
+            previousInfection: YesNo.Y,
             coInfection: 'Flu',
             preexistingCondition: '',
-            pregnancyStatus: 'NA',
+            pregnancyStatus: YesNo.None,
         } as PreexistingConditionsDocument;
 
         const caseDoc = {
@@ -533,7 +534,7 @@ describe('Case', () => {
         const denormalizedCase = await denormalizeFields(caseDoc);
         expect(
             denormalizedCase['preexistingConditions.previousInfection'],
-        ).toEqual('Y');
+        ).toEqual(YesNo.Y);
         expect(denormalizedCase['preexistingConditions.coInfection']).toEqual(
             'Flu',
         );
@@ -542,11 +543,11 @@ describe('Case', () => {
         ).toEqual('');
         expect(
             denormalizedCase['preexistingConditions.pregnancyStatus'],
-        ).toEqual('NA');
+        ).toEqual(YesNo.None);
     });
     it('denormalizes transmission fields', async () => {
         const transmissionDoc = {
-            contactWithCase: 'Y',
+            contactWithCase: YesNo.Y,
             contactId: 'abc123',
             contactSetting: 'setting',
             contactAnimal: 'animal',
@@ -572,7 +573,7 @@ describe('Case', () => {
 
         const denormalizedCase = await denormalizeFields(caseDoc);
 
-        expect(denormalizedCase['transmission.contactWithCase']).toEqual('Y');
+        expect(denormalizedCase['transmission.contactWithCase']).toEqual(YesNo.Y);
         expect(denormalizedCase['transmission.contactId']).toEqual('abc123');
         expect(denormalizedCase['transmission.contactSetting']).toEqual(
             'setting',
@@ -589,7 +590,7 @@ describe('Case', () => {
     });
     it('denormalizes travel history fields', async () => {
         const travelHistoryDoc = {
-            travelHistory: 'Y',
+            travelHistory: YesNo.Y,
             travelHistoryEntry: new Date('2020-11-01'),
             travelHistoryStart: 'start',
             travelHistoryLocation: 'London',
@@ -614,7 +615,7 @@ describe('Case', () => {
 
         const denormalizedCase = await denormalizeFields(caseDoc);
 
-        expect(denormalizedCase['travelHistory.travelHistory']).toEqual('Y');
+        expect(denormalizedCase['travelHistory.travelHistory']).toEqual(YesNo.Y);
         expect(denormalizedCase['travelHistory.travelHistoryEntry']).toEqual(
             formatDateWithoutTime(travelHistoryDoc.travelHistoryEntry),
         );
@@ -630,7 +631,7 @@ describe('Case', () => {
     });
     it('denormalizes vaccine fields', async () => {
         const vaccinationDoc = {
-            vaccination: 'Y',
+            vaccination: YesNo.Y,
             vaccineName: 'Pfizer',
             vaccineDate: new Date('2020-11-01'),
             vaccineSideEffects: 'cough',
@@ -653,7 +654,7 @@ describe('Case', () => {
         } as CaseDocument;
 
         const denormalizedCase = await denormalizeFields(caseDoc);
-        expect(denormalizedCase['vaccination.vaccination']).toEqual('Y');
+        expect(denormalizedCase['vaccination.vaccination']).toEqual(YesNo.Y);
         expect(denormalizedCase['vaccination.vaccineName']).toEqual('Pfizer');
         expect(denormalizedCase['vaccination.vaccineDate']).toEqual(
             formatDateWithoutTime(vaccinationDoc.vaccineDate),

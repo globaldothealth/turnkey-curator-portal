@@ -8,8 +8,7 @@ import { DateField, SelectField } from '../common-form-fields/FormikFields';
 import FieldTitle from '../common-form-fields/FieldTitle';
 import { useStyles } from './styled';
 import { StyledTooltip } from './StyledTooltip';
-
-const hasTravelledValues = ['Y', 'N', 'NA'];
+import { YesNo } from '../../api/models/Day0Case';
 
 const TooltipText = () => (
     <StyledTooltip>
@@ -59,9 +58,9 @@ export default function TravelHistory(): JSX.Element {
             <SelectField
                 name="travelHistory.travelHistory"
                 label="Travel history"
-                values={hasTravelledValues}
+                values={Object.values(YesNo)}
             />
-            {values.travelHistory.travelHistory === 'Y' && (
+            {values.travelHistory.travelHistory === YesNo.Y && (
                 <>
                     <DateField
                         name="travelHistory.travelHistoryEntry"

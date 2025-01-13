@@ -1,5 +1,6 @@
 import { CaseReferenceForm } from '../common-form-fields/Source';
 import { Location as Loc } from '../../api/models/Case';
+import { YesNo } from '../../api/models/Day0Case';
 
 /**
  * CaseFormValues defines all the values contained in the manual case entry form.
@@ -88,7 +89,7 @@ export interface Vaccine {
     batch?: string;
     date?: Date;
     sideEffects: Symptom;
-    previousInfection: 'yes' | 'no' | 'NA';
+    previousInfection: YesNo;
     previousInfectionDetectionMethod?: string;
 }
 
