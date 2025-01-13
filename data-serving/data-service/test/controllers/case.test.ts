@@ -1030,8 +1030,8 @@ describe('POST', () => {
     });
 });
 
-describe.only('download', () => {
-    it.only('should return 200 OK',  async () => {
+describe('download', () => {
+    it('should return 200 OK',  async () => {
         const destination = './test_return.csv';
         const fileStream = fs.createWriteStream(destination);
 
