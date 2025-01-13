@@ -103,6 +103,11 @@ export const removeBlankHeader = (headers: string[]): string[] => {
     return headers;
 };
 
+export const formatDateWithoutTime = (date: Date | undefined): string => {
+    if (!date) return '';
+    return date.toISOString().split('T')[0];
+};
+
 export const denormalizeFields = async (
     doc: CaseDocument,
 ): Promise<Partial<CaseDocument>> => {
@@ -178,9 +183,8 @@ function denormalizeCaseReferenceFields(
             additionalSources.push(source.sourceUrl);
         }
     }
-    denormalizedData[
-        'caseReference.additionalSources'
-    ] = additionalSources.join(',');
+    denormalizedData['caseReference.additionalSources'] =
+        additionalSources.join(',');
     denormalizedData['caseReference.sourceEntryId'] = doc.sourceEntryId || '';
     denormalizedData['caseReference.sourceId'] = doc.sourceId || '';
     denormalizedData['caseReference.sourceUrl'] = doc.sourceUrl || '';
@@ -211,38 +215,46 @@ export const denormalizeEventsFields = (
     const denormalizedData: Record<string, string> = {};
 
     denormalizedData['events.dateEntry'] = doc.dateEntry
-        ? doc.dateEntry.toDateString()
+        ? formatDateWithoutTime(doc.dateEntry)
         : undefined || '';
     denormalizedData['events.dateReported'] = doc.dateReported
-        ? doc.dateReported.toDateString()
+        ? formatDateWithoutTime(doc.dateReported)
         : undefined || '';
-    denormalizedData['events.dateOnset'] = doc.dateOnset?.toDateString() || '';
-    denormalizedData['events.dateConfirmation'] =
-        doc.dateConfirmation?.toDateString() || '';
+    denormalizedData['events.dateOnset'] = formatDateWithoutTime(doc.dateOnset);
+    denormalizedData['events.dateConfirmation'] = formatDateWithoutTime(
+        doc.dateConfirmation,
+    );
     denormalizedData['events.confirmationMethod'] =
         doc.confirmationMethod || '';
-    denormalizedData['events.dateOfFirstConsult'] =
-        doc.dateOfFirstConsult?.toDateString() || '';
+    denormalizedData['events.dateOfFirstConsult'] = formatDateWithoutTime(
+        doc.dateOfFirstConsult,
+    );
     denormalizedData['events.hospitalized'] = doc.hospitalized || '';
     denormalizedData['events.reasonForHospitalization'] =
         doc.reasonForHospitalization || '';
-    denormalizedData['events.dateHospitalization'] =
-        doc.dateHospitalization?.toDateString() || '';
-    denormalizedData['events.dateDischargeHospital'] =
-        doc.dateDischargeHospital?.toDateString() || '';
+    denormalizedData['events.dateHospitalization'] = formatDateWithoutTime(
+        doc.dateHospitalization,
+    );
+    denormalizedData['events.dateDischargeHospital'] = formatDateWithoutTime(
+        doc.dateDischargeHospital,
+    );
     denormalizedData['events.intensiveCare'] = doc.intensiveCare || '';
-    denormalizedData['events.dateAdmissionICU'] =
-        doc.dateAdmissionICU?.toDateString() || '';
-    denormalizedData['events.dateDischargeICU'] =
-        doc.dateDischargeICU?.toDateString() || '';
+    denormalizedData['events.dateAdmissionICU'] = formatDateWithoutTime(
+        doc.dateAdmissionICU,
+    );
+    denormalizedData['events.dateDischargeICU'] = formatDateWithoutTime(
+        doc.dateDischargeICU,
+    );
     denormalizedData['events.homeMonitoring'] = doc.homeMonitoring || '';
     denormalizedData['events.isolated'] = doc.isolated || '';
-    denormalizedData['events.dateIsolation'] =
-        doc.dateIsolation?.toDateString() || '';
+    denormalizedData['events.dateIsolation'] = formatDateWithoutTime(
+        doc.dateIsolation,
+    );
     denormalizedData['events.outcome'] = doc.outcome || '';
-    denormalizedData['events.dateDeath'] = doc.dateDeath?.toDateString() || '';
-    denormalizedData['events.dateRecovered'] =
-        doc.dateRecovered?.toDateString() || '';
+    denormalizedData['events.dateDeath'] = formatDateWithoutTime(doc.dateDeath);
+    denormalizedData['events.dateRecovered'] = formatDateWithoutTime(
+        doc.dateRecovered,
+    );
 
     return denormalizedData;
 };
@@ -334,7 +346,7 @@ function denormalizeTravelHistoryFields(
 
     denormalizedData['travelHistory.travelHistory'] = doc?.travelHistory || '';
     denormalizedData['travelHistory.travelHistoryEntry'] =
-        doc?.travelHistoryEntry?.toDateString() || '';
+        formatDateWithoutTime(doc?.travelHistoryEntry);
     denormalizedData['travelHistory.travelHistoryStart'] =
         doc?.travelHistoryStart || '';
     denormalizedData['travelHistory.travelHistoryLocation'] =
@@ -352,8 +364,9 @@ function denormalizeVaccineFields(
 
     denormalizedData['vaccination.vaccination'] = doc?.vaccination || '';
     denormalizedData['vaccination.vaccineName'] = doc?.vaccineName || '';
-    denormalizedData['vaccination.vaccineDate'] =
-        doc?.vaccineDate?.toDateString() || '';
+    denormalizedData['vaccination.vaccineDate'] = formatDateWithoutTime(
+        doc?.vaccineDate,
+    );
     denormalizedData['vaccination.vaccineSideEffects'] =
         doc?.vaccineSideEffects || '';
 

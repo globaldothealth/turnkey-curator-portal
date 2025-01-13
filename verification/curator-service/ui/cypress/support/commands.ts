@@ -12,7 +12,7 @@ export enum Outcome {
 export enum YesNo {
     Y = 'Y',
     N = 'N',
-    NA = 'NA',
+    None = '',
 }
 
 export enum Gender {
@@ -43,6 +43,7 @@ interface AddCaseProps {
     gender?: Gender;
     outcome?: Outcome;
     uploadIds?: string[];
+    comment?: string;
 }
 
 declare global {
@@ -111,6 +112,7 @@ export function addCase(opts: AddCaseProps): void {
             travelHistory: {},
             genomeSequences: {},
             vaccination: {},
+            comment: opts.comment || '',
         },
     });
 }

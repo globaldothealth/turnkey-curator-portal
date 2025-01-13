@@ -12,7 +12,7 @@ import { TextField } from 'formik-mui';
 import { StyledTooltip } from './StyledTooltip';
 import axios from 'axios';
 import { makeStyles } from 'tss-react/mui';
-import { Gender, Day0CaseFormValues } from '../../api/models/Day0Case';
+import { Gender, Day0CaseFormValues, YesNo } from '../../api/models/Day0Case';
 import { useStyles } from './styled';
 
 const styles = makeStyles()(() => ({
@@ -169,7 +169,7 @@ export default function Demographics(): JSX.Element {
             <SelectField
                 name="demographics.healthcareWorker"
                 label="Healthcare worker"
-                values={['Y', 'N', 'NA']}
+                values={Object.values(YesNo)}
             />
         </Scroll.Element>
     );

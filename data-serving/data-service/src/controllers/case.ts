@@ -356,6 +356,14 @@ export class CasesController {
                         header: false,
                         columns: this.csvHeaders,
                         delimiter: delimiter,
+                        cast: {
+                            date: (value: Date) => {
+                                if (value) {
+                                    return new Date(value).toISOString().split('T')[0];
+                                }
+                                return value;
+                            },
+                        }
                     });
                     res.write(stringifiedCase);
                     doc = await cursor.next();
