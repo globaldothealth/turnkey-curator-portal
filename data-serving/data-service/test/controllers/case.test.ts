@@ -1030,37 +1030,42 @@ describe('POST', () => {
     });
 });
 
-describe('download', () => {
-    it('should return 200 OK', async () => {
+describe.only('download', () => {
+    it.only('should return 200 OK',  async () => {
         const destination = './test_return.csv';
         const fileStream = fs.createWriteStream(destination);
 
         const c = new Day0Case(minimalDay0CaseData);
+        c.set({"events.dateLastModified": "2025-01-12T12:00:00.000Z"})
         await c.save();
         const c2 = new Day0Case(fullDay0CaseData);
+        c2.set({"events.dateLastModified": "2025-01-13T12:00:00.000Z"})
         await c2.save();
-
-        const responseStream = request(app)
+        await new Promise<void>((resolve, reject): void => {
+            const req = request(app)
             .post('/api/cases/download')
             .send({ format: 'csv' })
             .expect('Content-Type', 'text/csv')
             .expect(200)
             .parse(stringParser);
 
-        responseStream.pipe(fileStream);
-        responseStream.on('finish', () => {
-            const text: string = fs.readFileSync(destination).toString('utf-8');
-            expect(text).toContain(
-                '_id,caseReference.additionalSources,caseReference.sourceEntryId,caseReference.sourceId',
-            );
-            expect(text).toContain(c._id);
-            expect(text).toContain(c.caseStatus);
-            expect(text).toContain(c.caseReference.sourceId);
-            expect(text).toContain(c2._id);
-            expect(text).toContain(c2.caseStatus);
-            expect(text).toContain(c2.caseReference.sourceId);
+            const responseStream = req.pipe(fileStream);
+            responseStream.on('finish', () => {
+                const text: string = fs.readFileSync(destination).toString('utf-8');
+                expect(text).toContain(
+                    '_id,caseReference.additionalSources,caseReference.isGovernmentSource,caseReference.sourceEntryId,caseReference.sourceId,caseReference.sourceUrl,caseReference.uploadIds,caseStatus,comment,demographics.ageRange.end,demographics.ageRange.start,demographics.gender,demographics.healthcareWorker,demographics.occupation,events.confirmationMethod,events.dateAdmissionICU,events.dateConfirmation,events.dateDeath,events.dateDischargeHospital,events.dateDischargeICU,events.dateEntry,events.dateHospitalization,events.dateIsolation,events.dateLastModified,events.dateOfFirstConsult,events.dateOnset,events.dateRecovered,events.dateReported,events.homeMonitoring,events.hospitalized,events.intensiveCare,events.isolated,events.outcome,events.reasonForHospitalization,genomeSequences.accessionNumber,genomeSequences.genomicsMetadata,location.admin1,location.admin2,location.admin3,location.country,location.countryISO3,location.location,location.query,pathogen,preexistingConditions.coInfection,preexistingConditions.preexistingCondition,preexistingConditions.pregnancyStatus,preexistingConditions.previousInfection,symptoms,transmission.contactAnimal,transmission.contactComment,transmission.contactId,transmission.contactSetting,transmission.contactWithCase,transmission.transmission,travelHistory.travelHistory,travelHistory.travelHistoryCountry,travelHistory.travelHistoryEntry,travelHistory.travelHistoryLocation,travelHistory.travelHistoryStart,vaccination.vaccination,vaccination.vaccineDate,vaccination.vaccineName,vaccination.vaccineSideEffects',
+                );
+                expect(text).toContain(String(c._id));
+                expect(text).toContain(c.caseStatus);
+                expect(text).toContain("2025-01-12");
+                expect(text).toContain(c.caseReference.sourceId);
+                expect(text).toContain(String(c2._id));
+                expect(text).toContain(c2.caseStatus);
+                expect(text).toContain("2025-01-13");
+                expect(text).toContain(c2.caseReference.sourceId);
 
-            fs.unlinkSync(destination);
+                resolve();
+            });
         });
     });
     it('should use the age buckets in the download', async () => {
