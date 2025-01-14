@@ -15,7 +15,6 @@ import clsx from 'clsx';
 import DataGuideDialog from './DataGuideDialog';
 import { useDebounce } from '../hooks/useDebounce';
 import FiltersDialog from './FiltersDialog';
-import { searchQueryToURL, URLToSearchQuery } from './util/searchQuery';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { KeyboardEvent, ChangeEvent } from 'react';
 import { useAppSelector, useAppDispatch } from '../hooks/redux';
@@ -85,9 +84,7 @@ export default function SearchBar({
     const [isUserTyping, setIsUserTyping] = useState<boolean>(false);
     const [isDataGuideOpen, setIsDataGuideOpen] = useState<boolean>(false);
     const [searchInput, setSearchInput] = useState<string>(
-        location.search.includes('?q=')
-            ? URLToSearchQuery(location.search)
-            : '',
+        new URLSearchParams(location.search).get('q') || '',
     );
     const [modalAlert, setModalAlert] = useState<boolean>(false);
     const guideButtonRef = React.useRef<HTMLButtonElement>(null);
@@ -103,28 +100,30 @@ export default function SearchBar({
         }
     }, [filtersBreadcrumb]);
 
+    useEffect(() => {
+        const q = new URLSearchParams(location.search).get('q') || '';
+        if (q !== searchInput) setSearchInput(q);
+    }, [location.search]);
+
     // Set search query debounce to 1000ms
     const debouncedSearch = useDebounce(searchInput, 2000);
 
-    // Update search input based on search query
-    useEffect(() => {
-        if (!location.search.includes('?q=')) {
-            setSearchInput('');
-            return;
-        }
+    const handleNavigating = (q: string) => {
+        const searchParams = new URLSearchParams(location.search);
+        q !== '' ? searchParams.set('q', q) : searchParams.delete('q');
 
-        setSearchInput(URLToSearchQuery(location.search));
-    }, [location.search]);
+        navigate({
+            pathname: '/cases',
+            search: searchParams.toString(),
+        });
+    };
 
     // Apply filter parameters after delay
     useEffect(() => {
         if (!isUserTyping) return;
-
         setIsUserTyping(false);
-        navigate({
-            pathname: '/cases',
-            search: searchQueryToURL(debouncedSearch),
-        });
+
+        handleNavigating(debouncedSearch);
         //eslint-disable-next-line
     }, [debouncedSearch]);
 
@@ -136,10 +135,8 @@ export default function SearchBar({
         if (ev.key === 'Enter') {
             ev.preventDefault();
             setIsUserTyping(false);
-            navigate({
-                pathname: '/cases',
-                search: searchQueryToURL(searchInput),
-            });
+
+            handleNavigating(searchInput);
         }
     };
 
@@ -174,16 +171,24 @@ export default function SearchBar({
         return searchStringStrippedOutColon;
     }
 
+    const renderSearchErrorMessage = () => {
+        if (searchError) {
+            return 'Incorrect entry. ":" characters have been removed. Please use filters instead.';
+        } else {
+            const quoteCount = searchInput.split('"').length - 1;
+            if (quoteCount % 2 !== 0) {
+                return 'Incorrect entry. Please make sure you have an even number of quotes.';
+            }
+        }
+    };
+
     return (
         <>
             <div className={classes.searchRoot}>
                 <StyledSearchTextField
                     size="small"
                     error={searchError}
-                    helperText={
-                        searchError &&
-                        'Incorrect entry. ":" characters have been removed. Please use filters instead.'
-                    }
+                    helperText={renderSearchErrorMessage()}
                     id="search-field"
                     data-testid="searchbar"
                     name="searchbar"
@@ -254,6 +259,7 @@ export default function SearchBar({
                                     <IconButton
                                         color="primary"
                                         aria-label="clear search"
+                                        id="clear-search"
                                         onClick={(): void => {
                                             setSearchInput('');
                                             navigate({

@@ -57,8 +57,7 @@ describe('auth', () => {
         // Redirects to /
         request(app)
             .get('/auth/logout')
-            .expect(302)
-            .expect('Location', '/')
+            .expect(200)
             .end(done);
     });
     it('handles redirect from google', (done) => {
@@ -93,7 +92,7 @@ describe('bearer token auth', () => {
                 roles: ['curator'],
             })
             .expect(200, /test-user/);
-        await request.get('/auth/logout').expect(302);
+        await request.get('/auth/logout').expect(200);
         mockedAxios.get.mockResolvedValueOnce({
             data: { email: 'foo@bar.com' },
         });
@@ -111,7 +110,7 @@ describe('bearer token auth', () => {
                 roles: ['curator'],
             })
             .expect(200, /test-user/);
-        await request.get('/auth/logout').expect(302);
+        await request.get('/auth/logout').expect(200);
         mockedAxios.get.mockResolvedValueOnce({
             data: { name: 'my name' },
         });
@@ -129,7 +128,7 @@ describe('bearer token auth', () => {
                 roles: ['curator'],
             })
             .expect(200, /test-user/);
-        await request.get('/auth/logout').expect(302);
+        await request.get('/auth/logout').expect(200);
         mockedAxios.get.mockRejectedValueOnce('Oops!');
         await request
             .get('/api/sources?access_token=mF_9.B5f-4.1JqM')
@@ -229,7 +228,7 @@ describe('mustHaveAnyRole', () => {
                 roles: ['curator', 'admin'],
             })
             .expect(200, /test-curator/);
-        await request.get('/auth/logout').expect(302);
+        await request.get('/auth/logout').expect(200);
         mockedAxios.get.mockResolvedValueOnce({
             data: { email: 'foo@bar.com' },
         });
@@ -288,7 +287,7 @@ describe('api keys', () => {
         await request.post('/auth/profile/apiKey').expect(201);
         const apiKey = await request.get('/auth/profile/apiKey');
         request.set('X-API-key', apiKey.body);
-        await request.get('/auth/logout').expect(302);
+        await request.get('/auth/logout').expect(200);
         await request.get('/auth/profile').expect(200, /test-curator/);
     });
 
@@ -303,7 +302,7 @@ describe('api keys', () => {
             .expect(200, /test-curator/);
         await request.post('/auth/profile/apiKey').expect(201);
         const apiKey = await request.get('/auth/profile/apiKey');
-        await request.get('/auth/logout').expect(302);
+        await request.get('/auth/logout').expect(200);
         await request
             .post('/auth/register')
             .send({
@@ -316,7 +315,7 @@ describe('api keys', () => {
             .post(`/auth/deleteApiKey/${userRes.body._id}`)
             .expect(204);
         // now try to use the API key
-        await request.get('/auth/logout').expect(302);
+        await request.get('/auth/logout').expect(200);
         request.set('X-API-key', apiKey.body);
         await request.get('/auth/profile').expect(403);
     });
@@ -332,7 +331,7 @@ describe('api keys', () => {
             .expect(200, /test-curator/);
         await request.post('/auth/profile/apiKey').expect(201);
         const apiKey = await request.get('/auth/profile/apiKey');
-        await request.get('/auth/logout').expect(302);
+        await request.get('/auth/logout').expect(200);
         await request
             .post('/auth/register')
             .send({

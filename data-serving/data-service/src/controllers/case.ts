@@ -355,6 +355,14 @@ export class CasesController {
                         header: false,
                         columns: this.csvHeaders,
                         delimiter: delimiter,
+                        cast: {
+                            date: (value: Date) => {
+                                if (value) {
+                                    return new Date(value).toISOString().split('T')[0];
+                                }
+                                return value;
+                            },
+                        }
                     });
                     res.write(stringifiedCase);
                     doc = await cursor.next();
@@ -798,6 +806,13 @@ export class CasesController {
             res.status(201).json(result);
         } catch (e) {
             const err = e as Error;
+            if  (err.name === 'MongoServerError') {
+                logger.error((e as any).errInfo);
+                res.status(422).json({
+                    message: (err as any).errInfo,
+                });
+                return;
+            }
             if (err instanceof GeocodeNotFoundError) {
                 res.status(404).json({
                     message: err.message,

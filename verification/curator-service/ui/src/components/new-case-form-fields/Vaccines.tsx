@@ -1,14 +1,14 @@
 import clsx from 'clsx';
-import { FastField, useFormikContext } from 'formik';
-import { TextField } from 'formik-mui';
+import {FastField, useFormikContext} from 'formik';
+import {TextField} from 'formik-mui';
 import Scroll from 'react-scroll';
 
-import { Day0CaseFormValues } from '../../api/models/Day0Case';
-import { DateField, SelectField } from '../common-form-fields/FormikFields';
+import {Day0CaseFormValues, YesNo} from '../../api/models/Day0Case';
+import {DateField, SelectField} from '../common-form-fields/FormikFields';
 import FieldTitle from '../common-form-fields/FieldTitle';
-import { useStyles } from './styled';
-import { StyledTooltip } from './StyledTooltip';
-import { VaccineSideEffects } from './Symptoms';
+import {useStyles} from './styled';
+import {StyledTooltip} from './StyledTooltip';
+import {VaccineSideEffects} from './Symptoms';
 
 const TooltipText = () => (
     <StyledTooltip>
@@ -45,9 +45,9 @@ export default function Vaccines(): JSX.Element {
             <SelectField
                 name="vaccination.vaccination"
                 label="Vaccination"
-                values={['Y', 'N', 'NA']}
+                values={Object.values(YesNo)}
             />
-            {values.vaccination.vaccination === 'Y' && (
+            {values.vaccination.vaccination === YesNo.Y && (
                 <>
                     <div
                         className={clsx([classes.fieldRow, classes.halfWidth])}

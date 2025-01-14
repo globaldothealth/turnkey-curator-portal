@@ -4,9 +4,12 @@
         "key": {
             "demographics.occupation": "text",
             "location.country": "text",
-            "location.city": "text",
+            "location.admin1": "text",
+            "location.admin2": "text",
+            "location.admin3": "text",
             "caseReference.sourceUrl": "text",
-            "caseStatus": "text"
+            "caseStatus": "text",
+            "comment": "text"
         }
     },
     {
@@ -74,9 +77,29 @@
         }
     },
     {
-        "name": "locationCityIdx",
+        "name": "locationAdmin1Idx",
         "key": {
-            "location.city": -1
+            "location.admin1": -1
+        },
+        "collation": {
+            "locale": "en_US",
+            "strength": 2
+        }
+    },
+    {
+        "name": "locationAdmin2Idx",
+        "key": {
+            "location.admin2": -1
+        },
+        "collation": {
+            "locale": "en_US",
+            "strength": 2
+        }
+    },
+    {
+        "name": "locationAdmin3Idx",
+        "key": {
+            "location.admin3": -1
         },
         "collation": {
             "locale": "en_US",
@@ -117,6 +140,16 @@
         "name": "caseStatusIdx",
         "key": {
             "caseStatus": -1
+        },
+        "collation": {
+            "locale": "en_US",
+            "strength": 2
+        }
+    },
+    {
+        "name": "commentIdx",
+        "key": {
+            "comment": -1
         },
         "collation": {
             "locale": "en_US",

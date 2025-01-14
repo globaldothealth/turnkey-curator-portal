@@ -1,4 +1,6 @@
 /* eslint-disable no-undef */
+import { YesNo } from '../../support/commands';
+
 describe('Curator', function () {
     beforeEach(() => {
         cy.task('clearCasesDB', {});
@@ -56,27 +58,35 @@ describe('Curator', function () {
         // GENERAL
         cy.get('div[data-testid="caseStatus"]').click();
         cy.get('li[data-value="confirmed"').click();
-        cy.get('div[data-testid="comment"]').type('This case should be consulted with Supervisor.');
+        cy.get('div[data-testid="comment"]').type(
+            'This case should be consulted with Supervisor.',
+        );
 
         // DATA SOURCE
         cy.get('div[data-testid="caseReference"]').type('www.example.com');
         cy.contains('www.example.com').click();
-        cy.get('input[name="caseReference.isGovernmentSource"]').click()
+        cy.get('input[name="caseReference.isGovernmentSource"]').click();
         cy.get('button[data-testid="add-additional-source"]').click();
-        cy.get('div[data-testid="additional-source-0"]').type('www.example2.com');
+        cy.get('div[data-testid="additional-source-0"]').type(
+            'www.example2.com',
+        );
         cy.get('button[data-testid="add-additional-source"]').click();
-        cy.get('div[data-testid="additional-source-1"]').type('www.example3.com');
+        cy.get('div[data-testid="additional-source-1"]').type(
+            'www.example3.com',
+        );
         cy.get('span[data-testid="government-source-1"]').click();
 
         // LOCATION
-        cy.get('div[data-testid="location.geocodeLocation"]').type('France', { delay: 0});
+        cy.get('div[data-testid="location.geocodeLocation"]').type('France', {
+            delay: 0,
+        });
         cy.wait('@geolocationFranceSuggest');
         cy.contains('France').click();
         /* Change France to something else to check we can edit geocode results.
          * We need to change it to a valid country so that we can find the ISO code!
          */
-        cy.get('div[data-testid="location.country"]').click()
-        cy.get('input[name="location.country"]').clear().type('Germany')
+        cy.get('div[data-testid="location.country"]').click();
+        cy.get('input[name="location.country"]').clear().type('Germany');
         cy.get('p').contains('Germany').click();
         cy.get('input[name="location.admin1"]').type('Berlin');
         cy.get('p').contains('Berlin').click();
@@ -84,7 +94,9 @@ describe('Curator', function () {
         cy.get('p').contains('SK Berlin').click();
         cy.get('input[name="location.admin3"]').type('Berlin');
         cy.get('p').contains('Berlin').click();
-        cy.get('div[data-testid="location.comment"]').type('Martin Luther Hospital');
+        cy.get('div[data-testid="location.comment"]').type(
+            'Martin Luther Hospital',
+        );
 
         // EVENTS
         cy.get('input[name="events.dateEntry"]').type('2020-01-01');
@@ -94,16 +106,16 @@ describe('Curator', function () {
         cy.get('input[name="events.dateOnset"]').type('2020-01-03');
         cy.get('input[name="events.dateOfFirstConsult"]').type('2020-01-04');
         cy.get('div[data-testid="events.homeMonitoring"').click();
-        cy.get('li[data-value="Y"]').click();
+        cy.get(`li[data-value="${YesNo.Y}"]`).click();
         cy.get('div[data-testid="events.isolated"]').click();
-        cy.get('li[data-value="Y"]').click();
+        cy.get(`li[data-value="${YesNo.Y}"]`).click();
         cy.get('input[name="events.dateIsolation"]').type('2020-01-05');
         cy.get('div[data-testid="events.hospitalized"]').click();
-        cy.get('li[data-value="Y"]').click();
+        cy.get(`li[data-value="${YesNo.Y}"]`).click();
         cy.get('input[name="events.dateHospitalization"]').type('2020-01-06');
         cy.get('input[name="events.dateDischargeHospital"]').type('2020-01-07');
         cy.get('div[data-testid="events.intensiveCare"]').click();
-        cy.get('li[data-value="Y"]').click();
+        cy.get(`li[data-value="${YesNo.Y}"]`).click();
         cy.get('input[name="events.dateAdmissionICU"]').type('2020-01-08');
         cy.get('input[name="events.dateDischargeICU"]').type('2020-01-09');
         cy.get('div[data-testid="events.outcome"]').click();
@@ -117,7 +129,7 @@ describe('Curator', function () {
         cy.get('div[data-testid="occupation"]').click();
         cy.contains('li', 'Accountant').click();
         cy.get('div[data-testid="demographics.healthcareWorker"]').click();
-        cy.get('li[data-value="N"]').click();
+        cy.get(`li[data-value="${YesNo.N}"]`).click();
 
         // SYMPTOMS
         cy.get('div[data-testid="symptoms"]').type('dry cough');
@@ -129,7 +141,7 @@ describe('Curator', function () {
         cy.get(
             'div[data-testid="preexistingConditions.previousInfection"]',
         ).click();
-        cy.get('li[data-value="Y"').click();
+        cy.get(`li[data-value="${YesNo.Y}"]`).click();
         cy.get('input[name="preexistingConditions.coInfection"]').type('Flu');
         cy.get('div[data-testid="preexistingConditionsHelper"]').type(
             'ABCD syndrome',
@@ -142,11 +154,11 @@ describe('Curator', function () {
         cy.get(
             'div[data-testid="preexistingConditions.pregnancyStatus"]',
         ).click();
-        cy.get('li[data-value="N"]').click();
+        cy.get(`li[data-value="${YesNo.N}"]`).click();
 
         // TRANSMISSION
         cy.get('div[data-testid="transmission.contactWithCase"]').click();
-        cy.get('li[data-value="Y"]').click();
+        cy.get(`li[data-value="${YesNo.Y}"]`).click();
         cy.get('input[name="transmission.contactId"]').type('ABC123');
         cy.get('input[name="transmission.contactSetting"]').type(
             'test setting',
@@ -160,7 +172,7 @@ describe('Curator', function () {
 
         // TRAVEL HISTORY
         cy.get('div[data-testid="travelHistory.travelHistory"]').click();
-        cy.get('li[data-value="Y"]').click();
+        cy.get(`li[data-value="${YesNo.Y}"]`).click();
         cy.get('input[name="travelHistory.travelHistoryEntry"]').type(
             '2020-02-01',
         );
@@ -184,7 +196,7 @@ describe('Curator', function () {
 
         // VACCINES
         cy.get('div[data-testid="vaccination.vaccination"]').click();
-        cy.get('li[data-value="Y"]').click();
+        cy.get(`li[data-value="${YesNo.Y}"]`).click();
         cy.get('input[name="vaccination.vaccineName"]').type('Moderna');
         cy.get('input[name="vaccination.vaccineDate"]').type('2020-03-01');
         cy.get('div[data-testid="vaccineSideEffects"]').click();
@@ -268,7 +280,7 @@ describe('Curator', function () {
                 'have.value',
                 'Berlin',
             );
-            cy.get('input[value="Martin Luther Hospital"]').should("exist");
+            cy.get('input[value="Martin Luther Hospital"]').should('exist');
 
             // Events.
             cy.get('input[name="events.dateEntry"]').should(
@@ -297,16 +309,19 @@ describe('Curator', function () {
             );
             cy.get('input[name="events.homeMonitoring"]').should(
                 'have.value',
-                'Y',
+                YesNo.Y,
             );
-            cy.get('input[name="events.isolated"]').should('have.value', 'Y');
+            cy.get('input[name="events.isolated"]').should(
+                'have.value',
+                YesNo.Y,
+            );
             cy.get('input[name="events.dateIsolation"]').should(
                 'have.value',
                 '2020/01/05',
             );
             cy.get('input[name="events.hospitalized"]').should(
                 'have.value',
-                'Y',
+                YesNo.Y,
             );
             cy.get('input[name="events.dateHospitalization"]').should(
                 'have.value',
@@ -318,7 +333,7 @@ describe('Curator', function () {
             );
             cy.get('input[name="events.intensiveCare"]').should(
                 'have.value',
-                'Y',
+                YesNo.Y,
             );
             cy.get('input[name="events.dateAdmissionICU"]').should(
                 'have.value',
@@ -344,7 +359,7 @@ describe('Curator', function () {
             // Preconditions.
             cy.get(
                 'input[name="preexistingConditions.previousInfection"]',
-            ).should('have.value', 'Y');
+            ).should('have.value', YesNo.Y);
             cy.get('input[name="preexistingConditions.coInfection"]').should(
                 'have.value',
                 'Flu',
@@ -353,12 +368,12 @@ describe('Curator', function () {
             cy.contains('ADULT syndrome');
             cy.get(
                 'input[name="preexistingConditions.pregnancyStatus"]',
-            ).should('have.value', 'N');
+            ).should('have.value', YesNo.N);
 
             // Transmission
             cy.get('input[name="transmission.contactWithCase"]').should(
                 'have.value',
-                'Y',
+                YesNo.Y,
             );
             cy.get('input[name="transmission.contactId"]').should(
                 'have.value',
@@ -386,7 +401,7 @@ describe('Curator', function () {
             // Travel history.
             cy.get('input[name="travelHistory.travelHistory"]').should(
                 'have.value',
-                'Y',
+                YesNo.Y,
             );
             cy.get('input[name="travelHistory.travelHistoryEntry"]').should(
                 'have.value',
@@ -408,7 +423,7 @@ describe('Curator', function () {
             // Vaccination
             cy.get('input[name="vaccination.vaccination"]').should(
                 'have.value',
-                'Y',
+                YesNo.Y,
             );
             cy.get('input[name="vaccination.vaccineName"]').should(
                 'have.value',
@@ -428,7 +443,7 @@ describe('Curator', function () {
                 cy.get('input[type="text"]').clear().type('Test occupation');
             });
             cy.contains('li', 'Test occupation').click();
-            cy.get('div[data-testid="location.comment"]').clear()
+            cy.get('div[data-testid="location.comment"]').clear();
             cy.contains('li', 'Martin Luther Hospital').click();
             // Submit the changes.
             cy.get('button[data-testid="submit"]').click();

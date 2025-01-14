@@ -293,11 +293,9 @@ export class AuthController {
             },
         );
 
-        this.router.get('/logout', (req: Request, res: Response, next: NextFunction): void => {
-            req.logout(function(err) {
-                if (err) { return next(err); }
-                res.redirect('/');
-            });
+        this.router.get('/logout', function(req, res, next) {
+            req.logout();
+            res.status(200).json({ message: 'Logged out' });
         });
 
         // Starts the authentication flow with Google OAuth.

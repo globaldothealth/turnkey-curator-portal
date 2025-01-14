@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Box, Portal, Theme, Typography } from '@mui/material';
 import { withStyles } from 'tss-react/mui';
-import CloseIcon from '@mui/icons-material/Close';
+import { Close as CloseIcon } from '@mui/icons-material';
 import Draggable, { ControlPosition } from 'react-draggable';
 
 // As per this issue from react-draggable library: https://github.com/react-grid-layout/react-draggable/pull/648
@@ -97,7 +97,48 @@ const SearchGuideDialog = ({
                         </Typography>
                         <Typography className={classes?.textSection}>
                             <strong>For full-text search</strong>, enter any
-                            combination of search terms.
+                            combination of search terms. Rules for full-text
+                            search:
+                            <br />
+                            <ul>
+                                <li>
+                                    Full-text search covers: occupation, admin0,
+                                    admin1, admin2, admin3, sourceUrl, comment
+                                    and caseStatus.
+                                </li>
+                                <li>
+                                    Search terms must be exact (example:{' '}
+                                    <b>
+                                        <i>German</i>
+                                    </b>{' '}
+                                    will not match{' '}
+                                    <b>
+                                        <i>Germany</i>
+                                    </b>
+                                    ).
+                                </li>
+                                <li>
+                                    Full-text search matches cases that contain
+                                    any of the search terms, not a combination.
+                                </li>
+                                <li>
+                                    To search for a combination of terms, wrap
+                                    the combination in quotation marks (example:{' '}
+                                    <b>
+                                        <i>"Bus driver"</i>
+                                    </b>
+                                    ).
+                                </li>
+                                <li>
+                                    No special characters apart from dot are
+                                    allowed. Search terms with dot must be
+                                    contained within quotation marks (example:{' '}
+                                    <b>
+                                        <i>"global.health"</i>
+                                    </b>
+                                    ).
+                                </li>
+                            </ul>
                         </Typography>
                         <Typography>
                             You can use the icons on the right to navigate
