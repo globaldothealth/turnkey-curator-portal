@@ -1,9 +1,6 @@
 _id
-caseReference.sourceId
-caseReference.sourceEntryId
 caseReference.sourceUrl
 caseReference.isGovernmentSource
-caseReference.uploadIds
 caseReference.additionalSources
 caseStatus
 demographics.ageRange.start
