@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import Helmet from 'react-helmet';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 
 import {
     CircularProgress,
@@ -93,7 +93,7 @@ export default function AcknowledgmentsPage(): JSX.Element {
     };
 
     return (
-        <>
+        <HelmetProvider>
             <Helmet>
                 <title>Global.health | Data Acknowledment</title>
             </Helmet>
@@ -213,6 +213,6 @@ export default function AcknowledgmentsPage(): JSX.Element {
                 type="error"
                 onClose={() => dispatch(resetError())}
             />
-        </>
+        </HelmetProvider>
     );
 }
