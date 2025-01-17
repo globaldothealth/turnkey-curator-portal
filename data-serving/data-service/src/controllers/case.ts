@@ -193,13 +193,14 @@ const updatedRevisionMetadata = (
     day0Case: CaseDocument,
     curator: string,
     note?: string,
+    date?: Date | number,
 ) => {
     return {
         creationMetadata: day0Case.revisionMetadata.creationMetadata,
         updateMetadata: {
             curator: curator,
             note: note,
-            date: Date.now(),
+            date: date || Date.now(),
         },
         revisionNumber: day0Case.revisionMetadata.revisionNumber + 1,
     };
@@ -783,6 +784,7 @@ export class CasesController {
             } as CaseDTO;
 
             const c = fillEmpty(new Day0Case(await caseFromDTO(receivedCase)));
+            c.set({'events.dateLastModified': currentDate});
 
             let result;
             if (req.query.validate_only) {
@@ -806,7 +808,7 @@ export class CasesController {
             res.status(201).json(result);
         } catch (e) {
             const err = e as Error;
-            if  (err.name === 'MongoServerError') {
+            if (err.name === 'MongoServerError') {
                 logger.error((e as any).errInfo);
                 res.status(422).json({
                     message: (err as any).errInfo,
@@ -860,6 +862,7 @@ export class CasesController {
             });
             return;
         } else {
+            const updateDate = Date.now();
             c.set({
                 curators: {
                     createdBy: c.curators.createdBy,
@@ -869,7 +872,9 @@ export class CasesController {
                     c,
                     req.body.curator.email,
                     'Case Verification',
+                    updateDate,
                 ),
+                'events.dateLastModified': updateDate,
             });
             await c.save();
             const responseCase = await Day0Case.find({
@@ -1099,14 +1104,16 @@ export class CasesController {
                 return;
             }
             const caseDetails = await caseFromDTO(req.body);
-
+            const updateDate = Date.now();
             c.set({
                 ...caseDetails,
                 revisionMetadata: updatedRevisionMetadata(
                     c,
                     req.body.curator.email,
                     'Case Update',
+                    updateDate,
                 ),
+                'events.dateLastModified': updateDate,
             });
             await c.save();
 
