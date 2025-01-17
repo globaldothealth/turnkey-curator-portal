@@ -59,23 +59,26 @@ const caseFromDTO = async (receivedCase: CaseDTO) => {
 
     const user = await User.findOne({ email: receivedCase.curator?.email });
     if (user) {
-        logger.info(`User: ${JSON.stringify(user)}`)
+        logger.info(`User: ${JSON.stringify(user)}`);
         if (user.roles.includes(Role.JuniorCurator)) {
             aCase.curators = {
                 createdBy: {
                     name: user.name || '',
-                    email: user.email
+                    email: user.email,
                 },
             };
-        } else if (user.roles.includes(Role.Curator) || user.roles.includes(Role.Admin)) {
+        } else if (
+            user.roles.includes(Role.Curator) ||
+            user.roles.includes(Role.Admin)
+        ) {
             aCase.curators = {
                 createdBy: {
                     name: user.name || '',
-                    email: user.email
+                    email: user.email,
                 },
                 verifiedBy: {
                     name: user.name || '',
-                    email: user.email
+                    email: user.email,
                 },
             };
         }
@@ -85,7 +88,7 @@ const caseFromDTO = async (receivedCase: CaseDTO) => {
 };
 
 const dtoFromCase = async (storedCase: CaseDocument) => {
-    let dto = (storedCase as unknown) as CaseDTO;
+    let dto = storedCase as unknown as CaseDTO;
     const ageRange = await caseAgeRange(storedCase);
     const creator = await User.findOne({
         _id: storedCase.curators?.createdBy,
@@ -99,7 +102,7 @@ const dtoFromCase = async (storedCase: CaseDocument) => {
     }
 
     if (ageRange) {
-        if(creator) {
+        if (creator) {
             if (verifier) {
                 dto = {
                     ...dto,
@@ -131,15 +134,15 @@ const dtoFromCase = async (storedCase: CaseDocument) => {
             demographics: {
                 ...dto.demographics!,
                 ageRange,
-            }
+            },
         };
 
-
-
         // although the type system can't see it, there's an ageBuckets property on the demographics DTO now
-        delete ((dto as unknown) as {
-            demographics: { ageBuckets?: [ObjectId] };
-        }).demographics.ageBuckets;
+        delete (
+            dto as unknown as {
+                demographics: { ageBuckets?: [ObjectId] };
+            }
+        ).demographics.ageBuckets;
     }
 
     return dto;
@@ -190,13 +193,14 @@ const updatedRevisionMetadata = (
     day0Case: CaseDocument,
     curator: string,
     note?: string,
+    date?: Date | number,
 ) => {
     return {
         creationMetadata: day0Case.revisionMetadata.creationMetadata,
         updateMetadata: {
             curator: curator,
             note: note,
-            date: Date.now(),
+            date: date || Date.now(),
         },
         revisionNumber: day0Case.revisionMetadata.revisionNumber + 1,
     };
@@ -524,8 +528,8 @@ export class CasesController {
             // Get total case cardinality
             const grandTotalCount = await Day0Case.countDocuments({
                 caseStatus: {
-                    $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
-                }
+                    $nin: [CaseStatus.OmitError, CaseStatus.Discarded],
+                },
             });
             if (grandTotalCount === 0) {
                 res.status(200).json({});
@@ -537,9 +541,9 @@ export class CasesController {
                 {
                     $match: {
                         caseStatus: {
-                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
-                        }
-                    }
+                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded],
+                        },
+                    },
                 },
                 {
                     $group: {
@@ -592,9 +596,9 @@ export class CasesController {
                             $ne: null,
                         },
                         caseStatus: {
-                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
-                        }
-                    }
+                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded],
+                        },
+                    },
                 },
                 {
                     $group: {
@@ -664,9 +668,9 @@ export class CasesController {
                 {
                     $match: {
                         caseStatus: {
-                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
-                        }
-                    }
+                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded],
+                        },
+                    },
                 },
                 {
                     $group: {
@@ -698,9 +702,9 @@ export class CasesController {
                 {
                     $match: {
                         caseStatus: {
-                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded]
-                        }
-                    }
+                            $nin: [CaseStatus.OmitError, CaseStatus.Discarded],
+                        },
+                    },
                 },
                 {
                     $match: {
@@ -780,6 +784,7 @@ export class CasesController {
             } as CaseDTO;
 
             const c = fillEmpty(new Day0Case(await caseFromDTO(receivedCase)));
+            c.set({'events.dateLastModified': currentDate});
 
             let result;
             if (req.query.validate_only) {
@@ -803,7 +808,7 @@ export class CasesController {
             res.status(201).json(result);
         } catch (e) {
             const err = e as Error;
-            if  (err.name === 'MongoServerError') {
+            if (err.name === 'MongoServerError') {
                 logger.error((e as any).errInfo);
                 res.status(422).json({
                     message: (err as any).errInfo,
@@ -857,6 +862,7 @@ export class CasesController {
             });
             return;
         } else {
+            const updateDate = Date.now();
             c.set({
                 curators: {
                     createdBy: c.curators.createdBy,
@@ -866,7 +872,9 @@ export class CasesController {
                     c,
                     req.body.curator.email,
                     'Case Verification',
+                    updateDate,
                 ),
+                'events.dateLastModified': updateDate,
             });
             await c.save();
             const responseCase = await Day0Case.find({
@@ -1096,14 +1104,16 @@ export class CasesController {
                 return;
             }
             const caseDetails = await caseFromDTO(req.body);
-
+            const updateDate = Date.now();
             c.set({
                 ...caseDetails,
                 revisionMetadata: updatedRevisionMetadata(
                     c,
                     req.body.curator.email,
                     'Case Update',
+                    updateDate,
                 ),
+                'events.dateLastModified': updateDate,
             });
             await c.save();
 
@@ -1430,13 +1440,11 @@ export const casesMatchingSearchQuery = (opts: {
     }
 
     // Always search with case-insensitivity.
-    const casesQuery: Query<CaseDocument[], CaseDocument> = Day0Case.find(
-        queryOpts,
-    );
+    const casesQuery: Query<CaseDocument[], CaseDocument> =
+        Day0Case.find(queryOpts);
 
-    const countQuery: Query<number, CaseDocument> = Day0Case.countDocuments(
-        queryOpts,
-    ).limit(countLimit);
+    const countQuery: Query<number, CaseDocument> =
+        Day0Case.countDocuments(queryOpts).limit(countLimit);
 
     // Fill in keyword filters.
     parsedSearch.filters.forEach((f) => {
