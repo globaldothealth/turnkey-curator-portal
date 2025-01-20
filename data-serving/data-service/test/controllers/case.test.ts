@@ -1053,11 +1053,11 @@ describe('download', () => {
                 expect(text).toContain(String(c._id));
                 expect(text).toContain(c.caseStatus);
                 expect(text).toContain('2025-01-12');
-                expect(text).toContain(c.caseReference.sourceId);
+                expect(text).toContain(c.caseReference.sourceUrl);
                 expect(text).toContain(String(c2._id));
                 expect(text).toContain(c2.caseStatus);
                 expect(text).toContain('2025-01-13');
-                expect(text).toContain(c2.caseReference.sourceId);
+                expect(text).toContain(c2.caseReference.sourceUrl);
 
                 resolve();
             });
