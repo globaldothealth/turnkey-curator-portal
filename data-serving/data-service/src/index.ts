@@ -20,7 +20,7 @@ import { middleware as OpenApiValidatorMiddleware } from 'express-openapi-valida
 import YAML from 'yamljs';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
-import express from 'express';
+import express, { RequestHandler } from 'express';
 import mongoose from 'mongoose';
 import swaggerUi from 'swagger-ui-express';
 import winston from 'winston';
@@ -54,12 +54,12 @@ app.use(
     }),
 );
 
-app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.json({ limit: '50mb' }) as RequestHandler);
 app.use(
     bodyParser.urlencoded({
         limit: '50mb',
         extended: true,
-    }),
+    }) as RequestHandler,
 );
 
 // Configure app routes.

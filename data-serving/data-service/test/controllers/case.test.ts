@@ -24,12 +24,7 @@ let mongoServer: MongoMemoryServer;
 
 const curatorName = 'Casey Curatorio';
 const curatorUserEmail = 'case_curator@global.health';
-// const curatorMetadata = { 
-//     curator: {
-//         name: curatorName,
-//         email: curatorUserEmail
-//     }
-// };
+
 const curatorMetadata = { curator: { email: curatorUserEmail } };
 
 const minimalRequest = {
@@ -74,16 +69,14 @@ async function createAgeBuckets() {
 }
 
 beforeAll(async () => {
-    mockLocationServer.listen();
+    mockLocationServer.listen({ onUnhandledRequest: 'bypass' });
     mongoServer = new MongoMemoryServer();
     await createAgeBuckets();
-    curator = await User.create(
-        { 
-            name: curatorName,
-            email: curatorUserEmail,
-            roles: [Role.Curator]
-        }
-    );
+    curator = await User.create({
+        name: curatorName,
+        email: curatorUserEmail,
+        roles: [Role.Curator],
+    });
     minimalDay0CaseData = {
         ...minimalDay0CaseData,
         ...{ curators: { createdBy: curatorMetadata.curator } },
@@ -548,8 +541,7 @@ describe('POST', () => {
                 admin1: 'Florida',
                 admin2: 'Collier County',
                 admin3: 'Naples',
-                query:
-                    'Naples, Collier County, Florida, United States of America',
+                query: 'Naples, Collier County, Florida, United States of America',
             },
         };
 
@@ -587,8 +579,7 @@ describe('POST', () => {
                     latitude: 26.1295,
                     longitude: -81.8056,
                 },
-                query:
-                    'Naples, Collier County, Florida, United States of America',
+                query: 'Naples, Collier County, Florida, United States of America',
             },
         };
 
@@ -786,15 +777,20 @@ describe('POST', () => {
         const newCaseWithEntryId = new Day0Case(fullCase);
         newCaseWithEntryId.caseReference.sourceEntryId = 'newId';
 
+        const changedCaseWithEntryId_ = new Day0Case(fullCase);
+        await changedCaseWithEntryId_.save();
         const changedCaseWithEntryId = new Day0Case(fullCase);
-        await changedCaseWithEntryId.save();
         changedCaseWithEntryId.pathogen = 'Pneumonia';
 
+        const unchangedCaseWithEntryId_ = new Day0Case(fullCase);
+        unchangedCaseWithEntryId_.caseReference.sourceEntryId =
+            'unchangedEntryId';
+        unchangedCaseWithEntryId_.location.country = 'FR';
+        await unchangedCaseWithEntryId_.save();
         const unchangedCaseWithEntryId = new Day0Case(fullCase);
         unchangedCaseWithEntryId.caseReference.sourceEntryId =
             'unchangedEntryId';
         unchangedCaseWithEntryId.location.country = 'FR';
-        await unchangedCaseWithEntryId.save();
 
         const res = await request(app)
             .post('/api/cases/batchUpsert')
@@ -810,10 +806,10 @@ describe('POST', () => {
             .expect(200);
 
         const unchangedDbCase = await Day0Case.findById(
-            unchangedCaseWithEntryId._id,
+            unchangedCaseWithEntryId_._id,
         );
         expect(unchangedDbCase?.toJSON()).toEqual(
-            unchangedCaseWithEntryId.toJSON(),
+            unchangedCaseWithEntryId_.toJSON(),
         );
         expect(res.body.numCreated).toBe(2); // Both new cases were created.
         expect(res.body.numUpdated).toBe(1); // Only changed case was updated.
@@ -1013,10 +1009,7 @@ describe('POST', () => {
         const res = await request(app)
             .post('/api/cases/batchUpsert')
             .send({
-                cases: [
-                    minimalDay0CaseData,
-                    invalidRequest,
-                ],
+                cases: [minimalDay0CaseData, invalidRequest],
                 ...curatorMetadata,
             })
             .expect(207, /Day0Case validation failed/);
@@ -1036,31 +1029,38 @@ describe('download', () => {
         const fileStream = fs.createWriteStream(destination);
 
         const c = new Day0Case(minimalDay0CaseData);
+        c.set({ 'events.dateLastModified': '2025-01-12T12:00:00.000Z' });
         await c.save();
         const c2 = new Day0Case(fullDay0CaseData);
+        c2.set({ 'events.dateLastModified': '2025-01-13T12:00:00.000Z' });
         await c2.save();
+        await new Promise<void>((resolve, reject): void => {
+            const req = request(app)
+                .post('/api/cases/download')
+                .send({ format: 'csv' })
+                .expect('Content-Type', 'text/csv')
+                .expect(200)
+                .parse(stringParser);
 
-        const responseStream = request(app)
-            .post('/api/cases/download')
-            .send({ format: 'csv' })
-            .expect('Content-Type', 'text/csv')
-            .expect(200)
-            .parse(stringParser);
+            const responseStream = req.pipe(fileStream);
+            responseStream.on('finish', () => {
+                const text: string = fs
+                    .readFileSync(destination)
+                    .toString('utf-8');
+                expect(text).toContain(
+                    '_id,caseReference.additionalSources,caseReference.isGovernmentSource,caseReference.sourceEntryId,caseReference.sourceId,caseReference.sourceUrl,caseReference.uploadIds,caseStatus,comment,demographics.ageRange.end,demographics.ageRange.start,demographics.gender,demographics.healthcareWorker,demographics.occupation,events.confirmationMethod,events.dateAdmissionICU,events.dateConfirmation,events.dateDeath,events.dateDischargeHospital,events.dateDischargeICU,events.dateEntry,events.dateHospitalization,events.dateIsolation,events.dateLastModified,events.dateOfFirstConsult,events.dateOnset,events.dateRecovered,events.dateReported,events.homeMonitoring,events.hospitalized,events.intensiveCare,events.isolated,events.outcome,events.reasonForHospitalization,genomeSequences.accessionNumber,genomeSequences.genomicsMetadata,location.admin1,location.admin2,location.admin3,location.country,location.countryISO3,location.location,location.query,pathogen,preexistingConditions.coInfection,preexistingConditions.preexistingCondition,preexistingConditions.pregnancyStatus,preexistingConditions.previousInfection,symptoms,transmission.contactAnimal,transmission.contactComment,transmission.contactId,transmission.contactSetting,transmission.contactWithCase,transmission.transmission,travelHistory.travelHistory,travelHistory.travelHistoryCountry,travelHistory.travelHistoryEntry,travelHistory.travelHistoryLocation,travelHistory.travelHistoryStart,vaccination.vaccination,vaccination.vaccineDate,vaccination.vaccineName,vaccination.vaccineSideEffects',
+                );
+                expect(text).toContain(String(c._id));
+                expect(text).toContain(c.caseStatus);
+                expect(text).toContain('2025-01-12');
+                expect(text).toContain(c.caseReference.sourceId);
+                expect(text).toContain(String(c2._id));
+                expect(text).toContain(c2.caseStatus);
+                expect(text).toContain('2025-01-13');
+                expect(text).toContain(c2.caseReference.sourceId);
 
-        responseStream.pipe(fileStream);
-        responseStream.on('finish', () => {
-            const text: string = fs.readFileSync(destination).toString('utf-8');
-            expect(text).toContain(
-                '_id,caseReference.additionalSources,caseReference.sourceEntryId,caseReference.sourceId',
-            );
-            expect(text).toContain(c._id);
-            expect(text).toContain(c.caseStatus);
-            expect(text).toContain(c.caseReference.sourceId);
-            expect(text).toContain(c2._id);
-            expect(text).toContain(c2.caseStatus);
-            expect(text).toContain(c2.caseReference.sourceId);
-
-            fs.unlinkSync(destination);
+                resolve();
+            });
         });
     });
     it('should use the age buckets in the download', async () => {
