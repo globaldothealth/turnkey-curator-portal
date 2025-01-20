@@ -229,7 +229,6 @@ export class CasesController {
         this.csvHeaders.sort((a, b) =>
             a.localeCompare(b, undefined, { sensitivity: 'base' }),
         );
-        logger.error(this.csvHeaders);
 
         return this;
     }
