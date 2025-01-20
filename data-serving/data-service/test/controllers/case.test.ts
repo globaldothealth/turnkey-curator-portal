@@ -24,12 +24,7 @@ let mongoServer: MongoMemoryServer;
 
 const curatorName = 'Casey Curatorio';
 const curatorUserEmail = 'case_curator@global.health';
-// const curatorMetadata = {
-//     curator: {
-//         name: curatorName,
-//         email: curatorUserEmail
-//     }
-// };
+
 const curatorMetadata = { curator: { email: curatorUserEmail } };
 
 const minimalRequest = {
@@ -74,7 +69,7 @@ async function createAgeBuckets() {
 }
 
 beforeAll(async () => {
-    mockLocationServer.listen();
+    mockLocationServer.listen({ onUnhandledRequest: 'bypass' });
     mongoServer = new MongoMemoryServer();
     await createAgeBuckets();
     curator = await User.create({
@@ -546,8 +541,7 @@ describe('POST', () => {
                 admin1: 'Florida',
                 admin2: 'Collier County',
                 admin3: 'Naples',
-                query:
-                    'Naples, Collier County, Florida, United States of America',
+                query: 'Naples, Collier County, Florida, United States of America',
             },
         };
 
@@ -585,8 +579,7 @@ describe('POST', () => {
                     latitude: 26.1295,
                     longitude: -81.8056,
                 },
-                query:
-                    'Naples, Collier County, Florida, United States of America',
+                query: 'Naples, Collier County, Florida, United States of America',
             },
         };
 
@@ -784,15 +777,20 @@ describe('POST', () => {
         const newCaseWithEntryId = new Day0Case(fullCase);
         newCaseWithEntryId.caseReference.sourceEntryId = 'newId';
 
+        const changedCaseWithEntryId_ = new Day0Case(fullCase);
+        await changedCaseWithEntryId_.save();
         const changedCaseWithEntryId = new Day0Case(fullCase);
-        await changedCaseWithEntryId.save();
         changedCaseWithEntryId.pathogen = 'Pneumonia';
 
+        const unchangedCaseWithEntryId_ = new Day0Case(fullCase);
+        unchangedCaseWithEntryId_.caseReference.sourceEntryId =
+            'unchangedEntryId';
+        unchangedCaseWithEntryId_.location.country = 'FR';
+        await unchangedCaseWithEntryId_.save();
         const unchangedCaseWithEntryId = new Day0Case(fullCase);
         unchangedCaseWithEntryId.caseReference.sourceEntryId =
             'unchangedEntryId';
         unchangedCaseWithEntryId.location.country = 'FR';
-        await unchangedCaseWithEntryId.save();
 
         const res = await request(app)
             .post('/api/cases/batchUpsert')
@@ -808,10 +806,10 @@ describe('POST', () => {
             .expect(200);
 
         const unchangedDbCase = await Day0Case.findById(
-            unchangedCaseWithEntryId._id,
+            unchangedCaseWithEntryId_._id,
         );
         expect(unchangedDbCase?.toJSON()).toEqual(
-            unchangedCaseWithEntryId.toJSON(),
+            unchangedCaseWithEntryId_.toJSON(),
         );
         expect(res.body.numCreated).toBe(2); // Both new cases were created.
         expect(res.body.numUpdated).toBe(1); // Only changed case was updated.

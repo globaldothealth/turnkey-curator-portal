@@ -1,4 +1,4 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 const fakeGeocodes: Map<string, any> = new Map();
 
@@ -11,15 +11,18 @@ export const clear = () => {
 };
 
 export const handlers = [
-    rest.get('http://localhost:3003/geocode', (req, res, ctx) => {
-        const query = req.url.searchParams.get('q');
+    http.get('http://localhost:3003/geocode', ({ request }) => {
+        const url = new URL(request.url);
+        const query = url.searchParams.get('q');
         if (!query) {
-            return res(ctx.status(400));
+            return new HttpResponse(null, { status: 400 });
         }
         if (fakeGeocodes.has(query)) {
-            return res(ctx.status(200), ctx.json([fakeGeocodes.get(query)]));
+            return new HttpResponse(JSON.stringify([fakeGeocodes.get(query)]), {
+                status: 200,
+            });
         } else {
-            return res(ctx.status(404));
+            return new HttpResponse(null, { status: 404 });
         }
     }),
 ];

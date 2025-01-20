@@ -19,7 +19,7 @@ import {
     SortByOrder,
 } from '../util/case';
 import { logger } from '../util/logger';
-import stringify from 'csv-stringify/lib/sync';
+import { stringify } from 'csv-stringify/sync';
 import _, { forEach } from 'lodash';
 import { AgeBucket } from '../model/age-bucket';
 import { COUNTER_DOCUMENT_ID, IdCounter } from '../model/id-counter';
