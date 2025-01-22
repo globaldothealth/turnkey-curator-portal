@@ -201,6 +201,7 @@ export default function SignUpForm({
                             id="email"
                             name="email"
                             label="Email *"
+                            autoComplete="email"
                             value={formik.values.email}
                             onChange={formik.handleChange}
                             error={
@@ -221,6 +222,7 @@ export default function SignUpForm({
                             id="confirmEmail"
                             name="confirmEmail"
                             label="Confirm Email *"
+                            autoComplete="email"
                             value={formik.values.confirmEmail}
                             onChange={formik.handleChange}
                             error={
@@ -274,6 +276,7 @@ export default function SignUpForm({
                                     </InputAdornment>
                                 }
                                 label="Password"
+                                autoComplete="password"
                             />
                             <PasswordStrengthBar
                                 password={formik.values.password}
@@ -332,6 +335,7 @@ export default function SignUpForm({
                                     </InputAdornment>
                                 }
                                 label="Repeat password"
+                                autoComplete="password"
                             />
                             <FormHelperText>
                                 {formik.touched.passwordConfirmation &&

@@ -24,7 +24,7 @@ import { SnackbarAlert } from '../SnackbarAlert';
 
 import { useParams, Link } from 'react-router-dom';
 
-import Helmet from 'react-helmet';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { selectVersion, selectEnv } from '../../redux/app/selectors';
 import { MapLink } from '../../constants/types';
 import { getReleaseNotesUrl } from '../util/helperFunctions';
@@ -241,7 +241,7 @@ const LandingPage = (): JSX.Element => {
     }, [dispatch, registrationScreenOn]);
 
     return (
-        <>
+        <HelmetProvider>
             <Helmet>
                 <title>Global.health | Data</title>
             </Helmet>
@@ -323,7 +323,7 @@ const LandingPage = (): JSX.Element => {
                 size="invisible"
                 ref={recaptchaRef}
             />
-        </>
+        </HelmetProvider>
     );
 };
 
