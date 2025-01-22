@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import VerifiedIcon from '@mui/icons-material/CheckCircleOutline';
@@ -198,296 +198,309 @@ const LinelistTable = () => {
     const isSelected = (id: string) => casesSelected.indexOf(id) !== -1;
 
     return (
-        <LineListContainer>
-            <Helmet>
-                <title>Global.health | Cases</title>
-            </Helmet>
+        <HelmetProvider>
+            <LineListContainer>
+                <Helmet>
+                    <title>Global.health | Cases</title>
+                </Helmet>
 
-            {error && (
-                <StyledAlert severity="error" sx={{ marginTop: '2rem' }}>
-                    {error}
-                </StyledAlert>
-            )}
+                {error && (
+                    <StyledAlert severity="error" sx={{ marginTop: '2rem' }}>
+                        {error}
+                    </StyledAlert>
+                )}
 
-            {!location.state?.bulkMessage &&
-                location.state?.newCaseIds &&
-                location.state?.newCaseIds.length > 0 &&
-                (location.state.newCaseIds.length === 1 ? (
-                    <StyledAlert
-                        variant="standard"
-                        action={
-                            <Link
-                                to={`/cases/view/${location.state.newCaseIds}`}
-                            >
-                                <Button
-                                    color="primary"
-                                    size="small"
-                                    data-testid="view-case-btn"
+                {!location.state?.bulkMessage &&
+                    location.state?.newCaseIds &&
+                    location.state?.newCaseIds.length > 0 &&
+                    (location.state.newCaseIds.length === 1 ? (
+                        <StyledAlert
+                            variant="standard"
+                            action={
+                                <Link
+                                    to={`/cases/view/${location.state.newCaseIds}`}
                                 >
-                                    VIEW
-                                </Button>
-                            </Link>
-                        }
-                    >
-                        {`Case ${location.state.newCaseIds} added`}
-                    </StyledAlert>
-                ) : (
+                                    <Button
+                                        color="primary"
+                                        size="small"
+                                        data-testid="view-case-btn"
+                                    >
+                                        VIEW
+                                    </Button>
+                                </Link>
+                            }
+                        >
+                            {`Case ${location.state.newCaseIds} added`}
+                        </StyledAlert>
+                    ) : (
+                        <StyledAlert variant="standard">
+                            {`${location.state.newCaseIds.length} cases added`}
+                        </StyledAlert>
+                    ))}
+                {!location.state?.bulkMessage &&
+                    (location.state?.editedCaseIds?.length ?? 0) > 0 && (
+                        <StyledAlert
+                            variant="standard"
+                            action={
+                                <Link
+                                    to={`/cases/view/${location.state.editedCaseIds}`}
+                                >
+                                    <Button color="primary" size="small">
+                                        VIEW
+                                    </Button>
+                                </Link>
+                            }
+                        >
+                            {`Case ${location.state.editedCaseIds} edited`}
+                        </StyledAlert>
+                    )}
+                {location.state?.bulkMessage && (
                     <StyledAlert variant="standard">
-                        {`${location.state.newCaseIds.length} cases added`}
-                    </StyledAlert>
-                ))}
-            {!location.state?.bulkMessage &&
-                (location.state?.editedCaseIds?.length ?? 0) > 0 && (
-                    <StyledAlert
-                        variant="standard"
-                        action={
-                            <Link
-                                to={`/cases/view/${location.state.editedCaseIds}`}
-                            >
-                                <Button color="primary" size="small">
-                                    VIEW
-                                </Button>
-                            </Link>
-                        }
-                    >
-                        {`Case ${location.state.editedCaseIds} edited`}
+                        {location.state.bulkMessage}
                     </StyledAlert>
                 )}
-            {location.state?.bulkMessage && (
-                <StyledAlert variant="standard">
-                    {location.state.bulkMessage}
-                </StyledAlert>
-            )}
 
-            <EnhancedTableToolbar />
+                <EnhancedTableToolbar />
 
-            <Paper
-                sx={{
-                    width: '100%',
-                    overflow: 'hidden',
-                    position: 'relative',
-                }}
-                elevation={0}
-            >
-                {isLoading && (
-                    <LoaderContainer>
-                        <CircularProgress color="primary" />
-                    </LoaderContainer>
-                )}
-
-                <TableContainer
+                <Paper
                     sx={{
-                        maxHeight:
-                            'calc(100vh - 64px - 106px - 52px - 45px - 2rem)',
+                        width: '100%',
+                        overflow: 'hidden',
+                        position: 'relative',
                     }}
+                    elevation={0}
                 >
-                    <Table
-                        sx={{ minWidth: 650 }}
-                        size="medium"
-                        aria-label="Linelist table"
-                        stickyHeader
-                    >
-                        <TableHead>
-                            <TableRow>
-                                {hasAnyRole(user, [
-                                    Role.Admin,
-                                    Role.Curator,
-                                ]) && (
-                                    <TableCell
-                                        padding="checkbox"
-                                        sx={{
-                                            backgroundColor: '#fff',
-                                        }}
-                                    >
-                                        <Checkbox
-                                            color="primary"
-                                            indeterminate={
-                                                casesSelected.length > 0 &&
-                                                casesSelected.length <
-                                                    rows.length
-                                            }
-                                            checked={
-                                                rows.length > 0 &&
-                                                casesSelected.length ===
-                                                    rows.length
-                                            }
-                                            onChange={handleSelectAllClick}
-                                            inputProps={{
-                                                'aria-label':
-                                                    'select all cases',
-                                            }}
-                                        />
-                                    </TableCell>
-                                )}
+                    {isLoading && (
+                        <LoaderContainer>
+                            <CircularProgress color="primary" />
+                        </LoaderContainer>
+                    )}
 
-                                {labels.map((label) => (
-                                    <TableCell
-                                        key={label}
-                                        align="left"
-                                        sx={{
-                                            backgroundColor: '#fff',
-                                            fontWeight: 600,
-                                            whiteSpace: 'nowrap',
-                                        }}
-                                    >
-                                        {label}
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {rows.length > 0 ? (
-                                rows.map((row, idx) => (
-                                    <TableRow
-                                        key={row.caseId}
-                                        sx={{
-                                            '&:last-child td, &:last-child th':
-                                                {
-                                                    border: 0,
-                                                },
-                                            cursor: 'pointer',
-                                        }}
-                                        hover
-                                        onClick={() =>
-                                            handleCaseClick(row.caseId)
-                                        }
-                                    >
-                                        {hasAnyRole(user, [
-                                            Role.Admin,
-                                            Role.Curator,
-                                        ]) && (
-                                            <>
-                                                <TableCell padding="checkbox">
-                                                    <Checkbox
-                                                        color="primary"
-                                                        size="small"
-                                                        checked={isSelected(
-                                                            row.caseId,
-                                                        )}
-                                                        inputProps={{
-                                                            'aria-labelledby': `${row.caseId} - checkbox`,
-                                                            id: `checkbox${idx}`,
-                                                        }}
-                                                        onClick={(e) =>
-                                                            handleCaseSelect(
-                                                                e,
+                    <TableContainer
+                        sx={{
+                            maxHeight:
+                                'calc(100vh - 64px - 106px - 52px - 45px - 2rem)',
+                        }}
+                    >
+                        <Table
+                            sx={{ minWidth: 650 }}
+                            size="medium"
+                            aria-label="Linelist table"
+                            stickyHeader
+                        >
+                            <TableHead>
+                                <TableRow>
+                                    {hasAnyRole(user, [
+                                        Role.Admin,
+                                        Role.Curator,
+                                    ]) && (
+                                        <TableCell
+                                            padding="checkbox"
+                                            sx={{
+                                                backgroundColor: '#fff',
+                                            }}
+                                        >
+                                            <Checkbox
+                                                color="primary"
+                                                indeterminate={
+                                                    casesSelected.length > 0 &&
+                                                    casesSelected.length <
+                                                        rows.length
+                                                }
+                                                checked={
+                                                    rows.length > 0 &&
+                                                    casesSelected.length ===
+                                                        rows.length
+                                                }
+                                                onChange={handleSelectAllClick}
+                                                inputProps={{
+                                                    'aria-label':
+                                                        'select all cases',
+                                                }}
+                                            />
+                                        </TableCell>
+                                    )}
+
+                                    {labels.map((label) => (
+                                        <TableCell
+                                            key={label}
+                                            align="left"
+                                            sx={{
+                                                backgroundColor: '#fff',
+                                                fontWeight: 600,
+                                                whiteSpace: 'nowrap',
+                                            }}
+                                        >
+                                            {label}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {rows.length > 0 ? (
+                                    rows.map((row, idx) => (
+                                        <TableRow
+                                            key={row.caseId}
+                                            sx={{
+                                                '&:last-child td, &:last-child th':
+                                                    {
+                                                        border: 0,
+                                                    },
+                                                cursor: 'pointer',
+                                            }}
+                                            hover
+                                            onClick={() =>
+                                                handleCaseClick(row.caseId)
+                                            }
+                                        >
+                                            {hasAnyRole(user, [
+                                                Role.Admin,
+                                                Role.Curator,
+                                            ]) && (
+                                                <>
+                                                    <TableCell padding="checkbox">
+                                                        <Checkbox
+                                                            color="primary"
+                                                            size="small"
+                                                            checked={isSelected(
                                                                 row.caseId,
-                                                            )
-                                                        }
-                                                    />
-                                                </TableCell>
-                                            </>
-                                        )}
-                                        <TableCell align="left">
-                                            {row.caseId}
-                                        </TableCell>
-                                        <TableCell
-                                            align="left"
-                                            data-testid="verification-status"
-                                        >
-                                            {row.verified && <VerifiedIcon />}
-                                        </TableCell>
-                                        <TableCell
-                                            align="left"
-                                            sx={{ minWidth: 100 }}
-                                        >
-                                            {row.dateModified}
-                                        </TableCell>
-                                        <TableCell
-                                            align="left"
-                                            sx={{ minWidth: 100 }}
-                                        >
-                                            {row.lastModifiedBy}
-                                        </TableCell>
-                                        <TableCell
-                                            align="left"
-                                            sx={{ minWidth: 100 }}
-                                        >
-                                            {row.dateEntry}
-                                        </TableCell>
-                                        <TableCell
-                                            align="left"
-                                            sx={{ minWidth: 100 }}
-                                        >
-                                            {row.dateReported}
-                                        </TableCell>
-                                        <TableCell component="th" scope="row">
-                                            {row.caseStatus}
-                                        </TableCell>
-                                        <TableCell
-                                            align="left"
-                                            sx={{ minWidth: 100 }}
-                                        >
-                                            {row.country}
-                                        </TableCell>
-                                        <TableCell
-                                            align="left"
-                                            sx={{ minWidth: 100 }}
-                                        >
-                                            {row.age}
-                                        </TableCell>
-                                        <TableCell align="left">
-                                            {row.gender}
-                                        </TableCell>
-                                        <TableCell align="left">
-                                            {row.outcome}
-                                        </TableCell>
-                                        <TableCell align="left">
-                                            {row.dateHospitalization}
-                                        </TableCell>
-                                        <TableCell align="left">
-                                            {row.dateOnset}
-                                        </TableCell>
-                                        <TableCell align="left">
-                                            {row.source}
+                                                            )}
+                                                            inputProps={{
+                                                                'aria-labelledby': `${row.caseId} - checkbox`,
+                                                                id: `checkbox${idx}`,
+                                                            }}
+                                                            onClick={(e) =>
+                                                                handleCaseSelect(
+                                                                    e,
+                                                                    row.caseId,
+                                                                )
+                                                            }
+                                                        />
+                                                    </TableCell>
+                                                </>
+                                            )}
+                                            <TableCell align="left">
+                                                {row.caseId}
+                                            </TableCell>
+                                            <TableCell
+                                                align="left"
+                                                data-testid="verification-status"
+                                            >
+                                                {row.verified && (
+                                                    <VerifiedIcon />
+                                                )}
+                                            </TableCell>
+                                            <TableCell
+                                                align="left"
+                                                sx={{ minWidth: 100 }}
+                                            >
+                                                {row.dateModified}
+                                            </TableCell>
+                                            <TableCell
+                                                align="left"
+                                                sx={{ minWidth: 100 }}
+                                            >
+                                                {row.lastModifiedBy}
+                                            </TableCell>
+                                            <TableCell
+                                                align="left"
+                                                sx={{ minWidth: 100 }}
+                                            >
+                                                {row.dateEntry}
+                                            </TableCell>
+                                            <TableCell
+                                                align="left"
+                                                sx={{ minWidth: 100 }}
+                                            >
+                                                {row.dateReported}
+                                            </TableCell>
+                                            <TableCell
+                                                component="th"
+                                                scope="row"
+                                            >
+                                                {row.caseStatus}
+                                            </TableCell>
+                                            <TableCell
+                                                align="left"
+                                                sx={{ minWidth: 100 }}
+                                            >
+                                                {row.country}
+                                            </TableCell>
+                                            <TableCell
+                                                align="left"
+                                                sx={{ minWidth: 100 }}
+                                            >
+                                                {row.age}
+                                            </TableCell>
+                                            <TableCell align="left">
+                                                {row.gender}
+                                            </TableCell>
+                                            <TableCell align="left">
+                                                {row.outcome}
+                                            </TableCell>
+                                            <TableCell align="left">
+                                                {row.dateHospitalization}
+                                            </TableCell>
+                                            <TableCell align="left">
+                                                {row.dateOnset}
+                                            </TableCell>
+                                            <TableCell align="left">
+                                                {row.source}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell sx={{ padding: '1rem' }}>
+                                            No records to display
                                         </TableCell>
                                     </TableRow>
-                                ))
-                            ) : (
-                                <TableRow>
-                                    <TableCell sx={{ padding: '1rem' }}>
-                                        No records to display
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Paper>
+
+                <Stack>
+                    <Table>
+                        <TableFooter>
+                            <TableRow>
+                                <TablePagination
+                                    rowsPerPageOptions={[5, 10, 20, 50, 100]}
+                                    colSpan={3}
+                                    count={totalCases}
+                                    rowsPerPage={rowsPerPage}
+                                    page={currentPage}
+                                    labelDisplayedRows={customPaginationLabel}
+                                    SelectProps={{
+                                        inputProps: {
+                                            'aria-label': 'rows per page',
+                                        },
+                                        native: true,
+                                    }}
+                                    onPageChange={handleChangePage}
+                                    onRowsPerPageChange={
+                                        handleChangeRowsPerPage
+                                    }
+                                    ActionsComponent={Pagination}
+                                />
+                            </TableRow>
+                        </TableFooter>
                     </Table>
-                </TableContainer>
-            </Paper>
+                </Stack>
 
-            <Stack>
-                <Table>
-                    <TableFooter>
-                        <TableRow>
-                            <TablePagination
-                                rowsPerPageOptions={[5, 10, 20, 50, 100]}
-                                colSpan={3}
-                                count={totalCases}
-                                rowsPerPage={rowsPerPage}
-                                page={currentPage}
-                                labelDisplayedRows={customPaginationLabel}
-                                SelectProps={{
-                                    inputProps: {
-                                        'aria-label': 'rows per page',
-                                    },
-                                    native: true,
-                                }}
-                                onPageChange={handleChangePage}
-                                onRowsPerPageChange={handleChangeRowsPerPage}
-                                ActionsComponent={Pagination}
-                            />
-                        </TableRow>
-                    </TableFooter>
-                </Table>
-            </Stack>
-
-            <CaseDeleteDialog
-                isOpen={deleteCasesDialogOpen}
-                handleClose={() => dispatch(setDeleteCasesDialogOpen(false))}
-                caseIds={rowsAcrossPagesSelected ? undefined : casesSelected}
-                query={rowsAcrossPagesSelected ? searchQuery : undefined}
-            />
-        </LineListContainer>
+                <CaseDeleteDialog
+                    isOpen={deleteCasesDialogOpen}
+                    handleClose={() =>
+                        dispatch(setDeleteCasesDialogOpen(false))
+                    }
+                    caseIds={
+                        rowsAcrossPagesSelected ? undefined : casesSelected
+                    }
+                    query={rowsAcrossPagesSelected ? searchQuery : undefined}
+                />
+            </LineListContainer>
+        </HelmetProvider>
     );
 };
 

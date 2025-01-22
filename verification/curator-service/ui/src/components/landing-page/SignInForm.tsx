@@ -142,6 +142,7 @@ export default function SignInForm({
                             id="email"
                             name="email"
                             label="Email"
+                            autoComplete="email"
                             value={formik.values.email}
                             onChange={formik.handleChange}
                             error={
@@ -190,6 +191,7 @@ export default function SignInForm({
                                     </InputAdornment>
                                 }
                                 label="Password"
+                                autoComplete="password"
                                 data-testid="password-textbox"
                             />
                             <FormHelperText>

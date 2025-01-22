@@ -33,7 +33,7 @@ import { Chip, Tooltip } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import LinearProgress from '@mui/material/LinearProgress';
 import { SnackbarAlert } from './SnackbarAlert';
-import Helmet from 'react-helmet';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 import PasswordStrengthBar from 'react-password-strength-bar';
 import { Role } from '../api/models/User';
 
@@ -385,7 +385,7 @@ export default function Profile(): JSX.Element {
     const user = useAppSelector(selectUser);
 
     return (
-        <>
+        <HelmetProvider>
             <Helmet>
                 <title>Global.health | Profile</title>
             </Helmet>
@@ -452,6 +452,6 @@ export default function Profile(): JSX.Element {
             ) : (
                 <></>
             )}
-        </>
+        </HelmetProvider>
     );
 }
