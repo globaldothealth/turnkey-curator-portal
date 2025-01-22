@@ -484,7 +484,7 @@ export class CasesController {
                 sortedQuery
                     .skip(limit * (page - 1))
                     .limit(limit)
-                    .lean()
+                    .lean<CaseDocument[]>()
                     .collation({
                         locale: 'en_US',
                         strength: 2,
