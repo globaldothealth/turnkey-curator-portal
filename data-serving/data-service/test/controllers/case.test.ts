@@ -1048,16 +1048,16 @@ describe('download', () => {
                     .readFileSync(destination)
                     .toString('utf-8');
                 expect(text).toContain(
-                    '_id,caseReference.additionalSources,caseReference.isGovernmentSource,caseReference.sourceEntryId,caseReference.sourceId,caseReference.sourceUrl,caseReference.uploadIds,caseStatus,comment,demographics.ageRange.end,demographics.ageRange.start,demographics.gender,demographics.healthcareWorker,demographics.occupation,events.confirmationMethod,events.dateAdmissionICU,events.dateConfirmation,events.dateDeath,events.dateDischargeHospital,events.dateDischargeICU,events.dateEntry,events.dateHospitalization,events.dateIsolation,events.dateLastModified,events.dateOfFirstConsult,events.dateOnset,events.dateRecovered,events.dateReported,events.homeMonitoring,events.hospitalized,events.intensiveCare,events.isolated,events.outcome,events.reasonForHospitalization,genomeSequences.accessionNumber,genomeSequences.genomicsMetadata,location.admin1,location.admin2,location.admin3,location.country,location.countryISO3,location.location,location.query,pathogen,preexistingConditions.coInfection,preexistingConditions.preexistingCondition,preexistingConditions.pregnancyStatus,preexistingConditions.previousInfection,symptoms,transmission.contactAnimal,transmission.contactComment,transmission.contactId,transmission.contactSetting,transmission.contactWithCase,transmission.transmission,travelHistory.travelHistory,travelHistory.travelHistoryCountry,travelHistory.travelHistoryEntry,travelHistory.travelHistoryLocation,travelHistory.travelHistoryStart,vaccination.vaccination,vaccination.vaccineDate,vaccination.vaccineName,vaccination.vaccineSideEffects',
+                    '_id,caseReference.additionalSources,caseReference.isGovernmentSource,caseReference.sourceUrl,caseStatus,demographics.ageRange.end,demographics.ageRange.start,demographics.gender,demographics.healthcareWorker,demographics.occupation,events.confirmationMethod,events.dateAdmissionICU,events.dateConfirmation,events.dateDeath,events.dateDischargeHospital,events.dateDischargeICU,events.dateEntry,events.dateHospitalization,events.dateIsolation,events.dateLastModified,events.dateOfFirstConsult,events.dateOnset,events.dateRecovered,events.dateReported,events.homeMonitoring,events.hospitalized,events.intensiveCare,events.isolated,events.outcome,events.reasonForHospitalization,genomeSequences.accessionNumber,genomeSequences.genomicsMetadata,location.admin1,location.admin2,location.admin3,location.country,location.countryISO3,location.location,location.query,pathogen,preexistingConditions.coInfection,preexistingConditions.preexistingCondition,preexistingConditions.pregnancyStatus,preexistingConditions.previousInfection,symptoms,transmission.contactAnimal,transmission.contactComment,transmission.contactId,transmission.contactSetting,transmission.contactWithCase,transmission.transmission,travelHistory.travelHistory,travelHistory.travelHistoryCountry,travelHistory.travelHistoryEntry,travelHistory.travelHistoryLocation,travelHistory.travelHistoryStart,vaccination.vaccination,vaccination.vaccineDate,vaccination.vaccineName,vaccination.vaccineSideEffects',
                 );
                 expect(text).toContain(String(c._id));
                 expect(text).toContain(c.caseStatus);
                 expect(text).toContain('2025-01-12');
-                expect(text).toContain(c.caseReference.sourceId);
+                expect(text).toContain(c.caseReference.sourceUrl);
                 expect(text).toContain(String(c2._id));
                 expect(text).toContain(c2.caseStatus);
                 expect(text).toContain('2025-01-13');
-                expect(text).toContain(c2.caseReference.sourceId);
+                expect(text).toContain(c2.caseReference.sourceUrl);
 
                 resolve();
             });

@@ -216,6 +216,16 @@ export class CasesController {
     init(): CasesController {
         this.csvHeaders = caseFields;
         this.csvHeaders = removeBlankHeader(this.csvHeaders);
+        // Remove columns that are internal to or meaningless outside Turnkey Curator App
+        this.csvHeaders = this.csvHeaders.filter(
+            (csvHeader) =>
+                ![
+                    'caseReference.sourceEntryId',
+                    'caseReference.sourceId',
+                    'caseReference.uploadIds',
+                    'comment',
+                ].includes(csvHeader),
+        );
         this.csvHeaders.sort((a, b) =>
             a.localeCompare(b, undefined, { sensitivity: 'base' }),
         );
@@ -359,11 +369,15 @@ export class CasesController {
                         cast: {
                             date: (value: Date) => {
                                 if (value) {
-                                    return new Date(value).toISOString().split('T')[0];
+                                    return new Date(value)
+                                        .toISOString()
+                                        .split('T')[0];
                                 }
                                 return value;
                             },
-                        }
+                            boolean: (value: boolean) =>
+                                value ? 'TRUE' : 'FALSE',
+                        },
                     });
                     res.write(stringifiedCase);
                     doc = await cursor.next();
@@ -784,7 +798,7 @@ export class CasesController {
             } as CaseDTO;
 
             const c = fillEmpty(new Day0Case(await caseFromDTO(receivedCase)));
-            c.set({'events.dateLastModified': currentDate});
+            c.set({ 'events.dateLastModified': currentDate });
 
             let result;
             if (req.query.validate_only) {
