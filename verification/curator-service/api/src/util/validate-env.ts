@@ -8,6 +8,7 @@ export default function validateEnv(): Readonly<{
     BASE_URL: string;
     COMPLETE_DATA_BUCKET: string;
     COUNTRY_DATA_BUCKET: string;
+    DATA_DOWNLOAD_BUCKET: string;
     CURATOR_VERSION: string;
     DATASERVER_URL: string;
     DB_CONNECTION_STRING: string;
@@ -60,6 +61,10 @@ export default function validateEnv(): Readonly<{
         COUNTRY_DATA_BUCKET: str({
             desc: 'S3 bucket containing case data by country',
             devDefault: 'covid-19-country-export-dev-eu',
+        }),
+        DATA_DOWNLOAD_BUCKET: str({
+            desc: 'S3 bucket containing data to download',
+            devDefault: 'avian-influenza-2024',
         }),
         CURATOR_VERSION: str({
             desc: 'version string to display in UI for bug reports etc.',

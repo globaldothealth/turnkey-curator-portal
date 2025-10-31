@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import {
     Add as AddIcon,
+    BrowserUpdated as BrowserUpdatedIcon,
     Link as LinkIcon,
     List as ListIcon,
     People as PeopleIcon,
@@ -73,6 +74,12 @@ const Sidebar = ({ drawerOpen }: SidebarProps): JSX.Element => {
                           to: { pathname: '/cases', search: '' },
                           displayCheck: (): boolean => true,
                       },
+                    {
+                        text: 'Data downloads',
+                        icon: <BrowserUpdatedIcon />,
+                        to: { pathname: '/data-downloads', search: '' },
+                        displayCheck: (): boolean => true,
+                    },
                       {
                           text: 'Sources',
                           icon: <LinkIcon />,

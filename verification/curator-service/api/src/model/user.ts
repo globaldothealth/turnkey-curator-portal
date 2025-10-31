@@ -6,6 +6,7 @@ export enum Role {
     Admin = 'admin',
     Curator = 'curator',
     JuniorCurator = 'junior curator',
+    Researcher = 'researcher',
 }
 
 interface IUserPublicFields {

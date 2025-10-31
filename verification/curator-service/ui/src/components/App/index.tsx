@@ -12,6 +12,7 @@ import {
     useMediaQuery,
 } from '@mui/material';
 import { DownloadButton } from '../DownloadButton';
+import DataDownloads from '../DataDownloads';
 import LinelistTable from '../LinelistTable';
 import PivotTables from '../PivotTables';
 import {
@@ -64,6 +65,7 @@ import { getReleaseNotesUrl, hasAnyRole } from '../util/helperFunctions';
 import { theme } from '../../theme/theme';
 import { setSearchQuery } from '../../redux/linelistTable/slice';
 import { selectSearchQuery } from '../../redux/linelistTable/selectors';
+
 
 const menuStyles = makeStyles()((theme) => ({
     link: {
@@ -185,14 +187,14 @@ function ProfileMenu(props: { user: User; version: string }): JSX.Element {
                 onClose={handleClose}
                 data-testid="profile-menu-dropdown"
             >
-                <MenuItem
-                    component={Link}
-                    to="/profile"
-                    onClick={handleClose}
-                    className={classes.link}
-                >
-                    Profile
-                </MenuItem>
+                {/*<MenuItem*/}
+                {/*    component={Link}*/}
+                {/*    to="/profile"*/}
+                {/*    onClick={handleClose}*/}
+                {/*    className={classes.link}*/}
+                {/*>*/}
+                {/*    Profile*/}
+                {/*</MenuItem>*/}
 
                 <MenuItem
                     onClick={() => {
@@ -214,47 +216,47 @@ function ProfileMenu(props: { user: User; version: string }): JSX.Element {
                 >
                     <MenuItem>About Global.health</MenuItem>
                 </a>
-                <Link
-                    to="/data-acknowledgments"
-                    onClick={handleClose}
-                    className={classes.link}
-                >
-                    <MenuItem>Data acknowledgments</MenuItem>
-                </Link>
-                <a
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    href={import.meta.env.VITE_APP_DATA_DICTIONARY_LINK}
-                    onClick={handleClose}
-                    className={classes.link}
-                >
-                    <MenuItem>Data dictionary</MenuItem>
-                </a>
-                <a
-                    href="https://github.com/globaldothealth/list#globalhealth-list"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    onClick={handleClose}
-                    className={classes.link}
-                >
-                    <MenuItem>View source on Github</MenuItem>
-                </a>
+                {/*<Link*/}
+                {/*    to="/data-acknowledgments"*/}
+                {/*    onClick={handleClose}*/}
+                {/*    className={classes.link}*/}
+                {/*>*/}
+                {/*    <MenuItem>Data acknowledgments</MenuItem>*/}
+                {/*</Link>*/}
+                {/*<a*/}
+                {/*    rel="noopener noreferrer"*/}
+                {/*    target="_blank"*/}
+                {/*    href={import.meta.env.VITE_APP_DATA_DICTIONARY_LINK}*/}
+                {/*    onClick={handleClose}*/}
+                {/*    className={classes.link}*/}
+                {/*>*/}
+                {/*    <MenuItem>Data dictionary</MenuItem>*/}
+                {/*</a>*/}
+                {/*<a*/}
+                {/*    href="https://github.com/globaldothealth/list#globalhealth-list"*/}
+                {/*    rel="noopener noreferrer"*/}
+                {/*    target="_blank"*/}
+                {/*    onClick={handleClose}*/}
+                {/*    className={classes.link}*/}
+                {/*>*/}
+                {/*    <MenuItem>View source on Github</MenuItem>*/}
+                {/*</a>*/}
 
-                {props.version && (
-                    <div>
-                        <Divider className={classes.divider} />
+                {/*{props.version && (*/}
+                {/*    <div>*/}
+                {/*        <Divider className={classes.divider} />*/}
 
-                        <a
-                            href={releaseNotesUrl}
-                            rel="noopener noreferrer"
-                            target="_blank"
-                            onClick={handleClose}
-                            className={classes.link}
-                        >
-                            <MenuItem>Version: {props.version}</MenuItem>
-                        </a>
-                    </div>
-                )}
+                {/*        <a*/}
+                {/*            href={releaseNotesUrl}*/}
+                {/*            rel="noopener noreferrer"*/}
+                {/*            target="_blank"*/}
+                {/*            onClick={handleClose}*/}
+                {/*            className={classes.link}*/}
+                {/*        >*/}
+                {/*            <MenuItem>Version: {props.version}</MenuItem>*/}
+                {/*        </a>*/}
+                {/*    </div>*/}
+                {/*)}*/}
             </Menu>
         </div>
     );
@@ -417,17 +419,17 @@ export default function App(): JSX.Element {
                         <span className={classes.spacer}></span>
                     )}
 
-                    <Typography>
-                        <a
-                            className={classes.mapLink}
-                            data-testid="mapLink"
-                            href={MapLink[env]}
-                            rel="noopener noreferrer"
-                            target="_blank"
-                        >
-                            G.h Map
-                        </a>
-                    </Typography>
+                    {/*<Typography>*/}
+                    {/*    <a*/}
+                    {/*        className={classes.mapLink}*/}
+                    {/*        data-testid="mapLink"*/}
+                    {/*        href={MapLink[env]}*/}
+                    {/*        rel="noopener noreferrer"*/}
+                    {/*        target="_blank"*/}
+                    {/*    >*/}
+                    {/*        G.h Map*/}
+                    {/*    </a>*/}
+                    {/*</Typography>*/}
                     {user && <ProfileMenu user={user} version={appVersion} />}
                 </Toolbar>
             </AppBar>
@@ -450,11 +452,14 @@ export default function App(): JSX.Element {
                             <Navigate to={location.pathname.slice(0, -1)} />
                         }
                     />
-                    {user && (
+                    {hasAnyRole(user, [Role.Curator, Role.JuniorCurator]) && (
                         <Route path="/pivot-tables" element={<PivotTables />} />
                     )}
-                    {user && (
+                    {hasAnyRole(user, [Role.Curator, Role.JuniorCurator]) && (
                         <Route path="/cases" element={<LinelistTable />} />
+                    )}
+                    {user && (
+                        <Route path="/data-downloads" element={<DataDownloads />} />
                     )}
                     {hasAnyRole(user, [Role.Curator, Role.JuniorCurator]) && (
                         <Route path="/sources" element={<SourceTable />} />
@@ -560,7 +565,7 @@ export default function App(): JSX.Element {
                             user ? (
                                 <Navigate
                                     to={{
-                                        pathname: '/cases',
+                                        pathname: '/data-downloads',
                                         search: savedSearchQuery || '',
                                     }}
                                     replace

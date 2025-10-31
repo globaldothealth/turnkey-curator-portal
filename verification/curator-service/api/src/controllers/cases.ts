@@ -26,6 +26,7 @@ export default class CasesController {
         private readonly completeDataBucket: string,
         private readonly countryDataBucket: string,
         private readonly s3Client: AWS.S3,
+        private readonly dataDownloadBucket: string,
     ) {}
 
     /** List simply forwards the request to the data service */
@@ -222,6 +223,51 @@ export default class CasesController {
             });
 
             const result = await users().findOneAndUpdate(
+                { _id: new ObjectId(user.id) },
+                {
+                    $push: {
+                        downloads: {
+                            timestamp: new Date(),
+                            format: 'csv',
+                            query: '*',
+                        },
+                    },
+                },
+                { includeResultMetadata: true },
+            );
+            this.logOutcomeOfAppendingDownloadToUser(user.id, result);
+
+            res.status(200).send({ signedUrl });
+        } catch (err) {
+            res.status(500).send(err);
+        }
+
+        return;
+    };
+
+    /* getDataDownloadLink generates signed URL to downloadable resources */
+    getDataDownloadLink = async (req: Request, res: Response): Promise<void> => {
+        const filename = req.body.filename
+
+        const params = {
+            Bucket: this.dataDownloadBucket,
+            Key: filename,
+            Expires: 5 * 60,
+            ResponseContentDisposition:
+                'attachment; filename ="' + filename + '"',
+        };
+        const user = req.user as IUser;
+
+        try {
+            const signedUrl: string = await new Promise((resolve, reject) => {
+                this.s3Client.getSignedUrl('getObject', params, (err, url) => {
+                    if (err) reject(err);
+
+                    resolve(url);
+                });
+            });
+
+            const result = await users().findOneAndUpdate( // TODO update to reflect downloads of files
                 { _id: new ObjectId(user.id) },
                 {
                     $push: {

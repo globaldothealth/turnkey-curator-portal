@@ -130,3 +130,26 @@ export const resetApiKey = createAsyncThunk('auth/resetApiKey', async () => {
     }
     localStorage.setItem('user', JSON.stringify(response.data));
 });
+
+export const agreeToDataAcknowledgement = createAsyncThunk<
+    User,
+    undefined,
+    { rejectValue: string }
+>('dataDownloads/downloadData', async (filename, { rejectWithValue }) => {
+    try {
+        const response = await axios({
+            method: 'post',
+            url: '/api/users/agreeToDataAcknowledgement',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        return response.data;
+    } catch (error) {
+        if (!error.response) throw error;
+        return rejectWithValue(
+            `Error: Request failed with status code ${error.response.status}`,
+        );
+    }
+});

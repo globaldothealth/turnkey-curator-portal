@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 
 import GitHubIcon from '@mui/icons-material/GitHub';
-import TwitterIcon from '@mui/icons-material/Twitter';
+import XIcon from '@mui/icons-material/X';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import { useStyles } from './styled';
 import PolicyLink from '../PolicyLink';
@@ -51,35 +51,35 @@ const Footer = ({ drawerOpen }: FooterProps): JSX.Element => {
                     <LinkedInIcon className="icon" />
                 </a>
                 <a
-                    href="https://twitter.com/globaldothealth"
+                    href="https://x.com/globaldothealth"
                     target="_blank"
                     rel="noreferrer"
                     className={classes.socialMediaButton}
                 >
-                    <TwitterIcon className="icon" />
+                    <XIcon className="icon" />
                 </a>
             </section>
 
             <section>
-                <a
-                    href={
-                        import.meta.env.VITE_APP_DATA_DICTIONARY_LINK ||
-                        'https://global.health/data-dictionary'
-                    }
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    data-testid="dictionaryButton"
-                    className={classes.link}
-                >
-                    Data dictionary
-                </a>
-                <Link
-                    to="/data-acknowledgments"
-                    className={classes.link}
-                    data-testid="acknowledgmentsButton"
-                >
-                    Data acknowledgments
-                </Link>
+                {/*<a*/}
+                {/*    href={*/}
+                {/*        import.meta.env.VITE_APP_DATA_DICTIONARY_LINK ||*/}
+                {/*        'https://global.health/data-dictionary'*/}
+                {/*    }*/}
+                {/*    rel="noopener noreferrer"*/}
+                {/*    target="_blank"*/}
+                {/*    data-testid="dictionaryButton"*/}
+                {/*    className={classes.link}*/}
+                {/*>*/}
+                {/*    Data dictionary*/}
+                {/*</a>*/}
+                {/*<Link*/}
+                {/*    to="/data-acknowledgments"*/}
+                {/*    className={classes.link}*/}
+                {/*    data-testid="acknowledgmentsButton"*/}
+                {/*>*/}
+                {/*    Data acknowledgments*/}
+                {/*</Link>*/}
                 <a
                     href="https://global.health/terms-of-use"
                     rel="noopener noreferrer"
@@ -89,15 +89,15 @@ const Footer = ({ drawerOpen }: FooterProps): JSX.Element => {
                 >
                     Terms of use
                 </a>
-                <a
-                    href="https://global.health/privacy/"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    className={classes.link}
-                    data-testid="privacypolicybutton"
-                >
-                    Privacy policy
-                </a>
+                {/*<a*/}
+                {/*    href="https://global.health/privacy/"*/}
+                {/*    rel="noopener noreferrer"*/}
+                {/*    target="_blank"*/}
+                {/*    className={classes.link}*/}
+                {/*    data-testid="privacypolicybutton"*/}
+                {/*>*/}
+                {/*    Privacy policy*/}
+                {/*</a>*/}
                 <PolicyLink
                     type="cookie-policy"
                     classes={{
@@ -106,22 +106,22 @@ const Footer = ({ drawerOpen }: FooterProps): JSX.Element => {
                 >
                     Cookie policy
                 </PolicyLink>
-                <a
-                    href="https://global.health/faqs/"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    className={classes.link}
-                >
-                    FAQs
-                </a>
-                <a
-                    href="https://github.com/globaldothealth/list/tree/main/api"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                    className={classes.link}
-                >
-                    API
-                </a>
+                {/*<a*/}
+                {/*    href="https://global.health/faqs/"*/}
+                {/*    rel="noopener noreferrer"*/}
+                {/*    target="_blank"*/}
+                {/*    className={classes.link}*/}
+                {/*>*/}
+                {/*    FAQs*/}
+                {/*</a>*/}
+                {/*<a*/}
+                {/*    href="https://github.com/globaldothealth/list/tree/main/api"*/}
+                {/*    rel="noopener noreferrer"*/}
+                {/*    target="_blank"*/}
+                {/*    className={classes.link}*/}
+                {/*>*/}
+                {/*    API*/}
+                {/*</a>*/}
                 <Typography
                     display="inline"
                     className={classes.feedbackButton}

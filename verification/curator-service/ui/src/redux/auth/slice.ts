@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { User } from '../../api/models/User';
 import {
+    agreeToDataAcknowledgement,
     changePassword,
     getUserProfile,
     logout,
@@ -173,6 +174,22 @@ const authSlice = createSlice({
         builder.addCase(changePassword.rejected, (state, action) => {
             state.isLoading = false;
             state.changePasswordResponse = undefined;
+            state.error = action.payload
+                ? action.payload
+                : action.error.message;
+        });
+
+        // ACKNOWLEDGE DATA
+        builder.addCase(agreeToDataAcknowledgement.pending, (state) => {
+            state.isLoading = true;
+            state.error = undefined;
+        });
+        builder.addCase(agreeToDataAcknowledgement.fulfilled, (state, { payload }) => {
+            state.isLoading = false;
+            state.user = payload;
+        });
+        builder.addCase(agreeToDataAcknowledgement.rejected, (state, action) => {
+            state.isLoading = false;
             state.error = action.payload
                 ? action.payload
                 : action.error.message;

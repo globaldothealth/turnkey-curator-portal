@@ -33,6 +33,7 @@ import {
 } from './controllers/auth';
 import { Role } from './model/user';
 import { logger } from './util/logger';
+import { agreeToDataAcknowledgement } from './controllers/users';
 
 async function makeApp() {
     const app = express();
@@ -246,6 +247,7 @@ async function makeApp() {
         env.COMPLETE_DATA_BUCKET,
         env.COUNTRY_DATA_BUCKET,
         s3Client,
+        env.DATA_DOWNLOAD_BUCKET,
     );
     apiRouter.get(
         '/cases',
@@ -294,6 +296,12 @@ async function makeApp() {
         authenticateByAPIKey,
         mustBeAuthenticated,
         casesController.getDownloadLink,
+    );
+    apiRouter.post(
+        '/cases/getDataDownloadLink',
+        authenticateByAPIKey,
+        mustHaveAnyRole([Role.Researcher]),
+        casesController.getDataDownloadLink,
     );
     apiRouter.post(
         '/cases',
@@ -389,6 +397,11 @@ async function makeApp() {
         authenticateByAPIKey,
         mustHaveAnyRole([Role.Admin]),
         usersController.listRoles,
+    );
+    apiRouter.post(
+        '/users/agreeToDataAcknowledgement',
+        authenticateByAPIKey,
+        usersController.agreeToDataAcknowledgement,
     );
 
     const geocodeProxy = new GeocodeProxy(env.LOCATION_SERVICE_URL);

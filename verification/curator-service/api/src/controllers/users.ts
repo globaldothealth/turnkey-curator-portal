@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 
-import { Role, users } from '../model/user';
+import { IUser, Role, users } from '../model/user';
 import { logger } from '../util/logger';
 
 /**
@@ -85,7 +85,7 @@ export const updateRoles = async (
             {
                 // Return the updated object.
                 returnDocument: 'after',
-                 includeResultMetadata: true,
+                includeResultMetadata: true,
             },
         );
         if (!result.ok || !result.value) {
@@ -116,9 +116,9 @@ export const deleteUser = async (
     res: Response,
 ): Promise<void> => {
     try {
-        const result = await users().deleteOne(
-            { _id: new ObjectId(req.params.id) },
-        );
+        const result = await users().deleteOne({
+            _id: new ObjectId(req.params.id),
+        });
         console.log(result);
         if (result.deletedCount !== 1) {
             res.status(404).json({
@@ -141,4 +141,46 @@ export const deleteUser = async (
  */
 export const listRoles = (req: Request, res: Response): void => {
     res.json({ roles: Object.values(Role) });
+};
+
+/**
+ * Grant access to data downloads after user agrees to handle it responsibly by adding "researcher" role
+ */
+export const agreeToDataAcknowledgement = async (
+    req: Request,
+    res: Response,
+): Promise<void> => {
+    try {
+        const user = req.user as IUser;
+        const roles = user.roles || [];
+        if (!roles.includes('researcher')) {
+            roles.push('researcher');
+        }
+
+        const result = await users().findOneAndUpdate(
+            { _id: new ObjectId(user['id'] as string) },
+            { $set: { roles } },
+            {
+                // Return the updated object.
+                returnDocument: 'after',
+                includeResultMetadata: true,
+            },
+        );
+        if (!result.ok || !result.value) {
+            res.status(404).json({
+                message: `user with id ${req.params.id} could not be found`,
+            });
+            return;
+        }
+        res.status(200).json(result.value);
+    } catch (err) {
+        const error = err as Error;
+        logger.error('error updating roles', error);
+        if (error.name === 'ValidationError') {
+            res.status(422).json(error);
+            return;
+        }
+        res.status(500).json(error);
+        return;
+    }
 };

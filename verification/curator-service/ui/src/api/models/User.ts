@@ -2,6 +2,7 @@ export const enum Role {
     Admin = 'admin',
     Curator = 'curator',
     JuniorCurator = 'junior curator',
+    Researcher = 'researcher',
 }
 
 export interface User {
