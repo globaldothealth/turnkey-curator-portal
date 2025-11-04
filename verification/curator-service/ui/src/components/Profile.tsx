@@ -442,6 +442,11 @@ export default function Profile(): JSX.Element {
                                         'juniors curators can submit cases',
                                         role,
                                     );
+                                case Role.Researcher:
+                                    return tooltip(
+                                        'researchers are allowed to download datasets',
+                                        role,
+                                    );
                                 default:
                                     throw Error(`Unknown role ${role}`);
                             }

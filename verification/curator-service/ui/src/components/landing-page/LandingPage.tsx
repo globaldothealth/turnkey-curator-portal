@@ -62,6 +62,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
     description: {
         color: theme.custom.palette.landingPage.descriptionTextColor,
         marginRight: '90px',
+        marginBottom: '70px',
         width: '60%',
         [theme.breakpoints.down('sm')]: {
             width: '100%',
@@ -126,15 +127,15 @@ const MoreInformationLinks = ({
         <div className={classes.linksContainer}>
             <div>
                 <Typography>More information</Typography>
-                <div className={classes.link}>
-                    <a
-                        href={releaseNotesUrl}
-                        rel="noopener noreferrer"
-                        target="_blank"
-                    >
-                        Version: {version}
-                    </a>
-                </div>
+                {/*<div className={classes.link}>*/}
+                {/*    <a*/}
+                {/*        href={releaseNotesUrl}*/}
+                {/*        rel="noopener noreferrer"*/}
+                {/*        target="_blank"*/}
+                {/*    >*/}
+                {/*        Version: {version}*/}
+                {/*    </a>*/}
+                {/*</div>*/}
                 <div className={classes.link}>
                     <a
                         href="https://global.health/"
@@ -144,27 +145,27 @@ const MoreInformationLinks = ({
                         Global.health website
                     </a>
                 </div>
-                <div className={classes.link}>
-                    <a
-                        href={MapLink[env]}
-                        rel="noopener noreferrer"
-                        target="_blank"
-                    >
-                        Global.health map
-                    </a>
-                </div>
-                <div className={classes.link}>
-                    <a
-                        href={import.meta.env.VITE_APP_DATA_DICTIONARY_LINK}
-                        rel="noopener noreferrer"
-                        target="_blank"
-                    >
-                        Data dictionary
-                    </a>
-                </div>
-                <div className={classes.link}>
-                    <Link to="/data-acknowledgments">Data acknowledgments</Link>
-                </div>
+                {/*<div className={classes.link}>*/}
+                {/*    <a*/}
+                {/*        href={MapLink[env]}*/}
+                {/*        rel="noopener noreferrer"*/}
+                {/*        target="_blank"*/}
+                {/*    >*/}
+                {/*        Global.health map*/}
+                {/*    </a>*/}
+                {/*</div>*/}
+                {/*<div className={classes.link}>*/}
+                {/*    <a*/}
+                {/*        href={import.meta.env.VITE_APP_DATA_DICTIONARY_LINK}*/}
+                {/*        rel="noopener noreferrer"*/}
+                {/*        target="_blank"*/}
+                {/*    >*/}
+                {/*        Data dictionary*/}
+                {/*    </a>*/}
+                {/*</div>*/}
+                {/*<div className={classes.link}>*/}
+                {/*    <Link to="/data-acknowledgments">Data acknowledgments</Link>*/}
+                {/*</div>*/}
                 <div className={classes.link}>
                     <a
                         href="https://global.health/terms-of-use/"
@@ -174,15 +175,15 @@ const MoreInformationLinks = ({
                         Terms of use
                     </a>
                 </div>
-                <div className={classes.link}>
-                    <a
-                        href="https://global.health/privacy/"
-                        rel="noopener noreferrer"
-                        target="_blank"
-                    >
-                        Privacy policy
-                    </a>
-                </div>
+                {/*<div className={classes.link}>*/}
+                {/*    <a*/}
+                {/*        href="https://global.health/privacy/"*/}
+                {/*        rel="noopener noreferrer"*/}
+                {/*        target="_blank"*/}
+                {/*    >*/}
+                {/*        Privacy policy*/}
+                {/*    </a>*/}
+                {/*</div>*/}
                 <PolicyLink
                     type="cookie-policy"
                     classes={{

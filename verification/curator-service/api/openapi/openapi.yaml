@@ -1941,6 +1941,7 @@ components:
                 - admin
                 - curator
                 - "junior curator"
+                - researcher
         RoleArray:
             type: object
             properties:
