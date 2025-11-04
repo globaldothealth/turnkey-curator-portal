@@ -28,6 +28,7 @@ export type IUser = IUserPublicFields & {
             timestamp: Date;
             format?: string;
             query?: string;
+            filename?: string;
         },
     ];
 };
