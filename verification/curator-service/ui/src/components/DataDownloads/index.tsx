@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import MaterialTable from '@material-table/core';
 import { Button, Paper } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import { SaveAlt as SaveAltIcon } from '@mui/icons-material';
 import axios from 'axios';
-import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { agreeToDataAcknowledgement } from '../../redux/auth/thunk';
-import { selectUser } from '../../redux/auth/selectors';
+
 import { Role } from '../../api/models/User';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { selectUser } from '../../redux/auth/selectors';
+import { agreeToDataAcknowledgement } from '../../redux/auth/thunk';
+
 
 const dataDownloadsStyles = makeStyles()(() => ({
     cell: {
@@ -26,44 +28,60 @@ const dataDownloadsStyles = makeStyles()(() => ({
     },
     dataAcknowledgementText: {
         textAlign: 'justify',
-    }
+    },
 }));
 
 const DataDownloads = () => {
     const { classes } = dataDownloadsStyles();
     const dispatch = useAppDispatch();
     const user = useAppSelector(selectUser);
-    const agreedToDataAcknowledgement = user?.roles.includes(Role.Researcher)
+    const agreedToDataAcknowledgement = user?.roles.includes(Role.Researcher);
+    const [tableData, setTableData] = useState<[{ country: string }]>();
+    const [countries, setCountries2] = useState({});
 
+    useEffect(() => {
+        axios
+            .get(
+                'https://gh-data-downloads.s3.eu-central-1.amazonaws.com/metadata.json',
+            )
+            .then(function (response) {
+                const data: [{ country: string }] = response.data;
+                setTableData(data);
 
-    const downloadDataButtonOnClick = async (filename: string) => { try {
-        const response = await axios({
-            method: 'post',
-            url: '/api/cases/getDataDownloadLink',
-            data: { filename },
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
+                const uniqueCountries: string[] = [
+                    ...new Set(data.map((row) => row.country)),
+                ];
+                setCountries2(
+                    uniqueCountries.reduce(
+                        (
+                            p: { [id: string]: string },
+                            c: string,
+                        ): { [id: string]: string } => {
+                            p[c] = c;
+                            return p;
+                        },
+                        {},
+                    ),
+                );
+            });
+    }, []);
 
-        window.location.href = response.data.signedUrl;
-    } catch (error) {
-        if (!error.response) throw error;
-    }}
+    const downloadDataButtonOnClick = async (filename: string) => {
+        try {
+            const response = await axios({
+                method: 'post',
+                url: '/api/cases/getDataDownloadLink',
+                data: { filename },
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
 
-    const tableData = [
-        {
-            name: 'Logo',
-            description:
-                'An object used for testing curator portal data downloads',
-            filename: 'logo.png',
-        },
-        {
-            name: 'Cattle',
-            description: 'Cattle Dataset for Avian Influenza 2024',
-            filename: 'cattle/latest.csv',
-        },
-    ];
+            window.location.href = response.data.signedUrl;
+        } catch (error) {
+            if (!error.response) throw error;
+        }
+    };
 
     return (
         <>
@@ -90,9 +108,7 @@ const DataDownloads = () => {
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={() =>
-                        dispatch(agreeToDataAcknowledgement())
-                    }
+                    onClick={() => dispatch(agreeToDataAcknowledgement())}
                     sx={{
                         whiteSpace: 'nowrap',
                         minWidth: '140px',
@@ -103,50 +119,65 @@ const DataDownloads = () => {
                 </Button>
             </Paper>
             <Paper>
-                <MaterialTable
-                    options={{
-                        search: true,
-                        paging: false,
-                        searchFieldAlignment: 'right',
-                    }}
-                    columns={[
-                        {
-                            title: 'Name',
-                            field: 'name',
-                            defaultSort: 'asc',
-                            width: '200px',
-                        },
-                        {
-                            title: 'Description',
-                            field: 'description',
-                        },
-                        {
-                            title: '',
-                            field: 'filename',
-                            width: '120px',
-                            render: (rowData) =>
-                                rowData && (
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={() =>
-                                            downloadDataButtonOnClick(rowData.filename)
-                                        }
-                                        startIcon={<SaveAltIcon />}
-                                        sx={{
-                                            whiteSpace: 'nowrap',
-                                            minWidth: '140px',
-                                        }}
-                                        disabled={!agreedToDataAcknowledgement}
-                                    >
-                                        Download
-                                    </Button>
-                                ),
-                        },
-                    ]}
-                    data={tableData}
-                    title="Data downloads"
-                />
+                {tableData && (
+                    <MaterialTable
+                        options={{
+                            search: true,
+                            paging: false,
+                            searchFieldAlignment: 'right',
+                            filtering: true,
+                        }}
+                        columns={[
+                            {
+                                title: 'Name',
+                                field: 'name',
+                                defaultSort: 'asc',
+                                width: '200px',
+                                filtering: false,
+                            },
+                            {
+                                title: 'Country',
+                                field: 'country',
+                                lookup: countries,
+                            },
+                            {
+                                title: 'Description',
+                                field: 'description',
+                                filtering: false,
+                            },
+                            {
+                                title: '',
+                                field: 'filename',
+                                width: '120px',
+                                filtering: false,
+                                render: (rowData) =>
+                                    rowData && (
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={() =>
+                                                downloadDataButtonOnClick(
+                                                    rowData.filename,
+                                                )
+                                            }
+                                            startIcon={<SaveAltIcon />}
+                                            sx={{
+                                                whiteSpace: 'nowrap',
+                                                minWidth: '140px',
+                                            }}
+                                            disabled={
+                                                !agreedToDataAcknowledgement
+                                            }
+                                        >
+                                            Download
+                                        </Button>
+                                    ),
+                            },
+                        ]}
+                        data={tableData}
+                        title="Data downloads"
+                    />
+                )}
             </Paper>
         </>
     );
