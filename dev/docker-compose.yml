@@ -50,6 +50,7 @@ services:
       LOCATION_SERVICE_URL: "http://geocoding:8080"
       RECAPTCHA_SECRET_KEY: "${RECAPTCHA_SECRET_KEY}"
       DISEASE_NAME: "${DISEASE_NAME}"
+      DATA_DOWNLOAD_BUCKET: "${DATA_DOWNLOAD_BUCKET}"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://curator:3001"]
       interval: 30s

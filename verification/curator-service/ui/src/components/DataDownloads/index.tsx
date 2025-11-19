@@ -51,6 +51,7 @@ const DataDownloads = () => {
                 const uniqueCountries: string[] = [
                     ...new Set(data.map((row) => row.country)),
                 ];
+                // Map counties list to dict
                 setCountries2(
                     uniqueCountries.reduce(
                         (

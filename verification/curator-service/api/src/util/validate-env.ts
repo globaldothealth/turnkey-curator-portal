@@ -64,7 +64,7 @@ export default function validateEnv(): Readonly<{
         }),
         DATA_DOWNLOAD_BUCKET: str({
             desc: 'S3 bucket containing data to download',
-            devDefault: 'gh-data-downloads',
+            devDefault: 'global-dengue-forecasting',
         }),
         CURATOR_VERSION: str({
             desc: 'version string to display in UI for bug reports etc.',
