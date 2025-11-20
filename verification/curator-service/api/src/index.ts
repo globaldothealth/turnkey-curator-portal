@@ -33,7 +33,6 @@ import {
 } from './controllers/auth';
 import { Role } from './model/user';
 import { logger } from './util/logger';
-import { agreeToDataAcknowledgement } from './controllers/users';
 
 async function makeApp() {
     const app = express();
@@ -398,11 +397,11 @@ async function makeApp() {
         mustHaveAnyRole([Role.Admin]),
         usersController.listRoles,
     );
-    apiRouter.post(
-        '/users/agreeToDataAcknowledgement',
-        authenticateByAPIKey,
-        usersController.agreeToDataAcknowledgement,
-    );
+    // apiRouter.post(
+    //     '/users/agreeToDataAcknowledgement',
+    //     authenticateByAPIKey,
+    //     usersController.agreeToDataAcknowledgement,
+    // );
 
     const geocodeProxy = new GeocodeProxy(env.LOCATION_SERVICE_URL);
 

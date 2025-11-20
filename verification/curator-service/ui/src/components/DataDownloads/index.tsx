@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MaterialTable from '@material-table/core';
-import { Button, Paper } from '@mui/material';
+import { Box, Button, Grid, Paper, Tooltip } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import { SaveAlt as SaveAltIcon } from '@mui/icons-material';
 import axios from 'axios';
@@ -8,8 +8,7 @@ import axios from 'axios';
 import { Role } from '../../api/models/User';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { selectUser } from '../../redux/auth/selectors';
-import { agreeToDataAcknowledgement } from '../../redux/auth/thunk';
-
+// import { agreeToDataAcknowledgement } from '../../redux/auth/thunk';
 
 const dataDownloadsStyles = makeStyles()(() => ({
     cell: {
@@ -22,12 +21,25 @@ const dataDownloadsStyles = makeStyles()(() => ({
         fontWeight: 'bold',
     },
     paper: {
-        marginTop: '70px',
         padding: '16px',
         marginBottom: '30px',
     },
     dataAcknowledgementText: {
         textAlign: 'justify',
+    },
+    sectionTitle: {
+        fontSize: '20px',
+        fontWeight: '500',
+        margin: '0',
+    },
+    toolTile: {
+        height: '100%',
+        paddingBottom: '20px',
+        textAlign: 'center',
+    },
+    toolImg: {
+        width: '60%',
+        marginBottom: '10px',
     },
 }));
 
@@ -86,8 +98,87 @@ const DataDownloads = () => {
 
     return (
         <>
+            <Paper className={classes.paper} style={{ marginTop: '70px' }}>
+                <h6 className={classes.sectionTitle}>G.h Tools</h6>
+                {/*<p className={classes.dataAcknowledgementText}>*/}
+                {/*    SOME DESCRIPTION FOR HACKATHON TOOLS*/}
+                {/*</p>*/}
+                <Grid container spacing={2}>
+                    <Grid
+                        item
+                        xs={12}
+                        sm={12}
+                        md={3}
+                        order={{ xs: 1, sm: 1, md: 0 }}
+                    >
+                        <Paper className={classes.toolTile}>
+                            <a
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                href={
+                                    'https://dev-globalhealth.pantheonsite.io/tools/grapevne/'
+                                }
+                            >
+                                <img
+                                    className={classes.toolImg}
+                                    src="https://dev-globalhealth.pantheonsite.io/wp-content/uploads/2025/05/grapevne-logo.jpg"
+                                ></img>
+                            </a>
+                            <br />A graphical platform for building and
+                            validating infectious disease pipelines.
+                        </Paper>
+                    </Grid>
+                    <Grid
+                        item
+                        xs={12}
+                        sm={12}
+                        md={3}
+                        order={{ xs: 0, sm: 0, md: 1 }}
+                    >
+                        <Paper className={classes.toolTile}>
+                            <a
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                href={
+                                    'https://dev-globalhealth.pantheonsite.io/tools/dart/'
+                                }
+                            >
+                                <img
+                                    className={classes.toolImg}
+                                    src="https://dev-globalhealth.pantheonsite.io/wp-content/uploads/2025/11/dart-square-logo.png"
+                                ></img>
+                            </a>
+                            <br />
+                            Scalable, open-access and multidisciplinary data
+                            integration pipeline for climate-sensitive diseases.
+                        </Paper>
+                    </Grid>
+
+                    <Grid item xs={12} sm={12} md={3} order={2}>
+                        <Paper className={classes.toolTile}>
+                            <a
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                href={
+                                    'https://dev-globalhealth.pantheonsite.io/tools/insightboard/'
+                                }
+                            >
+                                <img
+                                    className={classes.toolImg}
+                                    src="https://dev-globalhealth.pantheonsite.io/wp-content/uploads/2025/10/insight-board-logo.png"
+                                ></img>
+                            </a>
+                            <br />
+                            Open-source AI-assisted tool for integrating,
+                            cleaning, and visualizing infectious disease
+                            outbreak data.
+                        </Paper>
+                    </Grid>
+                </Grid>
+            </Paper>
+
             <Paper className={classes.paper}>
-                <h2>Data Acknowledgement</h2>
+                <h2 className={classes.sectionTitle}>Data Acknowledgement</h2>
                 <p className={classes.dataAcknowledgementText}>
                     By participating in this hackathon and accessing the
                     provided datasets, you agree to handle all data responsibly
@@ -106,18 +197,18 @@ const DataDownloads = () => {
                     provided data, you acknowledge that you have read,
                     understood, and agreed to comply with these terms.
                 </p>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => dispatch(agreeToDataAcknowledgement())}
-                    sx={{
-                        whiteSpace: 'nowrap',
-                        minWidth: '140px',
-                    }}
-                    disabled={agreedToDataAcknowledgement}
-                >
-                    {agreedToDataAcknowledgement ? 'Already Agreed' : 'Agree'}
-                </Button>
+                {/*<Button*/}
+                {/*    variant="contained"*/}
+                {/*    color="primary"*/}
+                {/*    onClick={() => dispatch(agreeToDataAcknowledgement())}*/}
+                {/*    sx={{*/}
+                {/*        whiteSpace: 'nowrap',*/}
+                {/*        minWidth: '140px',*/}
+                {/*    }}*/}
+                {/*    disabled={agreedToDataAcknowledgement}*/}
+                {/*>*/}
+                {/*    {agreedToDataAcknowledgement ? 'Already Agreed' : 'Agree'}*/}
+                {/*</Button>*/}
             </Paper>
             <Paper>
                 {tableData && (
@@ -152,7 +243,7 @@ const DataDownloads = () => {
                                 width: '120px',
                                 filtering: false,
                                 render: (rowData) =>
-                                    rowData && (
+                                    rowData && agreedToDataAcknowledgement ? (
                                         <Button
                                             variant="contained"
                                             color="primary"
@@ -166,12 +257,31 @@ const DataDownloads = () => {
                                                 whiteSpace: 'nowrap',
                                                 minWidth: '140px',
                                             }}
-                                            disabled={
-                                                !agreedToDataAcknowledgement
-                                            }
                                         >
                                             Download
                                         </Button>
+                                    ) : (
+                                        <Tooltip placement="left" title={'To access file downloads your account must be verified by the G.h Administrator'}>
+                                            <span>
+                                                <Button
+                                                    variant="contained"
+                                                    color="primary"
+                                                    onClick={() =>
+                                                        downloadDataButtonOnClick(
+                                                            rowData.filename,
+                                                        )
+                                                    }
+                                                    startIcon={<SaveAltIcon />}
+                                                    sx={{
+                                                        whiteSpace: 'nowrap',
+                                                        minWidth: '140px',
+                                                    }}
+                                                    disabled={true}
+                                                >
+                                                    Download
+                                                </Button>
+                                            </span>
+                                        </Tooltip>
                                     ),
                             },
                         ]}
