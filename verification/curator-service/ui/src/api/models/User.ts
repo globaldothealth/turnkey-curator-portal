@@ -2,6 +2,7 @@ export const enum Role {
     Admin = 'admin',
     Curator = 'curator',
     JuniorCurator = 'junior curator',
+    PendingResearcher = 'pending researcher',
     Researcher = 'researcher',
 }
 

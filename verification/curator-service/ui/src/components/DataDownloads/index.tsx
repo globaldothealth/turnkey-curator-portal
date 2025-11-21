@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MaterialTable from '@material-table/core';
-import { Box, Button, Grid, Paper, Tooltip } from '@mui/material';
+import { Button, Grid, Paper, Tooltip } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import { SaveAlt as SaveAltIcon } from '@mui/icons-material';
 import axios from 'axios';
@@ -8,7 +8,7 @@ import axios from 'axios';
 import { Role } from '../../api/models/User';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { selectUser } from '../../redux/auth/selectors';
-// import { agreeToDataAcknowledgement } from '../../redux/auth/thunk';
+import { agreeToDataAcknowledgement } from '../../redux/auth/thunk';
 
 const dataDownloadsStyles = makeStyles()(() => ({
     cell: {
@@ -47,7 +47,9 @@ const DataDownloads = () => {
     const { classes } = dataDownloadsStyles();
     const dispatch = useAppDispatch();
     const user = useAppSelector(selectUser);
-    const agreedToDataAcknowledgement = user?.roles.includes(Role.Researcher);
+    const userIsResearcher = user?.roles.includes(Role.Researcher);
+    const agreedToDataAcknowledgement =
+        userIsResearcher || user?.roles.includes(Role.PendingResearcher);
     const [tableData, setTableData] = useState<[{ country: string }]>();
     const [countries, setCountries2] = useState({});
 
@@ -197,18 +199,18 @@ const DataDownloads = () => {
                     provided data, you acknowledge that you have read,
                     understood, and agreed to comply with these terms.
                 </p>
-                {/*<Button*/}
-                {/*    variant="contained"*/}
-                {/*    color="primary"*/}
-                {/*    onClick={() => dispatch(agreeToDataAcknowledgement())}*/}
-                {/*    sx={{*/}
-                {/*        whiteSpace: 'nowrap',*/}
-                {/*        minWidth: '140px',*/}
-                {/*    }}*/}
-                {/*    disabled={agreedToDataAcknowledgement}*/}
-                {/*>*/}
-                {/*    {agreedToDataAcknowledgement ? 'Already Agreed' : 'Agree'}*/}
-                {/*</Button>*/}
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => dispatch(agreeToDataAcknowledgement())}
+                    sx={{
+                        whiteSpace: 'nowrap',
+                        minWidth: '140px',
+                    }}
+                    disabled={agreedToDataAcknowledgement}
+                >
+                    {agreedToDataAcknowledgement ? 'Already Agreed' : 'Agree'}
+                </Button>
             </Paper>
             <Paper>
                 {tableData && (
@@ -242,26 +244,66 @@ const DataDownloads = () => {
                                 field: 'filename',
                                 width: '120px',
                                 filtering: false,
-                                render: (rowData) =>
-                                    rowData && agreedToDataAcknowledgement ? (
-                                        <Button
-                                            variant="contained"
-                                            color="primary"
-                                            onClick={() =>
-                                                downloadDataButtonOnClick(
-                                                    rowData.filename,
-                                                )
+                                render: (rowData) => {
+                                    if (userIsResearcher) {
+                                        return (
+                                            <Button
+                                                variant="contained"
+                                                color="primary"
+                                                onClick={() =>
+                                                    downloadDataButtonOnClick(
+                                                        rowData.filename,
+                                                    )
+                                                }
+                                                startIcon={<SaveAltIcon />}
+                                                sx={{
+                                                    whiteSpace: 'nowrap',
+                                                    minWidth: '140px',
+                                                }}
+                                            >
+                                                Download
+                                            </Button>
+                                        );
+                                    } else if (agreedToDataAcknowledgement) {
+                                        return (
+                                            <Tooltip
+                                                placement="left"
+                                                title={
+                                                    'To access file downloads your account must be verified by the G.h Administrator'
+                                                }
+                                            >
+                                                <span>
+                                                    <Button
+                                                        variant="contained"
+                                                        color="primary"
+                                                        onClick={() =>
+                                                            downloadDataButtonOnClick(
+                                                                rowData.filename,
+                                                            )
+                                                        }
+                                                        startIcon={
+                                                            <SaveAltIcon />
+                                                        }
+                                                        sx={{
+                                                            whiteSpace:
+                                                                'nowrap',
+                                                            minWidth: '140px',
+                                                        }}
+                                                        disabled={true}
+                                                    >
+                                                        Download
+                                                    </Button>
+                                                </span>
+                                            </Tooltip>
+                                        );
+                                    }
+                                    return (
+                                        <Tooltip
+                                            placement="left"
+                                            title={
+                                                'To access file downloads you must agree to Data Acknowledgement and your account must be verified by the G.h Administrator'
                                             }
-                                            startIcon={<SaveAltIcon />}
-                                            sx={{
-                                                whiteSpace: 'nowrap',
-                                                minWidth: '140px',
-                                            }}
                                         >
-                                            Download
-                                        </Button>
-                                    ) : (
-                                        <Tooltip placement="left" title={'To access file downloads your account must be verified by the G.h Administrator'}>
                                             <span>
                                                 <Button
                                                     variant="contained"
@@ -282,7 +324,8 @@ const DataDownloads = () => {
                                                 </Button>
                                             </span>
                                         </Tooltip>
-                                    ),
+                                    );
+                                },
                             },
                         ]}
                         data={tableData}

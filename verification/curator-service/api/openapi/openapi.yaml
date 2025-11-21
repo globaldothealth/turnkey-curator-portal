@@ -1240,24 +1240,24 @@ paths:
                     $ref: '#/components/responses/403'
                 '500':
                     $ref: '#/components/responses/500'
-#    /users/agreeToDataAcknowledgement:
-#        post:
-#          tags: [ User ]
-#          summary: Agrees to data acknowledgement
-#          operationId: agreeToDataAcknowledgement
-#          responses:
-#              '200':
-#                  $ref: '#/components/responses/200User'
-#              '400':
-#                  $ref: '#/components/responses/400'
-#              '403':
-#                  $ref: '#/components/responses/403'
-#              '404':
-#                  $ref: '#/components/responses/404'
-#              '422':
-#                  $ref: '#/components/responses/422'
-#              '500':
-#                  $ref: '#/components/responses/500'
+    /users/agreeToDataAcknowledgement:
+        post:
+          tags: [ User ]
+          summary: Agrees to data acknowledgement
+          operationId: agreeToDataAcknowledgement
+          responses:
+              '200':
+                  $ref: '#/components/responses/200User'
+              '400':
+                  $ref: '#/components/responses/400'
+              '403':
+                  $ref: '#/components/responses/403'
+              '404':
+                  $ref: '#/components/responses/404'
+              '422':
+                  $ref: '#/components/responses/422'
+              '500':
+                  $ref: '#/components/responses/500'
     /excludedCaseIds:
         get:
             summary: Lists IDs of excluded cases for a specified source
@@ -1942,6 +1942,7 @@ components:
                 - curator
                 - "junior curator"
                 - researcher
+                - "pending researcher"
         RoleArray:
             type: object
             properties:

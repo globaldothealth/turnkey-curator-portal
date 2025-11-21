@@ -442,6 +442,11 @@ export default function Profile(): JSX.Element {
                                         'juniors curators can submit cases',
                                         role,
                                     );
+                                case Role.PendingResearcher:
+                                    return tooltip(
+                                        'pending researchers are awaiting approval to download datasets',
+                                        role,
+                                    );
                                 case Role.Researcher:
                                     return tooltip(
                                         'researchers are allowed to download datasets',

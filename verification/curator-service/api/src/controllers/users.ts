@@ -79,6 +79,19 @@ export const updateRoles = async (
             newRoles.splice(newRoles.indexOf('junior curator'), 1);
         }
 
+        // User cannot have both "pending researcher" and "researcher" curator roles
+        if (
+            currentRoles.includes('researcher') &&
+            newRoles.includes('pending researcher')
+        ) {
+            newRoles.splice(newRoles.indexOf('researcher'), 1);
+        } else if (
+            currentRoles.includes('pending researcher') &&
+            newRoles.includes('researcher')
+        ) {
+            newRoles.splice(newRoles.indexOf('pending researcher'), 1);
+        }
+
         const result = await users().findOneAndUpdate(
             { _id: new ObjectId(req.params.id) },
             { $set: { roles: newRoles } },
@@ -153,8 +166,8 @@ export const agreeToDataAcknowledgement = async (
     try {
         const user = req.user as IUser;
         const roles = user.roles || [];
-        if (!roles.includes('researcher')) {
-            roles.push('researcher');
+        if (!roles.includes('pending researcher')) {
+            roles.push('pending researcher');
         }
 
         const result = await users().findOneAndUpdate(

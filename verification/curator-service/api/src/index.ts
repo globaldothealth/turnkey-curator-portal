@@ -397,11 +397,11 @@ async function makeApp() {
         mustHaveAnyRole([Role.Admin]),
         usersController.listRoles,
     );
-    // apiRouter.post(
-    //     '/users/agreeToDataAcknowledgement',
-    //     authenticateByAPIKey,
-    //     usersController.agreeToDataAcknowledgement,
-    // );
+    apiRouter.post(
+        '/users/agreeToDataAcknowledgement',
+        authenticateByAPIKey,
+        usersController.agreeToDataAcknowledgement,
+    );
 
     const geocodeProxy = new GeocodeProxy(env.LOCATION_SERVICE_URL);
 
