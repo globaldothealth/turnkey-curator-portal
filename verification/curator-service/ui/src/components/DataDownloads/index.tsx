@@ -50,7 +50,8 @@ const DataDownloads = () => {
     const userIsResearcher = user?.roles.includes(Role.Researcher);
     const agreedToDataAcknowledgement =
         userIsResearcher || user?.roles.includes(Role.PendingResearcher);
-    const [tableData, setTableData] = useState<[{ country: string }]>();
+    const [tableData, setTableData] =
+        useState<[{ country: string; filename: string }]>();
     const [countries, setCountries2] = useState({});
 
     useEffect(() => {
@@ -224,27 +225,24 @@ const DataDownloads = () => {
                         columns={[
                             {
                                 title: 'Name',
-                                field: 'name',
+                                field: 'filename',
                                 defaultSort: 'asc',
-                                width: '200px',
                                 filtering: false,
+                                render: (rowData: { filename: string }) =>
+                                    rowData.filename.split('/').pop(),
                             },
                             {
                                 title: 'Country',
                                 field: 'country',
+                                width: '25%',
                                 lookup: countries,
-                            },
-                            {
-                                title: 'Description',
-                                field: 'description',
-                                filtering: false,
                             },
                             {
                                 title: '',
                                 field: 'filename',
                                 width: '120px',
                                 filtering: false,
-                                render: (rowData) => {
+                                render: (rowData: { filename: string }) => {
                                     if (userIsResearcher) {
                                         return (
                                             <Button
