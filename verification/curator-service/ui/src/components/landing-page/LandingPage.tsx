@@ -61,15 +61,17 @@ const useStyles = makeStyles()((theme: Theme) => ({
     },
     description: {
         color: theme.custom.palette.landingPage.descriptionTextColor,
-        marginRight: '90px',
-        marginBottom: '70px',
-        width: '60%',
+        marginRight: '0px',
+        marginBottom: '30px',
+        width: '100%',
+        fontSize: '20px',
         [theme.breakpoints.down('sm')]: {
             width: '100%',
         },
     },
     linksContainer: {
-        width: '40%',
+        marginTop: '20px',
+        width: '25%',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-end',
@@ -247,17 +249,32 @@ const LandingPage = (): JSX.Element => {
                 <title>Global.health | Data</title>
             </Helmet>
             <StyledPaper smallHeight={smallHeight}>
-                <Typography variant="h4">
-                    Detailed line list data to power your research
+                <Typography variant="h4" style={{ fontSize: '30px' }}>
+                    Global.health Climate-Health Hackathon:
+                    <br />
+                    Uncover Dengue Transmission Drivers for a Healthier Future
                 </Typography>
                 <div className={classes.body}>
                     <Typography
                         classes={{ root: classes.description }}
                         variant="h5"
                     >
-                        Welcome to G.h Data. The first of its kind, easy to use
-                        global data repository with open access to real-time
-                        epidemiological anonymized line list data.
+                        <p>
+                            We extend a warm welcome to all participants of the
+                            Global.health Climate-Health Hackathon!
+                        </p>
+                        <p>
+                            We are excited to have you join our week long
+                            hackathon, where you will be exploring and modelling
+                            dengue data globally.
+                        </p>
+                        <p>
+                            To access comprehensive datasets linking dengue to
+                            transmission drivers, please create an account on
+                            the Global.health Data Portal. This will grant you
+                            full access to the resources needed for your
+                            projects.
+                        </p>
                     </Typography>
                     <MoreInformationLinks
                         classes={classes}
