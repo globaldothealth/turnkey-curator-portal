@@ -251,7 +251,7 @@ export default class CasesController {
         const filename = req.body.filename
 
         const params = {
-            Bucket: filename.endsWith('.csv') ? this.dataDownloadBucket : this.geodataDownloadBucket,
+            Bucket: filename.startsWith('output') ? this.geodataDownloadBucket : this.dataDownloadBucket,
             Key: filename,
             Expires: 5 * 60,
             ResponseContentDisposition:
