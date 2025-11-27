@@ -60,7 +60,8 @@ const DataDownloads = () => {
                 'https://gh-data-downloads.s3.eu-central-1.amazonaws.com/metadata.json',
             )
             .then(function (response) {
-                const data: [{ country: string }] = response.data;
+                const data: [{ country: string, filename: string, name: string }] = response.data as any;
+                data.forEach((td) => {td.name = td.filename.split('/').pop() || ''});
                 setTableData(data);
 
                 const uniqueCountries: string[] = [
@@ -221,15 +222,14 @@ const DataDownloads = () => {
                             paging: false,
                             searchFieldAlignment: 'right',
                             filtering: true,
+                            sorting: true,
                         }}
                         columns={[
                             {
                                 title: 'Name',
-                                field: 'filename',
+                                field: 'name',
                                 defaultSort: 'asc',
                                 filtering: false,
-                                render: (rowData: { filename: string }) =>
-                                    rowData.filename.split('/').pop(),
                             },
                             {
                                 title: 'Country',
