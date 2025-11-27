@@ -27,6 +27,7 @@ export default class CasesController {
         private readonly countryDataBucket: string,
         private readonly s3Client: AWS.S3,
         private readonly dataDownloadBucket: string,
+        private readonly geodataDownloadBucket: string,
     ) {}
 
     /** List simply forwards the request to the data service */
@@ -250,11 +251,11 @@ export default class CasesController {
         const filename = req.body.filename
 
         const params = {
-            Bucket: this.dataDownloadBucket,
+            Bucket: filename.endsWith('.csv') ? this.dataDownloadBucket : this.geodataDownloadBucket,
             Key: filename,
             Expires: 5 * 60,
             ResponseContentDisposition:
-                'attachment; filename ="' + filename + '"',
+                'attachment; filename ="' + filename.split('/').pop() + '"',
         };
         const user = req.user as IUser;
 

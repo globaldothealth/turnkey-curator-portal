@@ -9,6 +9,7 @@ export default function validateEnv(): Readonly<{
     COMPLETE_DATA_BUCKET: string;
     COUNTRY_DATA_BUCKET: string;
     DATA_DOWNLOAD_BUCKET: string;
+    GEODATA_DOWNLOAD_BUCKET: string;
     CURATOR_VERSION: string;
     DATASERVER_URL: string;
     DB_CONNECTION_STRING: string;
@@ -64,6 +65,10 @@ export default function validateEnv(): Readonly<{
         }),
         DATA_DOWNLOAD_BUCKET: str({
             desc: 'S3 bucket containing data to download',
+            devDefault: 'gh-data-downloads',
+        }),
+        GEODATA_DOWNLOAD_BUCKET: str({
+            desc: 'S3 bucket containing geodata to download',
             devDefault: 'global-dengue-forecasting',
         }),
         CURATOR_VERSION: str({

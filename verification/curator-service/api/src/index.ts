@@ -247,6 +247,7 @@ async function makeApp() {
         env.COUNTRY_DATA_BUCKET,
         s3Client,
         env.DATA_DOWNLOAD_BUCKET,
+        env.GEODATA_DOWNLOAD_BUCKET,
     );
     apiRouter.get(
         '/cases',
