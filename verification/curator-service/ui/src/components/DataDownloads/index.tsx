@@ -228,13 +228,13 @@ const DataDownloads = () => {
                             {
                                 title: 'Name',
                                 field: 'name',
-                                defaultSort: 'asc',
                                 filtering: false,
                             },
                             {
                                 title: 'Country',
                                 field: 'country',
                                 width: '25%',
+                                defaultSort: 'asc',
                                 lookup: countries,
                             },
                             {
