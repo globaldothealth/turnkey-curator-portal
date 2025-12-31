@@ -8,6 +8,7 @@ import fullCase from './../model/data/case.full.json';
 import minimalCase from './../model/data/case.minimal.json';
 import caseMustGeocode from './../model/data/case.mustgeocode.json';
 import mongoose from 'mongoose';
+import { ObjectId } from 'mongodb';
 import request from 'supertest';
 import { setupServer } from 'msw/node';
 import {
@@ -145,7 +146,7 @@ describe('GET', () => {
     it('should convert age bucket to age range', async () => {
         const c = new Day0Case(minimalDay0CaseData);
         const bucket = await AgeBucket.findOne({});
-        c.demographics.ageBuckets = [bucket!._id];
+        c.demographics.ageBuckets = [new ObjectId(bucket!._id as string)];
         await c.save();
         const res = await request(app).get(`/api/cases/${c._id}`).expect(200);
         expect(res.body[0].demographics.ageRange.start).toEqual(bucket!.start);
@@ -223,7 +224,7 @@ describe('GET', () => {
         it('should use age buckets in results', async () => {
             const c = new Day0Case(minimalDay0CaseData);
             const aBucket = await AgeBucket.findOne({});
-            c.demographics.ageBuckets = [aBucket!._id];
+            c.demographics.ageBuckets = [new ObjectId(aBucket!._id as string)];
             await c.save();
             const res = await request(app)
                 .get('/api/cases?page=1&limit=10')
