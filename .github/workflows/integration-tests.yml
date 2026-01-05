@@ -20,7 +20,7 @@ on:
 
 jobs:
   integration-tests:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     strategy:
       matrix:
@@ -30,7 +30,7 @@ jobs:
       MONGO_DB_NAME: 'covid19'
       DISEASE_NAME: 'COVID-19'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build stack
         run: docker compose -f dev/docker-compose.yml -f dev/docker-compose.ci.yml up --build -d -V
       - uses: cypress-io/github-action@v4
@@ -45,13 +45,13 @@ jobs:
           CI: true
           CYPRESS_RECORD_KEY: 1447b996-f025-495f-82d8-ca0b421ffd02
       # Screenshots are only available on failures.
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: cypress-screenshots
           path: verification/curator-service/ui/cypress/screenshots
       # Videos are always available.
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: cypress-videos
